@@ -5,7 +5,9 @@
  */
 exports.requiresLogin = function(req, res, next) {
     if (!req.isAuthenticated()) {
-        return res.send(401, 'User is not authorized');
+        return res.status(500).render('500', {
+                error: 'Please login to view this page.'
+            });
     }
     next();
 };

@@ -17,6 +17,14 @@ exports.authCallback = function(req, res) {
  * Logout
  */
 exports.signout = function(req, res) {
+    if(req.user)
+    {
+        var user = req.user;
+        user.lastLogout = new Date();
+        user.save(function(err) {
+            if(err) console.log(err);
+        });
+    }
     req.logout();
     res.redirect('/');
 };
@@ -38,6 +46,36 @@ exports.me = function(req, res) {
 
 
 /**
+ * Make Admin
+ */
+exports.makeAdmin = function(req, res) {
+    if(req.profile)
+    {
+        var admin = req.profile;
+        admin.isAdmin = true;
+        admin.save(function(err) {
+            if(err)
+            {
+                res.render('error', {
+                    status: 500
+                });
+            }
+            else
+            {
+                res.redirect('/');
+            }
+        });
+    }
+    else
+    {
+        res.render('error', {
+            status: 500
+        });
+    }
+};
+
+
+/**
  * Send All Users
  */
 exports.all = function(req, res) {
@@ -52,16 +90,16 @@ exports.all = function(req, res) {
 
 
 /**
- * Find user by id
+ * Find user by name
  */
-exports.user = function(req, res, next, id) {
+exports.user = function(req, res, next, name) {
     User
         .findOne({
-            _id: id
+            name: name
         })
         .exec(function(err, user) {
             if (err) return next(err);
-            if (!user) return next(new Error('Failed to load User ' + id));
+            if (!user) return next(new Error('Failed to find User ' + name));
             req.profile = user;
             next();
         });

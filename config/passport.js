@@ -31,7 +31,6 @@ module.exports = function(passport) {
         profile: true
       },
       function(identifier, profile, done) {
-        debugger;
             User.findOne({
                 'username': profile.userid
             }, function(err, user) {
@@ -53,7 +52,6 @@ module.exports = function(passport) {
                     });
                 } else {
                         user.lastLogin = new Date();
-                        debugger;
                         user.save(function (err) {
                         if (err) console.log(err);
                         return done(err, user);

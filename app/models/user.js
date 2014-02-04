@@ -19,7 +19,14 @@ var UserSchema = new Schema({
     provider: String,
     lastLogin: Date,
     lastLogout: Date,
-    isAdmin: Boolean
+    isAdmin: {
+        type: Boolean,
+        default: false
+    },
+    isManufacturer: {
+        type: Boolean,
+        default: false
+    }
 });
 
 mongoose.model('User', UserSchema);
