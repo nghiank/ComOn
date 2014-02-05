@@ -33,7 +33,7 @@ module.exports = function(grunt) {
         },
         jshint: {
             all: {
-                src: ['gruntfile.js', 'server.js', 'app/**/*.js', 'public/js/**', 'test/**/*.js'],
+                src: ['gruntfile.js', 'server.js', 'app/**/*.js', 'public/js/**', 'test/karma/**/*.js', 'test/mocha/**/*.js'],
                 options: {
                     jshintrc: true
                 }
@@ -97,4 +97,6 @@ module.exports = function(grunt) {
 
     //Test task.
     grunt.registerTask('test', ['env:test', 'mochaTest', 'karma:unit']);
+
+    grunt.registerTask('travis', ['env:test', 'jshint', 'mochaTest', 'karma:unit']);
 };
