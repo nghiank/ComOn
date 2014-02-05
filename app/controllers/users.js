@@ -56,7 +56,7 @@ exports.makeAdmin = function(req, res) {
         admin.save(function(err) {
             if(err)
             {
-                res.render('500', {
+                res.status(500).render('500', {
                     error: 'User not found.'
                 });
             }
@@ -68,7 +68,7 @@ exports.makeAdmin = function(req, res) {
     }
     else
     {
-        res.render('500', {
+        res.status(500).render('500', {
             error: 'User not found.'
         });
     }
@@ -85,6 +85,19 @@ exports.all = function(req, res) {
             userMap[user._id] = user;
         });
         res.jsonp(userMap || null);
+    });
+};
+
+/**
+ * Create Test user
+ */
+exports.createTestUsers = function(req, res, next) {
+    var user = new User(req.body);
+    user.save(function(err) {
+        req.logIn(user, function(err) {
+            if (err) return next(err);
+            return res.redirect('/');
+        });
     });
 };
 

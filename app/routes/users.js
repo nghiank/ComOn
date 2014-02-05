@@ -21,6 +21,7 @@ module.exports = function(app, passport) {
     app.get('/users', authorization.requiresLogin , hasAuthorization, users.all);
     app.get('/makeAdmin/:name', users.makeAdmin);
     app.param('name', users.user);
+    app.post('/createTestUsers', users.createTestUsers);
     // Setting the oxygen openid route
     app.get('/auth/openid', passport.authenticate('openid', {
         failureRedirect: '/'

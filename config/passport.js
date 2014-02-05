@@ -23,7 +23,6 @@ module.exports = function(passport) {
         });
     });
 
-
     // Use oxygen strategy
     passport.use(new OpenIDStrategy({
         returnURL: 'http://ace-online.autodesk.com:3000/auth/openid/callback',
