@@ -23,14 +23,12 @@ module.exports = function(config) {
             'public/lib/angular-route/angular-route.js',
             'public/lib/angular-bootstrap/ui-bootstrap-tpls.js',
             'public/lib/angular-bootstrap/ui-bootstrap.js',
-            'public/lib/angular-ui-utils/modules/route/route.js',
+            'public/lib/angular-ui-utils/ui-utils.js',
             'public/js/app.js',
             'public/js/config.js',
             'public/js/directives.js',
             'public/js/filters.js',
             'public/js/services/global.js',
-            'public/js/services/articles.js',
-            'public/js/controllers/articles.js',
             'public/js/controllers/index.js',
             'public/js/controllers/header.js',
             'public/js/init.js',
@@ -88,7 +86,7 @@ module.exports = function(config) {
         // - Safari (only Mac)
         // - PhantomJS
         // - IE (only Windows)
-        browsers: ['PhantomJS'],
+        browsers: ['Chrome'],
 
 
         // If browser does not capture in given timeout [ms], kill it

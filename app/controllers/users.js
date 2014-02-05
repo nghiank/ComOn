@@ -56,8 +56,8 @@ exports.makeAdmin = function(req, res) {
         admin.save(function(err) {
             if(err)
             {
-                res.render('error', {
-                    status: 500
+                res.render('500', {
+                    error: 'User not found.'
                 });
             }
             else
@@ -68,8 +68,8 @@ exports.makeAdmin = function(req, res) {
     }
     else
     {
-        res.render('error', {
-            status: 500
+        res.render('500', {
+            error: 'User not found.'
         });
     }
 };
