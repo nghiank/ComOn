@@ -5,5 +5,10 @@ angular.module('ace.system').controller('HeaderController', ['$scope', 'Global',
 
     $scope.menu = [];
     
+    if(Global.authenticated && Global.user.isAdmin === true)
+    {
+		$scope.menu.push({'title': 'Users','link': 'users'});
+    }
+
     $scope.isCollapsed = false;
 }]);

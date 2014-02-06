@@ -3,8 +3,8 @@
 var mongoose = require('mongoose'),
     request = require('supertest'),
     User = mongoose.model('User');
-var app = require('../../../server'),
-    agent = request.agent('http://localhost:3001');
+require('../../../server');
+var agent = request.agent('http://localhost:3001');
 describe('e2e API Test', function() {
     before(function (done) {
         mongoose.createConnection('mongodb://localhost/ACE-test', function (error) {
@@ -13,7 +13,7 @@ describe('e2e API Test', function() {
         });
     });
     describe('User Controller', function() {
-        it('should create user and login', function(done) {
+        it('should create test user and login', function(done) {
             this.timeout(50000);
             agent
             .post('/createTestUsers')
@@ -23,7 +23,7 @@ describe('e2e API Test', function() {
                 done();
             });
         });
-        it('should create another user and login', function(done) {
+        it('should create another test user and login', function(done) {
             this.timeout(50000);
             agent
             .post('/createTestUsers')

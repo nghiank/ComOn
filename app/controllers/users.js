@@ -79,12 +79,8 @@ exports.makeAdmin = function(req, res) {
  * Send All Users
  */
 exports.all = function(req, res) {
-    var userMap = {};
     User.find({}, function (err, users) {
-        users.forEach(function(user) {
-            userMap[user._id] = user;
-        });
-        res.jsonp(userMap || null);
+        res.jsonp(users || null);
     });
 };
 
@@ -94,6 +90,7 @@ exports.all = function(req, res) {
 exports.createTestUsers = function(req, res, next) {
     var user = new User(req.body);
     user.save(function(err) {
+        if(err) return next(err);
         req.logIn(user, function(err) {
             if (err) return next(err);
             return res.redirect('/');

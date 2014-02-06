@@ -11,10 +11,13 @@ var mongoose = require('mongoose'),
  */
 var UserSchema = new Schema({
     name: String,
-    email: String,
-    username: {
+    email: {
         type: String,
         unique: true
+    },
+    Id: {
+        type: String,
+        default: null
     },
     provider: String,
     lastLogin: Date,

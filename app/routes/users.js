@@ -30,4 +30,12 @@ module.exports = function(app, passport) {
         failureRedirect: '/'
     }), users.authCallback);
 
+    // Setting the oxygen oauth route
+    app.get('/auth/oauth', passport.authenticate('oauth', {
+        failureRedirect: '/'
+    }));
+    app.get('/auth/oauth/callback', passport.authenticate('oauth', {
+        failureRedirect: '/'
+    }), users.authCallback);
+
 };
