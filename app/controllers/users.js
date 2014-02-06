@@ -56,7 +56,7 @@ exports.makeAdmin = function(req, res) {
         admin.save(function(err) {
             if(err)
             {
-                res.status(500).render('500', {
+                return res.status(500).render('500', {
                     error: 'User not found.'
                 });
             }
@@ -68,7 +68,7 @@ exports.makeAdmin = function(req, res) {
     }
     else
     {
-        res.status(500).render('500', {
+        return res.status(500).render('500', {
             error: 'User not found.'
         });
     }
@@ -96,6 +96,43 @@ exports.createTestUsers = function(req, res, next) {
             return res.redirect('/');
         });
     });
+};
+
+
+/**
+ * Change User Status
+ */
+exports.changeStatus = function(req,res) {
+    var user = req.profile;
+
+    user.isManufacturer = !user.isManufacturer;
+
+    user.save(function(err) {
+        if (err) {
+            return res.status(500).render('500', {
+                error: 'User not found.'
+            });
+        } else {
+            res.jsonp(user);
+        }
+    });
+};
+
+
+/**
+ * Find user by Id
+ */
+exports.findById = function(req,res,next,id) {
+    User
+        .findOne({
+            _id: id
+        })
+        .exec(function(err, user) {
+            if (err) return next(err);
+            if (!user) return next(new Error('Failed to find User ' + id));
+            req.profile = user;
+            next();
+        });
 };
 
 

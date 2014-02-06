@@ -27,6 +27,7 @@
 			    <thead>
 			        <tr>
 			          <th>Name</th>
+			          <th>Designation</th>
 			          <th>Last Login</th>
 			          <th>Last Logout</th>
 			          <th>Actions</th>
@@ -35,9 +36,10 @@
 			    <tbody>
 					<tr data-ng-repeat="user in users | filter:query | filter: custom | orderBy:'name'">
 			          <td>{{user.name}}</td>
+			          <td>{{(user.isAdmin?'Admin'+(user.isManufacturer?', Manufacturer ':''):(user.isManufacturer?'Manufacturer':'User'))}}</td>
 			          <td>{{user.lastLogin | date:'medium'}}</td>
 			          <td>{{user.lastLogout | date:'medium'}}</td>
-			          <td><button type="button" href="/#!/users/{{user.isManufacturer?'revoke':'promote'}}/{{user._id}}" class="btn btn-info btn-xs">{{user.isManufacturer?'Revoke Permissions':'Promote to Manufacturer'}}</button></td>
+			          <td><button type="button" data="{{user._id}}" data-ng-click='update(user._id)' class="btn btn-info btn-xs">{{user.isManufacturer?'Revoke Permissions':'Promote to Manufacturer'}}</button></td>
 			        </tr>
 			    </tbody>
 			</table>
