@@ -1,0 +1,58 @@
+<section data-ng-controller="ProfileController" class="container dropshadow">
+<link rel="stylesheet" type="text/css" href="/css/profile.css">
+    <h3>My Profile</h3>
+<hr> 
+    <div class="sheet">
+    <div class="row">
+        <div class="col-md-offset-10">
+            <a ng-click="toggleEdit()">edit Profile</a>
+        </div>
+    </div> 
+    <form class="form-horizontal" name="profileForm" role="form">
+      <div class="form-group">
+        <div class="col-md-4 text-right"><p>Autodesk Account: </p></div>
+        <div class="col-md-4"><p>{{username}}</p></div>    
+      </div>
+            
+      <div class="form-group">
+        <div class="col-md-4 text-right"><p>Email: </p></div>
+        <div class="col-md-4"><p>{{email}}</p></div>    
+      </div>
+            
+      <div class="form-group">
+       <div class="col-md-4 text-right">
+           <p>CODE Name (optional):            
+               <a class="glyphicon glyphicon-question-sign"
+                  name="codeNamePopover"
+                  popover={{codeInfo}}
+                  popover-title={{codeInfoTitle}}
+                  popover-placement="bottom"
+                  popover-trigger="mouseenter"  ></a>           
+           </p>
+        </div>
+        <div ng-switch="editable">
+            <div ng-switch-when=false class="col-md-4">{{codename}}</div>
+            <div ng-switch-when=true>
+                <div class="col-md-4 pull-left">
+                <input type="text" 
+                         class="form-control" 
+                         placeholder={{codename}}
+                         ng-model="codeNameInput"
+                         ng-minlength={{codeNameMinLength}}
+                         ng-maxlength={{codeNameMaxLength}}
+                       name="codeNameInput">
+                <span class="help-block" ng-show="profileForm.codeNameInput.$dirty && (profileForm.codeNameInput.$error.minlength ||profileForm.codeNameInput.$error.maxlength)">
+                    Code Name must be between 1 and 30 characters.</span>
+                </div>
+                <div class="col-md-3">
+                <button class="btn btn-default" 
+                        ng-disabled="profileForm.codeNameInput.$pristine 
+                                                            ||profileForm.$invalid"
+                        >Submit Changes</button>
+                </div>
+            </div>
+        </div>
+      </div>
+</form>
+</div>
+</section>
