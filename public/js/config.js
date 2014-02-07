@@ -10,6 +10,9 @@ angular.module('ace').config(['$routeProvider',
         when('/users', {
             templateUrl: 'views/Users/list.html'
         }).
+        when('/profile/:username', {
+            templateUrl: 'views/profile.html'
+        }).
         otherwise({
             redirectTo: '/'
         });
