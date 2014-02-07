@@ -1,8 +1,9 @@
 'use strict';
 
 angular.module('ace.system')
-.controller('ProfileController', ['$scope', 'Global',function ($scope, Global) {
+.controller('ProfileController', ['$scope', 'Global', '$routeParams',function ($scope, Global, $routeParams) {
     $scope.global = Global;
+    $scope.urlUserName = $routeParams.username;
     $scope.username = Global.user.name;
     $scope.codename = $scope.username;
     $scope.email = Global.user.email;
