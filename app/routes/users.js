@@ -25,7 +25,6 @@ module.exports = function(app, passport) {
     app.get('/users/:userId', authorization.requiresLogin, hasAuthorization, users.changeStatus);
     app.param('userId', users.findById);
 
-    app.post('/createTestUsers', users.createTestUsers);
     // Setting the oxygen openid route
     app.get('/auth/openid', passport.authenticate('openid', {
         failureRedirect: '/'
@@ -41,5 +40,10 @@ module.exports = function(app, passport) {
     app.get('/auth/oauth/callback', passport.authenticate('oauth', {
         failureRedirect: '/'
     }), users.authCallback);
+
+    app.post('/xauth',  passport.authenticate('local', {
+        successRedirect: '/',
+        failureRedirect: '/'
+    }));
 
 };
