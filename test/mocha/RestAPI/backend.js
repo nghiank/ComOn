@@ -4,7 +4,7 @@ var mongoose = require('mongoose'),
     request = require('supertest'),
     User = mongoose.model('User');
 require('../../../server');
-var agent = request.agent('http://ace-online.autodesk.com:3001');
+var agent = request.agent('http://localhost:3001');
 describe('e2e API Test', function() {
     var xauth;
     var acess_token_secret = 'MdktTsU%3D', acess_token = 'NT2L%2FFIJda01hoaIx34ZHQjr3vU%3D';
@@ -66,7 +66,7 @@ describe('e2e API Test', function() {
             .end(function(err, res){
                 //validate the keys in the response JSON matches, we dont care about the values
                 (res.status).should.equal(200);
-                if(res.status == 200)
+                if(res.status === 200)
                 {
                     body = res.body;
                 }

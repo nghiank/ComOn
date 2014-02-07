@@ -48,12 +48,10 @@ OxygenOAuth.prototype.login = function(username, password, callback)
 };
 
 OxygenOAuth.prototype.refreshLogin = function(callback) {
-    var self = this;
     this.login(this.username, this.password, callback);
 };
 
 OxygenOAuth.prototype.get = function(queryUrl, callback, willTryAgainIfFailed){
-    var self = this;
     return this.oauth.get(
         queryUrl,
         this.oauth_accesstoken,
@@ -62,7 +60,6 @@ OxygenOAuth.prototype.get = function(queryUrl, callback, willTryAgainIfFailed){
 };
 
 OxygenOAuth.prototype.post = function(queryUrl, postBody, postContentType, callback){
-    var self = this;
     return this.oauth.post(
         queryUrl,
         this.oauth_accesstoken,
