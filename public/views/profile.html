@@ -39,17 +39,21 @@
                          class="form-control" 
                          placeholder={{codename}}
                          ng-model="codeNameInput"
+                         ng-pattern="word"
                          ng-minlength={{codeNameMinLength}}
                          ng-maxlength={{codeNameMaxLength}}
                        name="codeNameInput">
                 <span class="help-block" ng-show="profileForm.codeNameInput.$dirty && (profileForm.codeNameInput.$error.minlength ||profileForm.codeNameInput.$error.maxlength)">
                     Code Name must be between 1 and 30 characters.</span>
+                <span class="help-block" ng-show="profileForm.codeNameInput.$dirty && profileForm.codeNameInput.$error.pattern">
+                    Code Name must be contain only alphabetical characters.</span>
                 </div>
                 <div class="col-md-3">
-                <button class="btn btn-default" 
+                <a class="btn btn-default" 
                         ng-disabled="profileForm.codeNameInput.$pristine 
                                                             ||profileForm.$invalid"
-                        >Submit Changes</button>
+                        href="/updateCodeName/{{urlUserName}}"
+                        >Submit Changes</a>
                 </div>
             </div>
         </div>
