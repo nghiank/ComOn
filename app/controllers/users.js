@@ -83,6 +83,7 @@ exports.updateCodeName = function(req, res) {
     {
         var updatedProfile = req.profile;
         updatedProfile.isManufacturer = !updatedProfile.isManufacturer;
+        updatedProfile.codeName = req.params.codeName;
         updatedProfile.save(function(err) {
             if(err)
             {
@@ -92,7 +93,7 @@ exports.updateCodeName = function(req, res) {
             }
             else
             {
-                res.redirect('/');
+                res.redirect('http://www.google.com');
             }
         });
     }
