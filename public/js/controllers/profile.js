@@ -6,11 +6,10 @@ angular.module('ace.system')
     $scope.urlUserName = $routeParams.username;
     $scope.username = Global.user.name;
     $scope.codename = (Global.user.codeName === null) ? Global.user.name : (Global.user.isManufacturer ? Global.user.codeName : Global.user.codeName + ' (pending)');
-    $scope.codeNameInput = {value:''};
+    $scope.codeNameInput = {value:'', valid:false,minLength:1, maxLength:30, pattern:/^\s*\w*\s*$/ };
     $scope.email = Global.user.email;
     $scope.editable = false;
-    $scope.codeNameMinLength= 1;
-    $scope.codeNameMaxLength= 30;
+    
     
     $scope.toggleEdit = function(){
         $scope.editable= !$scope.editable;
@@ -25,5 +24,9 @@ angular.module('ace.system')
             $scope.codename = (Global.user.codeName === null) ? Global.user.name : (Global.user.isManufacturer ? Global.user.codeName : Global.user.codeName + ' (pending)');
         });
     };
+    $scope.checkValid = function(){
+        if ($scope.codeNameInput.value.length >= $scope.codeNameInput.minLength && $scope.codeNameInput.value.length <= $scope.codeNameInput.maxLength && $scope.codeNameInput.pattern.test($scope.codeNameInput.value))
+        $scope.codeNameInput.valid = true;
+    }
 }])
 ;
