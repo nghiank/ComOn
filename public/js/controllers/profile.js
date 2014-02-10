@@ -6,6 +6,7 @@ angular.module('ace.system')
     $scope.urlUserName = $routeParams.username;
     $scope.username = Global.user.name;
     $scope.codename = $scope.username;
+    $scope.codeNameInput = {value:''};
     $scope.email = Global.user.email;
     $scope.editable = false;
     $scope.codeNameMinLength= 1;

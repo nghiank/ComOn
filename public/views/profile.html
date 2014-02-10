@@ -35,13 +35,14 @@
             <div ng-switch-when=false class="col-md-4">{{codename}}</div>
             <div ng-switch-when=true>
                 <div class="col-md-4 pull-left">
+
                 <input type="text" 
                          class="form-control" 
                          placeholder={{codename}}
-                         ng-model="codeNameInput"
-                         ng-pattern="word"
+                         ng-model="codeNameInput.value"
                          ng-minlength={{codeNameMinLength}}
                          ng-maxlength={{codeNameMaxLength}}
+                         ng-pattern="/^\s*\w*\s*$/"
                        name="codeNameInput">
                 <span class="help-block" ng-show="profileForm.codeNameInput.$dirty && (profileForm.codeNameInput.$error.minlength ||profileForm.codeNameInput.$error.maxlength)">
                     Code Name must be between 1 and 30 characters.</span>
@@ -52,7 +53,7 @@
                 <a class="btn btn-default" 
                         ng-disabled="profileForm.codeNameInput.$pristine 
                                                             ||profileForm.$invalid"
-                        href="/updateCodeName/{{urlUserName}}"
+                        href="/updateCodeName/{{urlUserName}}/{{codeNameInput.value}}"
                         >Submit Changes</a>
                 </div>
             </div>
