@@ -64,7 +64,7 @@ exports.requiresLogin = function(req, res, next) {
 				else
 				{
 					return res.status(500).render('500', {
-						error: 'You are not authorizeda to view this page.'
+						error: 'You are not authorized to view this page.'
 					});
 				}
 			});
@@ -72,7 +72,7 @@ exports.requiresLogin = function(req, res, next) {
 		else
 		{
 			return res.status(500).render('500', {
-				error: 'You are not authorized cto view this page.'
+				error: 'You are not authorized to view this page.'
 			});
 		}
 	}
