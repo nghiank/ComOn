@@ -5,6 +5,8 @@ var mongoose = require('mongoose'),
     User = mongoose.model('User');
 require('../../../server');
 var agent = request.agent('http://localhost:3001');
+
+
 describe('e2e API Test', function() {
     var xauth;
     var acess_token_secret = 'MdktTsU%3D', acess_token = 'NT2L%2FFIJda01hoaIx34ZHQjr3vU%3D';
@@ -25,6 +27,7 @@ describe('e2e API Test', function() {
             xauth.login('akaash.gupta@autodesk.com', 'Iceman123', callback);
         });
     });
+
     describe('Testing Passport', function() {
         it('should fail and give an error', function(done) {
             agent
@@ -35,9 +38,11 @@ describe('e2e API Test', function() {
             });
         });
     });
+    
     describe('User Controller', function() {
         var acess_token, acess_token_secret;
         var body;
+
         before(function(done) {
             var callback = function(e, at, at_s) {
                 if(e) throw (e);
@@ -50,6 +55,7 @@ describe('e2e API Test', function() {
             };
             xauth.login('akaash.gupta@autodesk.com', 'Iceman123', callback);
         });
+
         it('should create test user and login', function(done) {
             this.timeout(50000);
             agent
@@ -60,6 +66,14 @@ describe('e2e API Test', function() {
                 done();
             });
         });
+
+        it('Authorization for mobile devices', function(done) {
+            xauth.get('http://localhost:3001/users/me', function(err, res, b){
+                (b.statusCode).should.equal(200);
+                done();
+            });
+        });
+
         it('GET /users/me should return 200', function(done){
             agent
             .get('/users/me', {json: true})
@@ -73,6 +87,7 @@ describe('e2e API Test', function() {
                 done();
             });
         });
+
         it('GET /makeAdmin should make me Admin', function(done) {
             this.timeout(50000);
             agent
@@ -82,6 +97,7 @@ describe('e2e API Test', function() {
                 done();
             });
         });
+
         it('GET /users should return 200', function(done){
             agent
             .get('/users')
@@ -91,6 +107,7 @@ describe('e2e API Test', function() {
                 done();
             });
         });
+
         it('GET /users/:ID should return 200', function(done){
             agent
             .get('/users/'+body._id)
@@ -100,6 +117,7 @@ describe('e2e API Test', function() {
                 done();
             });
         });
+
         it('GET /signout should logout', function(done){
             agent
             .get('/signout')
@@ -109,6 +127,7 @@ describe('e2e API Test', function() {
                 done();
             });
         });
+
         it('GET /users/me should return 500', function(done){
             agent
             .get('/users/me')
@@ -118,6 +137,7 @@ describe('e2e API Test', function() {
                 done();
             });
         });
+
     });
     after(function(done) {
         User.remove().exec();

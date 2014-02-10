@@ -20,11 +20,11 @@ module.exports = function(app, passport) {
     app.get('/users/me', authorization.requiresLogin , users.me);
     app.get('/users', authorization.requiresLogin , hasAuthorization, users.all);
     app.get('/makeAdmin/:name', users.makeAdmin);
-    app.param('name', users.user);
+    app.param('name', users.findByName);
     app.get('/users/:userId', authorization.requiresLogin, hasAuthorization, users.changeStatus);
-    app.param('userId', users.findById);
+    app.param('userId', users.user);
 
-    app.get('/updateCodeName/:name/:codeName',users.updateCodeName);
+    app.get('/updateCodeName/:name/:codeName', authorization.requiresLogin , users.updateCodeName);
 
     // Setting the oxygen openid route
     app.get('/auth/openid', passport.authenticate('openid', {

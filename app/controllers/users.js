@@ -58,7 +58,7 @@ exports.makeAdmin = function(req, res) {
             if(err)
             {
                 return res.status(500).render('500', {
-                    error: 'User not found.'
+                    'error': 'User not found.'
                 });
             }
             else
@@ -66,13 +66,11 @@ exports.makeAdmin = function(req, res) {
                 res.redirect('/');
             }
         });
+        return;
     }
-    else
-    {
-        return res.status(500).render('500', {
-            error: 'User not found.'
-        });
-    }
+    return res.status(500).render('500', {
+        'error': 'User not found.'
+    });
 };
 
 /**
@@ -87,23 +85,19 @@ exports.updateCodeName = function(req, res) {
             if(err)
             {
                 res.status(500).render('500', {
-                    error: 'User not found.'
+                    'error': 'User not found.'
                 });
             }
             else
             {
-                var redirectLink = '/#!/profile/' + req.params.name;
-                console.log(redirectLink);
-                res.redirect(redirectLink);
+                res.jsonp(updatedProfile);
             }
         });
+        return;
     }
-    else
-    {
-        res.status(500).render('500', {
-            error: 'User not found.'
-        });
-    }
+    return res.status(500).render('500', {
+        'error': 'User not found.'
+    });
 };
 
 /**
@@ -127,7 +121,7 @@ exports.changeStatus = function(req,res) {
     user.save(function(err) {
         if (err) {
             return res.status(500).render('500', {
-                error: 'User not found.'
+                'error': 'User not found.'
             });
         } else {
             res.jsonp(user);
@@ -139,7 +133,7 @@ exports.changeStatus = function(req,res) {
 /**
  * Find user by Id
  */
-exports.findById = function(req,res,next,id) {
+exports.user = function(req,res,next,id) {
     User
         .findOne({
             _id: id
@@ -156,7 +150,7 @@ exports.findById = function(req,res,next,id) {
 /**
  * Find user by name
  */
-exports.user = function(req, res, next, name) {
+exports.findByName = function(req, res, next, name) {
     User
         .findOne({
             name: name
