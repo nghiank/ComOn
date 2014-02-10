@@ -25,3 +25,12 @@ angular.module('ace').config(['$locationProvider',
         $locationProvider.hashPrefix('!');
     }
 ]);
+
+//Setting translate Dictionary
+angular.module('ace')
+.config(['$translateProvider', function($translateProvider) {
+    $translateProvider.translations({
+        'CODE_NAME_INFO_TITLE': 'What is CODE name?',
+        'CODE_NAME_INFO':'Code name is optional information only applicable for manufacturers.Code name appears in the field "manufacturer" in your catalog. By changing your default CODE name, you automatically apply to register as an manufacturer. You new CODE name is only confirmed after the verfication from the administrator.'
+    });
+}]);

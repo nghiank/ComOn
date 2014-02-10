@@ -1,5 +1,5 @@
-<section data-ng-controller="ProfileController" class="container dropshadow">
-  <div ng-show="global.authenticated && global.user.name == urlUserName">
+<section data-ng-controller="ProfileController" class="container dropshadow" ng-show="global.authenticated">
+  <div>
 <link rel="stylesheet" type="text/css" href="/css/profile.css">
     <h3>My Profile</h3>
 <hr> 
@@ -22,11 +22,11 @@
             
       <div class="form-group">
        <div class="col-md-4 text-right">
-           <p>CODE Name (optional):            
-               <a class="glyphicon glyphicon-question-sign"
-                  name="codeNamePopover"
-                  popover={{codeInfo}}
-                  popover-title={{codeInfoTitle}}
+           <p>CODE Name (optional):           
+               <a class = "glyphicon glyphicon-question-sign"
+                  name = "codeNamePopover"
+                  popover = "{{'CODE_NAME_INFO' | translate }}"
+                  popover-title = "{{'CODE_NAME_INFO_TITLE' | translate}}"
                   popover-placement="bottom"
                   popover-trigger="mouseenter"  ></a>           
            </p>
@@ -63,6 +63,4 @@
 </form>
 </div>
 </div>
-<div ng-hide="global.authenticated">You need to log in to see this page.</div>
-<div ng-hide="global.user.name == urlUserName">You must log in as {{urlUserName}} to see this profile.</div>
 </section>
