@@ -43,6 +43,7 @@
                          ng-minlength={{codeNameMinLength}}
                          ng-maxlength={{codeNameMaxLength}}
                          ng-pattern="/^\s*\w*\s*$/"
+                         ng-blur="checkUnique()"
                        name="codeNameInput">
                 <span class="help-block" ng-show="profileForm.codeNameInput.$dirty && (profileForm.codeNameInput.$error.minlength ||profileForm.codeNameInput.$error.maxlength)">
                     Code Name must be between 1 and 30 characters.</span>

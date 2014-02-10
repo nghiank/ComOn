@@ -16,5 +16,8 @@ angular.module('ace.system')
     $scope.toggleEdit = function(){
         $scope.editable= !$scope.editable;
     };
+    $scope.checkUnique = function(){
+        $scope.email = 'Blur is working';
+    };
 }])
 ;
