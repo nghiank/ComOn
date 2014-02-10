@@ -58,7 +58,7 @@ exports.makeAdmin = function(req, res) {
             if(err)
             {
                 res.status(500).render('500', {
-                    error: 'User not found.'
+                    'error': 'User not found.'
                 });
             }
             else
@@ -66,13 +66,11 @@ exports.makeAdmin = function(req, res) {
                 res.redirect('/');
             }
         });
+        return;
     }
-    else
-    {
-        res.status(500).render('500', {
-            error: 'User not found.'
-        });
-    }
+    res.status(500).render('500', {
+        'error': 'User not found.'
+    });
 };
 
 /**
@@ -87,23 +85,19 @@ exports.updateCodeName = function(req, res) {
             if(err)
             {
                 res.status(500).render('500', {
-                    error: 'User not found.'
+                    'error': 'User not found.'
                 });
             }
             else
             {
-                var redirectLink = '/#!/profile/' + req.params.name;
-                console.log(redirectLink);
-                res.redirect(redirectLink);
+                res.jsonp(updatedProfile);
             }
         });
+        return;
     }
-    else
-    {
-        res.status(500).render('500', {
-            error: 'User not found.'
-        });
-    }
+    res.status(500).render('500', {
+        'error': 'User not found.'
+    });
 };
 
 /**
@@ -128,7 +122,6 @@ exports.createTestUsers = function(req, res, next) {
         });
     });
 };
-
 
 /**
  * Find user by name
