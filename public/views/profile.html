@@ -1,4 +1,4 @@
-<section data-ng-controller="ProfileController" class="container dropshadow" ng-show="global.authenticated">
+<section data-ng-controller="ProfileController" class="container dropshadow" >
   <div>
 <link rel="stylesheet" type="text/css" href="/css/profile.css">
     <h3>My Profile</h3>
@@ -42,9 +42,9 @@
                          ng-model="codeNameInput.value"
                          ng-blur="checkValid()"
                        name="codeNameInput">
-                <span class="help-block" ng-show="profileForm.codeNameInput.$dirty && (profileForm.codeNameInput.$error.minlength ||profileForm.codeNameInput.$error.maxlength)">
+                <span class="help-block" ng-show="!lengthCheck && profileForm.codeNameInput.$dirty">
                     Code Name must be between 1 and 30 characters.</span>
-                <span class="help-block" ng-show="profileForm.codeNameInput.$dirty && profileForm.codeNameInput.$error.pattern">
+                <span class="help-block" ng-show="!patternCheck && profileForm.codeNameInput.$dirty">
                     Code Name must be contain only alphabetical characters.</span>
                 </div>
                 <div class="col-md-3">
