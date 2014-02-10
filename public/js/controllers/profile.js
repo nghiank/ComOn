@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('ace.system')
-.controller('ProfileController', ['$scope', 'Global', '$routeParams',function ($scope, Global, $routeParams) {
+.controller('ProfileController', ['$scope', 'Global', '$routeParams', '$resource',function ($scope, Global, $routeParams, $resource) {
     $scope.global = Global;
     $scope.urlUserName = $routeParams.username;
     $scope.username = Global.user.name;
@@ -16,8 +16,14 @@ angular.module('ace.system')
     $scope.toggleEdit = function(){
         $scope.editable= !$scope.editable;
     };
-    $scope.checkUnique = function(){
-        $scope.email = 'Blur is working';
+    $scope.updateCodeName = function(){
+        $scope.editable= !$scope.editable;
+        var update = $resource('/updateCodeName/:name/:codeName',
+                                {name:Global.user.name, codeName: $scope.codeNameInput.value},
+                                {change:{method:'GET'}});
+        update.change(function(){
+            Global.user.codeName = $scope.codeNameInput.value;
+        });
     };
 }])
 ;

@@ -51,11 +51,11 @@
                     Code Name must be contain only alphabetical characters.</span>
                 </div>
                 <div class="col-md-3">
-                <a class="btn btn-default" 
+                <button class="btn btn-default" 
                         ng-disabled="profileForm.codeNameInput.$pristine 
                                                             ||profileForm.$invalid"
-                        href="/updateCodeName/{{urlUserName}}/{{codeNameInput.value}}"
-                        >Submit Changes</a>
+                        ng-click="updateCodeName()"
+                        >Submit Changes</button>
                 </div>
             </div>
         </div>
