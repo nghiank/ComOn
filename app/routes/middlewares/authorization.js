@@ -72,7 +72,7 @@ exports.requiresLogin = function(req, res, next) {
 		else
 		{
 			return res.status(500).render('500', {
-				error: 'You are not authorized to view this page.'
+				error: 'Please login to view this page.'
 			});
 		}
 	}
