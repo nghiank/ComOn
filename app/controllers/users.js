@@ -29,6 +29,7 @@ exports.signout = function(req, res) {
     res.redirect('/');
 };
 
+
 /**
  * Session
  */
@@ -74,6 +75,36 @@ exports.makeAdmin = function(req, res) {
     }
 };
 
+/**
+ * Update Profile
+ */
+exports.updateCodeName = function(req, res) {
+    if(req.profile)
+    {
+        var updatedProfile = req.profile;
+        updatedProfile.codeName = req.params.codeName;
+        updatedProfile.save(function(err) {
+            if(err)
+            {
+                res.status(500).render('500', {
+                    error: 'User not found.'
+                });
+            }
+            else
+            {
+                var redirectLink = '/#!/profile/' + req.params.name;
+                console.log(redirectLink);
+                res.redirect(redirectLink);
+            }
+        });
+    }
+    else
+    {
+        res.status(500).render('500', {
+            error: 'User not found.'
+        });
+    }
+};
 
 /**
  * Send All Users

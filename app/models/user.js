@@ -29,6 +29,10 @@ var UserSchema = new Schema({
     isManufacturer: {
         type: Boolean,
         default: false
+    },
+    codeName:{
+        type: String,
+        default: null
     }
 });
 
