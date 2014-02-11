@@ -4,7 +4,10 @@ var mongoose = require('mongoose'),
     request = require('supertest'),
     User = mongoose.model('User');
 require('../../../server');
-var agent = request.agent('http://localhost:3001');
+var agent = request.agent('http://localhost:3001'),
+    config = require('../../../config/config');
+
+
 describe('e2e API Test', function() {
     var xauth;
     var acess_token_secret = 'MdktTsU%3D', acess_token = 'NT2L%2FFIJda01hoaIx34ZHQjr3vU%3D';
@@ -13,16 +16,6 @@ describe('e2e API Test', function() {
         mongoose.createConnection('mongodb://localhost/ACE-test', function (error) {
             if (error) throw error; // Handle failed connection
             done();
-        });
-    });
-    describe('Testing Xauth Library', function() {
-        this.timeout(50000);
-        it('should get an access token', function(done) {
-            var callback = function(e) {
-                (e === null).should.be.true;
-                done();
-            };
-            xauth.login('akaash.gupta@autodesk.com', 'Iceman123', callback);
         });
     });
     describe('Testing Passport', function() {
@@ -35,10 +28,13 @@ describe('e2e API Test', function() {
             });
         });
     });
+    
     describe('User Controller', function() {
         var acess_token, acess_token_secret;
         var body;
+
         before(function(done) {
+            this.timeout(config.timeout);
             var callback = function(e, at, at_s) {
                 if(e) throw (e);
                 if(!e)
@@ -50,8 +46,9 @@ describe('e2e API Test', function() {
             };
             xauth.login('akaash.gupta@autodesk.com', 'Iceman123', callback);
         });
+
         it('should create test user and login', function(done) {
-            this.timeout(50000);
+            this.timeout(config.timeout);
             agent
             .post('/xauth')
             .send({oauth_token: acess_token, oauth_verifier: acess_token_secret})
@@ -60,12 +57,22 @@ describe('e2e API Test', function() {
                 done();
             });
         });
+
+        it('Authorization for mobile devices', function(done) {
+            this.timeout(config.timeout);
+            xauth.get('http://localhost:3001/api/users/me', function(err, res, b){
+                (b.statusCode).should.equal(200);
+                done();
+            });
+        });
+
         it('GET /users/me should return 200', function(done){
             agent
-            .get('/users/me', {json: true})
+            .get('/api/users/me', {json: true})
             .end(function(err, res){
                 //validate the keys in the response JSON matches, we dont care about the values
                 (res.status).should.equal(200);
+                (res.body).should.have.properties('name','email','provider','lastLogin','_id','__v','codeName','isManufacturer','isAdmin','Id');
                 if(res.status === 200)
                 {
                     body = res.body;
@@ -73,33 +80,39 @@ describe('e2e API Test', function() {
                 done();
             });
         });
+
         it('GET /makeAdmin should make me Admin', function(done) {
-            this.timeout(50000);
+            this.timeout(config.timeout);
             agent
-            .get('/makeAdmin/Akaash Gupta')
+            .get('/api/makeAdmin/Akaash Gupta')
             .end(function(err,res) {
                 (res.status).should.equal(302);
                 done();
             });
         });
+
         it('GET /users should return 200', function(done){
             agent
-            .get('/users')
+            .get('/api/users')
             .end(function(err, res){
                 //validate the keys in the response JSON matches, we dont care about the values
                 (res.status).should.equal(200);
+                (res.body[0]).should.have.properties('name','email','provider','lastLogin','_id','__v','codeName','isManufacturer','isAdmin','Id');
                 done();
             });
         });
+
         it('GET /users/:ID should return 200', function(done){
             agent
-            .get('/users/'+body._id)
+            .get('/api/users/'+body._id)
             .end(function(err, res){
                 //validate the keys in the response JSON matches, we dont care about the values
                 (res.status).should.equal(200);
+                (res.body).should.have.properties('name','email','provider','lastLogin','_id','__v','codeName','isManufacturer','isAdmin','Id');
                 done();
             });
         });
+
         it('GET /signout should logout', function(done){
             agent
             .get('/signout')
@@ -109,15 +122,17 @@ describe('e2e API Test', function() {
                 done();
             });
         });
-        it('GET /users/me should return 500', function(done){
+
+        it('GET /users/me should return 401', function(done){
             agent
-            .get('/users/me')
+            .get('/api/users/me')
             .end(function(err, res){
                 //validate the keys in the response JSON matches, we dont care about the values
-                (res.status).should.equal(500);
+                (res.status).should.equal(401);
                 done();
             });
         });
+
     });
     after(function(done) {
         User.remove().exec();
