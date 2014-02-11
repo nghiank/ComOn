@@ -34,6 +34,7 @@ describe('e2e API Test', function() {
         var body;
 
         before(function(done) {
+            this.timeout(config.timeout);
             var callback = function(e, at, at_s) {
                 if(e) throw (e);
                 if(!e)
@@ -58,6 +59,7 @@ describe('e2e API Test', function() {
         });
 
         it('Authorization for mobile devices', function(done) {
+            this.timeout(config.timeout);
             xauth.get('http://localhost:3001/api/users/me', function(err, res, b){
                 (b.statusCode).should.equal(200);
                 done();
