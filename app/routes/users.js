@@ -24,7 +24,7 @@ module.exports = function(app, passport) {
     app.get('/users/:userId', authorization.requiresLogin, hasAuthorization, users.changeStatus);
     app.param('userId', users.findById);
 
-    app.get('/updateCodeName/:name/:codeName',users.updateCodeName);
+    app.put('/updateCodeName/:name/:codeName',users.updateCodeName);
 
     // Setting the oxygen openid route
     app.get('/auth/openid', passport.authenticate('openid', {

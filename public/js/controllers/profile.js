@@ -21,7 +21,7 @@ angular.module('ace.system')
             $scope.editable= !$scope.editable;
             var update = $resource('/updateCodeName/:name/:codeName',
                                     {name:Global.user.name, codeName: $scope.codeNameInput.value},
-                                    {change:{method:'GET'}});
+                                    {change:{method:'PUT'}});
             update.change(function(){
                 Global.user.codeName = $scope.codeNameInput.value;
                 $scope.codename = (Global.user.codeName === null) ? Global.user.name : (Global.user.isManufacturer ? Global.user.codeName : Global.user.codeName + ' (pending)');
