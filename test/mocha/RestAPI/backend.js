@@ -18,7 +18,7 @@ describe('e2e API Test', function() {
         });
     });
     describe('Testing Xauth Library', function() {
-        this.timeout(50000);
+        this.timeout(8000);
         it('should get an access token', function(done) {
             var callback = function(e) {
                 (e === null).should.be.true;
@@ -68,7 +68,7 @@ describe('e2e API Test', function() {
         });
 
         it('Authorization for mobile devices', function(done) {
-            xauth.get('http://localhost:3001/users/me', function(err, res, b){
+            xauth.get('http://localhost:3001/api/users/me', function(err, res, b){
                 (b.statusCode).should.equal(200);
                 done();
             });
@@ -76,13 +76,14 @@ describe('e2e API Test', function() {
 
         it('GET /users/me should return 200', function(done){
             agent
-            .get('/users/me', {json: true})
+            .get('/api/users/me', {json: true})
             .end(function(err, res){
                 //validate the keys in the response JSON matches, we dont care about the values
                 (res.status).should.equal(200);
                 if(res.status === 200)
                 {
                     body = res.body;
+                    console.log(body);
                 }
                 done();
             });
@@ -91,7 +92,7 @@ describe('e2e API Test', function() {
         it('GET /makeAdmin should make me Admin', function(done) {
             this.timeout(50000);
             agent
-            .get('/makeAdmin/Akaash Gupta')
+            .get('/api/makeAdmin/Akaash Gupta')
             .end(function(err,res) {
                 (res.status).should.equal(302);
                 done();
@@ -100,7 +101,7 @@ describe('e2e API Test', function() {
 
         it('GET /users should return 200', function(done){
             agent
-            .get('/users')
+            .get('/api/users')
             .end(function(err, res){
                 //validate the keys in the response JSON matches, we dont care about the values
                 (res.status).should.equal(200);
@@ -110,7 +111,7 @@ describe('e2e API Test', function() {
 
         it('GET /users/:ID should return 200', function(done){
             agent
-            .get('/users/'+body._id)
+            .get('/api/users/'+body._id)
             .end(function(err, res){
                 //validate the keys in the response JSON matches, we dont care about the values
                 (res.status).should.equal(200);
@@ -130,10 +131,10 @@ describe('e2e API Test', function() {
 
         it('GET /users/me should return 500', function(done){
             agent
-            .get('/users/me')
+            .get('/api/users/me')
             .end(function(err, res){
                 //validate the keys in the response JSON matches, we dont care about the values
-                (res.status).should.equal(500);
+                (res.status).should.equal(401);
                 done();
             });
         });

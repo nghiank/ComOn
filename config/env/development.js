@@ -1,6 +1,7 @@
 'use strict';
 
 module.exports = {
+    base_url: 'http://ace-online.autodesk.com:3000',
     db: "mongodb://localhost/ACE-dev",
     app: {
         name: "Autodesk - ACE ComOn Dev"

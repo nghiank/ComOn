@@ -2,7 +2,7 @@
 
 //Articles service used for articles REST endpoint
 angular.module('ace.users').factory('Users', ['$resource', function($resource) {
-    return $resource('users/:userId', {
+    return $resource('api/users/:userId', {
 		userId: '@_id'
 	},  {
 		update: {

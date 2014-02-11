@@ -2,79 +2,83 @@
 var config = require('../../../config/config'),
 request = require('request'),
 mongoose = require('mongoose'),
-User = mongoose.model('User');
+User = mongoose.model('User'),
+error = require('../../utils/error');
+
+
 /**
  * Generic require login routing middleware
  */
-exports.requiresLogin = function(req, res, next) {
-	if (!req.isAuthenticated()) {
-		if(req.headers.authorization)
+
+var validatingAuthorizationHeader = function(req,res,next)
+{
+	var url = config.base_url + req.url;
+	var urlAuth = config.oauth.apiURL + '/api/oauth/v1/ValidateAuthorization';
+	var options = {
+		url : urlAuth,
+		method : 'POST',
+		headers: {
+			'Content-Type':'application/x-www-form-urlencoded',
+		},
+		form: {'authorizationHeader': req.headers.authorization,
+		'requestUrl': url,
+		'httpMethod': req.method,
+		'responseFormat': 'json'}
+	};
+
+	request(options, function(e, r, body){
+		if (!body)
 		{
-			var url = config.base_url + req.url;
-			var urlAuth = config.oauth.apiURL + '/api/oauth/v1/ValidateAuthorization';
-			var options = {
-				url : urlAuth,
-				method : 'POST',
-				headers: {
-					'Content-Type':'application/x-www-form-urlencoded',
-				},
-				form: {'authorizationHeader': req.headers.authorization,
-				'requestUrl': url,
-				'httpMethod': req.method,
-				'responseFormat': 'json'}
-			};
-			request(options, function(e, r, body){
-				if (body)
-				{
-					var json = JSON.parse(body);
-					if (json && json.TokenValidationResult && json.TokenValidationResult.IsValidAccess === 'true')
-					{
-						var ret_user = json.TokenValidationResult.User;
-						User.findOne({
-							'email': ret_user.Email
-						}, function(err, user) {
-							if (err) {
-								return res.status(500).render('500', {'error': 'Error Encountered'});
-							}
-							if (!user) {
-								user = new User({
-									name: ret_user.Profile.FirstName+' '+ret_user.Profile.LastName,
-									Id: ret_user.Id,
-									email: ret_user.Email,
-									provider: 'Autodesk',
-									lastLogin: new Date(),
-									isAdmin: false
-								});
-								user.save(function(err) {
-									if (err)
-										return res.status(500).render('500', {'error': 'Error Encountered'});
-									next();
-								});
-							} else {
-								user.lastLogin = new Date();
-								user.save(function (err) {
-									if (err)
-										return res.status(500).render('500', {'error': 'Error Encountered'});
-									next();
-								});
-							}
-						});
-					}
+			return error.sendGenericError(res,401);
+		}
+
+		var json = JSON.parse(body);
+		if (json && json.TokenValidationResult && json.TokenValidationResult.IsValidAccess === 'true')
+		{
+			var ret_user = json.TokenValidationResult.User;
+
+			//Finding/creating new User
+			User.findOne({
+				'email': ret_user.Email
+			}, function(err, user) {
+				if (err) {
+					return error.sendGenericError(res,401);
 				}
-				else
-				{
-					return res.status(500).render('500', {
-						error: 'You are not authorized to view this page.'
+				if (!user) {
+					user = new User({
+						name: ret_user.Profile.FirstName+' '+ret_user.Profile.LastName,
+						Id: ret_user.Id,
+						email: ret_user.Email,
+						provider: 'Autodesk',
+						lastLogin: new Date(),
+						isAdmin: false
+					});
+					user.save(function(err) {
+						if (err)
+							return error.sendGenericError(res,401);
+						return next();
+					});
+				} else {
+					user.lastLogin = new Date();
+					user.save(function (err) {
+						if (err)
+							return error.sendGenericError(res,401);
+						return next();
 					});
 				}
 			});
+
 		}
-		else
-		{
-			return res.status(500).render('500', {
-				error: 'Please login to view this page.'
-			});
-		}
+	});
+};
+
+exports.requiresLogin = function(req, res, next) {
+	if (req.isAuthenticated()) {
+		return next();
 	}
-	next();
+	if(!req.headers.authorization)
+	{
+		return error.sendGenericError(res,401);
+	}
+	return validatingAuthorizationHeader(req,res,next);
 };

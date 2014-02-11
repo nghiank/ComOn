@@ -4,7 +4,8 @@
  * Module dependencies.
  */
 var mongoose = require('mongoose'),
-    User = mongoose.model('User');
+    User = mongoose.model('User'),
+    error = require('../utils/error');
 
 /**
  * Auth callback
@@ -38,12 +39,12 @@ exports.session = function(req, res) {
 };
 
 
-/**
- * Send User
- */
-exports.me = function(req, res) {
-    res.jsonp(req.user || null);
-};
+// /**
+//  * Send User
+//  */
+// exports.me = function(req, res) {
+//     res.jsonp(req.user || null);
+// };
 
 
 /**
@@ -57,9 +58,7 @@ exports.makeAdmin = function(req, res) {
         admin.save(function(err) {
             if(err)
             {
-                return res.status(500).render('500', {
-                    'error': 'User not found.'
-                });
+                return error.sendGenericError(res,401);
             }
             else
             {
@@ -68,9 +67,7 @@ exports.makeAdmin = function(req, res) {
         });
         return;
     }
-    return res.status(500).render('500', {
-        'error': 'User not found.'
-    });
+    return error.sendGenericError(res,401);
 };
 
 /**
@@ -84,9 +81,7 @@ exports.updateCodeName = function(req, res) {
         updatedProfile.save(function(err) {
             if(err)
             {
-                res.status(500).render('500', {
-                    'error': 'User not found.'
-                });
+                return error.sendGenericError(res,401);
             }
             else
             {
@@ -95,9 +90,7 @@ exports.updateCodeName = function(req, res) {
         });
         return;
     }
-    return res.status(500).render('500', {
-        'error': 'User not found.'
-    });
+    return error.sendGenericError(res,401);
 };
 
 /**
@@ -120,9 +113,7 @@ exports.changeStatus = function(req,res) {
 
     user.save(function(err) {
         if (err) {
-            return res.status(500).render('500', {
-                'error': 'User not found.'
-            });
+            return error.sendGenericError(res,401);
         } else {
             res.jsonp(user);
         }
