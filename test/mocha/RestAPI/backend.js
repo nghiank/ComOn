@@ -18,16 +18,6 @@ describe('e2e API Test', function() {
             done();
         });
     });
-    describe('Testing Passport', function() {
-        it('should fail and give an error', function(done) {
-            agent
-            .get('/auth/oauth/callback?oauth_verifier='+acess_token_secret+'&oauth_token='+acess_token)
-            .end(function(err,res) {
-                res.status.should.equal(500);
-                done();
-            });
-        });
-    });
     
     describe('User Controller', function() {
         var acess_token, acess_token_secret;
