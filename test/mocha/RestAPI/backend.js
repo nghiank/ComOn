@@ -83,7 +83,6 @@ describe('e2e API Test', function() {
                 if(res.status === 200)
                 {
                     body = res.body;
-                    console.log(body);
                 }
                 done();
             });

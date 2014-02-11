@@ -3,7 +3,7 @@
 // User routes use users controller
 var users = require('../controllers/users');
 var authorization = require('./middlewares/authorization');
-var error = require('../utils/error')
+var error = require('../utils/error');
 
 var hasAuthorization = function(req, res, next) {
     if (req.user.isAdmin === false) {
@@ -15,7 +15,7 @@ var hasAuthorization = function(req, res, next) {
 module.exports = function(app, passport) {
 
     app.get('/signout', users.signout);
-    // app.get('/api/users/me', authorization.requiresLogin , users.me);
+    app.get('/api/users/me', authorization.requiresLogin , users.me);
     app.get('/api/users', authorization.requiresLogin , hasAuthorization, users.all);
     app.get('/api/makeAdmin/:name', users.makeAdmin);
     app.param('name', users.findByName);
