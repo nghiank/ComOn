@@ -1,11 +1,11 @@
 'use strict';
 
 angular.module('ace.system')
-.controller('ProfileController', ['$scope', 'Global', '$routeParams', '$resource', '$location',function ($scope, Global, $routeParams, $resource, $location) {
+.controller('ProfileController', ['$scope', 'Global', '$routeParams', '$resource', function ($scope, Global, $routeParams, $resource) {
 
     $scope.init = function(){
         if (!Global.authenticated)
-           window.location.replace('/');
+            window.location.replace('/');
         $scope.global = Global;
         $scope.urlUserName = $routeParams.username;
         $scope.username = Global.user.name;
@@ -15,7 +15,7 @@ angular.module('ace.system')
         $scope.editable = false;
 
         $scope.toggleEdit = function(){
-        $scope.editable= !$scope.editable;
+            $scope.editable= !$scope.editable;
         };
         $scope.updateCodeName = function(){
             $scope.editable= !$scope.editable;
