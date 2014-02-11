@@ -7,7 +7,7 @@ var error = require('../utils/error');
 
 var hasAuthorization = function(req, res, next) {
     if (req.user.isAdmin === false) {
-        return error.sendGenericError(res,401);
+        return error.sendUnauthorizedError(res);
     }
     next();
 };

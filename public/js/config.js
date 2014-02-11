@@ -36,7 +36,6 @@ angular.module('ace').config(['$httpProvider',
             function error(response) {
                 var status = response.status;
                 if(status === 401) {
-                    window.alert('You are not authorized to view this page.');
                     window.location = '/';
                     return;
                 }

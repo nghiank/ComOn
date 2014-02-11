@@ -29,46 +29,46 @@ var validatingAuthorizationHeader = function(req,res,next)
 	request(options, function(e, r, body){
 		if (!body)
 		{
-			return error.sendGenericError(res,401);
+			return error.sendUnauthorizedError(res);
 		}
 
 		var json = JSON.parse(body);
-		if (json && json.TokenValidationResult && json.TokenValidationResult.IsValidAccess === 'true')
+		if (!(json && json.TokenValidationResult && json.TokenValidationResult.IsValidAccess === 'true'))
 		{
-			var ret_user = json.TokenValidationResult.User;
-
-			//Finding/creating new User
-			User.findOne({
-				'email': ret_user.Email
-			}, function(err, user) {
-				if (err) {
-					return error.sendGenericError(res,401);
-				}
-				if (!user) {
-					user = new User({
-						name: ret_user.Profile.FirstName+' '+ret_user.Profile.LastName,
-						Id: ret_user.Id,
-						email: ret_user.Email,
-						provider: 'Autodesk',
-						lastLogin: new Date(),
-						isAdmin: false
-					});
-					user.save(function(err) {
-						if (err)
-							return error.sendGenericError(res,401);
-						return next();
-					});
-				} else {
-					user.lastLogin = new Date();
-					user.save(function (err) {
-						if (err)
-							return error.sendGenericError(res,401);
-						return next();
-					});
-				}
-			});
-
+			return error.sendUnauthorizedError(res);
 		}
+		
+		//Finding/creating new User
+		var ret_user = json.TokenValidationResult.User;
+		User.findOne({
+			'email': ret_user.Email
+		}, function(err, user) {
+			if (err) {
+				return error.sendUnauthorizedError(res);
+			}
+			if (!user) {
+				user = new User({
+					name: ret_user.Profile.FirstName+' '+ret_user.Profile.LastName,
+					Id: ret_user.Id,
+					email: ret_user.Email,
+					provider: 'Autodesk',
+					lastLogin: new Date(),
+					isAdmin: false
+				});
+				user.save(function(err) {
+					if (err)
+						return error.sendUnauthorizedError(res);
+					return next();
+				});
+			} else {
+				user.lastLogin = new Date();
+				user.save(function (err) {
+					if (err)
+						return error.sendUnauthorizedError(res);
+					return next();
+				});
+			}
+		});
 	});
 };
 
@@ -78,7 +78,7 @@ exports.requiresLogin = function(req, res, next) {
 	}
 	if(!req.headers.authorization)
 	{
-		return error.sendGenericError(res,401);
+		return error.sendUnauthorizedError(res);
 	}
 	return validatingAuthorizationHeader(req,res,next);
 };

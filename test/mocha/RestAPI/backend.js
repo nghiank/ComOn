@@ -4,7 +4,8 @@ var mongoose = require('mongoose'),
     request = require('supertest'),
     User = mongoose.model('User');
 require('../../../server');
-var agent = request.agent('http://localhost:3001');
+var agent = request.agent('http://localhost:3001'),
+    config = require('../../../config/config');
 
 
 describe('e2e API Test', function() {
@@ -17,17 +18,6 @@ describe('e2e API Test', function() {
             done();
         });
     });
-    describe('Testing Xauth Library', function() {
-        this.timeout(8000);
-        it('should get an access token', function(done) {
-            var callback = function(e) {
-                (e === null).should.be.true;
-                done();
-            };
-            xauth.login('akaash.gupta@autodesk.com', 'Iceman123', callback);
-        });
-    });
-
     describe('Testing Passport', function() {
         it('should fail and give an error', function(done) {
             agent
@@ -57,7 +47,7 @@ describe('e2e API Test', function() {
         });
 
         it('should create test user and login', function(done) {
-            this.timeout(50000);
+            this.timeout(config.timeout);
             agent
             .post('/xauth')
             .send({oauth_token: acess_token, oauth_verifier: acess_token_secret})
@@ -80,6 +70,7 @@ describe('e2e API Test', function() {
             .end(function(err, res){
                 //validate the keys in the response JSON matches, we dont care about the values
                 (res.status).should.equal(200);
+                (res.body).should.have.properties('name','email','provider','lastLogin','_id','__v','codeName','isManufacturer','isAdmin','Id');
                 if(res.status === 200)
                 {
                     body = res.body;
@@ -89,7 +80,7 @@ describe('e2e API Test', function() {
         });
 
         it('GET /makeAdmin should make me Admin', function(done) {
-            this.timeout(50000);
+            this.timeout(config.timeout);
             agent
             .get('/api/makeAdmin/Akaash Gupta')
             .end(function(err,res) {
@@ -104,6 +95,7 @@ describe('e2e API Test', function() {
             .end(function(err, res){
                 //validate the keys in the response JSON matches, we dont care about the values
                 (res.status).should.equal(200);
+                (res.body[0]).should.have.properties('name','email','provider','lastLogin','_id','__v','codeName','isManufacturer','isAdmin','Id');
                 done();
             });
         });
@@ -114,6 +106,7 @@ describe('e2e API Test', function() {
             .end(function(err, res){
                 //validate the keys in the response JSON matches, we dont care about the values
                 (res.status).should.equal(200);
+                (res.body).should.have.properties('name','email','provider','lastLogin','_id','__v','codeName','isManufacturer','isAdmin','Id');
                 done();
             });
         });
@@ -128,7 +121,7 @@ describe('e2e API Test', function() {
             });
         });
 
-        it('GET /users/me should return 500', function(done){
+        it('GET /users/me should return 401', function(done){
             agent
             .get('/api/users/me')
             .end(function(err, res){

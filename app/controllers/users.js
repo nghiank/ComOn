@@ -58,7 +58,7 @@ exports.makeAdmin = function(req, res) {
         admin.save(function(err) {
             if(err)
             {
-                return error.sendGenericError(res,401);
+                return error.sendUnauthorizedError(res);
             }
             else
             {
@@ -67,7 +67,7 @@ exports.makeAdmin = function(req, res) {
         });
         return;
     }
-    return error.sendGenericError(res,401);
+    return error.sendUnauthorizedError(res);
 };
 
 /**
@@ -81,7 +81,7 @@ exports.updateCodeName = function(req, res) {
         updatedProfile.save(function(err) {
             if(err)
             {
-                return error.sendGenericError(res,401);
+                return error.sendUnauthorizedError(res);
             }
             else
             {
@@ -90,7 +90,7 @@ exports.updateCodeName = function(req, res) {
         });
         return;
     }
-    return error.sendGenericError(res,401);
+    return error.sendUnauthorizedError(res);
 };
 
 /**
@@ -113,7 +113,7 @@ exports.changeStatus = function(req,res) {
 
     user.save(function(err) {
         if (err) {
-            return error.sendGenericError(res,401);
+            return error.sendUnauthorizedError(res);
         } else {
             res.jsonp(user);
         }
