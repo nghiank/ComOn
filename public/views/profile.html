@@ -42,9 +42,9 @@
                          ng-model="codeNameInput.value"
                          ng-blur="checkValid()"
                        name="codeNameInput">
-                <span class="help-block" ng-show="!lengthCheck && profileForm.codeNameInput.$dirty">
+                <span class="help-block" ng-show="!codeNameInput.valid.lengthCheck && profileForm.codeNameInput.$dirty">
                     Code Name must be between 1 and 30 characters.</span>
-                <span class="help-block" ng-show="!patternCheck && profileForm.codeNameInput.$dirty">
+                <span class="help-block" ng-show="!codeNameInput.valid.patternCheck && profileForm.codeNameInput.$dirty">
                     Code Name must be contain only alphabetical characters.</span>
                 </div>
                 <div class="col-md-3">

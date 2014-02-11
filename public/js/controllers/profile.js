@@ -10,7 +10,12 @@ angular.module('ace.system')
         $scope.urlUserName = $routeParams.username;
         $scope.username = Global.user.name;
         $scope.codename = (Global.user.codeName === null) ? Global.user.name : (Global.user.isManufacturer ? Global.user.codeName : Global.user.codeName + ' (pending)');
-        $scope.codeNameInput = {value:'', valid:false,minLength:1, maxLength:30, pattern:/^\s*\w*\s*$/ };
+        $scope.codeNameInput =
+            {value:'',
+            valid:{valid:true,lengthCheck: true, patternCheck:true},
+            minLength:1,
+            maxLength:30,
+            pattern:/^\s*\w*\s*$/ };
         $scope.email = Global.user.email;
         $scope.editable = false;
 
@@ -28,14 +33,11 @@ angular.module('ace.system')
             });
         };
         $scope.checkValid = function(){
-            $scope.lengthCheck = $scope.codeNameInput.value.length >= $scope.codeNameInput.minLength && $scope.codeNameInput.value.length <= $scope.codeNameInput.maxLength ;
-            $scope.patternCheck = $scope.codeNameInput.pattern.test($scope.codeNameInput.value);
-            $scope.codeNameInput.valid = ($scope.lengthCheck && $scope.patternCheck);
+            $scope.codeNameInput.valid.lengthCheck = $scope.codeNameInput.value.length >= $scope.codeNameInput.minLength && $scope.codeNameInput.value.length <= $scope.codeNameInput.maxLength ;
+            $scope.codeNameInput.valid.patternCheck= $scope.codeNameInput.pattern.test($scope.codeNameInput.value);
+            $scope.codeNameInput.valid.valid = $scope.codeNameInput.valid.lengthCheck && $scope.codeNameInput.valid.patternCheck;
         };
     };
     $scope.init();
-    
-    
-
 }])
 ;
