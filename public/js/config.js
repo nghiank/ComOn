@@ -39,6 +39,10 @@ angular.module('ace').config(['$httpProvider',
                     window.location = '/';
                     return;
                 }
+                else if(status === 400) {
+                    window.alert(response.data.error);
+                    return;
+                }
                 return $q.reject(response); //similar to throw response;
             }
             return function(promise) {

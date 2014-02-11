@@ -58,7 +58,7 @@ exports.makeAdmin = function(req, res) {
         admin.save(function(err) {
             if(err)
             {
-                return error.sendUnauthorizedError(res);
+                return error.sendGenericError(res, 400, 'Error Encountered');
             }
             else
             {
@@ -67,7 +67,7 @@ exports.makeAdmin = function(req, res) {
         });
         return;
     }
-    return error.sendUnauthorizedError(res);
+    return error.sendGenericError(res, 400, 'Error Encountered');
 };
 
 /**
@@ -81,7 +81,7 @@ exports.updateCodeName = function(req, res) {
         updatedProfile.save(function(err) {
             if(err)
             {
-                return error.sendUnauthorizedError(res);
+                return error.sendGenericError(res, 400, 'Error Encountered');
             }
             else
             {
@@ -90,7 +90,7 @@ exports.updateCodeName = function(req, res) {
         });
         return;
     }
-    return error.sendUnauthorizedError(res);
+    return error.sendGenericError(res, 400, 'Error Encountered');
 };
 
 /**
@@ -113,7 +113,7 @@ exports.changeStatus = function(req,res) {
 
     user.save(function(err) {
         if (err) {
-            return error.sendUnauthorizedError(res);
+            return error.sendGenericError(res, 400, 'Error Encountered');
         } else {
             res.jsonp(user);
         }
