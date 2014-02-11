@@ -34,10 +34,9 @@ angular.module('ace.users').controller('UsersController', ['$scope', '$routePara
         $scope.find = function() {
             Users.query(function(users) {
                 $scope.users = users;
-            var i;
-            for (i = 0; i < $scope.users.length; i++)
-                $scope.users[i].name += ($scope.users[i].codeName ===null) ? '': ' ('+$scope.users[i].codeName+')';
-        
+                var i;
+                for (i = 0; i < $scope.users.length; i++)
+                    $scope.users[i].name += ($scope.users[i].codeName ===null) ? '': ' ('+$scope.users[i].codeName+')';
             });
         };
 
