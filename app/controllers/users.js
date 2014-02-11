@@ -57,8 +57,8 @@ exports.makeAdmin = function(req, res) {
         admin.save(function(err) {
             if(err)
             {
-                res.status(500).render('500', {
-                    'error': 'User not found.'
+                return res.status(500).render('500', {
+                    error: 'User not found.'
                 });
             }
             else
@@ -68,9 +68,13 @@ exports.makeAdmin = function(req, res) {
         });
         return;
     }
-    res.status(500).render('500', {
-        'error': 'User not found.'
-    });
+
+    else
+    {
+        return res.status(500).render('500', {
+            error: 'User not found.'
+        });
+    }
 };
 
 /**
@@ -109,18 +113,41 @@ exports.all = function(req, res) {
     });
 };
 
+
 /**
- * Create Test user
+ * Change User Status
  */
-exports.createTestUsers = function(req, res, next) {
-    var user = new User(req.body);
+exports.changeStatus = function(req,res) {
+    var user = req.profile;
+
+    user.isManufacturer = !user.isManufacturer;
+
     user.save(function(err) {
-        if(err) return next(err);
-        req.logIn(user, function(err) {
-            if (err) return next(err);
-            return res.redirect('/');
-        });
+        if (err) {
+            return res.status(500).render('500', {
+                error: 'User not found.'
+            });
+        } else {
+            res.jsonp(user);
+        }
     });
+};
+
+
+/**
+ * Find user by Id
+ */
+exports.findById = function(req,res,next,id) {
+    User
+        .findOne({
+            _id: id
+        })
+        .exec(function(err, user) {
+            if (err) return next(err);
+            if (!user) return next(new Error('Failed to find User ' + id));
+            req.profile = user;
+            next();
+        });
 };
 
 /**

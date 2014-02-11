@@ -1,36 +1,56 @@
 'use strict';
 
 angular.module('ace.users').controller('UsersController', ['$scope', '$routeParams', '$location', 'Global', 'Users', function ($scope, $routeParams, $location, Global, Users) {
-    $scope.init = function(){
-        if (!Global.authenticated || !Global.user.isAdmin)
-            window.location.replace('/');
-        $scope.global = Global;
-        $scope.showMan = true;
-        $scope.showUser = true;
-        
 
-        $scope.find = function() {
-            Users.query(function(users) {
-                $scope.users = users;
-            });
-        };
+    $scope.global = Global;
+    $scope.showMan = true;
+    $scope.showUser = true;
 
-        
-        $scope.custom = function(user)
+    $scope.update = function(id) {
+
+        var users = $scope.users;
+        var index = 0;
+        for(var i in users)
         {
-            var input1 = $scope.showUser;
-            var input2 = $scope.showMan;
-            if(!input1 && user.isAdmin === true)
+            if(users[i]._id === id)
             {
-                return false;
+                index = i;
+                break;
             }
-            else if(!input2 && user.isManufacturer === true)
+        }
+        Users.update({userId: id}, function(user) {
+            users[index] = user;
+        });
+    };
+
+    $scope.find = function() {
+        Users.query(function(users) {
+            $scope.users = users;
+        });
+    };
+
+    $scope.custom = function(user)
+    {
+        var input1 = $scope.showUser;
+        var input2 = $scope.showMan;
+        if(!input1 && user.isAdmin === true)
+        {
+            if(input2 && user.isManufacturer)
             {
-                return false;
+                return true;
             }
-            return true;
-        };
-        
+            return false;
+        }
+        if(!input2 && user.isManufacturer === true)
+        {
+            if(input1 && user.isAdmin)
+            {
+                return true;
+            }
+            return false;
+        }
+        return true;
+
     };
     $scope.init();
 }]);
