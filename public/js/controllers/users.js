@@ -24,8 +24,10 @@ angular.module('ace.users').controller('UsersController', ['$scope', '$routePara
             }
             Users.update({userId: id}, function(user) {
                 users[index] = user;
-                if(user._id === Global.user._id)
-                    Global.user = user;
+                if(user._id === Global.user._id){
+                    Global.user.codeName = user.codeName;
+                    Global.user.isManufacturer = user.isManufacturer;
+                }
                 $scope.users[i].name += ($scope.users[i].codeName ===null) ? '': ' ('+$scope.users[i].codeName+')';
 
             });
