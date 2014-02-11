@@ -10,7 +10,6 @@ var agent = request.agent('http://localhost:3001'),
 
 describe('e2e API Test', function() {
     var xauth;
-    var acess_token_secret = 'MdktTsU%3D', acess_token = 'NT2L%2FFIJda01hoaIx34ZHQjr3vU%3D';
     before(function (done) {
         xauth = new OxygenOauth('http://accounts-dev.autodesk.com','5f7de223-2148-479b-9ae1-e835f590c117','fb3d2f26-d89e-4ab5-9da4-d9c0664c3c9d');
         mongoose.createConnection('mongodb://localhost/ACE-test', function (error) {
