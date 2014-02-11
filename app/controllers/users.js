@@ -4,7 +4,8 @@
  * Module dependencies.
  */
 var mongoose = require('mongoose'),
-    User = mongoose.model('User');
+    User = mongoose.model('User'),
+    error = require('../utils/error');
 
 /**
  * Auth callback
@@ -57,9 +58,7 @@ exports.makeAdmin = function(req, res) {
         admin.save(function(err) {
             if(err)
             {
-                return res.status(500).render('500', {
-                    error: 'User not found.'
-                });
+                return error.sendGenericError(res, 400, 'Error Encountered');
             }
             else
             {
@@ -68,13 +67,7 @@ exports.makeAdmin = function(req, res) {
         });
         return;
     }
-
-    else
-    {
-        return res.status(500).render('500', {
-            error: 'User not found.'
-        });
-    }
+    return error.sendGenericError(res, 400, 'Error Encountered');
 };
 
 /**
@@ -88,9 +81,7 @@ exports.updateCodeName = function(req, res) {
         updatedProfile.save(function(err) {
             if(err)
             {
-                res.status(500).render('500', {
-                    'error': 'User not found.'
-                });
+                return error.sendGenericError(res, 400, 'Error Encountered');
             }
             else
             {
@@ -99,9 +90,7 @@ exports.updateCodeName = function(req, res) {
         });
         return;
     }
-    res.status(500).render('500', {
-        'error': 'User not found.'
-    });
+    return error.sendGenericError(res, 400, 'Error Encountered');
 };
 
 /**
@@ -124,9 +113,7 @@ exports.changeStatus = function(req,res) {
 
     user.save(function(err) {
         if (err) {
-            return res.status(500).render('500', {
-                error: 'User not found.'
-            });
+            return error.sendGenericError(res, 400, 'Error Encountered');
         } else {
             res.jsonp(user);
         }
@@ -137,7 +124,7 @@ exports.changeStatus = function(req,res) {
 /**
  * Find user by Id
  */
-exports.findById = function(req,res,next,id) {
+exports.user = function(req,res,next,id) {
     User
         .findOne({
             _id: id
@@ -153,7 +140,7 @@ exports.findById = function(req,res,next,id) {
 /**
  * Find user by name
  */
-exports.user = function(req, res, next, name) {
+exports.findByName = function(req, res, next, name) {
     User
         .findOne({
             name: name

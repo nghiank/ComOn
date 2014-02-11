@@ -26,6 +26,7 @@ angular.module('ace').config(['$locationProvider',
     }
 ]);
 
+
 //Setting translate Dictionary
 angular.module('ace')
 .config(['$translateProvider', function($translateProvider) {
@@ -35,3 +36,32 @@ angular.module('ace')
         suffix: '.json'
     });
 }]);
+
+//Setting up interceptor
+angular.module('ace').config(['$httpProvider',
+    function($httpProvider) {
+        function Interceptor($q) {
+            function success(response) {
+                return response;
+            }
+            function error(response) {
+                var status = response.status;
+                if(status === 401) {
+                    window.location = '/';
+                    return;
+                }
+                else if(status === 400) {
+                    window.alert(response.data.error);
+                    return;
+                }
+                return $q.reject(response); //similar to throw response;
+            }
+            return function(promise) {
+                return promise.then(success, error);
+            };
+        }
+        $httpProvider.responseInterceptors.push(Interceptor);
+    }
+]);
+
+

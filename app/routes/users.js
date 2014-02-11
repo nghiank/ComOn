@@ -3,13 +3,11 @@
 // User routes use users controller
 var users = require('../controllers/users');
 var authorization = require('./middlewares/authorization');
+var error = require('../utils/error');
 
 var hasAuthorization = function(req, res, next) {
     if (req.user.isAdmin === false) {
-        return res.status(500).render('500', {
-            error: 'You are not authorized to view this page.',
-            user: req.user ? JSON.stringify(req.user) : 'null'
-        });
+        return error.sendUnauthorizedError(res);
     }
     next();
 };
@@ -17,13 +15,13 @@ var hasAuthorization = function(req, res, next) {
 module.exports = function(app, passport) {
 
     app.get('/signout', users.signout);
-    app.get('/users/me', authorization.requiresLogin , users.me);
-    app.get('/users', authorization.requiresLogin , hasAuthorization, users.all);
-    app.get('/makeAdmin/:name', users.makeAdmin);
-    app.param('name', users.user);
-    app.get('/users/:userId', authorization.requiresLogin, hasAuthorization, users.changeStatus);
-    app.param('userId', users.findById);
-    app.get('/updateCodeName/:codeName',users.updateCodeName);
+    app.get('/api/users/me', authorization.requiresLogin , users.me);
+    app.get('/api/users', authorization.requiresLogin , hasAuthorization, users.all);
+    app.get('/api/makeAdmin/:name', authorization.requiresLogin , users.makeAdmin);
+    app.param('name', users.findByName);
+    app.get('/api/users/:userId', authorization.requiresLogin, hasAuthorization, users.changeStatus);
+    app.param('userId', users.user);
+    app.get('/api/updateCodeName/:codeName', authorization.requiresLogin , users.updateCodeName);
     // Setting the oxygen openid route
     app.get('/auth/openid', passport.authenticate('openid', {
         failureRedirect: '/'

@@ -75,41 +75,6 @@ module.exports = function(passport) {
       }
     ));
 
-    // Use oxygen strategy
-    passport.use(new OpenIDStrategy({
-        returnURL: 'http://ace-online.autodesk.com:3000/auth/openid/callback',
-        realm: 'http://ace-online.autodesk.com:3000',
-        profile: true
-      },
-      function(identifier, profile, done) {
-            User.findOne({
-                'email': profile.emails.value
-            }, function(err, user) {
-                if (err) {
-                    return done(err);
-                }
-                if (!user) {
-                    user = new User({
-                        name: profile.displayName,
-                        email: profile.emails.value,
-                        provider: 'Autodesk',
-                        lastLogin: new Date(),
-                        isAdmin: false
-                    });
-                    user.save(function(err) {
-                        if (err) console.log(err);
-                        return done(err, user);
-                    });
-                } else {
-                        user.lastLogin = new Date();
-                        user.save(function (err) {
-                        if (err) console.log(err);
-                        return done(err, user);
-                    });   
-                }
-            });
-      }
-    ));
     passport.use('oauth', new OAuthStrategy({
         requestTokenURL: config.oauth.requestTokenURL,
         accessTokenURL: config.oauth.accessTokenURL,

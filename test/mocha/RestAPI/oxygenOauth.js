@@ -51,7 +51,7 @@ OxygenOAuth.prototype.refreshLogin = function(callback) {
     this.login(this.username, this.password, callback);
 };
 
-OxygenOAuth.prototype.get = function(queryUrl, callback, willTryAgainIfFailed){
+OxygenOAuth.prototype.get = function(queryUrl, callback){
     return this.oauth.get(
         queryUrl,
         this.oauth_accesstoken,
