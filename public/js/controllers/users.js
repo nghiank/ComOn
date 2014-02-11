@@ -2,7 +2,6 @@
 
 angular.module('ace.users').controller('UsersController', ['$scope', '$routeParams', '$location', 'Global', 'Users', function ($scope, $routeParams, $location, Global, Users) {
 
-    $scope.init = function(){
         if (!Global.authenticated || !Global.user.isAdmin)
             window.location.replace('/');
 
@@ -63,6 +62,4 @@ angular.module('ace.users').controller('UsersController', ['$scope', '$routePara
             }
             return true;
         };
-    };
-    $scope.init();
-}]);
+    }]);

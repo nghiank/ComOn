@@ -2,10 +2,6 @@
 
 angular.module('ace.system')
 .controller('ProfileController', ['$scope', 'Global', 'Users', function ($scope, Global, Users) {
-
-    $scope.init = function(){
-        if (!Global.authenticated)
-            window.location.replace('/');
         $scope.global = Global;
         $scope.username = Global.user.name;
         $scope.codeNameInput =
@@ -24,8 +20,8 @@ angular.module('ace.system')
         $scope.updateCodeName = function(){
             $scope.toggleEdit();
             Users.profile.update({codeName:$scope.codeNameInput.value}, Global.user, function(){
-                Global.user.codeName = $scope.codeNameInput.value; 
-                $scope.setCodeName();               
+                Global.user.codeName = $scope.codeNameInput.value;
+                $scope.setCodeName();
             });
         };
 
@@ -37,9 +33,8 @@ angular.module('ace.system')
 
         $scope.setCodeName = function(){
             $scope.codename = (Global.user.codeName === null) ? Global.user.name : (Global.user.isManufacturer ? Global.user.codeName : Global.user.codeName + ' (pending)');
-        }
+        };
         $scope.setCodeName();
-    };
-    $scope.init();
-}])
+
+    }])
 ;

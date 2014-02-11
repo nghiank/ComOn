@@ -31,7 +31,7 @@ angular.module('ace')
 .config(['$translateProvider', function($translateProvider) {
     $translateProvider.preferredLanguage('en');
     $translateProvider.useStaticFilesLoader({
-        prefix: '/js/',
+        prefix: '/language/',
         suffix: '.json'
-    });    
+    });
 }]);

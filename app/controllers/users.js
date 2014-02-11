@@ -100,8 +100,8 @@ exports.updateCodeName = function(req, res) {
         return;
     }
     res.status(500).render('500', {
-                    'error': 'User not found.'
-                });
+        'error': 'User not found.'
+    });
 };
 
 /**
