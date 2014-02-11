@@ -21,6 +21,8 @@ module.exports = function(config) {
             'public/lib/angular-cookies/angular-cookies.js',
             'public/lib/angular-resource/angular-resource.js',
             'public/lib/angular-route/angular-route.js',
+            'public/lib/angular-translate/angular-translate.js',
+            'public/lib/angular-translate-loader-static-files/angular-translate-loader-static-files.js',
             'public/lib/angular-bootstrap/ui-bootstrap-tpls.js',
             'public/lib/angular-bootstrap/ui-bootstrap.js',
             'public/lib/angular-ui-utils/ui-utils.js',
