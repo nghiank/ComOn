@@ -1,15 +1,13 @@
 'use strict';
 
 angular.module('ace.system')
-.controller('ProfileController', ['$scope', 'Global', '$routeParams', '$resource', function ($scope, Global, $routeParams, $resource) {
+.controller('ProfileController', ['$scope', 'Global', 'Users', function ($scope, Global, Users) {
 
     $scope.init = function(){
         if (!Global.authenticated)
             window.location.replace('/');
         $scope.global = Global;
-        $scope.urlUserName = $routeParams.username;
         $scope.username = Global.user.name;
-        $scope.codename = (Global.user.codeName === null) ? Global.user.name : (Global.user.isManufacturer ? Global.user.codeName : Global.user.codeName + ' (pending)');
         $scope.codeNameInput =
             {value:'',
             valid:{valid:true,lengthCheck: true, patternCheck:true},
@@ -22,21 +20,25 @@ angular.module('ace.system')
         $scope.toggleEdit = function(){
             $scope.editable= !$scope.editable;
         };
+
         $scope.updateCodeName = function(){
-            $scope.editable= !$scope.editable;
-            var update = $resource('/updateCodeName/:name/:codeName',
-                                    {name:Global.user.name, codeName: $scope.codeNameInput.value},
-                                    {change:{method:'PUT'}});
-            update.change(function(){
-                Global.user.codeName = $scope.codeNameInput.value;
-                $scope.codename = (Global.user.codeName === null) ? Global.user.name : (Global.user.isManufacturer ? Global.user.codeName : Global.user.codeName + ' (pending)');
+            $scope.toggleEdit();
+            Users.profile.update({codeName:$scope.codeNameInput.value}, Global.user, function(){
+                Global.user.codeName = $scope.codeNameInput.value; 
+                $scope.setCodeName();               
             });
         };
+
         $scope.checkValid = function(){
             $scope.codeNameInput.valid.lengthCheck = $scope.codeNameInput.value.length >= $scope.codeNameInput.minLength && $scope.codeNameInput.value.length <= $scope.codeNameInput.maxLength ;
             $scope.codeNameInput.valid.patternCheck= $scope.codeNameInput.pattern.test($scope.codeNameInput.value);
             $scope.codeNameInput.valid.valid = $scope.codeNameInput.valid.lengthCheck && $scope.codeNameInput.valid.patternCheck;
         };
+
+        $scope.setCodeName = function(){
+            $scope.codename = (Global.user.codeName === null) ? Global.user.name : (Global.user.isManufacturer ? Global.user.codeName : Global.user.codeName + ' (pending)');
+        }
+        $scope.setCodeName();
     };
     $scope.init();
 }])

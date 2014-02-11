@@ -1,4 +1,13 @@
 {
+"PROFILE_PAGE_TITLE":"My Profile",
+"EDIT_BUTTON_TEXT":"Edit Profile",
+"AD_ACCOUNT_NAME_LABEL": "Autodesk Account Name:",
+"EMAIL_LABEL":"Email:",
+"CODE_NAME_LABEL":"CODE Name (Optional):",
+"CODE_NAME_LENGTH_ERROR_MSG":"Code Name must be between 1 and 30 characters.",
+"CODE_NAME_PATTERN_ERROR_MSG":"Code Name must be contain only alphabetical characters.",
+"SUBMIT_BUTTON_TEXT":"Submit Changes",
 "CODE_NAME_INFO_TITLE": "What is CODE name?",
 "CODE_NAME_INFO":"Code name is optional information only applicable for manufacturers.Code name appears in the field Manufacturer in your catalog. By changing your default CODE name, you automatically apply to register as an manufacturer. Your new CODE name is only confirmed after the verfication from the administrator."
+
 }

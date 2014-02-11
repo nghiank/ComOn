@@ -81,9 +81,9 @@ exports.makeAdmin = function(req, res) {
  * Update Profile
  */
 exports.updateCodeName = function(req, res) {
-    if(req.profile)
+    if(req.user)
     {
-        var updatedProfile = req.profile;
+        var updatedProfile = req.user;
         updatedProfile.codeName = req.params.codeName;
         updatedProfile.save(function(err) {
             if(err)
@@ -100,8 +100,8 @@ exports.updateCodeName = function(req, res) {
         return;
     }
     res.status(500).render('500', {
-        'error': 'User not found.'
-    });
+                    'error': 'User not found.'
+                });
 };
 
 /**

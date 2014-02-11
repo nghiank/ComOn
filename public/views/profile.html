@@ -1,28 +1,28 @@
 <section data-ng-controller="ProfileController" class="container dropshadow" >
   <div>
 <link rel="stylesheet" type="text/css" href="/css/profile.css">
-    <h1>My Profile</h1>
+    <h2>{{'PROFILE_PAGE_TITLE'| translate}}</h2>
 <hr> 
     <div class="sheet">
     <div class="row">
         <div class="col-md-offset-10">
-            <a ng-click="toggleEdit()">edit Profile</a>
+            <a ng-click="toggleEdit()">{{'EDIT_BUTTON_TEXT' | translate}}</a>
         </div>
     </div> 
     <form class="form-horizontal" name="profileForm" role="form">
       <div class="form-group">
-        <div class="col-md-4 text-right"><p>Autodesk Account: </p></div>
+        <div class="col-md-4 text-right"><p>{{'AD_ACCOUNT_NAME_LABEL' | translate}}</p></div>
         <div class="col-md-4"><p>{{username}}</p></div>    
       </div>
             
       <div class="form-group">
-        <div class="col-md-4 text-right"><p>Email: </p></div>
+        <div class="col-md-4 text-right"><p>{{'EMAIL_LABEL' | translate}}</p></div>
         <div class="col-md-4"><p>{{email}}</p></div>    
       </div>
             
       <div class="form-group">
        <div class="col-md-4 text-right">
-           <p>CODE Name (optional):           
+           <p>{{'CODE_NAME_LABEL' | translate}}           
                <a class = "glyphicon glyphicon-question-sign"
                   name = "codeNamePopover"
                   popover = "{{'CODE_NAME_INFO' | translate }}"
@@ -43,15 +43,15 @@
                          ng-blur="checkValid()"
                        name="codeNameInput">
                 <span class="help-block" ng-show="!codeNameInput.valid.lengthCheck && profileForm.codeNameInput.$dirty">
-                    Code Name must be between 1 and 30 characters.</span>
+                    {{'CODE_NAME_LENGTH_ERROR_MSG' | translate}}</span>
                 <span class="help-block" ng-show="!codeNameInput.valid.patternCheck && profileForm.codeNameInput.$dirty">
-                    Code Name must be contain only alphabetical characters.</span>
+                    {{'CODE_NAME_PATTERN_ERROR_MSG' | translate}}</span>
                 </div>
                 <div class="col-md-3">
                 <button class="btn btn-default" 
                         ng-disabled="profileForm.codeNameInput.$pristine || !codeNameInput.valid.valid"
                         ng-click="updateCodeName()"
-                        >Submit Changes</button>
+                        >{{'SUBMIT_BUTTON_TEXT' | translate}}</button>
                 </div>
             </div>
         </div>

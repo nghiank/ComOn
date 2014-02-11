@@ -22,7 +22,7 @@ angular.module('ace.users').controller('UsersController', ['$scope', '$routePara
                     break;
                 }
             }
-            Users.update({userId: id}, function(user) {
+            Users.userlist.update({userId: id}, function(user) {
                 users[index] = user;
                 if(user._id === Global.user._id){
                     Global.user.codeName = user.codeName;
@@ -34,10 +34,9 @@ angular.module('ace.users').controller('UsersController', ['$scope', '$routePara
         };
 
         $scope.find = function() {
-            Users.query(function(users) {
+            Users.userlist.query(function(users) {
                 $scope.users = users;
-                var i;
-                for (i = 0; i < $scope.users.length; i++)
+                for (var i = 0; i < $scope.users.length; i++)
                     $scope.users[i].name += ($scope.users[i].codeName ===null) ? '': ' ('+$scope.users[i].codeName+')';
             });
         };
