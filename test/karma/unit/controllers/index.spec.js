@@ -12,7 +12,7 @@
                 scope = $rootScope.$new();
 
                 httpBackend = $httpBackend;
-                $httpBackend.when('GET','/language/en.json').respond(translator);
+                $httpBackend.expectJSONP('/language/en.json').respond(translator);
 
                 IndexController = $controller('IndexController', {
                     $scope: scope
