@@ -34,6 +34,7 @@ module.exports = function(config) {
             'public/js/controllers/index.js',
             'public/js/controllers/header.js',
             'public/js/init.js',
+            {pattern: 'public/language/en.json',included: false, served: true},
             'test/karma/unit/**/*.js'
         ],
 
@@ -56,6 +57,10 @@ module.exports = function(config) {
             // (these files will be instrumented by Istanbul)
             'public/js/controllers/*.js': ['coverage'],
             'public/js/services/*.js': ['coverage']
+        },
+
+        proxies: {
+            'public/language': 'http://localhost:9876/public/language'
         },
 
         coverageReporter: {
