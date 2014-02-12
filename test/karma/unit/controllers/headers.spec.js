@@ -4,12 +4,15 @@
     describe('ACE controllers', function() {
         describe('HeaderController', function() {
             // Load the controllers module
-            beforeEach(module('ace'));
+            beforeEach(module('ace','mockJson'));
 
-            var scope, HeaderController;
+            var scope, HeaderController, httpBackend;
 
-            beforeEach(inject(function($controller, $rootScope) {
+            beforeEach(inject(function($controller, $rootScope, $httpBackend, translator) {
                 scope = $rootScope.$new();
+
+                httpBackend = $httpBackend;
+                $httpBackend.when('GET','/language/en.json').respond(translator);
 
                 HeaderController = $controller('HeaderController', {
                     $scope: scope

@@ -34,8 +34,8 @@ module.exports = function(config) {
             'public/js/controllers/index.js',
             'public/js/controllers/header.js',
             'public/js/init.js',
-            {pattern: 'public/language/en.json',included: false, served: true},
-            'test/karma/unit/**/*.js'
+            'test/karma/unit/**/*.js',
+            'test/karma/mock/translate.js'
         ],
 
 
@@ -59,9 +59,7 @@ module.exports = function(config) {
             'public/js/services/*.js': ['coverage']
         },
 
-        proxies: {
-            'public/language': 'http://localhost:9876/public/language'
-        },
+        
 
         coverageReporter: {
             type: 'html',
