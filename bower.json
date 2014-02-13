@@ -11,7 +11,7 @@
     "angular-bootstrap": "0.10.0",
     "angular-ui-utils": "0.1.0",
     "angular-translate":"latest",
-    "angular-translate-loader-static-files":"latest"
+    "angular-translate-loader-partial":"latest"
   },
   "resolutions": {
     "angular": "1.2.8"
