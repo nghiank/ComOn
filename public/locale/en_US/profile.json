@@ -1,0 +1,11 @@
+{
+"PROFILE_PAGE_TITLE":"Profile",
+"AD_ACCOUNT_NAME_LABEL":"Autodesk Account Name:",
+"EMAIL_LABEL": "Email:",
+"EDIT_BUTTON_TEXT":"Edit Profile",
+"CODE_NAME_LABEL":"CODE Name (Optional):",
+"CODE_NAME_LENGTH_ERROR_MSG":"Code Name must be between 1 and 30 characters.",
+"CODE_NAME_PATTERN_ERROR_MSG":"Code Name must be contain only alphabetical characters.",
+"SUBMIT_BUTTON_TEXT":"Submit Changes",
+"CODE_NAME_INFO_TITLE": "What is CODE name?"
+}

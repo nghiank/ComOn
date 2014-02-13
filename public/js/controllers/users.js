@@ -1,9 +1,9 @@
 'use strict';
 
-angular.module('ace.users').controller('UsersController', ['$scope', '$routeParams', '$location', 'Global', 'Users', function ($scope, $routeParams, $location, Global, Users) {
+angular.module('ace.users').controller('UsersController', ['$scope', '$routeParams', '$location', 'Global', 'Users', '$translate', '$translatePartialLoader', function ($scope, $routeParams, $location, Global, Users, $translate, $translatePartialLoader) {
 
-        if (!Global.authenticated || !Global.user.isAdmin)
-            window.location.replace('/');
+        $translatePartialLoader.addPart('users');
+        $translate.refresh();
 
         $scope.global = Global;
         $scope.showMan = true;

@@ -30,10 +30,9 @@ angular.module('ace').config(['$locationProvider',
 //Setting translate Dictionary
 angular.module('ace')
 .config(['$translateProvider', function($translateProvider) {
-    $translateProvider.preferredLanguage('en');
-    $translateProvider.useStaticFilesLoader({
-        prefix: '/language/',
-        suffix: '.json'
+    $translateProvider.preferredLanguage('en_US');
+    $translateProvider.useLoader('$translatePartialLoader', {
+        urlTemplate: '/locale/{lang}/{part}.json'
     });
 }]);
 

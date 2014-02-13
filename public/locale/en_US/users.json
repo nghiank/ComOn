@@ -1,0 +1,11 @@
+{
+"USER_PAGE_TITLE":"User Listing",
+"SEARCH_BAR_TITLE_LABEL":"Search By Name:",
+"SHOW_ADMIN_LABEL": "Show Admins",
+"SHOW_MAN_LABEL":"Show Manufacturers",
+"TABLE_COL_NAME_LABEL":"Name",
+"TABLE_COL_DES_LABEL":"Designation",
+"TABLE_COL_LAST_IN_LABEL":"Last Login",
+"TABLE_COL_LAST_OUT_LABEL":"Last Logout",
+"ABLE_COL_ACTION_LABEL":"Actions"
+}
