@@ -4,12 +4,15 @@
     describe('ACE controllers', function() {
         describe('IndexController', function() {
             // Load the controllers module
-            beforeEach(module('ace','mockJson'));
+            beforeEach(module('ace'));
 
-            var scope, IndexContro;
+            var scope, IndexController;
 
             beforeEach(inject(function($controller, $rootScope) {
                 scope = $rootScope.$new();
+
+                IndexController = $controller('IndexController', {
+                    $scope: scope
                 });
             }));
 
