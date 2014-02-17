@@ -1,9 +1,7 @@
 'use strict';
 
 angular.module('ace.system')
-.controller('ProfileController', ['$scope', 'Global', 'Users', '$translatePartialLoader','$translate', function ($scope, Global, Users, $translatePartialLoader, $translate) {
-        $translatePartialLoader.addPart('profile');
-        $translate.refresh();
+.controller('ProfileController', ['$scope', 'Global', 'Users',  function ($scope, Global, Users) {
 
         $scope.global = Global;
         $scope.username = Global.user.name;

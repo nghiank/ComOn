@@ -1,9 +1,6 @@
 'use strict';
 
-angular.module('ace.users').controller('UsersController', ['$scope', '$routeParams', '$location', 'Global', 'Users', '$translate', '$translatePartialLoader', function ($scope, $routeParams, $location, Global, Users, $translate, $translatePartialLoader) {
-
-        $translatePartialLoader.addPart('users');
-        $translate.refresh();
+angular.module('ace.users').controller('UsersController', ['$scope', '$routeParams', '$location', 'Global', 'Users', function ($scope, $routeParams, $location, Global, Users) {
 
         $scope.global = Global;
         $scope.showMan = true;

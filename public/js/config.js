@@ -26,16 +26,6 @@ angular.module('ace').config(['$locationProvider',
     }
 ]);
 
-
-//Setting translate Dictionary
-angular.module('ace')
-.config(['$translateProvider', function($translateProvider) {
-    $translateProvider.preferredLanguage('en_US');
-    $translateProvider.useLoader('$translatePartialLoader', {
-        urlTemplate: '/locale/{lang}/{part}.json'
-    });
-}]);
-
 //Setting up interceptor
 angular.module('ace').config(['$httpProvider',
     function($httpProvider) {

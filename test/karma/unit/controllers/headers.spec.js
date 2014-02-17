@@ -6,16 +6,10 @@
             // Load the controllers module
             beforeEach(module('ace','mockJson'));
 
-            var scope, HeaderController, httpBackend;
+            var scope, HeaderController;
 
-            beforeEach(inject(function($controller, $rootScope, $httpBackend, translator) {
+            beforeEach(inject(function($controller, $rootScope) {
                 scope = $rootScope.$new();
-
-                httpBackend = $httpBackend;
-                $httpBackend.expectJSONP('/language/en.json').respond(translator);
-
-                HeaderController = $controller('HeaderController', {
-                    $scope: scope
                 });
             }));
 

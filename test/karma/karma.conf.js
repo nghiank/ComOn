@@ -21,8 +21,6 @@ module.exports = function(config) {
             'public/lib/angular-cookies/angular-cookies.js',
             'public/lib/angular-resource/angular-resource.js',
             'public/lib/angular-route/angular-route.js',
-            'public/lib/angular-translate/angular-translate.js',
-            'public/lib/angular-translate-loader-partial/angular-translate-loader-partial.js',
             'public/lib/angular-bootstrap/ui-bootstrap-tpls.js',
             'public/lib/angular-bootstrap/ui-bootstrap.js',
             'public/lib/angular-ui-utils/ui-utils.js',
@@ -35,8 +33,6 @@ module.exports = function(config) {
             'public/js/controllers/header.js',
             'public/js/init.js',
             'test/karma/unit/**/*.js',
-            'test/karma/mock/translate.js',
-            {pattern: 'public/locale/*/*.json', included:false}
         ],
 
 
