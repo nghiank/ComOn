@@ -80,6 +80,19 @@ describe('e2e API Test', function() {
             });
         });
 
+        //test update Code Name
+        it('GET /updateCodeName should update my code name', function(done) {
+            this.timeout(50000);
+            agent
+            .get('/api/updateCodeName/AG')
+            .end(function(err,res) {
+                (res.status).should.equal(200);
+                (res.body.name).should.equal('Akaash Gupta');
+                (res.body.codeName).should.equal('AG');
+                done();
+            });
+        });
+
         it('GET /users should return 200', function(done){
             agent
             .get('/api/users')

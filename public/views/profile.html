@@ -1,32 +1,32 @@
-<section data-ng-controller="ProfileController" class="container dropshadow">
-  <div ng-show="global.authenticated && global.user.name == urlUserName">
+<section data-ng-controller="ProfileController" class="container dropshadow" >
+  <div>
 <link rel="stylesheet" type="text/css" href="/css/profile.css">
-    <h1>My Profile</h1>
+    <h2>My Profile</h2>
 <hr> 
     <div class="sheet">
     <div class="row">
         <div class="col-md-offset-10">
-            <a ng-click="toggleEdit()">edit Profile</a>
+            <a ng-click="toggleEdit()">Edit Profile</a>
         </div>
     </div> 
     <form class="form-horizontal" name="profileForm" role="form">
       <div class="form-group">
-        <div class="col-md-4 text-right"><p>Autodesk Account: </p></div>
+        <div class="col-md-4 text-right"><p>Autodesk Account Name:</p></div>
         <div class="col-md-4"><p>{{username}}</p></div>    
       </div>
             
       <div class="form-group">
-        <div class="col-md-4 text-right"><p>Email: </p></div>
+        <div class="col-md-4 text-right"><p>Email:</p></div>
         <div class="col-md-4"><p>{{email}}</p></div>    
       </div>
             
       <div class="form-group">
        <div class="col-md-4 text-right">
-           <p>CODE Name (optional):            
-               <a class="glyphicon glyphicon-question-sign"
-                  name="codeNamePopover"
-                  popover={{codeInfo}}
-                  popover-title={{codeInfoTitle}}
+           <p>CODE Name (Optional):           
+               <a class = "glyphicon glyphicon-question-sign"
+                  name = "codeNamePopover"
+                  popover = "CODE name is the CODE for manufacturers, shown in the catalog list. By changing the CODE name you automatically apply to be a manufacturer."
+                  popover-title = "What is CODE Name"
                   popover-placement="bottom"
                   popover-trigger="mouseenter"  ></a>           
            </p>
@@ -40,21 +40,18 @@
                          class="form-control" 
                          placeholder={{codename}}
                          ng-model="codeNameInput.value"
-                         ng-minlength={{codeNameMinLength}}
-                         ng-maxlength={{codeNameMaxLength}}
-                         ng-pattern="/^\s*\w*\s*$/"
+                         ng-blur="checkValid()"
                        name="codeNameInput">
-                <span class="help-block" ng-show="profileForm.codeNameInput.$dirty && (profileForm.codeNameInput.$error.minlength ||profileForm.codeNameInput.$error.maxlength)">
-                    Code Name must be between 1 and 30 characters.</span>
-                <span class="help-block" ng-show="profileForm.codeNameInput.$dirty && profileForm.codeNameInput.$error.pattern">
-                    Code Name must be contain only alphabetical characters.</span>
+                <span class="help-block" ng-show="!codeNameInput.valid.lengthCheck && profileForm.codeNameInput.$dirty">
+                    CODE name must be between 1 and 30 characters</span>
+                <span class="help-block" ng-show="!codeNameInput.valid.patternCheck && profileForm.codeNameInput.$dirty">
+                    CODE name must only be alhabetical characters</span>
                 </div>
                 <div class="col-md-3">
-                <a class="btn btn-default" 
-                        ng-disabled="profileForm.codeNameInput.$pristine 
-                                                            ||profileForm.$invalid"
-                        href="api/updateCodeName/{{urlUserName}}/{{codeNameInput.value}}"
-                        >Submit Changes</a>
+                <button class="btn btn-default" 
+                        ng-disabled="profileForm.codeNameInput.$pristine || !codeNameInput.valid.valid"
+                        ng-click="updateCodeName()"
+                        >Submit Change</button>
                 </div>
             </div>
         </div>

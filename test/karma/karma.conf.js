@@ -32,7 +32,7 @@ module.exports = function(config) {
             'public/js/controllers/index.js',
             'public/js/controllers/header.js',
             'public/js/init.js',
-            'test/karma/unit/**/*.js'
+            'test/karma/unit/**/*.js',
         ],
 
 
@@ -55,6 +55,8 @@ module.exports = function(config) {
             'public/js/controllers/*.js': ['coverage'],
             'public/js/services/*.js': ['coverage']
         },
+
+        
 
         coverageReporter: {
             type: 'html',

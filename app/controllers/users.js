@@ -74,9 +74,9 @@ exports.makeAdmin = function(req, res) {
  * Update Profile
  */
 exports.updateCodeName = function(req, res) {
-    if(req.profile)
+    if(req.user)
     {
-        var updatedProfile = req.profile;
+        var updatedProfile = req.user;
         updatedProfile.codeName = req.params.codeName;
         updatedProfile.save(function(err) {
             if(err)
@@ -136,7 +136,6 @@ exports.user = function(req,res,next,id) {
             next();
         });
 };
-
 
 /**
  * Find user by name
