@@ -1,0 +1,11 @@
+{
+  "name": "Uploader",
+  "description": "Upload ACE Schematics to dropbox.",
+  "author": "Akaash Gupta",
+  "dependencies": {
+    "assert": "latest",
+    "dropbox": "latest",
+    "request": "latest",
+    "oauth": "latest"
+  }
+}
