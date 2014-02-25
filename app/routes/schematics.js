@@ -13,8 +13,8 @@ module.exports = function(app) {
     
     app.post('/api/upload', authorization.requiresLogin , hasAuthorization, schem.receiveFiles);
 
-    app.get('/api/getChildren/:nodeId', authorization.requiresLogin, schem.getNodeChildren);
+    app.get('/api/getChildren/:nodeId', schem.getNodeChildren);
     app.param('nodeId', schem.node);
 
-    app.get('/api/getSchemStds', authorization.requiresLogin, schem.getAllSchemStds);
+    app.get('/api/getSchemStds', schem.getAllSchemStds);
 };
