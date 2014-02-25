@@ -46,6 +46,7 @@ var populateSchematic = function(res, root) {
 		}
 		var standardId = standard._id;
 		populateComponents([root], null, standardId);
+		return res.send(200);
 	});
 };
 
@@ -61,7 +62,6 @@ var parseFiles = function(res, fields, files) {
 		return error.sendGenericError(res, 400, 'Error Encountered');
 	var root = Inst.rootNode;
 	populateSchematic(res, root);
-	return res.send(200);
 };
 
 exports.receiveFiles = function(req, res) {
@@ -91,6 +91,18 @@ exports.getNodeChildren = function(req, res) {
 		});
 };
 
+exports.getAllSchemStds = function(req, res) {
+	ComponentSchem
+		.find({
+			parentNode: null
+		})
+		.populate('standard')
+		.exec(function(err, components) {
+            if (err)
+				return error.sendGenericError(res, 400, 'Error Encountered');
+			res.jsonp(components);
+		});
+};
 
 exports.node = function(req, res, next, id) {
     ComponentSchem

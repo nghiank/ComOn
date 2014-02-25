@@ -12,6 +12,23 @@ var mongoose = require('mongoose'),
  * Schematics Schema
  */
 
+var standardSchema = new Schema({
+    name: {
+        type: String,
+        required: true,
+        trim: true,
+        unique: true
+    },
+    description: {
+        type: String,
+        default: null
+    }
+});
+
+mongoose.model('SchematicStandard', standardSchema);
+
+//---------------------------------------------//
+
 var componentSchema = new Schema({
     name: {
         type: String,
@@ -25,7 +42,8 @@ var componentSchema = new Schema({
     },
     standard: {
         type: Schema.Types.ObjectId,
-        required: true
+        required: true,
+        ref: 'SchematicStandard'
     },
     parentNode: {
         type: Schema.Types.ObjectId
@@ -50,22 +68,5 @@ var componentSchema = new Schema({
 componentSchema.index({id: 1, parentNode: 1}, {unique: true});
 componentSchema.plugin(version, { collection: 'Schematic__versions' });
 
-//---------------------------------------------//
-
-var standardSchema = new Schema({
-    name: {
-        type: String,
-        required: true,
-        trim: true,
-        unique: true
-    },
-    description: {
-        type: String,
-        default: null
-    }
-});
-
-
 mongoose.model('SchematicComponent', componentSchema);
-mongoose.model('SchematicStandard', standardSchema);
 
