@@ -60,7 +60,10 @@
     "karma-coverage": "~0.1.4",
     "karma": "~0.10.9",
     "request": "latest",
-    "oauth": "latest"
+    "underscore": "latest",
+    "oauth": "latest",
+    "formidable": "latest",
+    "mongoose-version": "latest"
   },
   "devDependencies": {
     "supertest": "0.8.2",
