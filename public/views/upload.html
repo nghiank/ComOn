@@ -20,18 +20,18 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class= "col-md-3 control-label">Mapping File (.Json)</label>
+                        <label class= "col-md-3 control-label">Mapping File (.Json){{valid.name}}</label>
                         <div class = "col-md-9">
                             <input ng-click="resetJSON()" ng-file-select="jsonFileSelect($files)" type="file"/>
-                            <div data-ng-show="error.json" class="alert alert-danger alert-thin">
+                            <div data-ng-show="error.json" style="display:inline">
                                 <p>{{error.json}}</p>
                             </div>
-                            <div data-ng-show="!error.json && success.json" class="alert alert-success alert-thin">
+                            <div data-ng-show="!error.json && success.json" style="display:inline">
                                 <p>{{success.json}}</p>
                             </div>
                         </div>
                     </div>
-                    <div class="form-group" ng-show="valid.name">
+                    <div class="form-group" ng-show="stdName" ng-model="name.valid">
                         <label class= "col-md-3 control-label">Standard Name: </label>
                         <div class = "col-md-9">
                             <p>{{stdName}}<p>

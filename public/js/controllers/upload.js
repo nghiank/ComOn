@@ -84,6 +84,7 @@ angular.module('ace.users').controller('UploadController', ['$scope','$location'
 		{
 			$scope.valid.name = true;
 			$scope.success.name = 'This is a valid name.';
+			console.log($scope.valid.name);
 			$scope.uploadDisabled = true;
 			return;
 		}
