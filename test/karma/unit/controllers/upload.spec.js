@@ -6,9 +6,12 @@
 		// Load the controllers module
 			beforeEach(module('ace'));
 
-			var scope, UploadController;
+			var scope, UploadController, $httpBackend;
 
-			beforeEach(inject(function($controller, $rootScope) {
+			beforeEach(inject(function($controller, $rootScope, $injector) {
+				$httpBackend = $injector.get('$httpBackend');
+				$httpBackend.when('POST', 'api/upload').respond({'status':'Success'});
+
 				scope = $rootScope.$new();
 
 				UploadController = $controller('UploadController', {
@@ -31,14 +34,14 @@
 
 			it('ensure invalid path to dat file are caught', function(){
 				var files = [{'name':'sth.exe'}];
-					scope.datFileSelect(files);
-					expect(scope.valid.dat).not.toBe(true);				
+				scope.datFileSelect(files);
+				expect(scope.valid.dat).not.toBe(true);
 			});
 
 			it('ensure invalid path (file name with .dat) to dat file are caught', function(){
 				var files = [{'name':'sth.dat.js'}];
-					scope.datFileSelect(files);
-					expect(scope.valid.dat).not.toBe(true);				
+				scope.datFileSelect(files);
+				expect(scope.valid.dat).not.toBe(true);
 			});
 
 			it('ensure valid path to dat file pass validation', function(){
@@ -64,6 +67,9 @@
 				scope.jsonFileSelect(jsonFile);
 				expect(scope.valid.json).toBe(true);
 			});
+
+
+
 
 		});
 	});
