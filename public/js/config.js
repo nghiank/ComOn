@@ -13,6 +13,9 @@ angular.module('ace').config(['$routeProvider',
         when('/profile/:username', {
             templateUrl: 'views/profile.html'
         }).
+        when('/upload', {
+            templateUrl: 'views/upload.html'
+        }).
         otherwise({
             redirectTo: '/'
         });

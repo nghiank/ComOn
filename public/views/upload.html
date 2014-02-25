@@ -1,0 +1,61 @@
+<section data-ng-controller="UploadController">
+	<div data-ng-show="global.user.isAdmin">
+		<div class="row">
+            <div class="col-md-7">
+                <!-- 2. ng-file-select | ng-file-select="options" -->
+               <div class="panel panel-default">
+                <div class="panel-heading">Create a new stadnard</div>
+                <div class="panel-body">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label class= "col-md-3 control-label" for="stdNameInput">Name</label>
+                        <div class = "col-md-9">
+                            <input id="stdNameInput" ng-change="checkName()" type="text" class="form-control" placeholder="Standard Name" ng-model="stdName" name="stdName">
+                            <div data-ng-show="error.name" class="alert alert-danger alert-thin">
+                            	<p>{{error.name}}</p>
+                            </div>
+                            <div data-ng-show="!error.name && success.name" class="alert alert-success alert-thin">
+                            	<p>{{success.name}}</p>
+                        </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class= "col-md-3 control-label" for="stdNameInput">.DAT File{{fileName}}{{datFileType}}</label>
+                        <div class = "col-md-9">
+                            <input ng-click="resetDAT()" ng-file-select="datFileSelect($files)" type="file"/>
+                            <div data-ng-show="error.dat" class="alert alert-danger alert-thin">
+                                <p>{{error.dat}}</p>
+                            </div>
+                            <div data-ng-show="!error.dat && success.dat" class="alert alert-success alert-thin">
+                                <p>{{success.dat}}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class= "col-md-3 control-label" for="stdNameInput">Mapping File (.Json)</label>
+                        <div class = "col-md-9">
+                            <input ng-click="resetJSON()" ng-file-select="jsonFileSelect($files)" type="file"/>
+                            <div data-ng-show="error.json" class="alert alert-danger alert-thin">
+                                <p>{{error.json}}</p>
+                            </div>
+                            <div data-ng-show="!error.json && success.json" class="alert alert-success alert-thin">
+                                <p>{{success.json}}</p>
+                            </div>
+                        </div>
+                    </div>
+                
+                <hr>
+                <button type="button" ng-click="startValidation()" class="btn btn-info">Validate</button>
+                <button type="button" style="float: right" ng-disabled="uploadDisabled" class="btn btn-success">Upload</button>
+            </form>
+            </div>
+            </div>
+        </div>
+            <div class="col-md-7" style="border: 3px lightgray;">
+                <h4>Status</h4>
+                <div class="well" style="overflow-y:auto; max-height: 400px">
+                </div>
+            </div>
+        </div>
+	</div>
+</section>

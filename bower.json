@@ -11,7 +11,10 @@
     "angular-bootstrap": "0.10.0",
     "angular-ui-utils": "0.1.0",
     "angular-translate":"latest",
-    "angular-translate-loader-partial":"latest"
+    "angular-translate-loader-partial":"latest",
+    "underscore": "latest",
+    "jquery": "latest",
+    "ng-file-upload": "latest"
   },
   "resolutions": {
     "angular": "1.2.8"
