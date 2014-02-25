@@ -1,62 +1,61 @@
 <section data-ng-controller="ProfileController" class="container dropshadow" >
   <div>
-<link rel="stylesheet" type="text/css" href="/css/profile.css">
-    <h2>My Profile</h2>
-<hr> 
+    <link rel="stylesheet" type="text/css" href="/css/profile.css">
+    <div class="page-header"><h1>My Profile</h1></div>
     <div class="sheet">
-    <div class="row">
+      <div class="row">
         <div class="col-md-offset-10">
-            <a ng-click="toggleEdit()">Edit Profile</a>
+          <a ng-click="toggleEdit()">Edit Profile</a>
         </div>
-    </div> 
-    <form class="form-horizontal" name="profileForm" role="form">
-      <div class="form-group">
-        <div class="col-md-4 text-right"><p>Autodesk Account Name:</p></div>
-        <div class="col-md-4"><p>{{username}}</p></div>    
-      </div>
-            
-      <div class="form-group">
-        <div class="col-md-4 text-right"><p>Email:</p></div>
-        <div class="col-md-4"><p>{{email}}</p></div>    
-      </div>
-            
-      <div class="form-group">
-       <div class="col-md-4 text-right">
-           <p>CODE Name (Optional):           
-               <a class = "glyphicon glyphicon-question-sign"
-                  name = "codeNamePopover"
-                  popover = "CODE name is the CODE for manufacturers, shown in the catalog list. By changing the CODE name you automatically apply to be a manufacturer."
-                  popover-title = "What is CODE Name"
-                  popover-placement="bottom"
-                  popover-trigger="mouseenter"  ></a>           
-           </p>
+      </div> 
+      <form class="form-horizontal" name="profileForm" role="form">
+        <div class="form-group">
+          <div class="col-md-4 text-right"><p>Autodesk Account Name:</p></div>
+          <div class="col-md-4"><p>{{username}}</p></div>    
         </div>
-        <div ng-switch="editable">
-            <div ng-switch-when=false class="col-md-4">{{codename}}</div>
-            <div ng-switch-when=true>
-                <div class="col-md-4 pull-left">
 
-                <input type="text" 
-                         class="form-control" 
-                         placeholder={{codename}}
-                         ng-model="codeNameInput.value"
-                         ng-blur="checkValid()"
-                       name="codeNameInput">
-                <span class="help-block" ng-show="!codeNameInput.valid.lengthCheck && profileForm.codeNameInput.$dirty">
-                    CODE name must be between 1 and 30 characters</span>
+        <div class="form-group">
+          <div class="col-md-4 text-right"><p>Email:</p></div>
+          <div class="col-md-4"><p>{{email}}</p></div>    
+        </div>
+
+        <div class="form-group">
+         <div class="col-md-4 text-right">
+           <p>CODE Name (Optional):           
+             <a class = "glyphicon glyphicon-question-sign"
+             name = "codeNamePopover"
+             popover = "CODE name is the CODE for manufacturers, shown in the catalog list. By changing the CODE name you automatically apply to be a manufacturer."
+             popover-title = "What is CODE Name"
+             popover-placement="bottom"
+             popover-trigger="mouseenter"  ></a>           
+           </p>
+         </div>
+         <div ng-switch="editable">
+          <div ng-switch-when=false class="col-md-4">{{codename}}</div>
+          <div ng-switch-when=true>
+            <div class="col-md-4 pull-left">
+
+              <input type="text" 
+              class="form-control" 
+              placeholder={{codename}}
+              ng-model="codeNameInput.value"
+              ng-blur="checkValid()"
+              name="codeNameInput">
+              <span class="help-block" ng-show="!codeNameInput.valid.lengthCheck && profileForm.codeNameInput.$dirty">
+                CODE name must be between 1 and 30 characters</span>
                 <span class="help-block" ng-show="!codeNameInput.valid.patternCheck && profileForm.codeNameInput.$dirty">
-                    CODE name must only be alhabetical characters</span>
+                  CODE name must only be alhabetical characters</span>
                 </div>
                 <div class="col-md-3">
-                <button class="btn btn-default" 
-                        ng-disabled="profileForm.codeNameInput.$pristine || !codeNameInput.valid.valid"
-                        ng-click="updateCodeName()"
-                        >Submit Change</button>
+                  <button class="btn btn-default" 
+                  ng-disabled="profileForm.codeNameInput.$pristine || !codeNameInput.valid.valid"
+                  ng-click="updateCodeName()"
+                  >Submit Change</button>
                 </div>
+              </div>
             </div>
-        </div>
+          </div>
+        </form>
       </div>
-</form>
-</div>
-</div>
-</section>
+    </div>
+  </section>
