@@ -2,7 +2,7 @@
 
 angular.module('ace.users').controller('UploadController', ['$scope','$location', '$upload', 'DatParser', 'Global', '$modal', function ($scope, $location, $upload, ParseDat, Global, $modal) {
 	$scope.global = Global;
-	$scope.Parser = ParseDat;
+	$scope.Parser = new ParseDat();
 	$scope.uploadDisabled = true;
 	$scope.httpMethod = 'POST';
 	$scope.error = [];
@@ -27,6 +27,7 @@ angular.module('ace.users').controller('UploadController', ['$scope','$location'
 		$scope.success.dat = 'A valid data file.';
 		$scope.valid.dat = true;
 		$scope.datFile = $files[0];
+		$scope.parseDatForStdName();
 	};
 
 	$scope.resetDAT = function() {
@@ -79,7 +80,7 @@ angular.module('ace.users').controller('UploadController', ['$scope','$location'
 		{
 			return;
 		}
-		if(data.length<15 && /^[a-zA-Z0-9]+$/.test(data)) //Later check against all the other standard names too
+		if(data.length<30) //Later check against all the other standard names too
 		{
 			$scope.valid.name = true;
 			$scope.success.name = 'This is a valid name.';
@@ -127,7 +128,6 @@ angular.module('ace.users').controller('UploadController', ['$scope','$location'
 	
 	$scope.startValidation = function() {
 		console.log($scope.uploadResult);
-		console.log('Got Here');
 		var modalInstance = $modal.open({
 			templateUrl: 'views/validationModal.html',
 			controller: 'ValidationController',
@@ -137,6 +137,17 @@ angular.module('ace.users').controller('UploadController', ['$scope','$location'
 		});
 	};
 
+	$scope.parseDatForStdName = function(){
+		var reader = new FileReader();
+		reader.onload = function(){
+			$scope.Parser.parse(reader.result);
+			$scope.Parser.generateSubMenuHierachy();
+			//MO is the node for the name of the standard.
+			$scope.stdName = $scope.Parser.rootNode.title;
+			$scope.checkName();
+		};
+		reader.readAsText($scope.datFile);
+	};
 
 }]);
 
