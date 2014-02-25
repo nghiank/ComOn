@@ -66,7 +66,7 @@ var parseFiles = function(res, fields, files) {
 
 exports.receiveFiles = function(req, res) {
 	var form = new formidable.IncomingForm();
-    form.parse(req, function(err, fields, files) {
+    return form.parse(req, function(err, fields, files) {
 		if(err)
 			return error.sendGenericError(res, 400, 'Error Encountered');
 		if(!files.jsonFile || !files.datFile)

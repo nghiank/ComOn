@@ -1,5 +1,6 @@
 'use strict';
 
+
 //Setting up route and client interceptor
 angular.module('ace').config(['$routeProvider',
     function($routeProvider) {
@@ -10,7 +11,7 @@ angular.module('ace').config(['$routeProvider',
         when('/users', {
             templateUrl: 'views/Users/list.html'
         }).
-        when('/profile/', {
+        when('/profile', {
             templateUrl: 'views/profile.html'
         }).
         when('/upload', {
@@ -22,10 +23,11 @@ angular.module('ace').config(['$routeProvider',
     }
 ]).run(function(Global, $rootScope, $location) {
     // register listener to watch route changes
-    $rootScope.$on('$locationChangeStart', function(event, next) { //function(event, next, current)
+    $rootScope.$on('$locationChangeStart', function() { //function(event, next, current)
         if (Global.authenticated === false) {
-        // no logged user, we should be going to #login
-            if (next.templateUrl === '/') {
+            var path = $location.$$path;
+        // no logged user, can still browse the schematics
+            if (path === '/schem') {
                 return;
             } else {
                 // not going to #login, we should redirect now
