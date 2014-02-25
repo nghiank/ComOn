@@ -1,6 +1,6 @@
 'use strict';
 
-//Setting up route
+//Setting up route and client interceptor
 angular.module('ace').config(['$routeProvider',
     function($routeProvider) {
         $routeProvider.
@@ -10,7 +10,7 @@ angular.module('ace').config(['$routeProvider',
         when('/users', {
             templateUrl: 'views/Users/list.html'
         }).
-        when('/profile/:username', {
+        when('/profile/', {
             templateUrl: 'views/profile.html'
         }).
         when('/upload', {
@@ -20,7 +20,20 @@ angular.module('ace').config(['$routeProvider',
             redirectTo: '/'
         });
     }
-]);
+]).run(function(Global, $rootScope, $location) {
+    // register listener to watch route changes
+    $rootScope.$on('$locationChangeStart', function(event, next) { //function(event, next, current)
+        if (Global.authenticated === false) {
+        // no logged user, we should be going to #login
+            if (next.templateUrl === '/') {
+                return;
+            } else {
+                // not going to #login, we should redirect now
+                $location.path('/');
+            }
+        }
+    });
+});
 
 //Setting HTML5 Location Mode
 angular.module('ace').config(['$locationProvider',
