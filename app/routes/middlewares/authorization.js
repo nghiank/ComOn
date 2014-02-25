@@ -27,11 +27,10 @@ var validatingAuthorizationHeader = function(req,res,next)
 	};
 
 	request(options, function(e, r, body){
-		if (!body)
-		{
+		if(e)
 			return error.sendUnauthorizedError(res);
-		}
-
+		if (!body || JSON.stringify(body).indexOf('xoauth_problem')>-1)
+			return error.sendUnauthorizedError(res);
 		var json = JSON.parse(body);
 		if (!(json && json.TokenValidationResult && json.TokenValidationResult.IsValidAccess === 'true'))
 		{

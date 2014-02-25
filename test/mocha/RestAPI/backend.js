@@ -1,14 +1,16 @@
 'use strict';
-var OxygenOauth = require('./oxygenOauth');
-var mongoose = require('mongoose'),
+var OxygenOauth = require('./oxygenOauth'),
+    mongoose = require('mongoose'),
     request = require('supertest'),
-    User = mongoose.model('User');
-require('../../../server');
-var agent = request.agent('http://localhost:3001'),
+    User = mongoose.model('User'),
+    SchematicComponent = mongoose.model('SchematicComponent'),
+    SchematicStandard = mongoose.model('SchematicStandard'),
+    agent = request.agent('http://localhost:3001'),
     config = require('../../../config/config');
 
+require('../../../server');
 
-describe('e2e API Test', function() {
+describe('<e2e API Test>', function() {
     var xauth;
     before(function (done) {
         xauth = new OxygenOauth('http://accounts-dev.autodesk.com','5f7de223-2148-479b-9ae1-e835f590c117','fb3d2f26-d89e-4ab5-9da4-d9c0664c3c9d');
@@ -134,10 +136,127 @@ describe('e2e API Test', function() {
                 done();
             });
         });
+    });
+
+    describe('Schematics Controller', function() {
+        var acess_token, acess_token_secret;
+        var id;
+
+        before(function(done) {
+            this.timeout(config.timeout);
+            var callback = function(e, at, at_s) {
+                if(e) throw (e);
+                if(!e)
+                {
+                    acess_token = at;
+                    acess_token_secret = at_s;
+                }
+                agent
+                .post('/xauth')
+                .send({oauth_token: acess_token, oauth_verifier: acess_token_secret})
+                .end(function(err,res) {
+                    (res.status).should.equal(302);
+                    done();
+                });
+            };
+            xauth.login('akaash.gupta@autodesk.com', 'Iceman123', callback);
+        });
+
+        it('POST /api/upload should return 200', function(done) {
+            this.timeout(config.timeout);
+            agent.post('/api/upload')
+            .field('stdName', 'abcd')
+            .attach('datFile', './test/mocha/RestAPI/ACE_JIC_MENU.dat')
+            .attach('jsonFile', './test/mocha/RestAPI/mapping.json')
+            .end(function(err, res) {
+                res.should.have.status(200);
+                done();
+            });
+        });
+
+        it('POST /api/upload with only one file should return 400', function(done) {
+            this.timeout(config.timeout);
+            agent.post('/api/upload')
+            .field('stdName', 'abcd')
+            .attach('datFile', './test/mocha/RestAPI/ACE_JIC_MENU.dat')
+            .end(function(err, res) {
+                res.should.have.status(400);
+                done();
+            });
+        });
+
+        it('POST /api/upload with invalid file should return 400', function(done) {
+            this.timeout(config.timeout);
+            agent.post('/api/upload')
+            .field('stdName', 'abcd')
+            .attach('datFile', './test/mocha/RestAPI/oxygenOauth.js')
+            .end(function(err, res) {
+                res.should.have.status(400);
+                done();
+            });
+        });
+
+        it('GET /api/getSchemStds should return 200 with the list of schematics', function(done) {
+            xauth.get('http://localhost:3001/api/getSchemStds', function(err, res, b){
+                var result = JSON.parse(res)[0];
+                (result.name).should.equal('JIC: Schematic Symbols');
+                (b.statusCode).should.equal(200);
+                id = result._id;
+                done();
+            });
+        });
+
+        it('GET /api/getChildren with invalid componentId should return 400', function(done) {
+            xauth.get('http://localhost:3001/api/getChildren/asdjfhisweuhf', function(err, res, b){
+                (b.statusCode).should.equal(400);
+                done();
+            });
+        });
+
+        it('GET /api/upload with valid Id should return the children with status 200', function(done) {
+            xauth.get('http://localhost:3001/api/getChildren/'+id, function(err, res, b){
+                var result = JSON.parse(res);
+                (result.children.length).should.equal(17);
+                (b.statusCode).should.equal(200);
+                done();
+            });
+        });
+
+        it('GET /signout should logout', function(done){
+            agent
+            .get('/signout')
+            .end(function(err, res){
+                //validate the keys in the response JSON matches, we dont care about the values
+                (res.status).should.equal(302);
+                done();
+            });
+        });
+
+        it('POST without credentials /api/upload should return 401', function(done) {
+            agent.post('/api/upload')
+            .field('stdName', 'abcd')
+            .attach('datFile', './test/mocha/RestAPI/ACE_JIC_MENU.dat')
+            .attach('jsonFile', './test/mocha/RestAPI/mapping.json')
+            .end(function(err, res){
+                //validate the keys in the response JSON matches, we dont care about the values
+                (res.status).should.equal(401);
+                done();
+            });
+        });
+
+        it('GET /api/getSchemStds without credentials returns 401', function(done) {
+            agent.get('/api/getSchemStds').end(function(err, res) {
+                (res.status).should.equal(401);
+                done();
+            });
+        });
 
     });
+
     after(function(done) {
         User.remove().exec();
+        SchematicComponent.remove().exec();
+        SchematicStandard.remove().exec();
         done();
     });
 });
