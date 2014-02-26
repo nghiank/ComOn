@@ -47,7 +47,7 @@ var walk = function(start, callback) {
         var found = [],
             total = 0,
             processed = 0;
-        function isDir(abspath, relpath, stat) {
+        function isDir(abspath, stat) {
             if(stat.isFolder) {
                 // If we found a directory, recurse!
                 walk(abspath, function(err, data) {
@@ -87,7 +87,7 @@ var walk = function(start, callback) {
 
 var getMapping = function(err, files) {
     if(err) {
-        console.log(err);
+        return console.log(err);
     }
     total = files.length;
     console.log('Total files found: '+total);
