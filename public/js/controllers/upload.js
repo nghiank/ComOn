@@ -1,13 +1,16 @@
 'use strict';
 
-angular.module('ace.schematic').controller('UploadController', ['$scope','$location', '$upload', 'DatParser', 'Global', '$modal', function ($scope, $location, $upload, ParseDat, Global, $modal) {
+angular.module('ace.schematic').controller('UploadController', ['$scope','$location', '$upload', 'DatParser', 'Global', '$modal', 'Schematics', function ($scope, $location, $upload, ParseDat, Global, $modal, Schematics) {
 	$scope.global = Global;
 	$scope.Parser = new ParseDat();
 	$scope.uploadDisabled = true;
+	$scope.validateDisabled = true;
 	$scope.httpMethod = 'POST';
 	$scope.error = [];
 	$scope.success = [];
 	$scope.valid = [];
+	$scope.desc = '';
+
 	$scope.abort = function(index) {
 		$scope.upload[index].abort();
 		$scope.upload[index] = null;
@@ -15,7 +18,13 @@ angular.module('ace.schematic').controller('UploadController', ['$scope','$locat
 	$scope.hasUploader = function(index) {
 		return $scope.upload[index] !== null;
 	};
+
 	$scope.datFileSelect = function($files) {
+		$scope.checkDatFile($files);
+		$scope.parseDatForStdName();
+	};
+
+	$scope.checkDatFile = function($files){
 		$scope.error.dat = null;
 		var datPattern = new RegExp('^.*\\.dat$');
 		$scope.datFileType = datPattern.test($files[0].name);
@@ -27,11 +36,11 @@ angular.module('ace.schematic').controller('UploadController', ['$scope','$locat
 		$scope.success.dat = 'A valid data file.';
 		$scope.valid.dat = true;
 		$scope.datFile = $files[0];
-		$scope.parseDatForStdName();
 	};
 
 	$scope.resetDAT = function() {
 		$scope.uploadDisabled = true;
+		$scope.validateDisabled = true;
 		$scope.valid.dat = false;
 		$scope.error.dat = null;
 		$scope.success.dat = null;
@@ -42,6 +51,10 @@ angular.module('ace.schematic').controller('UploadController', ['$scope','$locat
 		}
 		$scope.datUpload = null;
 		$scope.uploadResult = null;
+		$scope.stdName = null;
+		$scope.valid.name = false;
+		$scope.error.name = null;
+		$scope.success.name = null;
 	};
 
 	$scope.jsonFileSelect = function($files) {
@@ -59,6 +72,7 @@ angular.module('ace.schematic').controller('UploadController', ['$scope','$locat
 
 	$scope.resetJSON = function() {
 		$scope.uploadDisabled = true;
+		$scope.validateDisabled = true;
 		$scope.valid.json = false;
 		$scope.error.json = null;
 		$scope.success.json = null;
@@ -80,27 +94,50 @@ angular.module('ace.schematic').controller('UploadController', ['$scope','$locat
 		{
 			return;
 		}
-		if(data.length < 30) //Later check against all the other standard names too
+		if(data.length > 30) //Later check against all the other standard names too
 		{
-			$scope.valid.name = true;
-			$scope.success.name = 'This is a valid name.';
-			console.log($scope.valid.name);
 			$scope.uploadDisabled = true;
+			$scope.error.name = 'Invalid name.';
 			$scope.$apply();
 			return;
 		}
+
+		if ($scope.checkExistingStd() === false){
+			return;
+		}
+
+		$scope.valid.name = true;
+		$scope.success.name = 'This is a valid name.';
+		console.log($scope.valid.name);
 		$scope.uploadDisabled = true;
-		$scope.error.name = 'Invalid name.';
 		$scope.$apply();
 	};
+
+	$scope.checkExistingStd = function(){
+			Schematics.standardlist.query(function(stds){
+				console.log('in check std');
+				for (var i = 0; i < stds.length; i++){
+					if($scope.stdName.localeCompare(stds[i].name) === 0){
+						$scope.valid.name = false;
+						$scope.error.name = 'This name already exists in database';
+						return false;
+					}
+				}
+				return true;
+			});
+		};
 
 	$scope.validate = function() {
 		var check = $scope.valid;
 		if(check.dat && check.name && check.json)
 		{
-			console.log('abt to validate');
-			$scope.startValidation();
-			return;
+			var modalInstance = $modal.open({
+				templateUrl: 'views/validationModal.html',
+				controller: 'ValidationController',
+			});
+			modalInstance.result.then(function(valid){
+				$scope.uploadDisabled = !valid;
+			});
 		}
 		$scope.uploadDisabled = true;
 	};
@@ -113,7 +150,8 @@ angular.module('ace.schematic').controller('UploadController', ['$scope','$locat
 			method: $scope.httpMethod,
 			headers: {'Content-Type': 'application/file'},
 			data : {
-				stdName : $scope.stdName
+				stdName : $scope.stdName,
+				description: $scope.desc
 			},
 			file: [$scope.datFile , $scope.jsonFile],
 			fileFormDataName: ['datFile', 'jsonFile']
@@ -128,17 +166,6 @@ angular.module('ace.schematic').controller('UploadController', ['$scope','$locat
 		});
 	};
 	
-	$scope.startValidation = function() {
-		console.log($scope.uploadResult);
-		var modalInstance = $modal.open({
-			templateUrl: 'views/validationModal.html',
-			controller: 'ValidationController',
-		});
-		modalInstance.result.then(function(valid){
-			$scope.uploadDisabled = !valid;
-		});
-	};
-
 	$scope.parseDatForStdName = function(){
 		var reader = new FileReader();
 		reader.onload = function(){
@@ -156,11 +183,9 @@ angular.module('ace.schematic').controller('UploadController', ['$scope','$locat
 angular.module('ace.schematic').controller('ValidationController', function($scope,$modal, $modalInstance){
 	$scope.valid = true;
 	$scope.ok = function(){
-		console.log('OK!');
 		$modalInstance.close($scope.valid);
 	};
 	$scope.cancel = function(){
 		console.log('Cancel!');
-		$modalInstance.dismiss('Cancel');
 	};
 });
