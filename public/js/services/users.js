@@ -1,6 +1,6 @@
 'use strict';
 
-//Articles service used for articles REST endpoint
+//Users service used for Users REST endpoint
 angular.module('ace.users').factory('Users', ['$resource', function($resource) {
 
     return {

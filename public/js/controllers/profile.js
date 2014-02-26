@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ace.system')
+angular.module('ace.users')
 .controller('ProfileController', ['$scope', 'Global', 'Users',  function ($scope, Global, Users) {
 
         $scope.global = Global;

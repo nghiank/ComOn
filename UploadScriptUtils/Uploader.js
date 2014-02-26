@@ -8,7 +8,7 @@ var file_dir = __dirname + '/filesToBeUploaded',
 	index_sent = 0;
 var account;
 var credentials = {key: "uvzy73jhd6i3x6y", secret: "s8ug233k9qcgsj0"};
-var mapping = [credentials];
+var mapping = [];
 var total_files = 0;
 var errored = [];
 var client = new dropbox.Client(credentials);
@@ -35,13 +35,13 @@ client.authenticate(function(error, client) {
 	fs.writeSync(write, '');
 	fs.closeSync(write);
 
-	//files will be taken from inside the filesToBeUploaded folder and uploaded to "app/account name" folder directly.
-	walk(file_dir, '/' + account.name, startProcess);
+	//files will be taken from inside the filesToBeUploaded folder and uploaded to "app/" folder directly.
+	walk(file_dir, '/',  startProcess);
   });
 });
 
 
-function walk(start, rel, callback) {
+function walk(start, absOl, callback) {
     // Use lstat to resolve symlink if we are passed a symlink
     fs.lstat(start, function(err, stat) {
         if(err) {
@@ -50,18 +50,18 @@ function walk(start, rel, callback) {
         var found = [],
             total = 0,
             processed = 0;
-        function isDir(abspath, rel) {
+        function isDir(abspath, absOl) {
             fs.stat(abspath, function(err, stat) {
                 if(stat.isDirectory()) {
                     // If we found a directory, recurse!
-                    walk(abspath, rel , function(err, data) {
+                    walk(abspath, absOl, function(err, data) {
                         found = found.concat(data);
                         if(++processed == total) {
                             callback(null, found);
                         }
                     });
                 } else {
-                    found.push({'file': abspath, 'url': rel});
+                    found.push({'file': abspath, 'url': absOl});
                     if(++processed == total) {
                         callback(null, found);
                     }
@@ -79,7 +79,7 @@ function walk(start, rel, callback) {
                 else
                 {
                     for(var x=0, l=files.length; x<l; x++) {
-                        isDir(start + '/' + files[x], rel + '/' + files[x]);
+                        isDir(start + '/' + files[x], absOl + '/' + files[x]);
                     }
                 }
             });
