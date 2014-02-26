@@ -80,22 +80,25 @@ angular.module('ace.users').controller('UploadController', ['$scope','$location'
 		{
 			return;
 		}
-		if(data.length<30) //Later check against all the other standard names too
+		if(data.length < 30) //Later check against all the other standard names too
 		{
 			$scope.valid.name = true;
 			$scope.success.name = 'This is a valid name.';
 			console.log($scope.valid.name);
 			$scope.uploadDisabled = true;
+			$scope.$apply();
 			return;
 		}
 		$scope.uploadDisabled = true;
 		$scope.error.name = 'Invalid name.';
+		$scope.$apply();
 	};
 
 	$scope.validate = function() {
 		var check = $scope.valid;
 		if(check.dat && check.name && check.json)
 		{
+			console.log('abt to validate');
 			$scope.startValidation();
 			$scope.uploadFiles();
 			return;
@@ -122,6 +125,7 @@ angular.module('ace.users').controller('UploadController', ['$scope','$location'
 				return;
 			}
 			$scope.uploadResult = response.data;
+			console.log('Uploaded!');
 		}, null, function(evt) {
 			$scope.datProgress = parseInt(100.0 * evt.loaded / evt.total);
 		});

@@ -19,9 +19,9 @@
 				});
 			}));
 
-			it('ensure name larger than 15 chars are caught', function(){
+			it('ensure name larger than 30 chars are caught', function(){
 				scope.$digest();
-				scope.stdName = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+				scope.stdName = 'ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ';
 				scope.checkName();
 				expect(scope.valid.name).toBe(false);
 			});
@@ -30,24 +30,6 @@
 				scope.stdName = 'IEC';
 				scope.checkName();
 				expect(scope.valid.name).toBe(true);
-			});
-
-			it('ensure invalid path to dat file are caught', function(){
-				var files = [{'name':'sth.exe'}];
-				scope.datFileSelect(files);
-				expect(scope.valid.dat).not.toBe(true);
-			});
-
-			it('ensure invalid path (file name with .dat) to dat file are caught', function(){
-				var files = [{'name':'sth.dat.js'}];
-				scope.datFileSelect(files);
-				expect(scope.valid.dat).not.toBe(true);
-			});
-
-			it('ensure valid path to dat file pass validation', function(){
-				var file = [{'name':'sth.dat'}];
-				scope.datFileSelect(file);
-				expect(scope.valid.dat).toBe(true);
 			});
 
 			it('ensure invalid path to mapping json files are caught', function(){
