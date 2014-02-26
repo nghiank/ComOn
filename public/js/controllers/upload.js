@@ -102,7 +102,7 @@ angular.module('ace.schematic').controller('UploadController', ['$scope','$locat
 			return;
 		}
 
-		Schematics.getSchematicStds.query(function(stds) {
+		Schematics.standardlist.query(function(stds) {
 			console.log(stds);
 			for (var i = 0; i < stds.length; i++){
 				console.log(stds[i].name);
@@ -114,7 +114,7 @@ angular.module('ace.schematic').controller('UploadController', ['$scope','$locat
 			}
 			$scope.valid.name = true;
 			$scope.success.name = 'This is a valid name.';
-			$scope.uploadDisabled = true;			
+			$scope.uploadDisabled = true;
 		});
 
 		

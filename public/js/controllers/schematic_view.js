@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('ace.schematic')
-.controller('SchCtrl', ['$scope', 'Schematic', 'Global', 'breadcrumbs', function ($scope, Schematic, Global, breadcrumbs) {
+.controller('SchCtrl', ['$scope', 'Schematics', 'Global', 'breadcrumbs', function ($scope, Schematics, Global, breadcrumbs) {
 	$scope.breadcrumbs = breadcrumbs;
 	$scope.admin = false;
 	if(Global.user && Global.user.isAdmin)
@@ -14,7 +14,7 @@ angular.module('ace.schematic')
 	};
 
 	$scope.getAll = function() {
-		Schematic.standardlist.query(function(standards) {
+		Schematics.standardlist.query(function(standards) {
 			for(var i in standards)
 			{
 				standards[i].showOption = false;
