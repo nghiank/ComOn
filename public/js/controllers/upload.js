@@ -9,7 +9,8 @@ angular.module('ace.users').controller('UploadController', ['$scope','$location'
 	$scope.error = [];
 	$scope.success = [];
 	$scope.valid = [];
-	$scope.desc = null;
+	$scope.desc = '';
+
 	$scope.abort = function(index) {
 		$scope.upload[index].abort();
 		$scope.upload[index] = null;
@@ -17,6 +18,7 @@ angular.module('ace.users').controller('UploadController', ['$scope','$location'
 	$scope.hasUploader = function(index) {
 		return $scope.upload[index] !== null;
 	};
+
 	$scope.datFileSelect = function($files) {
 		$scope.checkDatFile($files);
 		$scope.parseDatForStdName();
@@ -148,7 +150,8 @@ angular.module('ace.users').controller('UploadController', ['$scope','$location'
 			method: $scope.httpMethod,
 			headers: {'Content-Type': 'application/file'},
 			data : {
-				stdName : $scope.stdName
+				stdName : $scope.stdName,
+				description: $scope.desc
 			},
 			file: [$scope.datFile , $scope.jsonFile],
 			fileFormDataName: ['datFile', 'jsonFile']
@@ -165,10 +168,6 @@ angular.module('ace.users').controller('UploadController', ['$scope','$location'
 		});
 	};
 	
-	$scope.startValidation = function() {
-		
-	};
-
 	$scope.parseDatForStdName = function(){
 		var reader = new FileReader();
 		reader.onload = function(){
