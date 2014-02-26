@@ -3,7 +3,7 @@
 angular.module('ace.system').controller('HeaderController', ['$scope', 'Global', function ($scope, Global) {
     $scope.global = Global;
 
-    $scope.menu = [];
+    $scope.menu = [{'title': 'Schematic Components','link': 'schematics'}];
     
     if(Global.authenticated && Global.user.isAdmin === true)
     {

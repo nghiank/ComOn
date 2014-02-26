@@ -1,10 +1,10 @@
-<section data-ng-controller="UploadController">
+<section data-ng-controller="UploadController" style= "padding-top:30px;">
 	<div data-ng-show="global.user.isAdmin">
 		<div class="row">
             <div class="col-md-7">
                 <!-- 2. ng-file-select | ng-file-select="options" -->
                <div class="panel panel-default">
-                <div class="panel-heading">Create a new stadnard</div>
+                <div class="panel-heading">Create a new standard</div>
                 <div class="panel-body">
                 <form class="form-horizontal">
                     <div class="form-group">
@@ -20,7 +20,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class= "col-md-3 control-label">Mapping File (.Json){{valid.name}}</label>
+                        <label class= "col-md-3 control-label">Mapping File (.Json)</label>
                         <div class = "col-md-9">
                             <input ng-click="resetJSON()" ng-file-select="jsonFileSelect($files)" type="file"/>
                             <div data-ng-show="error.json" class="alert alert-danger alert-thin">

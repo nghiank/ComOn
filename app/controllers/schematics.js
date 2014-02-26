@@ -8,8 +8,48 @@ var StandardSchem = mongoose.model('SchematicStandard');
 var error = require('../utils/error');
 var formidable = require('formidable');
 var fs = require('fs');
+var g_mapping;
 
 var populateComponents;
+
+var escape_regex = function(text) {
+	return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+};
+
+var findThumbnail = function(thumbnail) {
+	if(!g_mapping)
+		return thumbnail;
+	var first_brack = thumbnail.indexOf('(');
+	var last_brack = thumbnail.indexOf(')');
+	if(first_brack === -1 || last_brack === -1)
+		return thumbnail;
+	var location = thumbnail.substring(0, first_brack)+'/'+thumbnail.substring(first_brack+1, last_brack);
+	var matchstring = '^.*'+escape_regex(location)+'\\.bmp$';
+	var reg = new RegExp(matchstring, 'i');
+	for (var i = g_mapping.length - 1; i >= 0; i--) {
+		var json = g_mapping[i];
+		if(reg.test(json.name))
+		{
+			return json.dl_url;
+		}
+	}
+	return thumbnail;
+};
+
+var findDl = function(id) {
+	if(!g_mapping)
+		return null;
+	var matchstring = '^.*'+escape_regex(id)+'\\.dwg$';
+	var reg = new RegExp(matchstring, 'i');
+	for (var i = g_mapping.length - 1; i >= 0; i--) {
+		var json = g_mapping[i];
+		if(reg.test(json.name))
+		{
+			return json.dl_url;
+		}
+	}
+	return null;
+};
 
 var createComponent = function(child, parent, std) {
 	var component = new ComponentSchem({
@@ -17,8 +57,8 @@ var createComponent = function(child, parent, std) {
 		parentNode: parent,
 		id: child.isComponent? child.component: child.id,
 		standard: std,
-		thumbnail: (child.thumbnail === 'none')? null: child.thunbnail,
-		dl: null,
+		thumbnail: (child.thumbnail === 'none')? null: findThumbnail(child.thumbnail),
+		dl: child.isComponent? findDl(child.component): null,
 		acad360l: null,
 		isComposite: !child.isComponent
 	});
@@ -53,9 +93,9 @@ var populateSchematic = function(res, root) {
 var parseFiles = function(res, fields, files) {
 	if(!files)
 		return error.sendGenericError(res, 400, 'Error Encountered');
-	// var jsonBuffer = fs.readFileSync(files.jsonFile.path, 'utf8');
+	var jsonBuffer = fs.readFileSync(files.jsonFile.path, 'utf8');
 	var datBuffer = fs.readFileSync(files.datFile.path, 'utf8');
-	// var mapping = JSON.parse(jsonBuffer);
+	g_mapping = JSON.parse(jsonBuffer);
 	var parse_result = Inst.parse(datBuffer);
 	var generate_result = Inst.generateSubMenuHierachy();
 	if(parse_result !== 'Success' || generate_result!== 'Success')
@@ -66,12 +106,12 @@ var parseFiles = function(res, fields, files) {
 
 exports.receiveFiles = function(req, res) {
 	var form = new formidable.IncomingForm();
-    form.parse(req, function(err, fields, files) {
+    return form.parse(req, function(err, fields, files) {
 		if(err)
 			return error.sendGenericError(res, 400, 'Error Encountered');
 		if(!files.jsonFile || !files.datFile)
 			return error.sendGenericError(res, 400, 'Error Encountered');
-		parseFiles(res, fields, files);
+		return parseFiles(res, fields, files);
     });
 };
 

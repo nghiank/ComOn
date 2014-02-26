@@ -1,20 +1,29 @@
 'use strict';
 
-//Setting up route and client interceptor
+
+//Setting up route and client interceptor and breadcrumbs
 angular.module('ace').config(['$routeProvider',
     function($routeProvider) {
         $routeProvider.
         when('/', {
-            templateUrl: 'views/index.html'
+            templateUrl: 'views/index.html',
+            label: 'Home'
         }).
         when('/users', {
-            templateUrl: 'views/Users/list.html'
+            templateUrl: 'views/Users/list.html',
+            label: 'Users'
         }).
-        when('/profile/', {
-            templateUrl: 'views/profile.html'
+        when('/profile', {
+            templateUrl: 'views/profile.html',
+            label: 'Profile'
         }).
         when('/upload', {
-            templateUrl: 'views/upload.html'
+            templateUrl: 'views/upload.html',
+            label: 'Add New Standard'
+        }).
+        when('/schematics', {
+            templateUrl: 'views/Schematics/all.html',
+            label: 'Standards'
         }).
         otherwise({
             redirectTo: '/'
@@ -22,10 +31,11 @@ angular.module('ace').config(['$routeProvider',
     }
 ]).run(function(Global, $rootScope, $location) {
     // register listener to watch route changes
-    $rootScope.$on('$locationChangeStart', function(event, next) { //function(event, next, current)
+    $rootScope.$on('$locationChangeStart', function() { //function(event, next, current)
         if (Global.authenticated === false) {
-        // no logged user, we should be going to #login
-            if (next.templateUrl === '/') {
+            var path = $location.$$path;
+        // no logged user, can still browse the schematics
+            if (path === '/' || path === '/schematics') {
                 return;
             } else {
                 // not going to #login, we should redirect now

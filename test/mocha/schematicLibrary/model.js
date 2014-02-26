@@ -16,6 +16,9 @@ var component, component2;
 describe('<Unit Test>', function() {
 	describe('Model Schematic Library:', function() {
 		before(function(done) {
+			ComponentSchem.remove().exec();
+			StandardSchem.remove().exec();
+			
 			standard = new StandardSchem({
 				name: 'JIC',
 				description: 'abcd'

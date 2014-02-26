@@ -1,0 +1,99 @@
+<div class="container" data-ng-init="getAll()" ng-controller="SchCtrl" style="min-height: 800px; padding-top:30px;">
+    <ol class="breadcrumb">
+        <li>
+            <a href="#!/schematics">Standards</a>
+        </li>
+    </ol>
+    <div class="row">
+        <div class="col-md-4">
+            <ul class="list-group">
+                <li class="list-group-item" ng-repeat="std in stds" ng-mouseenter = "toggleOption(std)" ng-mouseleave = "toggleOption(std)">
+                    <a href="Subtype_form.html">{{std.name}}</a>
+                    <a class="btn pull-right btn-link btn-xs" ng-click="toggleEditForm(std)" ng-show="std.showOption && admin">
+                        <i class="fa fa-pencil"></i>
+                    </a>
+                    <a class="btn pull-right btn-link btn-xs" data-toggle="modal" data-target="#uploadModal" ng-show="std.showOption && std.isPublished && admin">
+                        <i class="fa fa-cloud-upload"></i>
+                    </a>
+                    <a class="btn pull-right btn-link btn-xs" ng-show="std.showOption" >
+                        <i class="fa fa-download"></i>
+                    </a>
+                </li>
+                <li class="list-group-item" ng-show="admin">
+                    <a href="#!/upload"><i class="fa fa-plus fa-2x"></i></a>
+                </li>
+            </ul>
+        </div>
+        <div class="col-md-8">
+            <form ng-show="addForm">
+                <div class="form-group">
+                    <div>
+                        <label class="control-label">Standard Name:</label>
+                        <div class="controls">
+                            <input type="text" class="form-control">
+                            <span class="help-block">The name of the new standard. The name of the standard must be unique.</span>
+                            <div class="form-group">
+                                <label class="control-label">DAT File:</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" disabled>
+                                    <span class="input-group-btn">                                            <button class="btn btn-default" type="button">Browse Files</button>                                            </span>
+                                </div>
+                                <span class="help-block">The path to the DAT file that contains information on the organization of the components.</span>
+                                <div class="form-group">
+                                    <label class="control-label">Data Folder:</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" disabled>
+                                        <span class="input-group-btn">                                                    <button class="btn btn-default" type="button">Browse Files</button>                                                </span>
+                                    </div>
+                                    <span class="help-block">The path to the data folder that contains the components under this standard.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                    <div class="row">
+                                            
+                <div class="col-md-4">
+                    <button class="btn    btn-default" data-toggle="modal" data-target="#validateModal">Validate</button>
+                </div>
+                <div class="col-md-2">
+                    <a class="btn btn-primary" disabled>Upload</a>
+                </div>
+            </div>
+            </form>
+            <form ng-show="editForm">
+                <div class="form-group">
+                    <div>
+                        <label class="control-label">Standard Name:</label>
+                        <div class="controls">
+                                                            <input type="text" class="form-control" placeholder="{{editFormName}}">
+                            <div class="form-group">
+                                <label class="control-label">DAT File:</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="\path\to\dat\file.dat"disabled>
+                                    <span class="input-group-btn">                                            <button class="btn btn-default" type="button">Browse Files</button>                                            </span>
+                                </div>
+                                <span class="help-block">The path to the DAT file that contains information on the organization of the components.</span>
+                                <div class="form-group">
+                                    <label class="control-label">Data Folder:</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" placeholder="\Some_path\" disabled>
+                                        <span class="input-group-btn">                                                    <button class="btn btn-default" type="button">Browse Files</button>                                                </span>
+                                    </div>
+                                    <span class="help-block">The path to the data folder that contains the components under this standard.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>                    
+                <div class="row">
+                        <div class="col-md-2">
+                            <button class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">Delete</button>
+                    </div>     
+                        <button class="btn pull-right btn-primary" disabled>Edit</button>
+                        <button class="btn pull-right btn-default" data-toggle="modal" data-target="#validateModal">Validate</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
