@@ -47,12 +47,12 @@
                     <div class="form-group" ng-show="stdName">
                         <label class= "col-md-3 control-label">Discription: </label>
                         <div class = "col-md-9">
-                            <textarea class="form-control" rows="3"></textarea>
+                            <textarea class="form-control" rows="3" ng-model="desc"></textarea>
                         </div>
                     </div>  
                     <hr ng-show="stdName">             
                     <div class="form-group pull-right" style="margin-right:5px">
-                        <button type="button" ng-click="validate()" class="btn btn-default">Validate</button>
+                        <button type="button" ng-click="validate()" class="btn btn-default" ng-disabled="!(valid.dat && valid.json && valid.name)">Validate</button>
                         <button type="button" ng-disabled="uploadDisabled" class="btn btn-primary" ng-click="uploadFiles()">Create</button>
                     </div>
             </form>

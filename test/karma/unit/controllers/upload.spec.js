@@ -4,7 +4,7 @@
 	describe('ACE controllers', function() {
 		describe('UploadController', function() {
 		// Load the controllers module
-			beforeEach(module('ace'));
+			beforeEach(module('ace.schematics'));
 
 			var scope, UploadController, $httpBackend;
 
@@ -50,8 +50,23 @@
 				expect(scope.valid.json).toBe(true);
 			});
 
+			it('ensure invalid dat files (file name with .dat) are caught', function(){
+				var datFile = [{'name':'sth.dat.exe'}];
+				scope.checkDatFile(datFile);
+				expect(scope.valid.dat).not.toBe(true);
+			});
 
+			it('ensure invalid dat files are caught', function(){
+				var datFile = [{'name':'somethingstrange'}];
+				scope.checkDatFile(datFile);
+				expect(scope.valid.dat).not.toBe(true);
+			});
 
+			it('ensure valid dat files passes', function(){
+				var datFile = [{'name':'sthvalid.dat'}];
+				scope.checkDatFile(datFile);
+				expect(scope.valid.dat).toBe(true);
+			});
 
 		});
 	});
