@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ace.users').controller('UploadController', ['$scope','$location', '$upload', 'DatParser', 'Global', '$modal', 'Schematics', function ($scope, $location, $upload, ParseDat, Global, $modal, Schematics) {
+angular.module('ace.schematic').controller('UploadController', ['$scope','$location', '$upload', 'DatParser', 'Global', '$modal', 'Schematics', function ($scope, $location, $upload, ParseDat, Global, $modal, Schematics) {
 	$scope.global = Global;
 	$scope.Parser = new ParseDat();
 	$scope.uploadDisabled = true;
@@ -182,7 +182,7 @@ angular.module('ace.users').controller('UploadController', ['$scope','$location'
 
 }]);
 
-angular.module('ace.users').controller('ValidationController', function($scope,$modal, $modalInstance){
+angular.module('ace.schematic').controller('ValidationController', function($scope,$modal, $modalInstance){
 	$scope.valid = true;
 	$scope.ok = function(){
 		$modalInstance.close($scope.valid);
