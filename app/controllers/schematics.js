@@ -40,13 +40,11 @@ var findDl = function(id) {
 	if(!g_mapping)
 		return null;
 	var matchstring = '^.*'+escape_regex(id)+'\\.dwg$';
-	console.log(matchstring);
 	var reg = new RegExp(matchstring, 'i');
 	for (var i = g_mapping.length - 1; i >= 0; i--) {
 		var json = g_mapping[i];
 		if(reg.test(json.name))
 		{
-			console.log(id, json.name);
 			return json.dl_url;
 		}
 	}
