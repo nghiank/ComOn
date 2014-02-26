@@ -6,16 +6,18 @@
 		// Load the controllers module
 			beforeEach(module('ace'));
 
-			var scope, UploadController, $httpBackend;
+			var scope, UploadController, Service, $httpBackend;
 
-			beforeEach(inject(function($controller, $rootScope, $injector) {
-				$httpBackend = $injector.get('$httpBackend');
-				$httpBackend.when('POST', 'api/upload').respond({'status':'Success'});
-
+			beforeEach(inject(function($controller, $rootScope, $injector, Schematics) {
+				
 				scope = $rootScope.$new();
+				Service = Schematics;
+				$httpBackend = $injector.get('$httpBackend');
+				$httpBackend.when('GET', '/api/getSchemStds').respond([{'name': 'IEC'}, {'name': 'JIC'}]);
 
 				UploadController = $controller('UploadController', {
-					$scope: scope
+					$scope: scope,
+					Schematics: Service
 				});
 			}));
 
@@ -24,6 +26,21 @@
 				scope.stdName = 'ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ';
 				scope.checkName();
 				expect(scope.valid.name).toBe(false);
+			});
+
+			it('ensures repetitive standard name are caught', function(){
+				scope.stdName = 'IEC';
+				scope.checkName();
+				$httpBackend.flush();
+				console.log(scope.valid.name);
+				expect(scope.valid.name).toBe(false);
+			});
+
+			it('ensure valid name pass validaation', function(){
+				scope.stdName = 'JIC New';
+				scope.checkName();
+				$httpBackend.flush();
+				expect(scope.valid.name).toBe(true);
 			});
 
 			it('ensure invalid path to mapping json files are caught', function(){

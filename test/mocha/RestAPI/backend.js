@@ -197,6 +197,7 @@ describe('<e2e API Test>', function() {
         });
 
         it('GET /api/getSchemStds should return 200 with the list of schematics', function(done) {
+            this.timeout(config.timeout);
             xauth.get('http://localhost:3001/api/getSchemStds', function(err, res, b){
                 var result = JSON.parse(res)[0];
                 (result.name).should.equal('JIC: Schematic Symbols');
@@ -207,6 +208,7 @@ describe('<e2e API Test>', function() {
         });
 
         it('GET /api/getChildren with invalid componentId should return 400', function(done) {
+            this.timeout(config.timeout);
             xauth.get('http://localhost:3001/api/getChildren/asdjfhisweuhf', function(err, res, b){
                 (b.statusCode).should.equal(400);
                 done();
@@ -214,6 +216,7 @@ describe('<e2e API Test>', function() {
         });
 
         it('GET /api/upload with valid Id should return the children with status 200', function(done) {
+            this.timeout(config.timeout);
             xauth.get('http://localhost:3001/api/getChildren/'+id, function(err, res, b){
                 var result = JSON.parse(res);
                 (result.children.length).should.equal(17);

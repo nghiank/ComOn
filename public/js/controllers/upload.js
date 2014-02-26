@@ -102,30 +102,23 @@ angular.module('ace.schematic').controller('UploadController', ['$scope','$locat
 			return;
 		}
 
-		if ($scope.checkExistingStd() === false){
-			return;
-		}
-
-		$scope.valid.name = true;
-		$scope.success.name = 'This is a valid name.';
-		console.log($scope.valid.name);
-		$scope.uploadDisabled = true;
-		$scope.$apply();
-	};
-
-	$scope.checkExistingStd = function(){
-			Schematics.getSchematicStds.query(function(stds){
-				console.log('in check std');
-				for (var i = 0; i < stds.length; i++){
-					if($scope.stdName.localeCompare(stds[i].name) === 0){
-						$scope.valid.name = false;
-						$scope.error.name = 'This name already exists in database';
-						return false;
-					}
+		Schematics.getSchematicStds.query(function(stds) {
+			console.log(stds);
+			for (var i = 0; i < stds.length; i++){
+				console.log(stds[i].name);
+				if($scope.stdName.localeCompare(stds[i].name) === 0){
+					$scope.valid.name = false;
+					$scope.error.name = 'This name already exists in database';
+					return;
 				}
-				return true;
-			});
-		};
+			}
+			$scope.valid.name = true;
+			$scope.success.name = 'This is a valid name.';
+			$scope.uploadDisabled = true;			
+		});
+
+		
+	};
 
 	$scope.validate = function() {
 		var check = $scope.valid;
