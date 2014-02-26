@@ -8,21 +8,9 @@
                 <div class="panel-body">
                 <form class="form-horizontal">
                     <div class="form-group">
-                        <label class= "col-md-3 control-label" for="stdNameInput">Name</label>
+                        <label class= "col-md-3 control-label">.DAT File</label>
                         <div class = "col-md-9">
-                            <input id="stdNameInput" ng-change="checkName()" type="text" class="form-control" placeholder="Standard Name" ng-model="stdName" name="stdName">
-                            <div data-ng-show="error.name" class="alert alert-danger alert-thin">
-                            	<p>{{error.name}}</p>
-                            </div>
-                            <div data-ng-show="!error.name && success.name" class="alert alert-success alert-thin">
-                            	<p>{{success.name}}</p>
-                        </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class= "col-md-3 control-label" for="stdNameInput">.DAT File{{fileName}}{{datFileType}}</label>
-                        <div class = "col-md-9">
-                            <input ng-click="resetDAT()" ng-file-select="datFileSelect($files)" type="file"/>
+                            <input ng-click="resetDAT()" ng-file-select="datFileSelect($files)" type="file" class=""/>
                             <div data-ng-show="error.dat" class="alert alert-danger alert-thin">
                                 <p>{{error.dat}}</p>
                             </div>
@@ -32,7 +20,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class= "col-md-3 control-label" for="stdNameInput">Mapping File (.Json)</label>
+                        <label class= "col-md-3 control-label">Mapping File (.Json){{valid.name}}</label>
                         <div class = "col-md-9">
                             <input ng-click="resetJSON()" ng-file-select="jsonFileSelect($files)" type="file"/>
                             <div data-ng-show="error.json" class="alert alert-danger alert-thin">
@@ -43,17 +31,38 @@
                             </div>
                         </div>
                     </div>
-                
-                <hr>
-                <button type="button" ng-click="startValidation()" class="btn btn-info">Validate</button>
-                <button type="button" style="float: right" ng-disabled="uploadDisabled" class="btn btn-success">Upload</button>
+                    <hr>
+                    <div class="form-group" ng-show="stdName">
+                        <label class= "col-md-3 control-label">Standard Name: </label>
+                        <div class = "col-md-9">
+                            <p>{{stdName}}<p>
+                            <div data-ng-show="error.name" class="alert alert-danger alert-thin">
+                                <p>{{error.name}}</p>
+                            </div>
+                            <div data-ng-show="!error.name && valid.name" class="alert alert-success alert-thin">
+                                <p>{{success.name}}</p>
+                            </div>
+                        </div>
+                    </div>               
+                    <div class="form-group" ng-show="stdName">
+                        <label class= "col-md-3 control-label">Discription: </label>
+                        <div class = "col-md-9">
+                            <textarea class="form-control" rows="3"></textarea>
+                        </div>
+                    </div>  
+                    <hr ng-show="stdName">             
+                    <div class="form-group pull-right" style="margin-right:5px">
+                        <button type="button" ng-click="validate()" class="btn btn-default">Validate</button>
+                        <button type="button" ng-disabled="uploadDisabled" class="btn btn-primary" ng-click="uploadFiles()">Create</button>
+                    </div>
             </form>
             </div>
             </div>
         </div>
             <div class="col-md-7" style="border: 3px lightgray;">
-                <h4>Status</h4>
+                <h4>Status {{datFileText}}</h4>
                 <div class="well" style="overflow-y:auto; max-height: 400px">
+
                 </div>
             </div>
         </div>
