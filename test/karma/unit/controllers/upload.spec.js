@@ -13,7 +13,7 @@
 				scope = $rootScope.$new();
 				Service = Schematics;
 				$httpBackend = $injector.get('$httpBackend');
-				$httpBackend.when('GET', '/api/getSchemStds').respond([{'name': 'IEC'}, {'name': 'JIC'}]);
+				$httpBackend.when('GET', 'api/getSchemStds').respond([{'name': 'IEC'}, {'name': 'JIC'}]);
 
 				UploadController = $controller('UploadController', {
 					$scope: scope,
@@ -32,7 +32,6 @@
 				scope.stdName = 'IEC';
 				scope.checkName();
 				$httpBackend.flush();
-				console.log(scope.valid.name);
 				expect(scope.valid.name).toBe(false);
 			});
 

@@ -84,7 +84,7 @@ describe('<e2e API Test>', function() {
 
         //test update Code Name
         it('GET /updateCodeName should update my code name', function(done) {
-            this.timeout(50000);
+            this.timeout(config.timeout);
             agent
             .get('/api/updateCodeName/AG')
             .end(function(err,res) {
@@ -229,19 +229,23 @@ describe('<e2e API Test>', function() {
             agent
             .get('/signout')
             .end(function(err, res){
-                //validate the keys in the response JSON matches, we dont care about the values
                 (res.status).should.equal(302);
                 done();
             });
         });
 
         it('POST without credentials /api/upload should return 401', function(done) {
+            var hasBeenCalled = false;
+            this.timeout(config.timeout);
             agent.post('/api/upload')
             .field('stdName', 'abcd')
             .attach('datFile', './test/mocha/RestAPI/ACE_JIC_MENU.dat')
             .attach('jsonFile', './test/mocha/RestAPI/mapping.json')
             .end(function(err, res){
-                //validate the keys in the response JSON matches, we dont care about the values
+                if (hasBeenCalled) {
+                    return;
+                }
+                hasBeenCalled = true;
                 (res.status).should.equal(401);
                 done();
             });
