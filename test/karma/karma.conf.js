@@ -34,6 +34,7 @@ module.exports = function(config) {
             'public/js/services/global.js',
             'public/js/services/underscore.js',
             'public/js/services/users.js',
+            'public/js/services/Schematics.js',
             'public/js/services/Parsedat.js',
             'public/js/controllers/index.js',
             'public/js/controllers/header.js',

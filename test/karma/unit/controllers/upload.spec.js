@@ -4,7 +4,7 @@
 	describe('ACE controllers', function() {
 		describe('UploadController', function() {
 		// Load the controllers module
-			beforeEach(module('ace.schematics'));
+			beforeEach(module('ace'));
 
 			var scope, UploadController, $httpBackend;
 
@@ -24,12 +24,6 @@
 				scope.stdName = 'ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ';
 				scope.checkName();
 				expect(scope.valid.name).toBe(false);
-			});
-
-			it('ensure valid name pass validaation', function(){
-				scope.stdName = 'IEC';
-				scope.checkName();
-				expect(scope.valid.name).toBe(true);
 			});
 
 			it('ensure invalid path to mapping json files are caught', function(){
