@@ -6,9 +6,6 @@ angular.module('ace.users').factory('Schematic', ['$resource', function($resourc
     return {
 		standardlist:$resource('api/getSchemStds',
 							{query: {method: 'GET'}
-		}),
-		profile:$resource('api/updateCodeName/:codeName',
-                                    null,
-                                    {update:{method:'GET'}})
+		})
 	};
 }]);

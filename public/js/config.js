@@ -1,24 +1,29 @@
 'use strict';
 
 
-//Setting up route and client interceptor
+//Setting up route and client interceptor and breadcrumbs
 angular.module('ace').config(['$routeProvider',
     function($routeProvider) {
         $routeProvider.
         when('/', {
-            templateUrl: 'views/index.html'
+            templateUrl: 'views/index.html',
+            label: 'Home'
         }).
         when('/users', {
-            templateUrl: 'views/Users/list.html'
+            templateUrl: 'views/Users/list.html',
+            label: 'Users'
         }).
         when('/profile', {
-            templateUrl: 'views/profile.html'
+            templateUrl: 'views/profile.html',
+            label: 'Profile'
         }).
         when('/upload', {
-            templateUrl: 'views/upload.html'
+            templateUrl: 'views/upload.html',
+            label: 'Add New Standard'
         }).
         when('/schematics', {
-            templateUrl: 'views/Schematics/all.html'
+            templateUrl: 'views/Schematics/all.html',
+            label: 'Standards'
         }).
         otherwise({
             redirectTo: '/'

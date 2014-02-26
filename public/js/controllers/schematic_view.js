@@ -1,7 +1,8 @@
 'use strict';
 
 angular.module('ace.schematic')
-.controller('SchCtrl', ['$scope', 'Schematic', 'Global',  function ($scope, Schematic, Global) {
+.controller('SchCtrl', ['$scope', 'Schematic', 'Global', 'breadcrumbs', function ($scope, Schematic, Global, breadcrumbs) {
+	$scope.breadcrumbs = breadcrumbs;
 	$scope.admin = false;
 	if(Global.user && Global.user.isAdmin)
 		$scope.admin = true;
@@ -33,38 +34,21 @@ angular.module('ace.schematic')
 		$scope.editForm = true;
 		$scope.editFormName = std.name;
 	};
-/*  $scope.stds = [
-		{
-			'name': 'JIC Standard',
-			'showOption': false,
-			'local': false
-		},
-		{
-			'name': 'IEC Standard',
-			'showOption': false,
-			'local': false
-		},
-		{
-			'name': 'IEC Standard 2015',
-			'showOption': false,
-			'local': true
-		}
-	];*/
 	$scope.toggleOption = function (std) {
 		$scope.target = std;
 		return (std.showOption = !std.showOption);
 	};
-	// $scope.deleteWarning = function () {
-	// 	if ($scope.target.local === false) {
-	// 		$scope.target.local = true;
-	// 	} else {
-	// 		$scope.stds.splice($scope.stds.indexOf($scope.target), 1);
-	// 		$scope.target = null;
-	// 	}
-	// };
-	// $scope.uploadWarning = function () {
-	// 	$scope.stds[$scope.stds.indexOf($scope.target)].local = false;
-	// };
+/*	$scope.deleteWarning = function () {
+		if ($scope.target.local === false) {
+			$scope.target.local = true;
+		} else {
+			$scope.stds.splice($scope.stds.indexOf($scope.target), 1);
+			$scope.target = null;
+		}
+	};
+	$scope.uploadWarning = function () {
+		$scope.stds[$scope.stds.indexOf($scope.target)].local = false;
+	};*/
 }]);
 /*.controller('CompCtrl2', function ($scope, $window) {
 	$scope.addForm = false;

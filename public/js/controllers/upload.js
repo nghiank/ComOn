@@ -100,7 +100,6 @@ angular.module('ace.schematic').controller('UploadController', ['$scope','$locat
 		{
 			console.log('abt to validate');
 			$scope.startValidation();
-			$scope.uploadFiles();
 			return;
 		}
 		$scope.uploadDisabled = true;
@@ -119,13 +118,11 @@ angular.module('ace.schematic').controller('UploadController', ['$scope','$locat
 			file: [$scope.datFile , $scope.jsonFile],
 			fileFormDataName: ['datFile', 'jsonFile']
 		}).then(function(response) {
-			if(response.status !== 200)
+			if(response)
 			{
-				window.alert('Error encountered');
-				return;
+				$scope.uploadResult = response.data;
+				console.log('Uploaded!');
 			}
-			$scope.uploadResult = response.data;
-			console.log('Uploaded!');
 		}, null, function(evt) {
 			$scope.datProgress = parseInt(100.0 * evt.loaded / evt.total);
 		});

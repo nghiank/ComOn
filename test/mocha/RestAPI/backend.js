@@ -244,9 +244,9 @@ describe('<e2e API Test>', function() {
             });
         });
 
-        it('GET /api/getSchemStds without credentials returns 401', function(done) {
+        it('GET /api/getSchemStds without credentials returns 200', function(done) {
             agent.get('/api/getSchemStds').end(function(err, res) {
-                (res.status).should.equal(401);
+                (res.status).should.equal(200);
                 done();
             });
         });

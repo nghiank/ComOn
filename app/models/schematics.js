@@ -15,16 +15,14 @@ var mongoose = require('mongoose'),
 var standardSchema = new Schema({
     name: {
         type: String,
-        required: true,
-        trim: true,
-        unique: true
+        required: true
     },
     description: {
         type: String,
         default: null
     }
 });
-
+standardSchema.index({name: 1}, {unique: true});
 mongoose.model('SchematicStandard', standardSchema);
 
 //---------------------------------------------//
