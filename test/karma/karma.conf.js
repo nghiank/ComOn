@@ -27,7 +27,6 @@ module.exports = function(config) {
             'public/lib/underscore/underscore.js',
             'public/lib/ng-file-upload/angular-file-upload.js',
             'public/lib/ng-file-upload/angular-file-upload-shim.js',
-            'public/lib/ng-breadcrumbs/dist/js/ng-breadcrumbs.min.js',
             'public/js/app.js',
             'public/js/config.js',
             'public/js/directives.js',

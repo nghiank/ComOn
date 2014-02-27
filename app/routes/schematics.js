@@ -14,6 +14,7 @@ module.exports = function(app) {
     app.post('/api/upload', authorization.requiresLogin , hasAuthorization, schem.receiveFiles);
 
     app.get('/api/getChildren/:nodeId', schem.getNodeChildren);
+    app.get('/api/getParentHiearchy/:nodeId', schem.getParentHiearchy);
     app.param('nodeId', schem.node);
 
     app.get('/api/getSchemStds', schem.getAllSchemStds);

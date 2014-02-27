@@ -16,7 +16,6 @@ var component, component2;
 describe('<Unit Test>', function() {
 	describe('Model Schematic Library:', function() {
 		before(function(done) {
-			ComponentSchem.remove().exec();
 			StandardSchem.remove().exec();
 			
 			standard = new StandardSchem({
@@ -62,6 +61,7 @@ describe('<Unit Test>', function() {
 		describe('Component Methods', function() {
 
 			before(function(done) {
+				ComponentSchem.remove().exec();
 				standard3 = new StandardSchem({
 					name: 'IEC',
 					description: 'abcd'

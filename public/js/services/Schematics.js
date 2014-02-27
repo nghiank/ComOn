@@ -7,6 +7,8 @@ angular.module('ace.schematic').factory('Schematics', ['$resource', function($re
 		standardlist:$resource('api/getSchemStds',
 							null,
 							{query: {method: 'GET', isArray: true}
-		})
+		}),
+		children:$resource('api/getChildren/:nodeId',
+							{nodeId: '@_id'})
 	};
 }]);

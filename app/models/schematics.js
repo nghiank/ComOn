@@ -15,7 +15,8 @@ var mongoose = require('mongoose'),
 var standardSchema = new Schema({
     name: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     description: {
         type: String,
@@ -63,7 +64,7 @@ var componentSchema = new Schema({
         default: false
     }
 });
-componentSchema.index({id: 1, parentNode: 1}, {unique: true});
+componentSchema.index({id: 1, name: -1, parentNode: 1}, {unique: true});
 componentSchema.plugin(version, { collection: 'Schematic__versions' });
 
 mongoose.model('SchematicComponent', componentSchema);

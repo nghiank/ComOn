@@ -1,19 +1,21 @@
 'use strict';
 
 angular.module('ace.schematic')
-.controller('SchCtrl', ['$scope', 'Schematics', 'Global', 'breadcrumbs', function ($scope, Schematics, Global, breadcrumbs) {
+.controller('Standards', ['$scope', 'Schematics', 'Global', 'breadcrumbs', function ($scope, Schematics, Global, breadcrumbs) {
 	$scope.breadcrumbs = breadcrumbs;
 	$scope.admin = false;
 	if(Global.user && Global.user.isAdmin)
 		$scope.admin = true;
 	$scope.stds = [];
 	$scope.form = null;
-	$scope.forms = [{'name':'addForm','URL':'views/upload.html'},{'name':'edifForm','URL':'views/edit.html'}];
+	$scope.forms = [{'name':'addForm','URL':'/views/upload.html'},{'name':'edifForm','URL':'/views/edit.html'}];
 
 	$scope.showAddForm = function () {
 		$scope.form = $scope.forms[0];
 	};
+
 	$scope.getAll = function() {
+		$scope.breadcrumbs.reset();
 		Schematics.standardlist.query(function(standards) {
 			for(var i = 0; i < standards.length; i++)
 			{
