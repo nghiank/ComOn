@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ace.schematic').controller('editStdFormCtrl', ['$scope','$location', '$upload', 'DatParser', 'Global', '$modal', 'Schematics', function ($scope, $location, $upload, ParseDat, Global, $modal, Schematics) {
+angular.module('ace.schematic').controller('editStdFormCtrl', ['$scope','$location', '$upload', 'DatParser', 'Global', '$modal', 'Schematics',function ($scope, $location, $upload, ParseDat, Global, $modal, Schematics) {
 	$scope.global = Global;
 	$scope.Parser = new ParseDat();
 	$scope.uploadDisabled = true;
@@ -11,13 +11,6 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['$scope','$locati
 	$scope.valid = [];
 	$scope.desc = '';
 	$scope.id = null;
-
-	$scope.getCurrentStd = function(){
-		Schematics.standardlist.find({_id:$scope.id}, function(std){
-			$scope.stdName = std.name;
-			$scope.desc = std.description;
-		});
-	};
 
 	$scope.abort = function(index) {
 		$scope.upload[index].abort();
@@ -98,7 +91,7 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['$scope','$locati
 		$scope.success.name = null;
 		$scope.valid.name = false;
 		var data = $scope.stdName;
-		if(data === '')
+		if(!data)
 		{
 			return;
 		}
