@@ -14,8 +14,7 @@
     "angular-translate-loader-partial":"latest",
     "underscore": "latest",
     "jquery": "latest",
-    "ng-file-upload": "latest",
-    "ng-breadcrumbs": "latest"
+    "ng-file-upload": "latest"
   },
   "resolutions": {
     "angular": "1.2.8"
