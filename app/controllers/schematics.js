@@ -76,9 +76,10 @@ var populateComponents = function(children, parent, std) {
 	}
 };
 
-var populateSchematic = function(res, root) {
+var populateSchematic = function(res, root, fields) {
 	var standard = new StandardSchem({
 		name: root.title,
+		description: fields.description
 	});
 	standard.save(function(err) {
 		if(err) {
@@ -101,7 +102,7 @@ var parseFiles = function(res, fields, files) {
 	if(parse_result !== 'Success' || generate_result!== 'Success')
 		return error.sendGenericError(res, 400, 'Error Encountered');
 	var root = Inst.rootNode;
-	populateSchematic(res, root);
+	populateSchematic(res, root, fields);
 };
 
 exports.receiveFiles = function(req, res) {
@@ -140,26 +141,26 @@ exports.getParentHiearchy = function(req, res) {
 	}
 	var list = [];
 	var parent = req.node.parentNode;
+	list.push({'title': req.node.name, 'link': req.node._id});
 	if(parent === null)
 	{
-		list.push({'title': req.node.name, 'link': req.node._id});
 		return res.jsonp({'parentHiearchy': list});
 	}
 	(function genHiearchy(parentId) {
 		ComponentSchem
-		.find({_id: parentId})
+		.findOne({_id: parentId})
 		.exec(function(err, component) {
 			if(err)
 				return error.sendGenericError(res, 400, 'Error Encountered');
+			list.push({'title': component.name, 'link': component._id});
 			if(component.parentNode)
 			{
-				list.push({'title': component.name, 'link': component._id});
 				genHiearchy(component.parentNode);
 			}
 			else
 			{
-				list.push({'title': component.name, 'link': component._id});
-				return res.jsonp({'parentHiearchy': list});
+				console.log('asdasda   ', list);
+				return res.jsonp({'parentHiearchy': list.reverse()});
 			}
 		});
 	})(parent);

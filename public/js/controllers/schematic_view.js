@@ -6,7 +6,6 @@ angular.module('ace.schematic')
 	$scope.admin = false;
 	if(Global.user && Global.user.isAdmin)
 		$scope.admin = true;
-	$scope.stds = [];
 	$scope.form = null;
 	$scope.forms = [{'name':'addForm','URL':'/views/upload.html'},{'name':'edifForm','URL':'/views/edit.html'}];
 
@@ -17,9 +16,9 @@ angular.module('ace.schematic')
 	$scope.getAll = function() {
 		$scope.breadcrumbs.reset();
 		Schematics.standardlist.query(function(standards) {
+			$scope.stds = standards;
 			for(var i = 0; i < standards.length; i++)
 			{
-				$scope.stds[i] = standards[i];
 				$scope.stds[i].showOption = false;
 			}
 		});

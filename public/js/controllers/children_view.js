@@ -6,28 +6,36 @@ angular.module('ace.schematic')
 	$scope.admin = false;
 	if(Global.user && Global.user.isAdmin)
 		$scope.admin = true;
-	$scope.getChildren = function(id) {
-		var nodeId = id;
-		if(!id)
-			nodeId = $routeParams.nodeId;
+	$scope.getChildren = function() {
+		var nodeId = $routeParams.nodeId;
+		if(!nodeId)
+			return;
 		Schematics.children.get({nodeId: nodeId}, function(children) {
 			$scope.children = children.children;
+			$scope.seperate();
 		});
-		if($routeParams.nodeId)
-			breadcrumbs.fetch.get({nodeId: $routeParams.nodeId}, function(result) {
-				var hiearchy = result.parentHiearchy;
-				for (var i = hiearchy.length - 1; i >= 0; i--) {
-					hiearchy[i].link = '#!/standards/' + hiearchy[i].link;
-				}
-				breadcrumbs.add(hiearchy);
-			});
+		breadcrumbs.fetch.get({nodeId: nodeId}, function(result) {
+			var hiearchy = result.parentHiearchy;
+			for (var i = hiearchy.length - 1; i >= 0; i--) {
+				hiearchy[i].link = '#!/standards/' + hiearchy[i].link;
+			}
+			breadcrumbs.add(hiearchy);
+		});
 	};
 	$scope.toggleOption = function (child) {
 		$scope.target = child;
 		return (child.showOption = !child.showOption);
 	};
-	$scope.composite = function(child) {
-		return child.isComposite;
+	$scope.seperate = function() {
+		$scope.leaves = [];
+		$scope.subtypes = [];
+		var children = $scope.children;
+		for (var i = children.length - 1; i >= 0; i--) {
+			if(children[i].isComposite)
+				$scope.subtypes.push(children[i]);
+			else
+				$scope.leaves.push(children[i]);
+		}
 	};
 /*	$scope.addForm = false;
 

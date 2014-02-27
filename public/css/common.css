@@ -30,6 +30,16 @@ footer p {
     padding-bottom: 2px;
 }
 
+
+.listing {
+    max-height: 428px;
+    overflow-y: auto; 
+}
+
+.thick {
+    min-height: 62px;
+}
+
 .local
 {
     background-color:#F9F9F9;
