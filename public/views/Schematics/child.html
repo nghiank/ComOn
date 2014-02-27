@@ -13,9 +13,6 @@
                 <li class="list-group-item" ng-repeat="child in subtypes" ng-mouseenter = "toggleOption(child)" ng-mouseleave = "toggleOption(child)">
                     <img src={{child.thumbnail}} ng-show="child.thumbnail" style="margin-right:10px;">
                     <a href="#!/standards/{{child._id}}">{{child.name}}</a>
-                    <a class="btn pull-right btn-link" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}" ng-show="child.showOption && admin">
-                        <i class="fa fa-times"></i>
-                    </a>
                     <a class="btn pull-right btn-link" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}" ng-click="toggleEditForm(child)" ng-show="child.showOption && admin">
                         <i class="fa fa-pencil"></i>
                     </a>
@@ -32,9 +29,6 @@
                 <li class="list-group-item" ng-repeat="child in leaves" ng-mouseenter = "toggleOption(child)" ng-mouseleave = "toggleOption(child)">
                     <img src={{child.thumbnail}} ng-show="child.thumbnail" style="margin-right:10px;">
                     {{child.name}}
-                    <a class="btn pull-right btn-link" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}" ng-show="child.showOption && admin">
-                        <i class="fa fa-times"></i>
-                    </a>
                     <a class="btn pull-right btn-link" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}" ng-click="toggleEditForm(child)" ng-show="child.showOption && admin">
                         <i class="fa fa-pencil"></i>
                     </a>

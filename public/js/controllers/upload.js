@@ -20,6 +20,7 @@ angular.module('ace.schematic').controller('UploadController', ['$scope','$locat
 	};
 
 	$scope.datFileSelect = function($files) {
+		$scope.resetDAT();
 		$scope.checkDatFile($files);
 		$scope.parseDatForStdName();
 	};
@@ -39,6 +40,7 @@ angular.module('ace.schematic').controller('UploadController', ['$scope','$locat
 	};
 
 	$scope.resetDAT = function() {
+		$scope.resetJSON();
 		$scope.uploadDisabled = true;
 		$scope.validateDisabled = true;
 		$scope.valid.dat = false;
@@ -180,6 +182,6 @@ angular.module('ace.schematic').controller('ValidationController', function($sco
 		$modalInstance.close($scope.valid);
 	};
 	$scope.cancel = function(){
-		console.log('Cancel!');
+		$modalInstance.dismiss('cancel');
 	};
 });

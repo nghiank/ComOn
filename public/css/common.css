@@ -58,3 +58,13 @@ footer p {
 {
     background-color:#ADD8E6;
 }
+
+.success
+{
+    color:green;
+}
+
+.error
+{
+    color:red;
+}
