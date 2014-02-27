@@ -6,11 +6,12 @@ angular.module('ace.schematic').factory('breadcrumbs', ['$resource', function ($
 		all : function() {
 			return list;
 		},
-		add : function(parents) {
-			list = list.concat(parents);
-		},
 		reset: function() {
 			list = [{'title': 'Standards', 'link': '#!/standards'}];
+		},
+		add : function(parents) {
+			this.reset();
+			list = list.concat(parents);
 		},
 		fetch:$resource('api/getParentHiearchy/:nodeId',
 							{nodeId: '@_id'})
