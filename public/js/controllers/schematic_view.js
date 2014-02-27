@@ -9,12 +9,14 @@ angular.module('ace.schematic')
 	$scope.stds = [];
 	$scope.form = null;
 	$scope.forms = [{'name':'addForm','URL':'views/upload.html'},{'name':'editStdForm','URL':'views/editStdForm.html'}];
+	
 	$scope.showAddForm = function () {
 		$scope.form = $scope.forms[0];
 	};
 
-	$scope.showEditForm = function(){
+	$scope.showEditForm = function(std){
 		$scope.form = $scope.forms[1];
+		$scope.currentStd = std;
 	};
 
 	$scope.getAll = function() {
