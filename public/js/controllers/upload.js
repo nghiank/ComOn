@@ -103,11 +103,14 @@ angular.module('ace.schematic').controller('UploadController', ['$scope','$locat
 		}
 
 		Schematics.standardlist.query(function(stds) {
-			for (var i = 0; i < stds.length; i++){
-				if($scope.stdName.localeCompare(stds[i].name) === 0){
-					$scope.valid.name = false;
-					$scope.error.name = 'This name already exists in database';
-					return;
+			if(stds){
+				console.log(stds);
+				for (var i = 0; i < stds.length; i++){
+					if($scope.stdName.localeCompare(stds[i].name) === 0){
+						$scope.valid.name = false;
+						$scope.error.name = 'This name already exists in database';
+						return;
+					}
 				}
 			}
 			$scope.valid.name = true;
