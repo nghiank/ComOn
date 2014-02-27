@@ -26,11 +26,6 @@ angular.module('ace.schematic')
 		});
 	};
 	$scope.editForm = false;
-
-	$scope.toggleEditForm = function () {
-		$scope.editForm = !$scope.editForm;
-		$scope.addForm = false;
-	};
 	
 	$scope.toggleOption = function (std) {
 		$scope.target = std;

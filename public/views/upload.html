@@ -5,39 +5,51 @@
     <div class="panel-body">
     <form class="form-horizontal">
         <div class="form-group">
+            <div class="alert alert-success alert-thin" ng-show="!datFile">
+                    <h5>Step 1: Choose the .DAT file</h5>
+            </div>
             <label class= "col-md-3 control-label">.DAT File</label>
             <div class = "col-md-9">
-                <input ng-click="resetDAT()" ng-file-select="datFileSelect($files)" type="file" class=""/>
+                <div class="fileinput fileinput-new" data-provides="fileinput">
+                    <div class="input-group">
+                        <div class="form-control" data-trigger="fileinput"><i class="fa fa-check success fileinput-exists" ng-show="!error.dat && success.dat"></i> <span class="fileinput-filename"></span></div>
+                        <span class="input-group-addon btn btn-default btn-file"><span class="fileinput-new">Select file</span><span class="fileinput-exists">Change</span><input type="file" name="..." ng-file-select="datFileSelect($files)"></span>
+                        <a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput" ng-click="resetDAT()">Remove</a>
+                    </div>
+                </div>                                   
                 <div data-ng-show="error.dat" class="alert alert-danger alert-thin">
                     <p>{{error.dat}}</p>
                 </div>
-                <div data-ng-show="!error.dat && success.dat" class="alert alert-success alert-thin">
-                    <p>{{success.dat}}</p>
-                </div>
             </div>
         </div>
-        <div class="form-group">
+        <div class="form-group" ng-show="valid.dat">
+            <div class="alert alert-success alert-thin" ng-show="datFile && !jsonFile">
+                    <h5>Step 2: Choose the mapping File</h5>
+            </div>
             <label class= "col-md-3 control-label">Mapping File (.Json)</label>
             <div class = "col-md-9">
-                <input ng-click="resetJSON()" ng-file-select="jsonFileSelect($files)" type="file"/>
+               <div class="fileinput fileinput-new" data-provides="fileinput">
+                    <div class="input-group">
+                        <div class="form-control" data-trigger="fileinput"><i class="fa fa-check fileinput-exists" ng-show="!error.json && success.json"></i> <span class="fileinput-filename"></span></div>
+                        <span class="input-group-addon btn btn-default btn-file"><span class="fileinput-new">Select file</span><span class="fileinput-exists">Change</span><input type="file" name="..." ng-file-select="jsonFileSelect($files)"></span>
+                        <a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput" ng-click="resetJSON()">Remove</a>
+                    </div>
+                </div>    
                 <div data-ng-show="error.json" class="alert alert-danger alert-thin">
                     <p>{{error.json}}</p>
-                </div>
-                <div data-ng-show="!error.json && success.json" class="alert alert-success alert-thin">
-                    <p>{{success.json}}</p>
                 </div>
             </div>
         </div>
         <hr>
-        <div class="form-group" ng-show="stdName">
+        <div class="form-group" ng-show="stdName && jsonFile && datFile">
+            <div class="alert alert-success alert-thin">
+                    <h5>Step 3: Enter the details of the standard</h5>
+            </div>
             <label class= "col-md-3 control-label">Standard Name: </label>
             <div class = "col-md-9">
-                <p>{{stdName}}<p>
+                <p><i class="fa fa-check" ng-show="!error.name && success.name"></i> {{stdName}}<p>
                 <div data-ng-show="error.name" class="alert alert-danger alert-thin">
                     <p>{{error.name}}</p>
-                </div>
-                <div data-ng-show="!error.name && valid.name" class="alert alert-success alert-thin">
-                    <p>{{success.name}}</p>
                 </div>
             </div>
         </div>               
@@ -52,7 +64,7 @@
             <button type="button" ng-click="validate()" class="btn btn-default" ng-disabled="!(valid.dat && valid.json && valid.name)">Validate</button>
             <button type="button" ng-disabled="uploadDisabled" class="btn btn-primary" ng-click="uploadFiles()">Create</button>
         </div>
-        </form>
+    </form>
 </div>
 </div>
 
