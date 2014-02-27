@@ -9,7 +9,7 @@
             <ul class="list-group">
                 <li class="list-group-item" ng-repeat="std in stds" ng-mouseenter = "toggleOption(std)" ng-mouseleave = "toggleOption(std)">
                     <a href="Subtype_form.html">{{std.name}}</a>
-                    <a class="btn pull-right btn-link btn-xs" ng-click="toggleEditForm(std)" ng-show="std.showOption && admin">
+                    <a class="btn pull-right btn-link btn-xs" ng-click="showEditForm(std)" ng-show="std.showOption && admin">
                         <i class="fa fa-pencil"></i>
                     </a>
                     <a class="btn pull-right btn-link btn-xs" data-toggle="modal" data-target="#uploadModal" ng-show="std.showOption && std.isPublished && admin">
