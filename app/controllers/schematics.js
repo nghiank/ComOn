@@ -18,11 +18,11 @@ var escape_regex = function(text) {
 
 var findThumbnail = function(thumbnail) {
 	if(!g_mapping)
-		return thumbnail;
+		return null;
 	var first_brack = thumbnail.indexOf('(');
 	var last_brack = thumbnail.indexOf(')');
 	if(first_brack === -1 || last_brack === -1)
-		return thumbnail;
+		return null;
 	var location = thumbnail.substring(0, first_brack)+'/'+thumbnail.substring(first_brack+1, last_brack);
 	var matchstring = '^.*'+escape_regex(location)+'\\.bmp$';
 	var reg = new RegExp(matchstring, 'i');
@@ -33,7 +33,7 @@ var findThumbnail = function(thumbnail) {
 			return json.dl_url;
 		}
 	}
-	return thumbnail;
+	return null;
 };
 
 var findDl = function(id) {
@@ -124,12 +124,47 @@ exports.getNodeChildren = function(req, res) {
 	var id = req.node._id;
 	ComponentSchem
 		.find({parentNode: id})
+		.populate('standard')
+		.populate('parentNode')
 		.exec(function(err, components) {
 			if(err)
 				return error.sendGenericError(res, 400, 'Error Encountered');
 			return res.jsonp({'children': components});
 		});
 };
+
+exports.getParentHiearchy = function(req, res) {
+	if(!req.node)
+	{
+		return error.sendGenericError(res, 400, 'Error Encountered');
+	}
+	var list = [];
+	var parent = req.node.parentNode;
+	if(parent === null)
+	{
+		list.push({'title': req.node.name, 'link': req.node._id});
+		return res.jsonp({'parentHiearchy': list});
+	}
+	(function genHiearchy(parentId) {
+		ComponentSchem
+		.find({_id: parentId})
+		.exec(function(err, component) {
+			if(err)
+				return error.sendGenericError(res, 400, 'Error Encountered');
+			if(component.parentNode)
+			{
+				list.push({'title': component.name, 'link': component._id});
+				genHiearchy(component.parentNode);
+			}
+			else
+			{
+				list.push({'title': component.name, 'link': component._id});
+				return res.jsonp({'parentHiearchy': list});
+			}
+		});
+	})(parent);
+};
+
 
 exports.getAllSchemStds = function(req, res) {
 	ComponentSchem
@@ -140,7 +175,7 @@ exports.getAllSchemStds = function(req, res) {
 		.exec(function(err, components) {
             if (err)
 				return error.sendGenericError(res, 400, 'Error Encountered');
-			res.jsonp(components);
+			return res.jsonp(components);
 		});
 };
 

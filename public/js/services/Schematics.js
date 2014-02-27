@@ -8,6 +8,8 @@ angular.module('ace.schematic').factory('Schematics', ['$resource', function($re
 							null,
 							{query: {method: 'GET', isArray: true},
 							find:{method: 'GET', isArray: false}
-		})
+		}),
+		children:$resource('api/getChildren/:nodeId',
+							{nodeId: '@_id'})
 	};
 }]);

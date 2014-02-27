@@ -207,7 +207,7 @@ describe('<e2e API Test>', function() {
             });
         });
 
-        it('GET /api/getChildren with invalid componentId should return 400', function(done) {
+        it('GET /api/getChildren/:nodeId with invalid componentId should return 400', function(done) {
             this.timeout(config.timeout);
             xauth.get('http://localhost:3001/api/getChildren/asdjfhisweuhf', function(err, res, b){
                 (b.statusCode).should.equal(400);
@@ -215,11 +215,30 @@ describe('<e2e API Test>', function() {
             });
         });
 
-        it('GET /api/upload with valid Id should return the children with status 200', function(done) {
+        it('GET /api/getChildren/:nodeId with valid Id should return the children with status 200', function(done) {
             this.timeout(config.timeout);
             xauth.get('http://localhost:3001/api/getChildren/'+id, function(err, res, b){
                 var result = JSON.parse(res);
                 (result.children.length).should.equal(17);
+                (b.statusCode).should.equal(200);
+                done();
+            });
+        });
+
+        it('GET /api/getParentHiearchy/:nodeId with invalid componentId should return 400', function(done) {
+            this.timeout(config.timeout);
+            xauth.get('http://localhost:3001/api/getParentHiearchy/asdjfhisweuhf', function(err, res, b){
+                (b.statusCode).should.equal(400);
+                done();
+            });
+        });
+
+        it('GET /api/getParentHiearchy/:nodeId with valid Id should return the parent hiearchy of the node with status 200', function(done) {
+            this.timeout(config.timeout);
+            xauth.get('http://localhost:3001/api/getParentHiearchy/'+id, function(err, res, b){
+                var result = JSON.parse(res);
+                (result.parentHiearchy.length).should.equal(1);
+                (result.parentHiearchy[0].title).should.equal('JIC: Schematic Symbols');
                 (b.statusCode).should.equal(200);
                 done();
             });
@@ -235,25 +254,23 @@ describe('<e2e API Test>', function() {
         });
 
         it('POST without credentials /api/upload should return 401', function(done) {
-            var hasBeenCalled = false;
             this.timeout(config.timeout);
             agent.post('/api/upload')
             .field('stdName', 'abcd')
             .attach('datFile', './test/mocha/RestAPI/ACE_JIC_MENU.dat')
             .attach('jsonFile', './test/mocha/RestAPI/mapping.json')
-            .end(function(err, res){
-                if (hasBeenCalled) {
-                    return;
-                }
-                hasBeenCalled = true;
+            .end(function(err, res) {
                 (res.status).should.equal(401);
                 done();
             });
         });
 
-        it('GET /api/getSchemStds without credentials returns 200', function(done) {
+        it('GET /api/getSchemStds without login returns 200', function(done) {
+            this.timeout(config.timeout);
             agent.get('/api/getSchemStds').end(function(err, res) {
-                (res.status).should.equal(200);
+                var result = res.body[0];
+                (result.name).should.equal('JIC: Schematic Symbols');
+                (res.statusCode).should.equal(200);
                 done();
             });
         });

@@ -1,0 +1,27 @@
+<div class="container" data-ng-init="getChildren()" ng-controller="Children" style="min-height: 800px; padding-top:30px;">
+  <ol class="breadcrumb">
+    <li ng-repeat="breadcrumb in breadcrumbs.all()">
+      <a href="{{breadcrumb.link}}" ng-hide="$last">
+        {{breadcrumb.title}}
+      </a>
+      <span ng-show="$last">{{breadcrumb.title}}</span></li>
+  </ol>
+    <div class="row">
+        <div class="col-md-5">
+            <ul class="list-group">
+                <li class="list-group-item" ng-repeat="child in children | filter: composite" ng-mouseenter = "toggleOption(child)" ng-mouseleave = "toggleOption(child)">
+                    <a href="Subtype_form.html">{{child.name}}</a>
+                    <a class="btn pull-right btn-link btn-xs" ng-click="toggleEditForm(child)" ng-show="child.showOption && admin">
+                        <i class="fa fa-pencil"></i>
+                    </a>
+                    <a class="btn pull-right btn-link btn-xs" data-toggle="modal" data-target="#uploadModal" ng-show="child.showOption && child.isPublished && admin">
+                        <i class="fa fa-cloud-upload"></i>
+                    </a>
+                    <a class="btn pull-right btn-link btn-xs" ng-show="child.showOption" >
+                        <i class="fa fa-download"></i>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

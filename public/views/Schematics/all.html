@@ -1,15 +1,17 @@
-<div class="container" data-ng-init="getAll()" ng-controller="SchCtrl" style="; padding-top:30px;">
-    <ol class="breadcrumb">
-        <li>
-            <a href="#!/schematics">Standards</a>
-        </li>
-    </ol>
+<div class="container" data-ng-init="getAll()" ng-controller="Standards" style="min-height: 800px; padding-top:30px;">
+  <ol class="breadcrumb">
+    <li ng-repeat="breadcrumb in breadcrumbs.all()">
+      <a href="{{breadcrumb.link}}" ng-hide="$last">
+        {{breadcrumb.title}}
+      </a>
+      <span ng-show="$last">{{breadcrumb.title}}</span></li>
+  </ol>
     <div class="row">
         <div class="col-md-4">
             <ul class="list-group">
                 <li class="list-group-item" ng-repeat="std in stds" ng-mouseenter = "toggleOption(std)" ng-mouseleave = "toggleOption(std)">
-                    <a href="Subtype_form.html">{{std.name}}</a>
-                    <a class="btn pull-right btn-link btn-xs" ng-click="showEditForm(std)" ng-show="std.showOption && admin">
+                    <a href="#!/standards/{{std._id}}">{{std.name}}</a>
+                    <a class="btn pull-right btn-link btn-xs" ng-click="toggleEditForm(std)" ng-show="std.showOption && admin">
                         <i class="fa fa-pencil"></i>
                     </a>
                     <a class="btn pull-right btn-link btn-xs" data-toggle="modal" data-target="#uploadModal" ng-show="std.showOption && std.isPublished && admin">
@@ -19,12 +21,12 @@
                         <i class="fa fa-download"></i>
                     </a>
                 </li>
-                <li class="list-group-item" ng-show="admin">
-                    <a ng-click="showAddForm()"><i class="fa fa-plus fa-2x"></i></a>
+                <li ng-click="showAddForm()" class="list-group-item" ng-show="admin">
+                    <a><i class="fa fa-plus fa-2x"></i></a>
                 </li>
             </ul>
         </div>
-        <div class="col-md-8" ng-include="form.URL">
+        <div class="col-md-8" data-ng-include src="form.URL">
         </div>
     </div>
 </div>
