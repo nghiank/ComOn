@@ -162,17 +162,6 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['$scope','$locati
 	};
 
 	$scope.editStd = function(){
-		if($scope.valid.dat){
-				//upload the files to the existing std
-		}
-		if(!$scope.valid.dat){
-			if($scope.stdName){
-				//call schematics service to update name
-			}
-			if($scope.desc){
-				//call schematics service to update desc
-			}
-		}
 	};
 
 	
