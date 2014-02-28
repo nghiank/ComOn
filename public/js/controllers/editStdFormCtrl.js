@@ -3,14 +3,19 @@
 angular.module('ace.schematic').controller('editStdFormCtrl', ['$scope','$location', '$upload', 'DatParser', 'Global', '$modal', 'Schematics',function ($scope, $location, $upload, ParseDat, Global, $modal, Schematics) {
 	$scope.global = Global;
 	$scope.Parser = new ParseDat();
-	$scope.uploadDisabled = true;
-	$scope.validateDisabled = true;
 	$scope.httpMethod = 'POST';
-	$scope.error = [];
-	$scope.success = [];
-	$scope.valid = [];
-	$scope.desc = '';
+	$scope.error = {};
+	$scope.success = {};
+	$scope.valid = {'name':false,'json':false,'dat':false,'validation':false};
+	$scope.desc = null;
 	$scope.id = null;
+	$scope.uploadDisabled = true;
+
+	$scope.$watch('[valid,desc,stdName]',function(){
+		var part1 = !$scope.valid.dat && ((!$scope.stdName && $scope.desc) || $scope.stdName && $scope.valid.name);
+		var part2 = $scope.valid.name && $scope.valid.json && $scope.valid.dat && $scope.valid.validation;
+		$scope.uploadDisabled = !(part1 || part2);
+	});
 
 	$scope.abort = function(index) {
 		$scope.upload[index].abort();
@@ -40,8 +45,6 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['$scope','$locati
 	};
 
 	$scope.resetDAT = function() {
-		$scope.uploadDisabled = true;
-		$scope.validateDisabled = true;
 		$scope.valid.dat = false;
 		$scope.error.dat = null;
 		$scope.success.dat = null;
@@ -72,8 +75,6 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['$scope','$locati
 	};
 
 	$scope.resetJSON = function() {
-		$scope.uploadDisabled = true;
-		$scope.validateDisabled = true;
 		$scope.valid.json = false;
 		$scope.error.json = null;
 		$scope.success.json = null;
@@ -97,7 +98,6 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['$scope','$locati
 		}
 		if(data.length > 30) //Later check against all the other standard names too
 		{
-			$scope.uploadDisabled = true;
 			$scope.error.name = 'Invalid name.';
 			$scope.$apply();
 			return;
@@ -107,7 +107,8 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['$scope','$locati
 			if(stds){
 				console.log(stds);
 				for (var i = 0; i < stds.length; i++){
-					if($scope.stdName.localeCompare(stds[i].name) === 0){
+					if($scope.stdName.localeCompare(stds[i].name) === 0 && $scope.$parent.currentStd._id.localeCompare(stds[i]._id) !== 0){
+						console.log('wrong name');
 						$scope.valid.name = false;
 						$scope.error.name = 'This name already exists in database';
 						return;
@@ -116,7 +117,6 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['$scope','$locati
 			}
 			$scope.valid.name = true;
 			$scope.success.name = 'This is a valid name.';
-			$scope.uploadDisabled = true;
 		});
 
 		
@@ -131,10 +131,10 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['$scope','$locati
 				controller: 'ValidationController',
 			});
 			modalInstance.result.then(function(valid){
-				$scope.uploadDisabled = !valid;
+				$scope.valid.validation = valid;
 			});
 		}
-		$scope.uploadDisabled = true;
+		$scope.valid.validation = false;
 	};
 
 
@@ -160,6 +160,21 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['$scope','$locati
 			$scope.datProgress = parseInt(100.0 * evt.loaded / evt.total);
 		});
 	};
+
+	$scope.editStd = function(){
+		if($scope.valid.dat){
+				//upload the files to the existing std
+		}
+		if(!$scope.valid.dat){
+			if($scope.stdName){
+				//call schematics service to update name
+			}
+			if($scope.desc){
+				//call schematics service to update desc
+			}
+		}
+	};
+
 	
 	$scope.parseDatForStdName = function(){
 		var reader = new FileReader();
@@ -173,14 +188,5 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['$scope','$locati
 		reader.readAsText($scope.datFile);
 	};
 
-}]);
 
-angular.module('ace.schematic').controller('ValidationController', function($scope,$modal, $modalInstance){
-	$scope.valid = true;
-	$scope.ok = function(){
-		$modalInstance.close($scope.valid);
-	};
-	$scope.cancel = function(){
-		console.log('Cancel!');
-	};
-});
+}]);

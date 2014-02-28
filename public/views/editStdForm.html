@@ -1,15 +1,15 @@
 <section data-ng-controller="editStdFormCtrl">
     <!-- 2. ng-file-select | ng-file-select="options" -->
    <div class="panel panel-default" data-ng-show="global.user.isAdmin">
-    <div class="panel-heading">Edit Current standard</div>
+    <div class="panel-heading">Edit Current standard:</div>
     <div class="panel-body">
-    <form class="form-horizontal">
+    <form class="form-horizontal" name="editStdForm">
         <div class="form-group">
             <label class= "col-md-3 control-label">Standard Name: </label>
             <div class = "col-md-9">
                 <div class="input-group">
                 <span class="input-group-addon"><i ng-show = "valid.name" class="fa fa-check success" ></i></span>
-                <input type="text" class="form-control" ng-model="stdName" ng-blur="checkName()" placeholder={{currentStd.name}}>
+                <input type="text" class="form-control" ng-model="stdName" ng-blur="checkName()" placeholder={{currentStd.name}} ng-disabled="valid.dat">
                 </div>
                 <p data-ng-show="error.name" class="error">{{error.name}}</p>
             </div>
@@ -21,6 +21,9 @@
             </div>
         </div>  
         <hr> 
+        <div class="alert alert-info" ng-show="datFile">
+            <p>Note: by uploading a new .DAT File, you'll erase all existing structure of this standard in the database. This cannot be undone.</p>
+        </div>
         <div class="form-group">
             <label class= "col-md-3 control-label">.DAT File</label>
             <div class = "col-md-9">
@@ -49,8 +52,8 @@
             </div>
         <hr>            
         <div class="form-group pull-right" style="margin-right:5px">
-            <button type="button" ng-click="validate()" class="btn btn-default" ng-disabled="!(valid.dat && valid.json && valid.name)">Validate</button>
-            <button type="button" ng-disabled="uploadDisabled" class="btn btn-primary" ng-click="uploadFiles()">Edit</button>
+            <button type="button" ng-show="datFile" ng-click="validate()" class="btn btn-default" ng-disabled="!(valid.dat && valid.json && valid.name)">Validate</button>
+            <button type="button" ng-disabled="uploadDisabled" class="btn btn-primary" ng-click="editStd()">Edit</button>
         </div>
     </form>
 </div>

@@ -18,5 +18,4 @@ module.exports = function(app) {
     app.param('nodeId', schem.node);
 
     app.get('/api/getSchemStds', schem.getAllSchemStds);
-    app.get('/api/findSchemStd', schem.findSchemStd);
 };
