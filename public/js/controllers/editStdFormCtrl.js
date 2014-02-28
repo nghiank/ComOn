@@ -11,7 +11,7 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['$scope','$locati
 	$scope.id = null;
 	$scope.uploadDisabled = true;
 
-	$scope.$watch('[valid,desc,stdName]',function(){
+	$scope.$watchCollection('[valid.name,desc,valid.validation]',function(){
 		var part1 = !$scope.valid.dat && ((!$scope.stdName && $scope.desc) || $scope.stdName && $scope.valid.name);
 		var part2 = $scope.valid.name && $scope.valid.json && $scope.valid.dat && $scope.valid.validation;
 		$scope.uploadDisabled = !(part1 || part2);
@@ -162,6 +162,17 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['$scope','$locati
 	};
 
 	$scope.editStd = function(){
+		// if($scope.valid.dat){
+		// 		//upload the files to the existing std
+		// }
+		// if(!$scope.valid.dat){
+		// 	if($scope.stdName){
+		// 		//call schematics service to update name
+		// 	}
+		// 	if($scope.desc){
+		// 		//call schematics service to update desc
+		// 	}
+		// }
 	};
 
 	
