@@ -34,7 +34,7 @@ angular.module('ace').config(['$routeProvider',
         if (Global.authenticated === false) {
             var path = $location.$$path;
         // no logged user, can still browse the schematics
-            if (path === '/' || path === '/standards') {
+            if (path === '/' || path.substring(0, 10) === '/standards') {
                 return;
             } else {
                 // not going to #login, we should redirect now
