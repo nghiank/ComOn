@@ -127,7 +127,7 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['$scope','$locati
 		if(check.dat && check.name && check.json)
 		{
 			var modalInstance = $modal.open({
-				templateUrl: 'views/validationModal.html',
+				templateUrl: 'views/Schematics/validationModal.html',
 				controller: 'ValidationController',
 			});
 			modalInstance.result.then(function(valid){

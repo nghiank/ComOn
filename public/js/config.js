@@ -15,9 +15,6 @@ angular.module('ace').config(['$routeProvider',
         when('/profile', {
             templateUrl: 'views/profile.html'
         }).
-        when('/upload', {
-            templateUrl: 'views/upload.html'
-        }).
         when('/standards', {
             templateUrl: 'views/Schematics/all.html'
         }).

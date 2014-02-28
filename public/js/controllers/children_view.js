@@ -37,18 +37,5 @@ angular.module('ace.schematic')
 				$scope.leaves.push(children[i]);
 		}
 	};
-/*	$scope.addForm = false;
-
-	$scope.toggleAddForm = function () {
-		$scope.addForm = !$scope.addForm;
-		$scope.editForm = false;
-	};*/
-/*	$scope.editForm = false;
-
-	$scope.toggleEditForm = function () {
-		$scope.editForm = !$scope.editForm;
-		$scope.addForm = false;
-	};
-*/
 
 }]);
