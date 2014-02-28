@@ -180,20 +180,6 @@ exports.getAllSchemStds = function(req, res) {
 		});
 };
 
-exports.findSchemStd = function(req, res, _id) {
-	ComponentSchem
-		.find({
-			parentNode: null,
-			_id:_id
-		})
-		.populate('standard')
-		.exec(function(err, components) {
-            if (err)
-				return error.sendGenericError(res, 400, 'Error Encountered');
-			res.jsonp(components);
-		});
-};
-
 exports.node = function(req, res, next, id) {
     ComponentSchem
         .findOne({

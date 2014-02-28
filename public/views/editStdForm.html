@@ -51,9 +51,14 @@
                 </div>
             </div>
         <hr>            
-        <div class="form-group pull-right" style="margin-right:5px">
-            <button type="button" ng-show="datFile" ng-click="validate()" class="btn btn-default" ng-disabled="!(valid.dat && valid.json && valid.name)">Validate</button>
-            <button type="button" ng-disabled="uploadDisabled" class="btn btn-primary" ng-click="editStd()">Edit</button>
+        <div class="form-group" style="margin-right:5px">
+            <div class="col-md-3">
+                <button type="button" class="btn btn-danger">Delete</button>
+            </div>
+            <div class="pull-right">
+                <button type="button" ng-click="validate()" class="btn btn-default" ng-disabled="!(valid.dat && valid.json && valid.name)">Validate</button>
+                <button type="button" ng-disabled="uploadDisabled" class="btn btn-primary" ng-click="editStd()">Edit</button>
+            </div>
         </div>
     </form>
 </div>
