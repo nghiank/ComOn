@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ace.schematic').controller('UploadController', ['$scope','$location', '$upload', 'DatParser', 'Global', '$modal', 'Schematics', function ($scope, $location, $upload, ParseDat, Global, $modal, Schematics) {
+angular.module('ace.schematic').controller('UploadController', ['$scope', '$route', '$location', '$upload', 'DatParser', 'Global', '$modal', 'Schematics', function ($scope, $route, $location, $upload, ParseDat, Global, $modal, Schematics) {
 	$scope.global = Global;
 	$scope.Parser = new ParseDat();
 	$scope.uploadDisabled = true;
@@ -154,8 +154,12 @@ angular.module('ace.schematic').controller('UploadController', ['$scope','$locat
 		}).then(function(response) {
 			if(response)
 			{
-				$scope.uploadResult = response.data;
-				console.log('Uploaded!');
+				if(response.status === 200)
+				{
+					$scope.uploadResult = response.data;
+					console.log('Uploaded!');
+					$route.reload();
+				}
 			}
 		}, null, function(evt) {
 			$scope.datProgress = parseInt(100.0 * evt.loaded / evt.total);

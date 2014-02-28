@@ -105,6 +105,39 @@ var parseFiles = function(res, fields, files) {
 	populateSchematic(res, root, fields);
 };
 
+var deleteChildren = function(id) {
+	ComponentSchem
+		.findOne({_id: id})
+		.exec(function(err, component) {
+			if(err)
+				return console.log(err);
+			if(!component.parentNode)
+			{
+				StandardSchem
+					.findOne({name: component.name})
+					.exec(function(err, standard) {
+						if(err)
+							return console.log(err);
+						standard.remove();
+					});
+			}
+			if(component.isComposite)
+			{
+				ComponentSchem
+					.find({parentNode: component._id})
+					.exec(function(err, children) {
+						if (err) {
+							return console.log(err);
+						}
+						for (var i = children.length - 1; i >= 0; i--) {
+							deleteChildren(children[i]._id);
+						}
+					});
+			}
+			component.remove();
+		});
+};
+
 exports.receiveFiles = function(req, res) {
 	var form = new formidable.IncomingForm();
     return form.parse(req, function(err, fields, files) {
@@ -132,6 +165,14 @@ exports.getNodeChildren = function(req, res) {
 				return error.sendGenericError(res, 400, 'Error Encountered');
 			return res.jsonp({'children': components});
 		});
+};
+
+exports.delete = function(req, res) {
+	if(!req.node)
+	{
+		return error.sendGenericError(res, 400, 'Error Encountered');
+	}
+	deleteChildren(req.node._id);
 };
 
 exports.getParentHiearchy = function(req, res) {

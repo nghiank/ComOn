@@ -11,7 +11,7 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['$scope','$locati
 	$scope.id = null;
 	$scope.uploadDisabled = true;
 
-	$scope.$watch('[valid,desc,stdName]',function(){
+	$scope.$watchCollection('[valid,desc,stdName]',function(){
 		var part1 = !$scope.valid.dat && ((!$scope.stdName && $scope.desc) || $scope.stdName && $scope.valid.name);
 		var part2 = $scope.valid.name && $scope.valid.json && $scope.valid.dat && $scope.valid.validation;
 		$scope.uploadDisabled = !(part1 || part2);
