@@ -10,6 +10,10 @@ angular.module('ace.schematic').factory('Schematics', ['$resource', function($re
 							find:{method: 'GET', isArray: false}
 		}),
 		children:$resource('api/getChildren/:nodeId',
-							{nodeId: '@_id'})
+							{nodeId: '@_id'
+		}),
+		deleteNode:$resource('api/deleteNode/:nodeId',
+							{nodeId: '@_id'
+		})
 	};
 }]);

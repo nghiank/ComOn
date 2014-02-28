@@ -167,12 +167,13 @@ exports.getNodeChildren = function(req, res) {
 		});
 };
 
-exports.delete = function(req, res) {
+exports.deleteNode = function(req, res) {
 	if(!req.node)
 	{
 		return error.sendGenericError(res, 400, 'Error Encountered');
 	}
 	deleteChildren(req.node._id);
+	return res.send(200);
 };
 
 exports.getParentHiearchy = function(req, res) {
@@ -200,7 +201,6 @@ exports.getParentHiearchy = function(req, res) {
 			}
 			else
 			{
-				console.log('asdasda   ', list);
 				return res.jsonp({'parentHiearchy': list.reverse()});
 			}
 		});

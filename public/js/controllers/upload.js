@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ace.schematic').controller('UploadController', ['$scope', '$route', '$location', '$upload', 'DatParser', 'Global', '$modal', 'Schematics', function ($scope, $route, $location, $upload, ParseDat, Global, $modal, Schematics) {
+angular.module('ace.schematic').controller('UploadController', ['$timeout', '$scope', '$location', '$upload', 'DatParser', 'Global', '$modal', 'Schematics', function ($timeout, $scope, $location, $upload, ParseDat, Global, $modal, Schematics) {
 	$scope.global = Global;
 	$scope.Parser = new ParseDat();
 	$scope.uploadDisabled = true;
@@ -106,7 +106,6 @@ angular.module('ace.schematic').controller('UploadController', ['$scope', '$rout
 
 		Schematics.standardlist.query(function(stds) {
 			if(stds){
-				console.log(stds);
 				for (var i = 0; i < stds.length; i++){
 					if($scope.stdName.localeCompare(stds[i].name) === 0){
 						$scope.valid.name = false;
@@ -158,7 +157,7 @@ angular.module('ace.schematic').controller('UploadController', ['$scope', '$rout
 				{
 					$scope.uploadResult = response.data;
 					console.log('Uploaded!');
-					$route.reload();
+					$timeout($scope.getAll, 500);
 				}
 			}
 		}, null, function(evt) {

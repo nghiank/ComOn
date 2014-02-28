@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ace.schematic').controller('editStdFormCtrl', ['$scope','$location', '$upload', 'DatParser', 'Global', '$modal', 'Schematics',function ($scope, $location, $upload, ParseDat, Global, $modal, Schematics) {
+angular.module('ace.schematic').controller('editStdFormCtrl', ['$timeout', '$scope','$location', '$upload', 'DatParser', 'Global', '$modal', 'Schematics',function ($timeout, $scope, $location, $upload, ParseDat, Global, $modal, Schematics) {
 	$scope.global = Global;
 	$scope.Parser = new ParseDat();
 	$scope.httpMethod = 'POST';
@@ -164,7 +164,19 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['$scope','$locati
 	$scope.editStd = function(){
 	};
 
-	
+	$scope.delete = function() {
+		var id = $scope.currentStd._id;
+		if(!id)
+			return;
+		Schematics.deleteNode.get({nodeId: id}, function(response) {
+			if(response)
+			{
+				console.log('Deleted!');
+				$timeout($scope.getAll, 500);
+			}
+		});
+	};
+
 	$scope.parseDatForStdName = function(){
 		var reader = new FileReader();
 		reader.onload = function(){

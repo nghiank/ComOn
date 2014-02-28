@@ -22,6 +22,7 @@ angular.module('ace.schematic')
 		$scope.breadcrumbs.reset();
 		Schematics.standardlist.query(function(standards) {
 			$scope.stds = standards;
+			$scope.form = null;
 			for(var i = 0; i < standards.length; i++)
 			{
 				$scope.stds[i].showOption = false;
