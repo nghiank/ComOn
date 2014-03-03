@@ -7,7 +7,6 @@
 
 .container{
     height:90%;
-    overflow-y: hidden;
 }
 
 h1 {
@@ -105,4 +104,9 @@ footer p {
 .list-title-btn:hover
 {
     color:white;
+}
+
+img
+{
+    background: url('../img/loaders/loader-small.gif') no-repeat center;
 }

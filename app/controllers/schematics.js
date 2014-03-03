@@ -176,19 +176,6 @@ exports.delete = function(req, res) {
 	return res.send(200);
 };
 
-exports.editStd = function(req,res){
-	ComponentSchem
-		.find({
-			parentNode: null
-		})
-		.populate('standard')
-		.exec(function(err, components) {
-            if (err)
-				return error.sendGenericError(res, 400, 'Error Encountered');
-			return res.jsonp(components);
-		});
-};
-
 exports.getParentHiearchy = function(req, res) {
 	if(!req.node)
 	{
@@ -234,6 +221,9 @@ exports.getAllSchemStds = function(req, res) {
 		});
 };
 
+exports.editStd = function(req, res) {
+	res.send(200);
+};
 
 exports.node = function(req, res, next, id) {
     ComponentSchem
