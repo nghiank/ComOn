@@ -15,7 +15,7 @@ module.exports = function(app) {
 
     app.get('/api/getChildren/:nodeId', schem.getNodeChildren);
     app.get('/api/getParentHiearchy/:nodeId', schem.getParentHiearchy);
-    app.get('/api/deleteNode/:nodeId', authorization.requiresLogin , hasAuthorization, schem.deleteNode);
+    app.get('/api/delete/:nodeId', authorization.requiresLogin , hasAuthorization, schem.delete);
     app.param('nodeId', schem.node);
 
     app.get('/api/getSchemStds', schem.getAllSchemStds);
