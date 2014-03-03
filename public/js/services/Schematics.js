@@ -15,7 +15,9 @@ angular.module('ace.schematic').factory('Schematics', ['$resource', function($re
 		delete:$resource('api/delete/:nodeId',
 							{nodeId: '@_id'
 		}),
-		editStd:$resource('api/editStd/:nodeId',{name:'@_id'}
+		editComponent:$resource('api/editComponent',null
+		),
+		editStd:$resource('api/editStd',null
 		)
 	};
 }]);

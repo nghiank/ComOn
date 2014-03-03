@@ -203,7 +203,8 @@ angular.module('ace.schematic').controller('ValidationController', ['$scope', '$
 		$scope.messages = $scope.validator.messages();
 	};
 	$scope.init = function() {
-		$timeout($scope.startValidation, 3000);
+		$scope.valid = false;
+		$timeout($scope.startValidation, 1500);
 	};
 	$scope.valid = false;
 	$scope.ok = function(){

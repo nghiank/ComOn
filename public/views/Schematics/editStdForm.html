@@ -56,7 +56,7 @@
                 <button type="button" ng-click="delete()" class="btn btn-danger">Delete</button>
             </div>
             <div class="pull-right">
-                <button type="button" ng-click="validate()" class="btn btn-default" ng-disabled="!(valid.dat && valid.json && valid.name)">Validate</button>
+                <button type="button" ng-click="validate()" class="btn btn-default" ng-show="(valid.dat && valid.json && valid.name)">Validate</button>
                 <button type="button" ng-disabled="uploadDisabled" class="btn btn-primary" ng-click="editStd()">Edit</button>
             </div>
         </div>
