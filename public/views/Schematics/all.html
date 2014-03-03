@@ -8,8 +8,11 @@
   </ol>
     <div class="row">
         <div class="col-md-4">
+            <a class="list-group-item active">Standard List</a>
             <ul class="list-group listing">
-                <a class="list-group-item active" ng-show="stds">Standard List</a>
+                <li ng-click="showAddForm()" class="list-group-item" ng-show="admin">
+                    <a><i class="fa fa-plus fa-2x"></i></a>
+                </li>
                 <li class="list-group-item" ng-repeat="std in stds" ng-mouseenter = "toggleOption(std)" ng-mouseleave = "toggleOption(std)">
                     <a href="#!/standards/{{std._id}}">{{std.name}}</a>
                     <a class="btn pull-right btn-link btn-xs" ng-click="showEditForm(std)" ng-show="std.showOption && admin">
@@ -22,12 +25,10 @@
                         <i class="fa fa-download"></i>
                     </a>
                 </li>
-                <li ng-click="showAddForm()" class="list-group-item" ng-show="admin">
-                    <a><i class="fa fa-plus fa-2x"></i></a>
-                </li>
             </ul>
         </div>
         <div class="col-md-8" data-ng-include src="form.URL">
         </div>
     </div>
 </div>
+

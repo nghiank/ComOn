@@ -15,9 +15,6 @@ angular.module('ace').config(['$routeProvider',
         when('/profile', {
             templateUrl: 'views/profile.html'
         }).
-        when('/upload', {
-            templateUrl: 'views/upload.html'
-        }).
         when('/standards', {
             templateUrl: 'views/Schematics/all.html'
         }).
@@ -34,7 +31,7 @@ angular.module('ace').config(['$routeProvider',
         if (Global.authenticated === false) {
             var path = $location.$$path;
         // no logged user, can still browse the schematics
-            if (path === '/' || path === '/standards') {
+            if (path === '/' || path.substring(0, 10) === '/standards') {
                 return;
             } else {
                 // not going to #login, we should redirect now

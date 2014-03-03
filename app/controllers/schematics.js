@@ -105,6 +105,39 @@ var parseFiles = function(res, fields, files) {
 	populateSchematic(res, root, fields);
 };
 
+var deleteChildren = function(id) {
+	ComponentSchem
+		.findOne({_id: id})
+		.exec(function(err, component) {
+			if(err)
+				return console.log(err);
+			if(!component.parentNode)
+			{
+				StandardSchem
+					.findOne({name: component.name})
+					.exec(function(err, standard) {
+						if(err)
+							return console.log(err);
+						standard.remove();
+					});
+			}
+			if(component.isComposite)
+			{
+				ComponentSchem
+					.find({parentNode: component._id})
+					.exec(function(err, children) {
+						if (err) {
+							return console.log(err);
+						}
+						for (var i = children.length - 1; i >= 0; i--) {
+							deleteChildren(children[i]._id);
+						}
+					});
+			}
+			component.remove();
+		});
+};
+
 exports.receiveFiles = function(req, res) {
 	var form = new formidable.IncomingForm();
     return form.parse(req, function(err, fields, files) {
@@ -134,6 +167,28 @@ exports.getNodeChildren = function(req, res) {
 		});
 };
 
+exports.deleteNode = function(req, res) {
+	if(!req.node)
+	{
+		return error.sendGenericError(res, 400, 'Error Encountered');
+	}
+	deleteChildren(req.node._id);
+	return res.send(200);
+};
+
+exports.editStd = function(req,res){
+	ComponentSchem
+		.find({
+			parentNode: null
+		})
+		.populate('standard')
+		.exec(function(err, components) {
+            if (err)
+				return error.sendGenericError(res, 400, 'Error Encountered');
+			return res.jsonp(components);
+		});
+};
+
 exports.getParentHiearchy = function(req, res) {
 	if(!req.node)
 	{
@@ -159,7 +214,6 @@ exports.getParentHiearchy = function(req, res) {
 			}
 			else
 			{
-				console.log('asdasda   ', list);
 				return res.jsonp({'parentHiearchy': list.reverse()});
 			}
 		});
@@ -180,6 +234,7 @@ exports.getAllSchemStds = function(req, res) {
 		});
 };
 
+
 exports.node = function(req, res, next, id) {
     ComponentSchem
         .findOne({
@@ -195,3 +250,4 @@ exports.node = function(req, res, next, id) {
             next();
         });
 };
+

@@ -22,6 +22,7 @@ angular.module('ace.schematic')
 		$scope.breadcrumbs.reset();
 		Schematics.standardlist.query(function(standards) {
 			$scope.stds = standards;
+			$scope.form = null;
 			for(var i = 0; i < standards.length; i++)
 			{
 				$scope.stds[i].showOption = false;
@@ -29,7 +30,6 @@ angular.module('ace.schematic')
 		});
 	};
 	$scope.editForm = false;
-	
 	$scope.toggleOption = function (std) {
 		$scope.target = std;
 		return (std.showOption = !std.showOption);

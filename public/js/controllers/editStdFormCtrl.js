@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ace.schematic').controller('editStdFormCtrl', ['$scope','$location', '$upload', 'DatParser', 'Global', '$modal', 'Schematics',function ($scope, $location, $upload, ParseDat, Global, $modal, Schematics) {
+angular.module('ace.schematic').controller('editStdFormCtrl', ['$timeout', '$scope','$location', '$upload', 'DatParser', 'Global', '$modal', 'Schematics',function ($timeout, $scope, $location, $upload, ParseDat, Global, $modal, Schematics) {
 	$scope.global = Global;
 	$scope.Parser = new ParseDat();
 	$scope.httpMethod = 'POST';
@@ -12,9 +12,9 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['$scope','$locati
 	$scope.uploadDisabled = true;
 
 	$scope.$watchCollection('[valid.name,desc,valid.validation]',function(){
-		var part1 = !$scope.valid.dat && ((!$scope.stdName && $scope.desc) || $scope.stdName && $scope.valid.name);
-		var part2 = $scope.valid.name && $scope.valid.json && $scope.valid.dat && $scope.valid.validation;
-		$scope.uploadDisabled = !(part1 || part2);
+		$scope.editNameDescOnly = !$scope.valid.dat && ((!$scope.stdName && $scope.desc) || $scope.stdName && $scope.valid.name);
+		$scope.editdatFile = $scope.valid.name && $scope.valid.json && $scope.valid.dat && $scope.valid.validation;
+		$scope.uploadDisabled = !($scope.editNameDescOnly || $scope.editdatFile);
 	});
 
 	$scope.abort = function(index) {
@@ -127,7 +127,7 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['$scope','$locati
 		if(check.dat && check.name && check.json)
 		{
 			var modalInstance = $modal.open({
-				templateUrl: 'views/validationModal.html',
+				templateUrl: 'views/Schematics/validationModal.html',
 				controller: 'ValidationController',
 			});
 			modalInstance.result.then(function(valid){
@@ -160,7 +160,33 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['$scope','$locati
 			$scope.datProgress = parseInt(100.0 * evt.loaded / evt.total);
 		});
 	};
-	
+
+
+	$scope.editStd = function(){
+		if($scope.editNameDescOnly)
+			Schematics.editStd.get({name:$scope.currentStd.name},function(response){
+				if(response)
+				{
+					console.log('Name & desc updated!');
+					$timeout($scope.getAll,500);
+				}
+			});
+	};
+
+	$scope.delete = function() {
+		var id = $scope.currentStd._id;
+		if(!id)
+			return;
+		Schematics.deleteNode.get({nodeId: id}, function(response) {
+			if(response)
+			{
+				console.log('Deleted!');
+				$timeout($scope.getAll, 500);
+			}
+		});
+	};
+
+
 	$scope.parseDatForStdName = function(){
 		var reader = new FileReader();
 		reader.onload = function(){

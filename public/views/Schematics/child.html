@@ -8,8 +8,11 @@
   </ol>
     <div class="row">
         <div class="col-md-5">
-            <a class="list-group-item active" ng-show="subtypes">Sub-types</a>
+            <a class="list-group-item active">Sub-types</a>
             <ul class="list-group listing">
+                <li ng-click="showSubtypeAddForm()" class="list-group-item" ng-show="admin">
+                    <a><i class="fa fa-plus fa-2x"></i></a>
+                </li>
                 <li class="list-group-item" ng-repeat="child in subtypes" ng-mouseenter = "toggleOption(child)" ng-mouseleave = "toggleOption(child)">
                     <img ng-src="{{child.thumbnail}}" ng-show="child.thumbnail" style="margin-right:10px;">
                     <a href="#!/standards/{{child._id}}">{{child.name}}</a>
@@ -19,13 +22,13 @@
                     <a class="btn pull-right btn-link" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}" ng-show="child.showOption && child.isPublished && admin">
                         <i class="fa fa-cloud-upload"></i>
                     </a>
-                    <a class="btn pull-right btn-link" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}" ng-show="child.showOption" >
-                        <i class="fa fa-download"></i>
-                    </a>
                 </li>
             </ul>
-            <a class="list-group-item active" ng-show="leaves">Components</a>
+            <a class="list-group-item active">Components</a>
             <ul class="list-group listing">
+                <li ng-click="showLeafAddForm()" class="list-group-item" ng-show="admin">
+                    <a><i class="fa fa-plus fa-2x"></i></a>
+                </li>
                 <li class="list-group-item" ng-repeat="child in leaves" ng-mouseenter = "toggleOption(child)" ng-mouseleave = "toggleOption(child)">
                     <img ng-src='{{child.thumbnail}}' ng-show="child.thumbnail" style="margin-right:10px;">
                     {{child.name}}
@@ -35,7 +38,7 @@
                     <a class="btn pull-right btn-link" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}" ng-show="child.showOption && child.isPublished && admin">
                         <i class="fa fa-cloud-upload"></i>
                     </a>
-                    <a class="btn pull-right btn-link" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}" ng-show="child.showOption" >
+                    <a href="{{child.dl? child.dl: '#'}}" class="btn pull-right btn-link" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}" ng-show="child.showOption" >
                         <i class="fa fa-download"></i>
                     </a>
                 </li>

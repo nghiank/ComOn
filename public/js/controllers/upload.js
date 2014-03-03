@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ace.schematic').controller('UploadController', ['$scope','$location', '$upload', 'DatParser', 'Global', '$modal', 'Schematics', function ($scope, $location, $upload, ParseDat, Global, $modal, Schematics) {
+angular.module('ace.schematic').controller('UploadController', ['$timeout', '$scope', '$location', '$upload', 'DatParser', 'Global', '$modal', 'Schematics', function ($timeout, $scope, $location, $upload, ParseDat, Global, $modal, Schematics) {
 	$scope.global = Global;
 	$scope.Parser = new ParseDat();
 	$scope.uploadDisabled = true;
@@ -106,7 +106,6 @@ angular.module('ace.schematic').controller('UploadController', ['$scope','$locat
 
 		Schematics.standardlist.query(function(stds) {
 			if(stds){
-				console.log(stds);
 				for (var i = 0; i < stds.length; i++){
 					if($scope.stdName.localeCompare(stds[i].name) === 0){
 						$scope.valid.name = false;
@@ -128,7 +127,7 @@ angular.module('ace.schematic').controller('UploadController', ['$scope','$locat
 		if(check.dat && check.name && check.json)
 		{
 			var modalInstance = $modal.open({
-				templateUrl: 'views/validationModal.html',
+				templateUrl: 'views/Schematics/validationModal.html',
 				controller: 'ValidationController',
 			});
 			modalInstance.result.then(function(valid){
@@ -154,8 +153,12 @@ angular.module('ace.schematic').controller('UploadController', ['$scope','$locat
 		}).then(function(response) {
 			if(response)
 			{
-				$scope.uploadResult = response.data;
-				console.log('Uploaded!');
+				if(response.status === 200)
+				{
+					$scope.uploadResult = response.data;
+					console.log('Uploaded!');
+					$timeout($scope.getAll, 500);
+				}
 			}
 		}, null, function(evt) {
 			$scope.datProgress = parseInt(100.0 * evt.loaded / evt.total);
@@ -176,12 +179,12 @@ angular.module('ace.schematic').controller('UploadController', ['$scope','$locat
 
 }]);
 
-angular.module('ace.schematic').controller('ValidationController', function($scope,$modal, $modalInstance){
+angular.module('ace.schematic').controller('ValidationController', function($scope, $modalInstance){
 	$scope.valid = true;
 	$scope.ok = function(){
 		$modalInstance.close($scope.valid);
 	};
 	$scope.cancel = function(){
-		$modalInstance.dismiss('cancel');
+		$modalInstance.dismiss('Cancelled by User');
 	};
 });
