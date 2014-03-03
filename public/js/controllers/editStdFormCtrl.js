@@ -13,8 +13,8 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['$timeout', '$sco
 
 	$scope.$watchCollection('[valid.name,desc,valid.validation]',function(){
 		$scope.editNameDescOnly = !$scope.valid.dat && ((!$scope.stdName && $scope.desc) || $scope.stdName && $scope.valid.name);
-		$scope.editdatFile = $scope.valid.name && $scope.valid.json && $scope.valid.dat && $scope.valid.validation;
-		$scope.uploadDisabled = !($scope.editNameDescOnly || $scope.editdatFile);
+		$scope.editDatFile = $scope.valid.name && $scope.valid.json && $scope.valid.dat && $scope.valid.validation;
+		$scope.uploadDisabled = !($scope.editNameDescOnly || $scope.editDatFile);
 	});
 
 	$scope.abort = function(index) {
@@ -72,6 +72,7 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['$timeout', '$sco
 		$scope.success.json = 'A valid json file.';
 		$scope.valid.json = true;
 		$scope.jsonFile = $files[0];
+		$scope.parseJsonFile();
 	};
 
 	$scope.resetJSON = function() {
@@ -129,7 +130,12 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['$timeout', '$sco
 			var modalInstance = $modal.open({
 				templateUrl: 'views/Schematics/validationModal.html',
 				controller: 'ValidationController',
-				backdrop: 'static'
+				backdrop: 'static',
+				resolve: {
+					items: function() {
+						return ({'dat': $scope.datObject, 'json': $scope.jsonText});
+					}
+				}
 			});
 			modalInstance.result.then(function(valid){
 				$scope.valid.validation = valid;
@@ -156,6 +162,7 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['$timeout', '$sco
 			{
 				$scope.uploadResult = response.data;
 				console.log('Uploaded!');
+				$timeout($scope.getAll, 500);
 			}
 		}, null, function(evt) {
 			$scope.datProgress = parseInt(100.0 * evt.loaded / evt.total);
@@ -165,13 +172,27 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['$timeout', '$sco
 
 	$scope.editStd = function(){
 		if($scope.editNameDescOnly)
-			Schematics.editStd.get({nodeId:$scope.currentStd._id}, function(response){
+			Schematics.editStd.save({standardId:$scope.currentStd.standard._id, stdName:$scope.stdName, desc: $scope.desc}, function(response){
 				if(response)
 				{
-					console.log('Name & desc updated!');
-					$timeout($scope.getAll,500);
+					console.log('standard updated!');
+					$scope.currentStd.name = $scope.stdName;
+					Schematics.editComponent.save({node:$scope.currentStd}, function(response){
+						if(response){
+							console.log('component updated!');
+							$timeout($scope.getAll,500);
+						}
+					});
 				}
 			});
+		if($scope.editDatFile){
+			Schematics.delete.get({nodeId: $scope.currentStd._id}, function(response){
+				if(response){
+					console.log('deleted & re-uploading');
+					$scope.uploadFiles();
+				}
+			});
+		}
 	};
 
 	$scope.delete = function() {
@@ -195,9 +216,18 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['$timeout', '$sco
 			$scope.Parser.generateSubMenuHierachy();
 			//MO is the node for the name of the standard.
 			$scope.stdName = $scope.Parser.rootNode.title;
+			$scope.datObject = $scope.Parser.rootNode;
 			$scope.checkName();
 		};
 		reader.readAsText($scope.datFile);
+	};
+
+	$scope.parseJsonFile = function(){
+		var reader = new FileReader();
+		reader.onload = function(){
+			$scope.jsonText = reader.result;
+		};
+		reader.readAsText($scope.jsonFile);
 	};
 
 }]);

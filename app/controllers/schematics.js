@@ -9,6 +9,7 @@ var error = require('../utils/error');
 var formidable = require('formidable');
 var fs = require('fs');
 var g_mapping;
+var _ = require('underscore');
 
 var populateComponents;
 
@@ -177,16 +178,35 @@ exports.delete = function(req, res) {
 };
 
 exports.editStd = function(req,res){
+	if(!req.body.standardId)
+	{
+		return error.sendGenericError(res, 400, 'Error Encountered');
+	}
+	var standard = {name:req.body.stdName, description: req.body.desc};
+	StandardSchem
+	.update({_id:req.body.standardId}, standard, function(err){
+		if(err) return error.sendGenericError(res, 400, 'Error Encountered');
+		return res.jsonp(standard);
+	});
+};
+
+exports.editComponent = function(req, res){
+	if(!req.body.node)
+	{
+		return error.sendGenericError(res, 400, 'Error Encountered');
+	}
+	var component = req.body.node;
+	component.standard = req.body.node.standard._id;
 	ComponentSchem
-		.find({
-			parentNode: null
-		})
-		.populate('standard')
-		.exec(function(err, components) {
-            if (err)
-				return error.sendGenericError(res, 400, 'Error Encountered');
-			return res.jsonp(components);
+	.findOne({_id: req.body.node._id}, function(err, fetchedComponent){
+		if(err) console.log(err);
+		if(err) return error.sendGenericError(res, 400, 'Error Encountered');
+		_.extend(fetchedComponent, component);
+		fetchedComponent.save(function(err) {
+			if(err) return error.sendGenericError(res, 400, 'Error Encountered');
+			return res.jsonp(fetchedComponent);
 		});
+	});
 };
 
 exports.getParentHiearchy = function(req, res) {
