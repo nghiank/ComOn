@@ -7,28 +7,26 @@
       <span ng-show="$last">{{breadcrumb.title}}</span></li>
   </ol>
     <div class="row">
-        <div class="col-md-5">
-            <a class="list-group-item active">Sub-types</a>
-            <ul class="list-group listing">
-                <li ng-click="showSubtypeAddForm()" class="list-group-item" ng-show="admin">
-                    <a><i class="fa fa-plus fa-2x"></i></a>
-                </li>
-                <li class="list-group-item" ng-repeat="child in subtypes" ng-mouseenter = "toggleOption(child)" ng-mouseleave = "toggleOption(child)">
-                    <img ng-src="{{child.thumbnail}}" ng-show="child.thumbnail" style="margin-right:10px;">
-                    <a href="#!/standards/{{child._id}}">{{child.name}}</a>
-                    <a class="btn pull-right btn-link" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}" ng-click="toggleEditForm(child)" ng-show="child.showOption && admin">
-                        <i class="fa fa-pencil"></i>
-                    </a>
-                    <a class="btn pull-right btn-link" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}" ng-show="child.showOption && child.isPublished && admin">
-                        <i class="fa fa-cloud-upload"></i>
-                    </a>
-                </li>
+        <div class="col-md-6">
+            <ul class="list-group">
+                <div class="list-group-item list-title">Groups<a class="pull-right list-title-btn" ng-show="admin" ng-click="showSubtypeAddForm()"><i class="fa fa-plus fa-2x"></i></a></div> 
+                    <li class="list-group-item" ng-show="subtypes.length == 0">No group at this level.</li>          
+                    <li class="list-group-item" ng-repeat="child in subtypes" ng-mouseenter = "toggleOption(child)" ng-mouseleave = "toggleOption(child)">
+                        <img ng-src="{{child.thumbnail}}" ng-show="child.thumbnail" style="margin-right:10px;">
+                        <a href="#!/standards/{{child._id}}">{{child.name}}</a>
+                        <a class="btn pull-right btn-link" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}" ng-click="toggleEditForm(child)" ng-show="child.showOption && admin">
+                            <i class="fa fa-pencil"></i>
+                        </a>
+                        <a class="btn pull-right btn-link" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}" ng-show="child.showOption && child.isPublished && admin">
+                            <i class="fa fa-cloud-upload"></i>
+                        </a>
+                    </li>
             </ul>
-            <a class="list-group-item active">Components</a>
-            <ul class="list-group listing">
-                <li ng-click="showLeafAddForm()" class="list-group-item" ng-show="admin">
-                    <a><i class="fa fa-plus fa-2x"></i></a>
-                </li>
+        </div>
+        <div class="col-md-6">
+             <ul class="list-group">
+                <div class="list-group-item list-title">Components<a class="pull-right list-title-btn" ng-show="admin" ng-click="showLeafAddForm()"><i class="fa fa-plus fa-2x"></i></a></div>
+                 <li class="list-group-item" ng-show="leaves.length == 0">No components at this level.</li>          
                 <li class="list-group-item" ng-repeat="child in leaves" ng-mouseenter = "toggleOption(child)" ng-mouseleave = "toggleOption(child)">
                     <img ng-src='{{child.thumbnail}}' ng-show="child.thumbnail" style="margin-right:10px;">
                     {{child.name}}

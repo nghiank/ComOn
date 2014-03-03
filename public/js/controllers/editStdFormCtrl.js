@@ -165,7 +165,7 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['$timeout', '$sco
 
 	$scope.editStd = function(){
 		if($scope.editNameDescOnly)
-			Schematics.editStd.get({nodeId:$scope.currentStd._id}},function(response){
+			Schematics.editStd.get({nodeId:$scope.currentStd._id}, function(response){
 				if(response)
 				{
 					console.log('Name & desc updated!');

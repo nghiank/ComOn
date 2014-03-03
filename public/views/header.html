@@ -5,6 +5,9 @@
                 <li>
                     <a onclick="_gaq.push(['_trackEvent', 'Home', 'clicked'])" class="navbar-brand" href="/">AutoCAD Electrical</a>
                 </li>
+                <li data-ng-repeat="item in menu" ui-route="/{{item.link}}[a-z0-9/]*" ng-class="{active: $uiRoute}">
+                    <a href="#!/{{item.link}}">{{item.title}}</a>
+                </li>
             </ul>
             <ul class="navbar-nav nav pull-right" data-ng-hide="global.authenticated">
                 <li><a href="/auth/oauth">Log in</a>
@@ -21,15 +24,6 @@
                         </li>
                     </ul>
                 </li>
-            </ul>
-        </div>
-    </div>
-    <div class="navbar navbar-inverse navbar-fixed-top navbar-second" role="navigation">
-        <div class="container">
-            <ul class="nav navbar-nav">
-            <li data-ng-repeat="item in menu" ui-route="/{{item.link}}[a-z0-9/]*" ng-class="{active: $uiRoute}">
-                <a href="#!/{{item.link}}">{{item.title}}</a>
-            </li>
             </ul>
         </div>
     </div>

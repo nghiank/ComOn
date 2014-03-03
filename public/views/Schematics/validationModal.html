@@ -2,7 +2,7 @@
     <div class="modal-header">Performing Link Verification -</div>
     <div class="modal-body">
         <p>Log</p>
-        <div class="well listing validation-box">
+        <div scroll-glue class="well listing validation-box">
             <ul ng-repeat="msg in messages" ng-class="{'{{msg.type}}': true}">{{msg.info}}</ul>
         </div>
         <button class="btn btn-default" ng-click="cancel()">Cancel</button>

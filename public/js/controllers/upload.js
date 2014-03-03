@@ -197,6 +197,7 @@ angular.module('ace.schematic').controller('UploadController', ['$timeout', '$sc
 
 angular.module('ace.schematic').controller('ValidationController', ['$scope', '$timeout', '$modalInstance', 'ValidationService', 'items',function($scope, $timeout, $modalInstance, ValidationService, items){
 	$scope.validator = ValidationService;
+	$scope.valid = false;
 	$scope.startValidation = function() {
 		$scope.validator.validateLinks(items.dat, items.json);
 		$scope.messages = $scope.validator.messages();

@@ -1,5 +1,5 @@
 .content {
-    margin-top:110px;
+    margin-top:50px;
     width:100%;
     max-height: 90%;
     overflow-y:hidden;
@@ -52,14 +52,6 @@ footer p {
     background-color:#F9F9F9;
 }
 
-.navbar-second
-{
-    z-index: -1;
-    margin-top:50px;
-    font-size:13px;
-    position:fixed;
-    background-color:#111111;
-}
 
 .list-group-item:hover
 {
@@ -91,4 +83,26 @@ footer p {
 .center-result
 {
     margin-left: 15px;
+}
+
+.list-title {
+    padding-top: 15px;
+    padding-bottom: 15px;
+    background-color: #428bca;
+    color: white;
+}
+
+.list-title:hover{
+    background-color: #428bca;
+}
+
+.list-title-btn
+{
+    margin-top: -3px;
+    color:#f5f5f5;
+}
+
+.list-title-btn:hover
+{
+    color:white;
 }
