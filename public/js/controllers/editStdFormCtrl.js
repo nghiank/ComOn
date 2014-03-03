@@ -160,21 +160,6 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['$scope','$locati
 			$scope.datProgress = parseInt(100.0 * evt.loaded / evt.total);
 		});
 	};
-
-	$scope.editStd = function(){
-		// if($scope.valid.dat){
-		// 		//upload the files to the existing std
-		// }
-		// if(!$scope.valid.dat){
-		// 	if($scope.stdName){
-		// 		//call schematics service to update name
-		// 	}
-		// 	if($scope.desc){
-		// 		//call schematics service to update desc
-		// 	}
-		// }
-	};
-
 	
 	$scope.parseDatForStdName = function(){
 		var reader = new FileReader();
