@@ -57,6 +57,7 @@ var validatingAuthorizationHeader = function(req,res,next)
 				user.save(function(err) {
 					if (err)
 						return error.sendUnauthorizedError(res);
+					req.user = user;
 					return next();
 				});
 			} else {
@@ -64,6 +65,7 @@ var validatingAuthorizationHeader = function(req,res,next)
 				user.save(function (err) {
 					if (err)
 						return error.sendUnauthorizedError(res);
+					req.user = user;
 					return next();
 				});
 			}

@@ -167,7 +167,7 @@ exports.getNodeChildren = function(req, res) {
 		});
 };
 
-exports.deleteNode = function(req, res) {
+exports.delete = function(req, res) {
 	if(!req.node)
 	{
 		return error.sendGenericError(res, 400, 'Error Encountered');

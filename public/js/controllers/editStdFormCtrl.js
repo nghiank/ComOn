@@ -129,6 +129,7 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['$timeout', '$sco
 			var modalInstance = $modal.open({
 				templateUrl: 'views/Schematics/validationModal.html',
 				controller: 'ValidationController',
+				backdrop: 'static'
 			});
 			modalInstance.result.then(function(valid){
 				$scope.valid.validation = valid;
@@ -164,7 +165,7 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['$timeout', '$sco
 
 	$scope.editStd = function(){
 		if($scope.editNameDescOnly)
-			Schematics.editStd.get({name:$scope.currentStd.name},function(response){
+			Schematics.editStd.get({nodeId:$scope.currentStd._id}},function(response){
 				if(response)
 				{
 					console.log('Name & desc updated!');
@@ -177,7 +178,7 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['$timeout', '$sco
 		var id = $scope.currentStd._id;
 		if(!id)
 			return;
-		Schematics.deleteNode.get({nodeId: id}, function(response) {
+		Schematics.delete.get({nodeId: id}, function(response) {
 			if(response)
 			{
 				console.log('Deleted!');
@@ -198,6 +199,5 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['$timeout', '$sco
 		};
 		reader.readAsText($scope.datFile);
 	};
-
 
 }]);

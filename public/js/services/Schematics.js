@@ -12,10 +12,10 @@ angular.module('ace.schematic').factory('Schematics', ['$resource', function($re
 		children:$resource('api/getChildren/:nodeId',
 							{nodeId: '@_id'
 		}),
-		deleteNode:$resource('api/deleteNode/:nodeId',
+		delete:$resource('api/delete/:nodeId',
 							{nodeId: '@_id'
 		}),
-		editStd:$resource('api/editStd/:name',{name:'@name'}
+		editStd:$resource('api/editStd/:nodeId',{name:'@_id'}
 		)
 	};
 }]);

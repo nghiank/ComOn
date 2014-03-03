@@ -70,6 +70,7 @@ angular.module('ace.schematic').controller('UploadController', ['$timeout', '$sc
 		$scope.success.json = 'A valid json file.';
 		$scope.valid.json = true;
 		$scope.jsonFile = $files[0];
+		$scope.parseJsonFile();
 	};
 
 	$scope.resetJSON = function() {
@@ -129,6 +130,12 @@ angular.module('ace.schematic').controller('UploadController', ['$timeout', '$sc
 			var modalInstance = $modal.open({
 				templateUrl: 'views/Schematics/validationModal.html',
 				controller: 'ValidationController',
+				backdrop: 'static',
+				resolve: {
+					items: function() {
+						return ({'dat': $scope.datObject, 'json': $scope.jsonText});
+					}
+				}
 			});
 			modalInstance.result.then(function(valid){
 				$scope.uploadDisabled = !valid;
@@ -172,19 +179,37 @@ angular.module('ace.schematic').controller('UploadController', ['$timeout', '$sc
 			$scope.Parser.generateSubMenuHierachy();
 			//MO is the node for the name of the standard.
 			$scope.stdName = $scope.Parser.rootNode.title;
+			$scope.datObject = $scope.Parser.rootNode;
 			$scope.checkName();
 		};
 		reader.readAsText($scope.datFile);
 	};
 
+	$scope.parseJsonFile = function(){
+		var reader = new FileReader();
+		reader.onload = function(){
+			$scope.jsonText = reader.result;
+		};
+		reader.readAsText($scope.jsonFile);
+	};
+
 }]);
 
-angular.module('ace.schematic').controller('ValidationController', function($scope, $modalInstance){
-	$scope.valid = true;
+angular.module('ace.schematic').controller('ValidationController', ['$scope', '$timeout', '$modalInstance', 'ValidationService', 'items',function($scope, $timeout, $modalInstance, ValidationService, items){
+	$scope.validator = ValidationService;
+	$scope.startValidation = function() {
+		$scope.validator.validateLinks(items.dat, items.json);
+		$scope.messages = $scope.validator.messages();
+	};
+	$scope.init = function() {
+		$timeout($scope.startValidation, 3000);
+	};
+	$scope.valid = false;
 	$scope.ok = function(){
+		$scope.valid = $scope.validator.result();
 		$modalInstance.close($scope.valid);
 	};
 	$scope.cancel = function(){
 		$modalInstance.dismiss('Cancelled by User');
 	};
-});
+}]);

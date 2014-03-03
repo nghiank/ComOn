@@ -75,3 +75,20 @@ footer p {
 {
     color:red;
 }
+
+.info
+{
+    color: black;
+}
+
+.validation-box 
+{
+    padding-left: 0px;
+    line-height: 0.5em;
+    font-size: 10px;
+}
+
+.center-result
+{
+    margin-left: 15px;
+}
