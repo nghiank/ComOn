@@ -183,6 +183,8 @@ angular.module('ace.schematic').factory('ValidationService', ['$http', function(
 			g_messages = [];
 			dlList = [];
 			thumbnailList = [];
+			g_result = false;
+			status = true;
 			g_messages.push({'type': 'info', 'info': 'Starting validation.....'});
 			g_messages.push({'type': 'info', 'info': 'Finding Download Links and Thumbnails.....'});
 			populateDlAndThumbnail(data, JSON.parse(mapping), startDownloadCheck);

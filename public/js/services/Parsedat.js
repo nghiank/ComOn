@@ -85,13 +85,13 @@ angular.module('ace.system').factory('DatParser', ['_', function (_) {
 				* we ignore $C = xxx
 				* $S = and component are taken care of
 				*/
-				if (split[2].indexOf(ParserDat.SubMenuCommand) === 0)
+				if (split[2].toUpperCase().indexOf(ParserDat.SubMenuCommand) === 0)
 					continue;
 				var subSubMenuRef = {
 						description: split[0],
 						thumbnail: split[1]
 					};
-				if (split[2].indexOf(ParserDat.SubMenuRefTo) === 0) {
+				if (split[2].toUpperCase().indexOf(ParserDat.SubMenuRefTo) === 0) {
 					subSubMenuRef.isComponent = false;
 					//extract the num in $S=<num> 
 					subSubMenuRef.subMenuRef = split[2].substr(3);
@@ -125,7 +125,7 @@ angular.module('ace.system').factory('DatParser', ['_', function (_) {
 			return ParserDat.ErrorCode.SUCCESS;
 		};
 		ParserDat.prototype._readSubMenuMapNode = function (subMenuId, subMenuIdName, subMenuThumbnail) {
-			var node = this.subMenuMap[subMenuId];
+			var node = this.subMenuMap[subMenuId.toUpperCase()];
 			if (typeof node === 'undefined') {
 				throw new Error('Node ' + subMenuId + ' is not found');
 			}

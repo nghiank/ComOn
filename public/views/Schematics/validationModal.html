@@ -6,6 +6,6 @@
             <ul ng-repeat="msg in messages" ng-class="{'{{msg.type}}': true}">{{msg.info}}</ul>
         </div>
         <button class="btn btn-default" ng-click="cancel()">Cancel</button>
-        <button class="btn btn-primary" ng-show="validator.result()" ng-click="ok()">Done</button>
+        <button class="btn btn-primary" ng-show="result()" ng-click="ok()">Done</button>
     </div>
 </div>
