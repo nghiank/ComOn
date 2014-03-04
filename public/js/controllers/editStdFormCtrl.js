@@ -175,13 +175,8 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['$timeout', '$sco
 				if(response)
 				{
 					console.log('standard updated!');
+					$timeout($scope.getAll,500);
 					$scope.currentStd.name = $scope.stdName;
-					Schematics.editComponent.save({node:$scope.currentStd}, function(response){
-						if(response){
-							console.log('component updated!');
-							$timeout($scope.getAll,500);
-						}
-					});
 				}
 			});
 		if($scope.editDatFile){

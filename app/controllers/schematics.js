@@ -88,7 +88,7 @@ var populateSchematic = function(res, root, fields) {
 		}
 		var standardId = standard._id;
 		populateComponents([root], null, standardId);
-		return res.send(200);
+		res.send(200);
 	});
 };
 
@@ -112,6 +112,8 @@ var deleteChildren = function(id) {
 		.exec(function(err, component) {
 			if(err)
 				return console.log(err);
+			if(!component)
+				return console.log(new Error('Not found'));
 			if(!component.parentNode)
 			{
 				StandardSchem
@@ -119,6 +121,8 @@ var deleteChildren = function(id) {
 					.exec(function(err, standard) {
 						if(err)
 							return console.log(err);
+						if(!standard)
+							return console.log(new Error('Not found'));
 						standard.remove();
 					});
 			}
@@ -174,7 +178,7 @@ exports.delete = function(req, res) {
 		return error.sendGenericError(res, 400, 'Error Encountered');
 	}
 	deleteChildren(req.node._id);
-	return res.send(200);
+	res.send(200);
 };
 
 exports.editStd = function(req,res){
@@ -183,34 +187,73 @@ exports.editStd = function(req,res){
 		return error.sendGenericError(res, 400, 'Error Encountered');
 	}
 	var standard = {};
-	console.log(req.body);
 	if (req.body.hasOwnProperty('stdName'))
 		standard.name = req.body.stdName;
 	if (req.body.hasOwnProperty('desc'))
 		standard.description = req.body.desc;
 	StandardSchem
-	.update({_id:req.body.standardId}, standard, function(err){
-		console.log('in editStd');
-		console.log(standard);
-		if(err) return error.sendGenericError(res, 400, 'Error Encountered');
-		return res.jsonp(standard);
+	.findOne({_id: req.body.standardId}, function(err, fetchedStandard){
+		if(err)
+			return error.sendGenericError(res, 400, 'Error Encountered');
+		if(!fetchedStandard)
+			return error.sendGenericError(res, 400, 'Error Encountered');
+		_.extend(fetchedStandard, standard);
+		fetchedStandard.save(function(err) {
+			if(err)
+				return error.sendGenericError(res, 400, 'Error Encountered');
+			if(standard.name)
+			{
+				ComponentSchem.findOne({standard: req.body.standardId, parentNode: null}, function(err, component) {
+					if(err)
+						return error.sendGenericError(res, 400, 'Error Encountered');
+					if(!component)
+						return error.sendGenericError(res, 400, 'Error Encountered');
+					component.name = standard.name;
+					component.save(function(err) {
+						if(err)
+							return console.log(err);
+						return res.jsonp(fetchedStandard);
+					});
+				});
+			}
+			else
+				return res.jsonp(fetchedStandard);
+		});
 	});
 };
 
 exports.editComponent = function(req, res){
-	if(!req.body.node)
+	if(!req.body.node || !req.body.node._id)
 	{
 		return error.sendGenericError(res, 400, 'Error Encountered');
 	}
 	var component = req.body.node;
-	component.standard = req.body.node.standard._id;
 	ComponentSchem
 	.findOne({_id: req.body.node._id}, function(err, fetchedComponent){
-		if(err) console.log(err);
-		if(err) return error.sendGenericError(res, 400, 'Error Encountered');
+		if(err)
+			return error.sendGenericError(res, 400, 'Error Encountered');
+		if(!fetchedComponent)
+			return error.sendGenericError(res, 400, 'Error Encountered');
+		var old_name = fetchedComponent.name;
 		_.extend(fetchedComponent, component);
 		fetchedComponent.save(function(err) {
-			if(err) return error.sendGenericError(res, 400, 'Error Encountered');
+			if(err)
+				return error.sendGenericError(res, 400, 'Error Encountered1');
+			if(!fetchedComponent.parentNode && component.name)
+			{
+				return StandardSchem.findOne({name: old_name}, function(err, standard) {
+					if(err)
+						return error.sendGenericError(res, 400, 'Error Encountered');
+					if(!standard)
+						return error.sendGenericError(res, 400, 'Error Encountered');
+					standard.name = component.name;
+					standard.save(function(err) {
+						if(err)
+							return error.sendGenericError(res, 400, 'Error Encountered');
+						return res.jsonp(fetchedComponent);
+					});
+				});
+			}
 			return res.jsonp(fetchedComponent);
 		});
 	});

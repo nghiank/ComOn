@@ -20,7 +20,7 @@ describe('<Unit Test>', function() {
 
 			before(function(done) {
 				StandardSchem.remove().exec();
-				
+				ComponentSchem.remove().exec();
 				standard = new StandardSchem({
 					name: 'JIC',
 					description: 'abcd'
@@ -133,8 +133,8 @@ describe('<Unit Test>', function() {
 		});
 
 		after(function(done) {
-			ComponentSchem.remove({}).exec();
-			StandardSchem.remove({}).exec();
+			ComponentSchem.remove().exec();
+			StandardSchem.remove().exec();
 			done();
 		});
 	});
