@@ -7,7 +7,6 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['$timeout', '$sco
 	$scope.error = {};
 	$scope.success = {};
 	$scope.valid = {'name':false,'json':false,'dat':false,'validation':false};
-	$scope.desc = null;
 	$scope.id = null;
 	$scope.uploadDisabled = true;
 
@@ -196,10 +195,9 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['$timeout', '$sco
 	};
 
 	$scope.delete = function() {
-		var id = $scope.currentStd._id;
-		if(!id)
+		if(!$scope.currentStd._id)
 			return;
-		Schematics.delete.get({nodeId: id}, function(response) {
+		Schematics.delete.get({nodeId: $scope.currentStd._id}, function(response) {
 			if(response)
 			{
 				console.log('Deleted!');
@@ -214,7 +212,6 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['$timeout', '$sco
 		reader.onload = function(){
 			$scope.Parser.parse(reader.result);
 			$scope.Parser.generateSubMenuHierachy();
-			//MO is the node for the name of the standard.
 			$scope.stdName = $scope.Parser.rootNode.title;
 			$scope.datObject = $scope.Parser.rootNode;
 			$scope.checkName();

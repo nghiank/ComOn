@@ -15,22 +15,22 @@ var component, component2;
 
 describe('<Unit Test>', function() {
 	describe('Model Schematic Library:', function() {
-		before(function(done) {
-			StandardSchem.remove().exec();
-			
-			standard = new StandardSchem({
-				name: 'JIC',
-				description: 'abcd'
-			});
-			standard2 = new StandardSchem({
-				name: 'JIC',
-				description: 'abcd'
-			});
-			done();
-		});
 
 		describe('Standard Methods', function() {
-
+			
+			before(function(done) {
+				StandardSchem.remove().exec();
+				
+				standard = new StandardSchem({
+					name: 'JIC',
+					description: 'abcd'
+				});
+				standard2 = new StandardSchem({
+					name: 'JIC',
+					description: 'abcd'
+				});
+				done();
+			});
 			it('should begin with no standards', function(done) {
 				StandardSchem.find({}, function(err, standards) {
 					(standards).should.have.length(0);

@@ -1,11 +1,11 @@
-<section data-ng-controller="editStdFormCtrl">
+<section data-ng-controller="editCompFormCtrl">
     <!-- 2. ng-file-select | ng-file-select="options" -->
    <div class="panel panel-default" data-ng-show="global.user.isAdmin">
-    <div class="panel-heading">Edit Current standard:</div>
+    <div class="panel-heading">Edit Current Component:</div>
     <div class="panel-body">
     <form class="form-horizontal" name="editStdForm">
         <div class="form-group">
-            <label class= "col-md-3 control-label">Standard Name: </label>
+            <label class= "col-md-3 control-label">Component Name: </label>
             <div class = "col-md-9">
                 <div class="input-group">
                 <span class="input-group-addon"><i ng-show = "valid.name" class="fa fa-check success" ></i></span>
@@ -14,18 +14,9 @@
                 <p data-ng-show="error.name" class="error">{{error.name}}</p>
             </div>
         </div>              
-        <div class="form-group">
-            <label class= "col-md-3 control-label">Description: </label>
-            <div class = "col-md-9">
-                <textarea class="form-control" rows="3" ng-model="desc" placeholder={{currentStd.description}}></textarea>
-            </div>
-        </div>  
         <hr> 
-        <div class="alert alert-info" ng-show="datFile">
-            <p>Note: by uploading a new .DAT File, you'll erase all existing structure of this standard in the database. This cannot be undone.</p>
-        </div>
         <div class="form-group">
-            <label class= "col-md-3 control-label">.DAT File</label>
+            <label class= "col-md-3 control-label">Thumbnail:</label>
             <div class = "col-md-9">
                 <div class="fileinput fileinput-new" data-provides="fileinput">
                     <div class="input-group">
@@ -53,15 +44,14 @@
         <hr>            
         <div class="form-group" style="margin-right:5px">
             <div class="col-md-3">
-                <button type="button" class="btn btn-danger">Delete</button>
+                <button type="button" ng-click="delete()" class="btn btn-danger">Delete</button>
             </div>
             <div class="pull-right">
-                <button type="button" ng-click="validate()" class="btn btn-default" ng-disabled="!(valid.dat && valid.json && valid.name)">Validate</button>
+                <button type="button" ng-click="validate()" class="btn btn-default" ng-show="(valid.dat && valid.json && valid.name)">Validate</button>
                 <button type="button" ng-disabled="uploadDisabled" class="btn btn-primary" ng-click="editStd()">Edit</button>
             </div>
         </div>
     </form>
 </div>
 </div>
-
 </section>

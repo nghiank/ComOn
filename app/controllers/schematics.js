@@ -182,9 +182,16 @@ exports.editStd = function(req,res){
 	{
 		return error.sendGenericError(res, 400, 'Error Encountered');
 	}
-	var standard = {name:req.body.stdName, description: req.body.desc};
+	var standard = {};
+	console.log(req.body);
+	if (req.body.hasOwnProperty('stdName'))
+		standard.name = req.body.stdName;
+	if (req.body.hasOwnProperty('desc'))
+		standard.description = req.body.desc;
 	StandardSchem
 	.update({_id:req.body.standardId}, standard, function(err){
+		console.log('in editStd');
+		console.log(standard);
 		if(err) return error.sendGenericError(res, 400, 'Error Encountered');
 		return res.jsonp(standard);
 	});

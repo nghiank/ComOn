@@ -20,12 +20,12 @@ angular.module('ace.schematic').controller('UploadController', ['$timeout', '$sc
 	};
 
 	$scope.datFileSelect = function($files) {
-		$scope.resetDAT();
 		$scope.checkDatFile($files);
 		$scope.parseDatForStdName();
 	};
 
 	$scope.checkDatFile = function($files){
+		console.log('in checkDat');
 		$scope.error.dat = null;
 		var datPattern = new RegExp('^.*\\.dat$');
 		$scope.datFileType = datPattern.test($files[0].name);
@@ -40,7 +40,9 @@ angular.module('ace.schematic').controller('UploadController', ['$timeout', '$sc
 	};
 
 	$scope.resetDAT = function() {
-		$scope.resetJSON();
+		console.log('in resetDAT');
+		if($scope.jsonFile)
+			$scope.resetJSON();
 		$scope.uploadDisabled = true;
 		$scope.validateDisabled = true;
 		$scope.valid.dat = false;
@@ -60,6 +62,12 @@ angular.module('ace.schematic').controller('UploadController', ['$timeout', '$sc
 	};
 
 	$scope.jsonFileSelect = function($files) {
+		$scope.checkJsonFile($files);
+		$scope.parseJsonFile();
+	};
+
+	$scope.checkJsonFile = function($files){
+		console.log('in checkJsonFile');
 		$scope.error.json = null;
 		var jsonPattern = new RegExp('^.*\\.json$');
 		if($files[0] && !jsonPattern.test($files[0].name))
@@ -70,7 +78,6 @@ angular.module('ace.schematic').controller('UploadController', ['$timeout', '$sc
 		$scope.success.json = 'A valid json file.';
 		$scope.valid.json = true;
 		$scope.jsonFile = $files[0];
-		$scope.parseJsonFile();
 	};
 
 	$scope.resetJSON = function() {
@@ -206,7 +213,7 @@ angular.module('ace.schematic').controller('ValidationController', ['$scope', '$
 		$scope.valid = false;
 		$timeout($scope.startValidation, 1500);
 	};
-	$scope.valid = false;
+
 	$scope.ok = function(){
 		$scope.valid = $scope.validator.result();
 		$modalInstance.close($scope.valid);
