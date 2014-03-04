@@ -13,6 +13,7 @@ require('../../../server');
 describe('<e2e API Test>', function() {
     var xauth;
     before(function (done) {
+        this.timeout(config.timeout);
         xauth = new OxygenOauth('http://accounts-dev.autodesk.com','5f7de223-2148-479b-9ae1-e835f590c117','fb3d2f26-d89e-4ab5-9da4-d9c0664c3c9d');
         mongoose.createConnection('mongodb://localhost/ACE-test', function (error) {
             if (error) throw error; // Handle failed connection
@@ -140,7 +141,7 @@ describe('<e2e API Test>', function() {
 
     describe('Schematics Controller', function() {
         var acess_token, acess_token_secret;
-        var id;
+        var id, standard_id, node;
 
         before(function(done) {
             this.timeout(config.timeout);
@@ -201,6 +202,8 @@ describe('<e2e API Test>', function() {
                     (result.name).should.equal('JIC: Schematic Symbols');
                     (b.statusCode).should.equal(200);
                     id = result._id;
+                    standard_id = result.standard._id;
+                    node = result;
                     done();
                 });
             });
@@ -242,6 +245,52 @@ describe('<e2e API Test>', function() {
                 });
             });
 
+            it('POST /api/editStd should return updated standard with 200', function(done) {
+                this.timeout(config.timeout);
+                agent
+                .post('/api/editStd')
+                .send({standardId: standard_id, stdName: 'JIC',desc: 'pass'})
+                .end(function(err, res) {
+                    (res.body.name).should.equal('JIC');
+                    (res.status).should.equal(200);
+                    done();
+                });
+            });
+
+            it('POST /api/editComponent should return updated component with 200', function(done) {
+                this.timeout(config.timeout);
+                agent
+                .post('/api/editComponent')
+                .send({node: {_id: id,name: 'JIC2'}})
+                .end(function(err, res) {
+                    (res.body.name).should.equal('JIC2');
+                    (res.status).should.equal(200);
+                    done();
+                });
+            });
+
+            it('POST /api/editStd for an invalid standard Id should return 400', function(done) {
+                this.timeout(config.timeout);
+                agent
+                .post('/api/editStd')
+                .send({standardId: 'sfrgsdfs', stdName: 'JIC',desc: 'fail'})
+                .end(function(err, res) {
+                    (res.status).should.equal(400);
+                    done();
+                });
+            });
+
+            it('POST /api/editComponent for an invalid component Id should return 400', function(done) {
+                this.timeout(config.timeout);
+                agent
+                .post('/api/editComponent')
+                .send({node: {_id: 'dsajhfiuwhes',name: 'JIC2'}})
+                .end(function(err, res) {
+                    (res.status).should.equal(400);
+                    done();
+                });
+            });
+
             it('GET /api/delete/:nodeId with an invalid Id should return 400', function(done) {
                 this.timeout(config.timeout);
                 agent.get('/api/delete/asdwqeq')
@@ -261,7 +310,7 @@ describe('<e2e API Test>', function() {
             });
 
         });
-        describe('after delete', function() {
+        describe('After delete', function() {
             before(function(done) {
                 this.timeout(config.timeout);
                 agent.post('/api/upload')
@@ -282,7 +331,7 @@ describe('<e2e API Test>', function() {
                 });
             });
 
-            it('POST without credentials /api/upload should return 401', function(done) {
+            it('POST /api/upload without credentials should return 401', function(done) {
                 this.timeout(config.timeout);
                 agent.post('/api/upload')
                 .attach('datFile', './test/mocha/RestAPI/ACE_JIC_MENU.dat')
@@ -308,6 +357,26 @@ describe('<e2e API Test>', function() {
                 this.timeout(config.timeout);
                 agent
                 .get('/api/delete/'+id)
+                .end(function(err, res) {
+                    (res.status).should.equal(401);
+                    done();
+                });
+            });
+
+            it('POST /api/editStd without credentials should return 401', function(done) {
+                this.timeout(config.timeout);
+                agent
+                .post('/api/editStd')
+                .end(function(err, res) {
+                    (res.status).should.equal(401);
+                    done();
+                });
+            });
+
+            it('POST /api/editComponent without credentials should return 401', function(done) {
+                this.timeout(config.timeout);
+                agent
+                .post('/api/editComponent')
                 .end(function(err, res) {
                     (res.status).should.equal(401);
                     done();

@@ -106,6 +106,13 @@ footer p {
     color:white;
 }
 
+.header
+{
+    padding-top: 5px;
+    padding-bottom: 5px;
+    font-style: italic;
+}
+
 img
 {
     background: url('../img/loaders/loader-small.gif') no-repeat center;
