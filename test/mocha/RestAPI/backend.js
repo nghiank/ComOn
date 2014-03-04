@@ -63,7 +63,7 @@ describe('<e2e API Test>', function() {
             .end(function(err, res){
                 //validate the keys in the response JSON matches, we dont care about the values
                 (res.status).should.equal(200);
-                (res.body).should.have.properties('name','email','provider','lastLogin','_id','__v','codeName','isManufacturer','isAdmin','Id');
+                (res.body).should.have.properties('name','email','lastLogin','_id','__v','codeName','isManufacturer','isAdmin','Id');
                 if(res.status === 200)
                 {
                     body = res.body;
@@ -112,7 +112,7 @@ describe('<e2e API Test>', function() {
             .end(function(err, res){
                 //validate the keys in the response JSON matches, we dont care about the values
                 (res.status).should.equal(200);
-                (res.body).should.have.properties('name','email','provider','lastLogin','_id','__v','codeName','isManufacturer','isAdmin','Id');
+                (res.body).should.have.properties('name','email','lastLogin','_id','__v','codeName','isManufacturer','isAdmin','Id');
                 done();
             });
         });
@@ -317,9 +317,12 @@ describe('<e2e API Test>', function() {
     });
 
     after(function(done) {
-        User.remove().exec();
-        SchematicComponent.remove().exec();
-        SchematicStandard.remove().exec();
-        done();
+        User.remove().exec(function(){
+            SchematicComponent.remove().exec(function() {
+                SchematicStandard.remove().exec(function() {
+                    done();
+                });
+            });
+        });
     });
 });

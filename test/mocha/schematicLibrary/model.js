@@ -17,7 +17,7 @@ describe('<Unit Test>', function() {
 	describe('Model Schematic Library:', function() {
 
 		describe('Standard Methods', function() {
-			
+
 			before(function(done) {
 				StandardSchem.remove().exec();
 				
@@ -61,27 +61,28 @@ describe('<Unit Test>', function() {
 		describe('Component Methods', function() {
 
 			before(function(done) {
-				ComponentSchem.remove().exec();
-				standard3 = new StandardSchem({
-					name: 'IEC',
-					description: 'abcd'
-				});
-
-				standard3.save(function() {
-					component = new ComponentSchem({
-						name: 'Push Buttons',
-						id: 'M134',
-						parentNode: null,
-						standard: standard3._id
+				ComponentSchem.remove().exec(function() {
+					standard3 = new StandardSchem({
+						name: 'IEC',
+						description: 'abcd'
 					});
 
-					component2 = new ComponentSchem({
-						name: 'Push Buttons',
-						id: 'M134',
-						parentNode: null,
-						standard: standard3._id
+					standard3.save(function() {
+						component = new ComponentSchem({
+							name: 'Push Buttons',
+							id: 'M134',
+							parentNode: null,
+							standard: standard3._id
+						});
+
+						component2 = new ComponentSchem({
+							name: 'Push Buttons',
+							id: 'M134',
+							parentNode: null,
+							standard: standard3._id
+						});
+						done();
 					});
-					done();
 				});
 			});
 
@@ -132,8 +133,8 @@ describe('<Unit Test>', function() {
 		});
 
 		after(function(done) {
-			ComponentSchem.remove().exec();
-			StandardSchem.remove().exec();
+			ComponentSchem.remove({}).exec();
+			StandardSchem.remove({}).exec();
 			done();
 		});
 	});

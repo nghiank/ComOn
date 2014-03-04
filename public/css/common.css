@@ -105,3 +105,8 @@ footer p {
 {
     color:white;
 }
+
+img
+{
+    background: url('../img/loaders/loader-small.gif') no-repeat center;
+}
