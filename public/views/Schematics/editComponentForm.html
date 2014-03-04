@@ -1,15 +1,14 @@
-<section data-ng-controller="editCompFormCtrl">
     <!-- 2. ng-file-select | ng-file-select="options" -->
-   <div class="panel panel-default" data-ng-show="global.user.isAdmin">
-    <div class="panel-heading">Edit Current Component:</div>
-    <div class="panel-body">
-    <form class="form-horizontal" name="editStdForm">
+
+    <div class="modal-header">Edit Current Component:</div>
+    <div class="modal-body">
+    <form class="form-horizontal" name="editCompForm">
         <div class="form-group">
-            <label class= "col-md-3 control-label">Component Name: </label>
+            <label class= "col-md-3 control-label">Component Name:{{compName}} </label>
             <div class = "col-md-9">
                 <div class="input-group">
                 <span class="input-group-addon"><i ng-show = "valid.name" class="fa fa-check success" ></i></span>
-                <input type="text" class="form-control" ng-model="stdName" ng-blur="checkName()" placeholder={{currentStd.name}} ng-disabled="valid.dat">
+                <input type="text" class="form-control" ng-model="target.name" ng-blur="checkName()" placeholder={{origin.name}}>
                 </div>
                 <p data-ng-show="error.name" class="error">{{error.name}}</p>
             </div>
@@ -18,40 +17,35 @@
         <div class="form-group">
             <label class= "col-md-3 control-label">Thumbnail:</label>
             <div class = "col-md-9">
-                <div class="fileinput fileinput-new" data-provides="fileinput">
-                    <div class="input-group">
-                        <div class="form-control" data-trigger="fileinput"><i class="fa fa-check success fileinput-exists" ng-show="!error.dat && success.dat"></i><span class="fileinput-filename"></span></div>
-                        <span class="input-group-addon btn btn-default btn-file"><span class="fileinput-new">Select file</span><span class="fileinput-exists">Change</span><input type="file" name="..." ng-file-select="datFileSelect($files)"></span>
-                        <a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput" ng-click="resetDAT()">Remove</a>
-                    </div>
-                </div>                                   
-                    <p data-ng-show="error.dat" class="error">{{error.dat}}</p>
+                <div class="input-group">
+                    <span class="input-group-addon"><i ng-show = "valid.thumbnail" class="fa fa-check success" ></i></span>
+                    <input type="text" class="form-control" ng-model="target.thumbnail" ng-blur="validateThumbnail()" placeholder={{origin.thumbnail}}>                
+                </div>
+                <p data-ng-show="typeof target.thumbnail != 'undefined' && error.thumbnail&&!valid.thumbnail" class="error">{{error.thumbnail}}</p>
+                
             </div>
         </div>
-        <div class="form-group" ng-show="valid.dat">
-            <label class= "col-md-3 control-label">Mapping File (.Json)</label>
+        <div class="form-group">
+            <label class= "col-md-3 control-label">.DWG File</label>
             <div class = "col-md-9">
-               <div class="fileinput fileinput-new" data-provides="fileinput">
-                    <div class="input-group">
-                        <div class="form-control" data-trigger="fileinput"><i class="fa fa-check fileinput-exists success" ng-show="!error.json && success.json"></i> <span class="fileinput-filename"></span></div>
-                        <span class="input-group-addon btn btn-default btn-file"><span class="fileinput-new">Select file</span><span class="fileinput-exists">Change</span><input type="file" name="..." ng-file-select="jsonFileSelect($files)"></span>
-                        <a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput" ng-click="resetJSON()">Remove</a>
-                    </div>
-                </div>    
-                    <p data-ng-show="error.json" class="error">{{error.json}}</p>
+                <div class="input-group">
+                    <span class="input-group-addon"><i ng-show = "valid.dl" class="fa fa-check success" ></i></span>
+                    <input type="text" class="form-control" ng-model="target.dl" ng-blur="validateDwg()" placeholder={{origin.dl}}>                
                 </div>
+                <p data-ng-show="error.dl && !valid.dl" class="error">{{error.dl}}</p>
+                 
             </div>
+        </div>
         <hr>            
         <div class="form-group" style="margin-right:5px">
             <div class="col-md-3">
                 <button type="button" ng-click="delete()" class="btn btn-danger">Delete</button>
             </div>
             <div class="pull-right">
-                <button type="button" ng-click="validate()" class="btn btn-default" ng-show="(valid.dat && valid.json && valid.name)">Validate</button>
-                <button type="button" ng-disabled="uploadDisabled" class="btn btn-primary" ng-click="editStd()">Edit</button>
+                <button type="button" ng-click="cancel()" class="btn btn-default">Cancel</button>
+                <button type="button" ng-disabled="editDisabled" class="btn btn-primary" ng-click="editComp()">Edit</button>
             </div>
         </div>
     </form>
 </div>
-</div>
-</section>
+

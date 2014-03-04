@@ -1,13 +1,14 @@
 'use strict';
 
 angular.module('ace.schematic')
-.controller('Children', ['$scope', 'Schematics', '$routeParams', 'Global', 'breadcrumbs', function ($scope, Schematics, $routeParams, Global, breadcrumbs) {
+.controller('Children', ['$scope', 'Schematics', '$routeParams', 'Global', 'breadcrumbs', '$modal', function ($scope, Schematics, $routeParams, Global, breadcrumbs, $modal) {
 	$scope.breadcrumbs = breadcrumbs;
 	$scope.admin = false;
 	if(Global.user && Global.user.isAdmin)
 		$scope.admin = true;
 	$scope.getChildren = function() {
 		var nodeId = $routeParams.nodeId;
+		$scope.nodeId = nodeId;
 		if(!nodeId)
 			return;
 		Schematics.children.get({nodeId: nodeId}, function(children) {
@@ -23,7 +24,6 @@ angular.module('ace.schematic')
 		});
 	};
 	$scope.toggleOption = function (child) {
-		$scope.target = child;
 		return (child.showOption = !child.showOption);
 	};
 	$scope.seperate = function() {
@@ -36,6 +36,23 @@ angular.module('ace.schematic')
 			else
 				$scope.leaves.push(children[i]);
 		}
+	};
+
+	$scope.showEditForm  = function(child){
+		$scope.target = child;
+		var modalInstance = $modal.open({
+			templateUrl: 'views/Schematics/editComponentForm.html',
+			controller: 'editCompFormCtrl',
+			backdrop: 'static',
+			resolve: {
+				target: function() {
+					return ($scope.target);
+				}
+			}
+		});
+		modalInstance.result.then(function(){
+			$scope.getChildren();
+		});
 	};
 
 }]);

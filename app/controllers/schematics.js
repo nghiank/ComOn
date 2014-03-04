@@ -136,6 +136,7 @@ var deleteChildren = function(id) {
 					});
 			}
 			component.remove();
+			console.log('got here.');
 		});
 };
 
@@ -169,9 +170,10 @@ exports.getNodeChildren = function(req, res) {
 };
 
 exports.delete = function(req, res) {
+	console.log('at least in');
 	if(!req.node)
 	{
-		return error.sendGenericError(res, 400, 'Error Encountered');
+		return error.sendGenericError(res, 400, 'Error Encountered...');
 	}
 	deleteChildren(req.node._id);
 	return res.send(200);
@@ -203,13 +205,14 @@ exports.editComponent = function(req, res){
 		return error.sendGenericError(res, 400, 'Error Encountered');
 	}
 	var component = req.body.node;
-	component.standard = req.body.node.standard._id;
+	console.log(component);
 	ComponentSchem
 	.findOne({_id: req.body.node._id}, function(err, fetchedComponent){
 		if(err) console.log(err);
 		if(err) return error.sendGenericError(res, 400, 'Error Encountered');
 		_.extend(fetchedComponent, component);
 		fetchedComponent.save(function(err) {
+			if(err) console.log('fetchComp err:', err);
 			if(err) return error.sendGenericError(res, 400, 'Error Encountered');
 			return res.jsonp(fetchedComponent);
 		});
