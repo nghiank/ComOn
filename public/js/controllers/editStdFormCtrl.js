@@ -192,13 +192,22 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['$timeout', '$sco
 	};
 
 	$scope.delete = function() {
-		if(!$scope.currentStd._id)
-			return;
-		Schematics.delete.get({nodeId: $scope.currentStd._id}, function(response) {
-			if(response)
-			{
-				console.log('Deleted!');
-				$timeout($scope.getAll, 500);
+		var modalInstance = $modal.open({
+			templateUrl: 'views/Schematics/DeleteModal.html',
+			controller:'DeleteModalCtrl',
+			backdrop: 'static',
+		});
+		modalInstance.result.then(function(result){
+			if(result){
+				if(!$scope.currentStd._id)
+					return;
+				Schematics.delete.get({nodeId: $scope.currentStd._id}, function(response) {
+					if(response)
+					{
+						console.log('Deleted!');
+						$timeout($scope.getAll, 500);
+					}
+				});
 			}
 		});
 	};

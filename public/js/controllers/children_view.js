@@ -55,4 +55,23 @@ angular.module('ace.schematic')
 		});
 	};
 
+	$scope.showLeafAddForm = function(){
+		$scope.showComingSoon();
+	};
+
+	$scope.showSubtypeAddForm = function(){
+		$scope.showComingSoon();
+	};
+
+	$scope.showSubtypeEditForm = function(){
+		$scope.showComingSoon();
+	};
+	
+	$scope.showComingSoon = function(){
+		var modalInstance = $modal.open({
+			templateUrl: 'views/ComingModal.html',
+			controller: 'ComingModalCtrl'
+		});
+	};
+
 }]);

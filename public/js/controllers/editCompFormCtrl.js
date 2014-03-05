@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('ace.schematic')
-.controller('editCompFormCtrl', ['$timeout', '$scope','$location', '$upload', 'DatParser', 'Global', '$http', 'Schematics', '$modalInstance','target',function ($timeout, $scope, $location, $upload, ParseDat, Global, $http, Schematics, $modalInstance, target) {
+.controller('editCompFormCtrl', ['$timeout', '$scope','$location', '$upload', 'DatParser', 'Global', '$http', 'Schematics', '$modalInstance', '$modal', 'target', function ($timeout, $scope, $location, $upload, ParseDat, Global, $http, Schematics, $modalInstance, $modal, target) {
 	$scope.target = {'_id':target._id};
 	$scope.origin = target;
 	$scope.global = Global;
@@ -17,11 +17,10 @@ angular.module('ace.schematic')
 	$scope.$watch('target.thumbnail',function(){
 		if($scope.target.thumbnail){
 			$scope.imgPreview = '<img src="'.concat($scope.target.thumbnail, '"/>');
-			$scope.$apply();
 		}else{
 			$scope.imgPreview = '<img src="'.concat($scope.origin.thumbnail, '"/>');
-			$scope.apply();
 		}
+		$scope.$apply();
 	});
 
 	$scope.$watchCollection('valid',function(){
@@ -111,14 +110,25 @@ angular.module('ace.schematic')
 	};
 
 	$scope.delete = function() {
-		if(!$scope.target._id)
-			return;
-		Schematics.delete.get({nodeId: $scope.target._id}, function(response) {
-			if(response)
-			{
-				console.log('Deleted!');
-				$modalInstance.close();
+		$scope.hide = true;
+		var modalInstance = $modal.open({
+			templateUrl: 'views/Schematics/DeleteModal.html',
+			controller:'DeleteModalCtrl',
+			backdrop: 'static',
+		});
+		modalInstance.result.then(function(decision){
+			if(decision){
+				if(!$scope.target._id)
+					return;
+				Schematics.delete.get({nodeId: $scope.target._id}, function(response) {
+					if(response)
+					{
+						console.log('Deleted!');
+						$modalInstance.close();
+					}
+				});
 			}
+			$scope.hide = false;
 		});
 	};
 
