@@ -12,6 +12,18 @@ angular.module('ace.schematic')
 	$scope.valid = {'name':false,'thumbnail':false,'dl':false};
 	$scope.editDisabled = true;
 
+	$scope.imgPreview = '<img src="'.concat($scope.origin.thumbnail, '"/>');
+
+	$scope.$watch('target.thumbnail',function(){
+		if($scope.target.thumbnail){
+			$scope.imgPreview = '<img src="'.concat($scope.target.thumbnail, '"/>');
+			$scope.$apply();
+		}else{
+			$scope.imgPreview = '<img src="'.concat($scope.origin.thumbnail, '"/>');
+			$scope.apply();
+		}
+	});
+
 	$scope.$watchCollection('valid',function(){
 		var nameCorrect = (($scope.target.name && $scope.valid.name) || typeof $scope.target.name ==='undefined');
 		var thumbnailCorrect = (($scope.valid.thumbnail && $scope.target.thumbnail) || typeof $scope.target.thumbnail === 'undefined');
