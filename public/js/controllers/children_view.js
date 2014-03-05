@@ -66,9 +66,9 @@ angular.module('ace.schematic')
 	$scope.showSubtypeEditForm = function(){
 		$scope.showComingSoon();
 	};
-	
+
 	$scope.showComingSoon = function(){
-		var modalInstance = $modal.open({
+		$modal.open({
 			templateUrl: 'views/ComingModal.html',
 			controller: 'ComingModalCtrl'
 		});
