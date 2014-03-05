@@ -107,7 +107,9 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['$timeout', '$sco
 			if(stds){
 				console.log(stds);
 				for (var i = 0; i < stds.length; i++){
-					if($scope.stdName.localeCompare(stds[i].name) === 0 && $scope.$parent.currentStd._id.localeCompare(stds[i]._id) !== 0){
+					var dbName = stds[i].name.toUpperCase();
+					var localName = $scope.stdName.toUpperCase();
+					if(dbName.localeCompare(localName) === 0 && $scope.$parent.currentStd._id.localeCompare(stds[i]._id) !== 0){
 						console.log('wrong name');
 						$scope.valid.name = false;
 						$scope.error.name = 'This name already exists in database';
@@ -201,6 +203,9 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['$timeout', '$sco
 		});
 	};
 
+	$scope.populateDesc = function() {
+		return $scope.currentStd.standard.description? $scope.currentStd.standard.description: 'No description available.';
+	};
 
 	$scope.parseDatForStdName = function(){
 		var reader = new FileReader();

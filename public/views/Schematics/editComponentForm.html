@@ -18,10 +18,10 @@
             <label class= "col-md-3 control-label">Thumbnail:</label>
             <div class = "col-md-9">
                 <div class="input-group">
-                    <span class="input-group-addon"><i ng-show = "valid.thumbnail" class="fa fa-check success" ></i></span>
+                    <span class="input-group-addon"><i ng-show="valid.thumbnail" class="fa fa-check success" ></i></span>
                     <input type="text" class="form-control" ng-model="target.thumbnail" ng-blur="validateThumbnail()" placeholder={{origin.thumbnail}}>                
                 </div>
-                <p data-ng-show="typeof target.thumbnail != 'undefined' && error.thumbnail&&!valid.thumbnail" class="error">{{error.thumbnail}}</p>
+                <p data-ng-show="error.thumbnail && !valid.thumbnail" class="error">{{error.thumbnail}}</p>
                 
             </div>
         </div>
@@ -43,7 +43,7 @@
             </div>
             <div class="pull-right">
                 <button type="button" ng-click="cancel()" class="btn btn-default">Cancel</button>
-                <button type="button" ng-disabled="editDisabled" class="btn btn-primary" ng-click="editComp()">Edit</button>
+                <button type="button" ng-disabled="editDisabled" class="btn btn-primary btn-separate" ng-click="editComp()">Update</button>
             </div>
         </div>
     </form>

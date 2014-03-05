@@ -114,8 +114,12 @@ angular.module('ace.schematic').controller('UploadController', ['$timeout', '$sc
 
 		Schematics.standardlist.query(function(stds) {
 			if(stds){
+				console.log(stds);
 				for (var i = 0; i < stds.length; i++){
-					if($scope.stdName.localeCompare(stds[i].name) === 0){
+					var dbName = stds[i].name.toUpperCase();
+					var localName = $scope.stdName.toUpperCase();
+					if(dbName.localeCompare(localName) === 0){
+						console.log('wrong name');
 						$scope.valid.name = false;
 						$scope.error.name = 'This name already exists in database';
 						return;
@@ -124,7 +128,6 @@ angular.module('ace.schematic').controller('UploadController', ['$timeout', '$sc
 			}
 			$scope.valid.name = true;
 			$scope.success.name = 'This is a valid name.';
-			$scope.uploadDisabled = true;
 		});
 
 		

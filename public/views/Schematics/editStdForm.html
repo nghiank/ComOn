@@ -17,7 +17,7 @@
         <div class="form-group">
             <label class= "col-md-3 control-label">Description:</label>
             <div class = "col-md-9">
-                <textarea class="form-control" rows="3" ng-model="desc" placeholder={{currentStd.standard.description}}></textarea>
+                <textarea class="form-control" rows="3" ng-model="desc" placeholder={{populateDesc()}}/>
             </div>
         </div>  
         <hr> 
@@ -57,7 +57,7 @@
             </div>
             <div class="pull-right">
                 <button type="button" ng-click="validate()" class="btn btn-default" ng-show="(valid.dat && valid.json && valid.name)">Validate</button>
-                <button type="button" ng-disabled="uploadDisabled" class="btn btn-primary" ng-click="editStd()">Edit</button>
+                <button type="button" ng-disabled="uploadDisabled" class="btn btn-primary btn-separate" ng-click="editStd()">Update</button>
             </div>
         </div>
     </form>

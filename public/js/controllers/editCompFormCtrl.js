@@ -31,6 +31,9 @@ angular.module('ace.schematic')
 	};
 
 	$scope.validateThumbnail = function(){
+		console.log($scope.target.thumbnail);
+		$scope.valid.thumbnail = false;
+		$scope.error.thumbnail = null;
 		if($scope.target.thumbnail)
 			$http.get($scope.target.thumbnail)
 			.success(function(){
@@ -46,6 +49,8 @@ angular.module('ace.schematic')
 
 	$scope.validateDwg = function(){
 		console.log('in validateDwg');
+		$scope.valid.dl = false;
+		$scope.error.dl = null;
 		if($scope.target.dl){
 			console.log('in if');
 			$http.get($scope.target.dl)
@@ -79,7 +84,9 @@ angular.module('ace.schematic')
 		Schematics.children.get({nodeId:$scope.origin.parentNode._id}, function(comps) {
 			if(comps){
 				for (var i = 0; i < comps.children.length; i++){
-					if($scope.target.name.localeCompare(comps.children[i].name) === 0 && $scope.target._id !== comps.children[i]._id){
+					var dbName = comps.children[i].name.toUpperCase();
+					var localName = $scope.target.name.toUpperCase();
+					if(dbName.localeCompare(localName) === 0 && $scope.target._id !== comps.children[i]._id){
 						$scope.valid.name = false;
 						$scope.error.name = 'This name already exists in database';
 						return;
@@ -98,7 +105,7 @@ angular.module('ace.schematic')
 			if(response)
 			{
 				console.log('Deleted!');
-				$modalInstance.dismiss('Delete done.');
+				$modalInstance.close();
 			}
 		});
 	};

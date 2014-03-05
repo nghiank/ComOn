@@ -51,6 +51,10 @@ footer p {
     background-color:#F9F9F9;
 }
 
+.btn-separate
+{
+    margin-left: 10px;
+}
 
 .list-group-item:hover
 {

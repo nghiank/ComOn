@@ -310,8 +310,7 @@ exports.getAllSchemStds = function(req, res) {
 exports.node = function(req, res, next, id) {
     ComponentSchem
         .findOne({
-            _id: id,
-            isComposite: true
+            _id: id
         })
 		.exec(function(err, component) {
             if (err)
