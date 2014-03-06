@@ -20,7 +20,6 @@ angular.module('ace.schematic')
 		}else{
 			$scope.imgPreview = '<img src="'.concat($scope.origin.thumbnail, '"/>');
 		}
-		$scope.$apply();
 	});
 
 	$scope.$watchCollection('valid',function(){

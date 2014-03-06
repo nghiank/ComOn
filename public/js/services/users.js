@@ -4,12 +4,15 @@
 angular.module('ace.users').factory('Users', ['$resource', function($resource) {
 
     return {
-		userlist:$resource('api/users/:userId',
+		userlist: $resource('api/users/:userId',
 							{userId: '@_id'},
 							{update: {method: 'GET'}},  {query: {method: 'GET'}
 		}),
-		profile:$resource('api/updateCodeName/:codeName',
+		profile: $resource('api/updateCodeName/:codeName',
                                     null,
-                                    {update:{method:'GET'}})
+                                    {update:{method:'GET'}
+        }),
+        addFav: $resource('api/addFav', null, {save: {method: 'POST', isArray: true}}),
+        delFav: $resource('api/delFav', null, {save: {method: 'POST', isArray: true}})
 	};
 }]);

@@ -134,7 +134,7 @@ angular.module('ace.schematic').factory('ValidationService', ['$http', function(
 	};
 
 	var startThumnailCheck = function(number) {
-		g_messages.push({'type': 'header h6', 'info': 'Starting validation of Thumbnail links.....'});
+		g_messages.push({'type': 'center-result alert alert-info', 'info': 'Starting validation of Thumbnail links.....'});
 		checked = 0;
 		total = thumbnailList.length;
 		for (var i = thumbnailList.length - 1; i >= 0; i--) {
@@ -167,7 +167,7 @@ angular.module('ace.schematic').factory('ValidationService', ['$http', function(
 			return g_messages.push({'type': 'error', 'info': 'Validation failed.'});
 		}
 		total = dlList.length;
-		g_messages.push({'type': 'header h6', 'info': 'Starting validation of Download links.....'});
+		g_messages.push({'type': 'center-result alert alert-info', 'info': 'Starting validation of Download links.....'});
 		for (var i = dlList.length - 1; i >= 0; i--) {
 			var item = dlList[i];
 			if(number === trial_number)
@@ -187,21 +187,19 @@ angular.module('ace.schematic').factory('ValidationService', ['$http', function(
 		}
 	};
 
-	var init = function() {
-		checked = 0;
-		total = 0;
-		g_messages = [];
-		dlList = [];
-		thumbnailList = [];
-		g_result = false;
-		status = true;
-	};
-
 	var instance = {
+		reset: function() {
+			checked = 0;
+			total = 0;
+			g_messages = [];
+			dlList = [];
+			thumbnailList = [];
+			g_result = false;
+			status = true;
+		},
 		messages: function() { return g_messages; },
 		validateLinks: function(data, mapping) {
-			init();
-			g_messages.push({'type': 'center-result alert alert-warning', 'info': 'Locating links :-'});
+			this.reset();
 			var number = ++trial_number;
 			populateDlAndThumbnail(data, JSON.parse(mapping), number, startDownloadCheck);
 		},

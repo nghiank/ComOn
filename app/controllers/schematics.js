@@ -61,7 +61,8 @@ var createComponent = function(child, parent, std) {
 		thumbnail: (child.thumbnail === 'none')? null: findThumbnail(child.thumbnail),
 		dl: child.isComponent? findDl(child.component): null,
 		acad360l: null,
-		isComposite: !child.isComponent
+		isComposite: !child.isComponent,
+		isPublished: true
 	});
 	component.save(function(err) {
 		if(err) return console.log(err);
@@ -140,7 +141,6 @@ var deleteChildren = function(id) {
 					});
 			}
 			component.remove();
-			console.log('got here.');
 		});
 };
 
@@ -174,7 +174,6 @@ exports.getNodeChildren = function(req, res) {
 };
 
 exports.delete = function(req, res) {
-	console.log('at least in');
 	if(!req.node)
 	{
 		return error.sendGenericError(res, 400, 'Error Encountered...');

@@ -33,7 +33,8 @@ var UserSchema = new Schema({
     codeName:{
         type: String,
         default: null
-    }
+    },
+    fav: [{ type: Schema.ObjectId, ref: 'SchematicComponent' }]
 });
 
 mongoose.model('User', UserSchema);

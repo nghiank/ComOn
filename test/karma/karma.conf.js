@@ -40,6 +40,7 @@ module.exports = function(config) {
             'public/js/controllers/index.js',
             'public/js/controllers/header.js',
             'public/js/controllers/upload.js',
+            'public/js/controllers/uploadModalCtrl.js',
             'public/js/init.js',
             'test/karma/unit/**/*.js',
         ],

@@ -4,7 +4,8 @@ angular.module('ace.schematic')
 .controller('Standards', ['$scope', 'Schematics', 'Global', 'breadcrumbs', function ($scope, Schematics, Global, breadcrumbs) {
 	$scope.breadcrumbs = breadcrumbs;
 	$scope.admin = false;
-	if(Global.user && Global.user.isAdmin)
+	$scope.Global = Global;
+	if($scope.authenticated && $scope.Global.user.isAdmin)
 		$scope.admin = true;
 	$scope.form = null;
 	$scope.forms = [{'name':'addForm','URL':'views/Schematics/upload.html'},{'name':'editStdForm','URL':'views/Schematics/editStdForm.html'}];
@@ -33,5 +34,9 @@ angular.module('ace.schematic')
 	$scope.toggleOption = function (std) {
 		$scope.target = std;
 		return (std.showOption = !std.showOption);
+	};
+
+	$scope.unpublished = function(child) {
+		return child.isPublished || $scope.admin;
 	};
 }]);

@@ -62,6 +62,10 @@ var componentSchema = new Schema({
     isComposite: {
         type: Boolean,
         default: false
+    },
+    isPublished: {
+        type: Boolean,
+        default: true
     }
 });
 componentSchema.index({id: 1, name: -1, parentNode: 1}, {unique: true});

@@ -5,6 +5,7 @@
  */
 var mongoose = require('mongoose'),
     User = mongoose.model('User'),
+    ComponentSchem = mongoose.model('SchematicComponent'),
     error = require('../utils/error');
 
 /**
@@ -118,6 +119,57 @@ exports.changeStatus = function(req,res) {
             res.jsonp(user);
         }
     });
+};
+
+exports.addFavourite = function(req, res) {
+    console.log('asdasdasd');
+    if(!req.user)
+        return error.sendUnauthorizedError(res);
+    if(!req.body.hasOwnProperty('_id'))
+        return error.sendGenericError(res, 400, 'Error Encountered');
+    var id = req.body._id;
+    ComponentSchem.findOne({_id: id}, function(err, component) {
+        if(err)
+            return error.sendGenericError(res, 400, 'Error Encountered');
+        if(!component)
+            return error.sendGenericError(res, 400, 'Error Encountered');
+        console.log(req.user, id);
+        var list = req.user.fav;
+        if(list.indexOf(id) < 0)
+        {
+            list.push(id);
+            req.user.fav = list;
+            req.user.save(function(err) {
+                if(err)
+                    return error.sendGenericError(res, 400, 'Error Encountered');
+                res.jsonp(list);
+            });
+            return;
+        }
+        res.jsonp(list);
+    });
+};
+
+exports.removeFavourite = function(req,res) {
+    if(!req.user)
+        return error.sendUnauthorizedError(res);
+    if(!req.body.hasOwnProperty('_id'))
+        return error.sendGenericError(res, 400, 'Error Encountered');
+    var id = req.body._id;
+    var list = req.user.fav;
+    if(list.indexOf(id) > -1)
+    {
+        var index = list.indexOf(id);
+        list.splice(index);
+        req.user.fav = list;
+        req.user.save(function(err) {
+            if(err)
+                return error.sendGenericError(res, 400, 'Error Encountered');
+            res.jsonp(list);
+        });
+        return;
+    }
+    res.jsonp(list);
 };
 
 

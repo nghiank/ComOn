@@ -121,3 +121,17 @@ img
 {
     background: url('../img/loaders/loader-small.gif') no-repeat center;
 }
+
+.modal-body{
+    background-color: #e5e5e5;
+}
+
+.modal-header{
+    font-weight: bold;
+    font-size: 14px;
+    font-family: "Trebuchet MS", Helvetica, sans-serif;
+}
+
+.star{
+    color: #FFD700;
+}

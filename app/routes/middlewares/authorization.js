@@ -81,5 +81,5 @@ exports.requiresLogin = function(req, res, next) {
 	{
 		return error.sendUnauthorizedError(res);
 	}
-	return validatingAuthorizationHeader(req,res,next);
+	validatingAuthorizationHeader(req,res,next);
 };

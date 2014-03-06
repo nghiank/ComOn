@@ -16,6 +16,19 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['$timeout', '$sco
 		$scope.uploadDisabled = !($scope.editNameDescOnly || $scope.editDatFile);
 	});
 
+	$scope.$watch('currentStd.name', function() {
+		$scope.error = {};
+		$scope.success = {};
+		$scope.valid = {'name':false,'json':false,'dat':false,'validation':false};
+		$scope.id = null;
+		$scope.uploadDisabled = true;
+		$scope.datObject = null;
+		$scope.json = null;
+		$scope.datFile = null;
+		$scope.jsonFile = null;
+		$scope.editStdForm.$setPristine();
+	});
+
 	$scope.abort = function(index) {
 		$scope.upload[index].abort();
 		$scope.upload[index] = null;
@@ -99,7 +112,6 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['$timeout', '$sco
 		if(data.length > 30) //Later check against all the other standard names too
 		{
 			$scope.error.name = 'Invalid name.';
-			$scope.$apply();
 			return;
 		}
 

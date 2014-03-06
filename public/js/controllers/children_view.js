@@ -1,10 +1,11 @@
 'use strict';
 
 angular.module('ace.schematic')
-.controller('Children', ['$scope', 'Schematics', '$routeParams', 'Global', 'breadcrumbs', '$modal', function ($scope, Schematics, $routeParams, Global, breadcrumbs, $modal) {
+.controller('Children', ['$scope', 'Schematics', '$routeParams', 'Global', 'breadcrumbs', '$modal', 'Users', function ($scope, Schematics, $routeParams, Global, breadcrumbs, $modal, Users) {
 	$scope.breadcrumbs = breadcrumbs;
+	$scope.Global = Global;
 	$scope.admin = false;
-	if(Global.user && Global.user.isAdmin)
+	if($scope.Global.authenticated && $scope.Global.user.isAdmin)
 		$scope.admin = true;
 	$scope.getChildren = function() {
 		var nodeId = $routeParams.nodeId;
@@ -36,6 +37,8 @@ angular.module('ace.schematic')
 			else
 				$scope.leaves.push(children[i]);
 		}
+		if($scope.Global.authenticated)
+			$scope.addFavouriteKey();
 	};
 
 	$scope.showEditForm  = function(child){
@@ -72,6 +75,50 @@ angular.module('ace.schematic')
 			templateUrl: 'views/ComingModal.html',
 			controller: 'ComingModalCtrl'
 		});
+	};
+
+	$scope.addFavouriteKey = function() {
+		var listOfFavs = $scope.Global.user.fav;
+		for (var i = 0; i < $scope.leaves.length; i++) {
+			var leaf = $scope.leaves[i];
+			if(listOfFavs.indexOf(leaf._id) > -1)
+				leaf.isFavourite = true;
+			else
+				leaf.isFavourite = false;
+		}
+	};
+
+	$scope.addFav = function(child){
+		if(child.isComposite)
+			return;
+		Users.addFav.save({_id: child._id}, function(response) {
+			if(response)
+			{
+				console.log('favourite added');
+				child.isFavourite = true;
+				if($scope.Global.authenticated)
+					$scope.Global.setFav(response);
+			}
+		});
+	};
+
+	$scope.delFav = function(child){
+		if(child.isComposite)
+			return;
+		Users.delFav.save({_id: child._id}, function(response) {
+			if(response)
+			{
+				console.log('favourite deleted');
+				child.isFavourite = false;
+				if($scope.Global.authenticated)
+					$scope.Global.setFav(response);
+			}
+
+		});
+	};
+
+	$scope.unpublished = function(child) {
+		return child.isPublished || $scope.admin;
 	};
 
 }]);

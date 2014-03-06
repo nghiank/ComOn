@@ -1,9 +1,9 @@
 <section data-ng-controller="editStdFormCtrl">
     <!-- 2. ng-file-select | ng-file-select="options" -->
    <div class="panel panel-default" data-ng-show="global.user.isAdmin">
-    <div class="panel-heading">Edit Current standard:</div>
+    <div class="panel-heading">Edit Standard: <div class="pull-right"><strong>{{currentStd.name}}</strong></div></div>
     <div class="panel-body">
-    <form class="form-horizontal" name="editStdForm">
+    <form class="form-horizontal" reset-form="{{currentStd.name}}" name="editStdForm">
         <div class="form-group">
             <label class= "col-md-3 control-label">Standard Name: </label>
             <div class = "col-md-9">
