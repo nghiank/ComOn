@@ -9,7 +9,7 @@ angular.module('ace.system').factory('Global', [
 			authenticated: !! window.user,
 			setFav: function(list) {
 				if(!!window.user)
-					window.user.fav = list;
+					window.user.SchemFav = list;
 			}
 		};
 

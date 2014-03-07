@@ -13,6 +13,7 @@ require('../../../server');
 describe('<e2e API Test>', function() {
     var xauth;
     before(function (done) {
+        User.remove().exec();
         this.timeout(config.timeout);
         xauth = new OxygenOauth('http://accounts-dev.autodesk.com','5f7de223-2148-479b-9ae1-e835f590c117','fb3d2f26-d89e-4ab5-9da4-d9c0664c3c9d');
         mongoose.createConnection('mongodb://localhost/ACE-test', function (error) {
@@ -53,6 +54,7 @@ describe('<e2e API Test>', function() {
         it('Authorization for mobile devices', function(done) {
             this.timeout(config.timeout);
             xauth.get('http://localhost:3001/api/users/me', function(err, res, b){
+                (JSON.parse(res)).should.have.properties('name','email','lastLogin','_id','__v','codeName','isManufacturer','isAdmin','Id');
                 (b.statusCode).should.equal(200);
                 done();
             });
@@ -107,13 +109,14 @@ describe('<e2e API Test>', function() {
             });
         });
 
-        it('GET /users/:ID should return 200', function(done){
+        it('GET /users/:ID should make me a Manufacturer and return 200', function(done){
             agent
             .get('/api/users/'+body._id)
             .end(function(err, res){
                 //validate the keys in the response JSON matches, we dont care about the values
                 (res.status).should.equal(200);
                 (res.body).should.have.properties('name','email','lastLogin','_id','__v','codeName','isManufacturer','isAdmin','Id');
+                (res.body.isManufacturer).should.equal(true);
                 done();
             });
         });
@@ -122,18 +125,136 @@ describe('<e2e API Test>', function() {
             agent
             .get('/signout')
             .end(function(err, res){
-                //validate the keys in the response JSON matches, we dont care about the values
                 (res.status).should.equal(302);
                 done();
             });
         });
 
-        it('GET /users/me should return 401', function(done){
+        it('GET api/users/me without credentials should return 401', function(done){
             agent
             .get('/api/users/me')
             .end(function(err, res){
-                //validate the keys in the response JSON matches, we dont care about the values
                 (res.status).should.equal(401);
+                done();
+            });
+        });
+        it('POST api/addSchemFav without credentials should return 401', function(done){
+            agent
+            .post('/api/addSchemFav')
+            .end(function(err, res){
+                (res.status).should.equal(401);
+                done();
+            });
+        });
+
+        it('GET api/getFav without credentials should return 401', function(done){
+            agent
+            .get('/api/getFav')
+            .end(function(err, res){
+                (res.status).should.equal(401);
+                done();
+            });
+        });
+
+        it('POST api/delSchemFav without credentials should return 401', function(done){
+            agent
+            .post('/api/delSchemFav')
+            .end(function(err, res){
+                (res.status).should.equal(401);
+                done();
+            });
+        });
+
+        describe('For testing Add, Delete Schem Fav and geting favourite list', function() {
+            var component_id = '';
+            before(function(done) {
+                this.timeout(config.timeout*3);
+                SchematicComponent.remove().exec(function() {
+                    SchematicStandard.remove().exec(function() {
+                        agent
+                        .post('/xauth')
+                        .send({oauth_token: acess_token, oauth_verifier: acess_token_secret})
+                        .end(function(err,res) {
+                            (res.status).should.equal(302);
+                            agent.post('/api/upload')
+                            .attach('datFile', './test/mocha/RestAPI/ACE_JIC_MENU.dat')
+                            .attach('jsonFile', './test/mocha/RestAPI/mapping.json')
+                            .end(function(err, res) {
+                                res.should.have.status(200);
+                                
+                                function getComponentId() {
+                                    agent.get('/api/getSchemStds')
+                                    .end(function(err, res) {
+                                        (res.status).should.equal(200);
+                                        agent.get('/api/getChildren/'+res.body[0]._id)
+                                        .end(function(err, res) {
+                                            (res.status).should.equal(200);
+                                            agent.get('/api/getChildren/'+res.body.children[0]._id)
+                                            .end(function(err, res) {
+                                                (res.status).should.equal(200);
+                                                for (var i = 0; i < res.body.children.length; i++) {
+                                                    var child = res.body.children[i];
+                                                    if(!child.isComposite)
+                                                    {
+                                                        component_id = child._id;
+                                                        done();
+                                                        return;
+                                                    }
+                                                }
+                                                done();
+                                            });
+                                        });
+                                    });
+                                }
+                                setTimeout(getComponentId, 500);
+                            });
+                        });
+                    });
+                });
+            });
+            it('POST /api/addSchemFav with valid id should return 200', function(done) {
+                (component_id).should.not.equal('');
+                agent.post('/api/addSchemFav')
+                .send({_id: component_id})
+                .end(function(err, res) {
+                    (res.status).should.equal(200);
+                    done();
+                });
+            });
+
+            it('GET /api/getFav should return updated fav list with one fav', function(done){
+                agent
+                .get('/api/getFav', {json: true})
+                .end(function(err, res){
+                    (res.body.schematic.length).should.equal(1);
+                    (res.status).should.equal(200);
+                    done();
+                });
+            });
+
+            it('POST /api/delSchemFav with valid id should return 200', function(done) {
+                (component_id).should.not.equal('');
+                agent.post('/api/delSchemFav')
+                .send({_id: component_id})
+                .end(function(err, res) {
+                    (res.status).should.equal(200);
+                    done();
+                });
+            });
+
+            it('GET /api/getFav should return updated fav list with no favs', function(done){
+                agent
+                .get('/api/getFav', {json: true})
+                .end(function(err, res){
+                    (res.status).should.equal(200);
+                    (res.body.schematic.length).should.equal(0);
+                    done();
+                });
+            });
+
+            after(function(done) {
+                SchematicComponent.remove().exec();
+                SchematicStandard.remove().exec();
                 done();
             });
         });

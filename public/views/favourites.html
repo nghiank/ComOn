@@ -1,0 +1,21 @@
+<div class="container" ng-show="Global.authenticated" data-ng-init="getFavourites()" ng-controller="Favourites" style="min-height: 800px;">
+	<div class="page-header"><h1>Favourites</h1></div>
+    <div class="row">
+        <div class="col-md-6">
+            <ul class="list-group">
+                <div class="list-group-item list-title">Schematic Favourites</div> 
+                    <li class="list-group-item" ng-show="schematic.length == 0">No favourites yet.</li>          
+                    <li class="list-group-item" ng-repeat="child in schematic | filter: unpublished" ng-mouseenter = "toggleOption(child)" ng-mouseleave = "toggleOption(child)">
+                        <img ng-src="{{child.thumbnail}}" ng-show="child.thumbnail" style="width: 40px; height: 40px; margin-right:10px;">
+                        <a href="#!/standards/{{child.parentNode}}">{{child.name}}</a>
+	                    <a class="btn pull-right btn-link" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}" ng-click="delSchemFav(child)" ng-show="!child.isComposite">
+	                        <i class="fa fa-star star"></i>
+	                    </a>
+	                    <a href="{{child.dl? child.dl: '#'}}" class="btn pull-right btn-link" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}" ng-show="child.showOption" >
+	                        <i class="fa fa-download"></i>
+	                    </a>
+                    </li>
+            </ul>
+        </div>
+    </div>
+</div>

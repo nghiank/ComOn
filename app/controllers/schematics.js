@@ -5,6 +5,7 @@ var Inst = new parser();
 var mongoose = require('mongoose');
 var ComponentSchem = mongoose.model('SchematicComponent');
 var StandardSchem = mongoose.model('SchematicStandard');
+var Users = mongoose.model('User');
 var error = require('../utils/error');
 var formidable = require('formidable');
 var fs = require('fs');
@@ -140,6 +141,18 @@ var deleteChildren = function(id) {
 						}
 					});
 			}
+			var deleted_id = component._id;
+			Users.find({fav: deleted_id}, function(err, users) {
+				if(err)
+					return console.log(err);
+				if(!users)
+					return;
+				for (var i = 0; i < users.length; i++) {
+					var user = users[i];
+					user.fav.remove(deleted_id);
+					user.save();
+				}
+			});
 			component.remove();
 		});
 };

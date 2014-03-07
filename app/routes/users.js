@@ -26,8 +26,9 @@ module.exports = function(app, passport) {
 
     app.get('/api/updateCodeName/:codeName', authorization.requiresLogin , users.updateCodeName);
 
-    app.post('/api/addFav', authorization.requiresLogin, users.addFavourite);
-    app.post('/api/delFav', authorization.requiresLogin, users.removeFavourite);
+    app.post('/api/addSchemFav', authorization.requiresLogin, users.addSchemFavourite);
+    app.post('/api/delSchemFav', authorization.requiresLogin, users.removeSchemFavourite);
+    app.get('/api/getFav', authorization.requiresLogin, users.getFavourites);
 
     // Setting the oxygen oauth route
     app.get('/auth/oauth', passport.authenticate('oauth', {
