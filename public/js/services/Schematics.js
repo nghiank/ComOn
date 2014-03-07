@@ -18,6 +18,7 @@ angular.module('ace.schematic').factory('Schematics', ['$resource', function($re
 		editComponent: $resource('api/editComponent',null
 		),
 		editStd: $resource('api/editStd',null
-		)
+		),
+		checkId:$resource('api/isUniqueId',null)
 	};
 }]);

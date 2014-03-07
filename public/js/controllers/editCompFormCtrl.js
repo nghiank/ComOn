@@ -9,7 +9,7 @@ angular.module('ace.schematic')
 	$scope.error = {};
 	$scope.success = {};
 	$scope.id = null;
-	$scope.valid = {'name':false,'thumbnail':false,'dl':false};
+	$scope.valid = {'name':false,'thumbnail':false,'dl':false,'id':false};
 	$scope.editDisabled = true;
 
 	$scope.imgPreview = '<img src="'.concat($scope.origin.thumbnail, '"/>');
@@ -24,11 +24,12 @@ angular.module('ace.schematic')
 
 	$scope.$watchCollection('valid',function(){
 		var nameCorrect = (($scope.target.name && $scope.valid.name) || typeof $scope.target.name ==='undefined');
+		var idCorrect = ($scope.target.id && $scope.valid.id) || typeof $scope.target.id === 'undefined';
 		var thumbnailCorrect = (($scope.valid.thumbnail && $scope.target.thumbnail) || typeof $scope.target.thumbnail === 'undefined');
 		var dlCorrect = (($scope.target.dl && $scope.valid.dl) || typeof $scope.target.dl === 'undefined');
 		console.log(nameCorrect,thumbnailCorrect,dlCorrect);
-		var cleanForm = typeof $scope.target.name === 'undefined' && typeof $scope.target.dl === 'undefined' && typeof $scope.target.thumbnail === 'undefined';
-		$scope.editDisabled = !(nameCorrect && thumbnailCorrect && dlCorrect) || cleanForm;
+		var cleanForm = typeof $scope.target.name === 'undefined' && typeof $scope.target.dl === 'undefined' && typeof $scope.target.thumbnail === 'undefined' && typeof $scope.target.id === 'undefined';
+		$scope.editDisabled = !(idCorrect && nameCorrect && thumbnailCorrect && dlCorrect) || cleanForm;
 	});
 
 	$scope.abort = function(index) {
@@ -105,6 +106,23 @@ angular.module('ace.schematic')
 			}
 			$scope.valid.name = true;
 			$scope.success.name = 'This is a valid name.';
+		});
+	};
+
+	$scope.checkId = function(){
+		$scope.error.id = null;
+		$scope.success.id = null;
+		if(!$scope.target.id)
+			return;
+		$scope.target.id = $scope.target.id.toUpperCase();
+		Schematics.checkId.save({id:$scope.target.id, standardId:$scope.origin.standard._id},function(response){
+			if(response.unique === true){
+				$scope.valid.id = true;
+			}
+			else{
+				$scope.valid.id = false;
+				$scope.error.id = 'This id already exists in the database.';
+			}
 		});
 	};
 

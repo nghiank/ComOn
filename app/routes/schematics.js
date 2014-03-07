@@ -14,7 +14,7 @@ module.exports = function(app) {
     app.post('/api/upload', authorization.requiresLogin , hasAuthorization, schem.receiveFiles);
     app.post('/api/editStd', authorization.requiresLogin , hasAuthorization,  schem.editStd);
     app.post('/api/editComponent',authorization.requiresLogin , hasAuthorization, schem.editComponent);
-
+    app.post('/api/isUniqueId',authorization.requiresLogin, hasAuthorization, schem.isUniqueId);
     app.get('/api/getChildren/:nodeId', schem.getNodeChildren);
     app.get('/api/getParentHiearchy/:nodeId', schem.getParentHiearchy);
     app.get('/api/delete/:nodeId', authorization.requiresLogin , hasAuthorization, schem.delete);
