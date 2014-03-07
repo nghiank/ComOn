@@ -13,6 +13,7 @@ require('../../../server');
 describe('<e2e API Test>', function() {
     var xauth;
     before(function (done) {
+        User.remove().exec();
         this.timeout(config.timeout);
         xauth = new OxygenOauth('http://accounts-dev.autodesk.com','5f7de223-2148-479b-9ae1-e835f590c117','fb3d2f26-d89e-4ab5-9da4-d9c0664c3c9d');
         mongoose.createConnection('mongodb://localhost/ACE-test', function (error) {
@@ -168,36 +169,44 @@ describe('<e2e API Test>', function() {
             var component_id = '';
             before(function(done) {
                 this.timeout(config.timeout*3);
-                agent
-                .post('/xauth')
-                .send({oauth_token: acess_token, oauth_verifier: acess_token_secret})
-                .end(function(err,res) {
-                    (res.status).should.equal(302);
-                    agent.post('/api/upload')
-                    .attach('datFile', './test/mocha/RestAPI/ACE_JIC_MENU.dat')
-                    .attach('jsonFile', './test/mocha/RestAPI/mapping.json')
-                    .end(function(err, res) {
-                        res.should.have.status(200);
-                        agent.get('/api/getSchemStds')
-                        .end(function(err, res) {
-                            (res.status).should.equal(200);
-                            agent.get('/api/getChildren/'+res.body[0]._id)
+                SchematicComponent.remove().exec(function() {
+                    SchematicStandard.remove().exec(function() {
+                        agent
+                        .post('/xauth')
+                        .send({oauth_token: acess_token, oauth_verifier: acess_token_secret})
+                        .end(function(err,res) {
+                            (res.status).should.equal(302);
+                            agent.post('/api/upload')
+                            .attach('datFile', './test/mocha/RestAPI/ACE_JIC_MENU.dat')
+                            .attach('jsonFile', './test/mocha/RestAPI/mapping.json')
                             .end(function(err, res) {
-                                (res.status).should.equal(200);
-                                agent.get('/api/getChildren/'+res.body.children[0]._id)
-                                .end(function(err, res) {
-                                    (res.status).should.equal(200);
-                                    for (var i = 0; i < res.body.children.length; i++) {
-                                        var child = res.body.children[i];
-                                        if(!child.isComposite)
-                                        {
-                                            component_id = child._id;
-                                            done();
-                                            return;
-                                        }
-                                    }
-                                    done();
-                                });
+                                res.should.have.status(200);
+                                
+                                function getComponentId() {
+                                    agent.get('/api/getSchemStds')
+                                    .end(function(err, res) {
+                                        (res.status).should.equal(200);
+                                        agent.get('/api/getChildren/'+res.body[0]._id)
+                                        .end(function(err, res) {
+                                            (res.status).should.equal(200);
+                                            agent.get('/api/getChildren/'+res.body.children[0]._id)
+                                            .end(function(err, res) {
+                                                (res.status).should.equal(200);
+                                                for (var i = 0; i < res.body.children.length; i++) {
+                                                    var child = res.body.children[i];
+                                                    if(!child.isComposite)
+                                                    {
+                                                        component_id = child._id;
+                                                        done();
+                                                        return;
+                                                    }
+                                                }
+                                                done();
+                                            });
+                                        });
+                                    });
+                                }
+                                setTimeout(getComponentId, 500);
                             });
                         });
                     });
