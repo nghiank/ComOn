@@ -121,8 +121,10 @@ exports.changeStatus = function(req,res) {
     });
 };
 
-exports.addFavourite = function(req, res) {
-    console.log('asdasdasd');
+/**
+ * Change User Schematic Favourites
+ */
+exports.addSchemFavourite = function(req, res) {
     if(!req.user)
         return error.sendUnauthorizedError(res);
     if(!req.body.hasOwnProperty('_id'))
@@ -133,12 +135,11 @@ exports.addFavourite = function(req, res) {
             return error.sendGenericError(res, 400, 'Error Encountered');
         if(!component)
             return error.sendGenericError(res, 400, 'Error Encountered');
-        console.log(req.user, id);
-        var list = req.user.fav;
+        var list = req.user.SchemFav;
         if(list.indexOf(id) < 0)
         {
             list.push(id);
-            req.user.fav = list;
+            req.user.SchemFav = list;
             req.user.save(function(err) {
                 if(err)
                     return error.sendGenericError(res, 400, 'Error Encountered');
@@ -150,26 +151,34 @@ exports.addFavourite = function(req, res) {
     });
 };
 
-exports.removeFavourite = function(req,res) {
+exports.removeSchemFavourite = function(req,res) {
     if(!req.user)
         return error.sendUnauthorizedError(res);
     if(!req.body.hasOwnProperty('_id'))
         return error.sendGenericError(res, 400, 'Error Encountered');
     var id = req.body._id;
-    var list = req.user.fav;
+    var list = req.user.SchemFav;
     if(list.indexOf(id) > -1)
     {
-        var index = list.indexOf(id);
-        list.splice(index);
-        req.user.fav = list;
+        req.user.SchemFav.remove(id);
         req.user.save(function(err) {
             if(err)
                 return error.sendGenericError(res, 400, 'Error Encountered');
-            res.jsonp(list);
+            res.jsonp(req.user.SchemFav);
         });
         return;
     }
     res.jsonp(list);
+};
+
+exports.getFavourites = function(req, res) {
+    if(!req.user)
+        return error.sendUnauthorizedError(res);
+    ComponentSchem.find({_id: {$in: req.user.SchemFav}, isComposite: false}).exec(function(err, components) {
+        if(err)
+            return error.sendGenericError(res, 400, 'Error Encountered');
+        res.jsonp({'schematic': components});
+    });
 };
 
 

@@ -18,6 +18,9 @@ angular.module('ace').config(['$routeProvider',
         when('/standards', {
             templateUrl: 'views/Schematics/all.html'
         }).
+        when('/favourites', {
+            templateUrl: 'views/favourites.html'
+        }).
         when('/standards/:nodeId', {
             templateUrl: 'views/Schematics/child.html'
         }).

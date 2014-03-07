@@ -34,7 +34,7 @@ var UserSchema = new Schema({
         type: String,
         default: null
     },
-    fav: [{ type: Schema.ObjectId, ref: 'SchematicComponent' }]
+    SchemFav: [{ type: Schema.ObjectId, ref: 'SchematicComponent' }]
 });
 
 mongoose.model('User', UserSchema);

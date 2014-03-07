@@ -78,7 +78,7 @@ angular.module('ace.schematic')
 	};
 
 	$scope.addFavouriteKey = function() {
-		var listOfFavs = $scope.Global.user.fav;
+		var listOfFavs = $scope.Global.user.SchemFav;
 		for (var i = 0; i < $scope.leaves.length; i++) {
 			var leaf = $scope.leaves[i];
 			if(listOfFavs.indexOf(leaf._id) > -1)
