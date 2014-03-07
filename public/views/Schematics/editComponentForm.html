@@ -4,7 +4,7 @@
     <div class="modal-body">
     <form class="form-horizontal" name="editCompForm">
         <div class="form-group">
-            <label class= "col-md-3 control-label">Component Name:{{compName}} </label>
+            <label class= "col-md-3 control-label">Component Name:</label>
             <div class = "col-md-9">
                 <div class="input-group">
                 <span class="input-group-addon"><i ng-show = "valid.name" class="fa fa-check success" ></i><i class="fa fa-times fileinput-exists error" ng-show="!valid.name && error.name"></i></span>
@@ -12,7 +12,17 @@
                 </div>
                 <p data-ng-show="error.name" class="error">{{error.name}}</p>
             </div>
-        </div>              
+        </div>
+        <div class="form-group">
+            <label class= "col-md-3 control-label">ID:</label>
+            <div class = "col-md-9">
+                <div class="input-group">
+                <span class="input-group-addon"><i ng-show = "valid.id" class="fa fa-check success" ></i><i class="fa fa-times fileinput-exists error" ng-show="!valid.id && error.id"></i></span>
+                <input type="text" class="form-control" ng-model="target.id" ng-blur="checkId()" placeholder={{origin.id}}>
+                </div>
+                <p data-ng-show="error.id" class="error">{{error.id}}</p>
+            </div>
+        </div>                     
         <hr> 
         <div class="form-group">
             <label class= "col-md-3 control-label">Thumbnail:</label>

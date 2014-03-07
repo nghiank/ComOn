@@ -155,6 +155,19 @@ exports.receiveFiles = function(req, res) {
     });
 };
 
+exports.isUniqueId = function(req,res) {
+	console.log(req.body);
+	if(!req.body.standardId || !req.body.id)
+	{
+		return error.sendGenericError(res, 400, 'Error Encountered');
+	}
+	var s_id = req.body.standardId, id = req.body.id;
+	ComponentSchem.findOne({standard: s_id, id: id}).exec(function(err, component) {
+		if(err)
+			return error.sendGenericError(res, 400, 'Error Encountered');
+		res.status(200).jsonp({'unique': !!!component});
+	});
+};
 
 exports.getNodeChildren = function(req, res) {
 	if(!req.node)
