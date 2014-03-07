@@ -59,7 +59,22 @@ angular.module('ace.schematic')
 	};
 
 	$scope.showLeafAddForm = function(){
-		$scope.showComingSoon();
+		Schematics.node.get({nodeId:$routeParams.nodeId}, function(node){
+			$scope.target = node;
+			var modalInstance = $modal.open({
+				templateUrl: 'views/Schematics/addCompForm.html',
+				controller: 'addCompFormCtrl',
+				backdrop: 'static',
+				resolve:{
+					parent: function(){
+						return ($scope.target);
+					}
+				}
+			});
+			modalInstance.result.then(function(){
+				$scope.getChildren();
+			});
+		});
 	};
 
 	$scope.showSubtypeAddForm = function(){

@@ -12,6 +12,11 @@ angular.module('ace.schematic').factory('Schematics', ['$resource', function($re
 		children: $resource('api/getChildren/:nodeId',
 							{nodeId: '@_id'
 		}),
+		node:$resource('api/getNode/:nodeId',
+						{nodeId:'@_id'
+		}),
+		createNode:$resource('api/createNode',null
+		),
 		delete: $resource('api/delete/:nodeId',
 							{nodeId: '@_id'
 		}),
@@ -19,6 +24,6 @@ angular.module('ace.schematic').factory('Schematics', ['$resource', function($re
 		),
 		editStd: $resource('api/editStd',null
 		),
-		checkId:$resource('api/isUniqueId',null)
+		checkId:$resource('api/isUniqueId',null),
 	};
 }]);

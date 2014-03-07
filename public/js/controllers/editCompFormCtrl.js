@@ -78,6 +78,7 @@ angular.module('ace.schematic')
 	};
 
 	$scope.checkName = function(){
+		console.log($scope.origin.parentNode);
 		$scope.error.name = null;
 		$scope.success.name = null;
 		$scope.valid.name = false;

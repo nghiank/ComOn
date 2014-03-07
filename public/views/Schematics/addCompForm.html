@@ -1,6 +1,5 @@
-    <!-- 2. ng-file-select | ng-file-select="options" -->
 <div ng-hide="hide">
-    <div class="modal-header">Edit Current Component:</div>
+    <div class="modal-header">Add New Component:</div>
     <div class="modal-body">
     <form class="form-horizontal" name="editCompForm">
         <div class="form-group">
@@ -8,7 +7,7 @@
             <div class = "col-md-8">
                 <div class="input-group">
                 <span class="input-group-addon"><i ng-show = "valid.name" class="fa fa-check success" ></i><i class="fa fa-times fileinput-exists error" ng-show="!valid.name && error.name"></i></span>
-                <input type="text" class="form-control" ng-model="target.name" ng-blur="checkName()" placeholder={{origin.name}}>
+                <input type="text" class="form-control" ng-model="target.name" ng-blur="checkName()">
                 </div>
                 <p data-ng-show="error.name" class="error">{{error.name}}</p>
             </div>
@@ -18,7 +17,7 @@
             <div class = "col-md-8">
                 <div class="input-group">
                 <span class="input-group-addon"><i ng-show = "valid.id" class="fa fa-check success" ></i><i class="fa fa-times fileinput-exists error" ng-show="!valid.id && error.id"></i></span>
-                <input type="text" class="form-control" ng-model="target.id" ng-blur="checkId()" placeholder={{origin.id}}>
+                <input type="text" class="form-control" ng-model="target.id" ng-blur="checkId()">
                 </div>
                 <p data-ng-show="error.id" class="error">{{error.id}}</p>
             </div>
@@ -29,7 +28,7 @@
             <div class = "col-md-8">
                 <div class="input-group">
                     <span class="input-group-addon"><i ng-show="valid.thumbnail" class="fa fa-check success" ></i><i class="fa fa-times fileinput-exists error" ng-show="!valid.thumbnail && error.thumbnail"></i></span>
-                    <input type="text" class="form-control" ng-model="target.thumbnail" ng-blur="validateThumbnail()" placeholder={{origin.thumbnail}}
+                    <input type="text" class="form-control" ng-model="target.thumbnail" ng-blur="validateThumbnail()"
                     tooltip-html-unsafe="{{imgPreview}}" tooltip-placement="right">                
                 </div>
                 <p data-ng-show="error.thumbnail && !valid.thumbnail" class="error">{{error.thumbnail}}</p>
@@ -40,8 +39,8 @@
             <label class= "col-md-4 control-label">.DWG File</label>
             <div class = "col-md-8">
                 <div class="input-group">
-                    <span class="input-group-addon"><i ng-show = "valid.dl" class="fa fa-check success" ><i class="fa fa-times fileinput-exists error" ng-show="!valid.dl && error.dl"></i></i></span>
-                    <input type="text" class="form-control" ng-model="target.dl" ng-blur="validateDwg()" placeholder={{origin.dl}}>                
+                    <span class="input-group-addon"><i ng-show = "valid.dl" class="fa fa-check success"><i class="fa fa-times fileinput-exists error" ng-show="!valid.dl && error.dl"></i></i></span>
+                    <input type="text" class="form-control" ng-model="target.dl" ng-blur="validateDwg()">                
                 </div>
                 <p data-ng-show="error.dl && !valid.dl" class="error">{{error.dl}}</p>
                  
@@ -49,12 +48,9 @@
         </div>
         <hr>            
         <div class="form-group" style="margin-right:5px">
-            <div class="col-md-3">
-                <button type="button" ng-click="delete()" class="btn btn-danger">Delete</button>
-            </div>
             <div class="pull-right">
                 <button type="button" ng-click="cancel()" class="btn btn-default">Cancel</button>
-                <button type="button" ng-disabled="editDisabled" class="btn btn-primary btn-separate" ng-click="editComp()">Update</button>
+                <button type="button" ng-disabled="createDisabled" class="btn btn-primary btn-separate" ng-click="createComp()">Create</button>
             </div>
         </div>
     </form>

@@ -334,3 +334,31 @@ exports.node = function(req, res, next, id) {
         });
 };
 
+exports.getNode = function(req,res){
+	if (req.node)
+		return res.jsonp(req.node);
+	return error.sendGenericError(res, 400, 'Error Encountered');
+};
+
+exports.createNode = function(req,res){
+	if(!req.body.node)
+		return error.sendGenericError(res, 400, 'No node sent to server');
+	var node = req.body.node;
+	var component = new ComponentSchem({
+		name: node.name,
+		parentNode: node.parentNode,
+		id: node.id,
+		standard: node.standard,
+		thumbnail: node.thumbnail,
+		dl: node.dl,
+		acad360l: null,
+		isComposite: node.isComposite,
+		isPublished: true
+	});
+	component.save(function(err) {
+		if(err) return console.log(err);
+		return res.jsonp(component);
+	});
+
+};
+
