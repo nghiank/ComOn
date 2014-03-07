@@ -145,6 +145,16 @@ describe('<e2e API Test>', function() {
                 done();
             });
         });
+
+        it('GET api/getFav without credentials should return 401', function(done){
+            agent
+            .get('/api/getFav')
+            .end(function(err, res){
+                (res.status).should.equal(401);
+                done();
+            });
+        });
+
         it('POST api/delSchemFav without credentials should return 401', function(done){
             agent
             .post('/api/delSchemFav')
@@ -154,7 +164,7 @@ describe('<e2e API Test>', function() {
             });
         });
 
-        describe('For testing Add and Delete Fav', function() {
+        describe('For testing Add, Delete Schem Fav and geting favourite list', function() {
             var component_id = '';
             before(function(done) {
                 this.timeout(config.timeout*3);
@@ -203,11 +213,11 @@ describe('<e2e API Test>', function() {
                 });
             });
 
-            it('GET /users/me should return user with updated fav list with one fav', function(done){
+            it('GET /api/getFav should return updated fav list with one fav', function(done){
                 agent
-                .get('/api/users/me', {json: true})
+                .get('/api/getFav', {json: true})
                 .end(function(err, res){
-                    (res.body.SchemFav.length).should.equal(1);
+                    (res.body.schematic.length).should.equal(1);
                     (res.status).should.equal(200);
                     done();
                 });
@@ -223,12 +233,12 @@ describe('<e2e API Test>', function() {
                 });
             });
 
-            it('GET /users/me should return user with updated fav list with no favs', function(done){
+            it('GET /api/getFav should return updated fav list with no favs', function(done){
                 agent
-                .get('/api/users/me', {json: true})
+                .get('/api/getFav', {json: true})
                 .end(function(err, res){
                     (res.status).should.equal(200);
-                    (res.body.SchemFav.length).should.equal(0);
+                    (res.body.schematic.length).should.equal(0);
                     done();
                 });
             });
