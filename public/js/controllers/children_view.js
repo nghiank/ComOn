@@ -91,7 +91,7 @@ angular.module('ace.schematic')
 	$scope.addFav = function(child){
 		if(child.isComposite)
 			return;
-		Users.addFav.save({_id: child._id}, function(response) {
+		Users.addSchemFav.save({_id: child._id}, function(response) {
 			if(response)
 			{
 				console.log('favourite added');
@@ -105,7 +105,7 @@ angular.module('ace.schematic')
 	$scope.delFav = function(child){
 		if(child.isComposite)
 			return;
-		Users.delFav.save({_id: child._id}, function(response) {
+		Users.delSchemFav.save({_id: child._id}, function(response) {
 			if(response)
 			{
 				console.log('favourite deleted');

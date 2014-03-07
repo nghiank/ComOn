@@ -12,8 +12,8 @@ angular.module('ace.users').factory('Users', ['$resource', function($resource) {
                                     null,
                                     {update:{method:'GET'}
         }),
-        addFav: $resource('api/addSchemFav', null, {save: {method: 'POST', isArray: true}}),
-        delFav: $resource('api/delSchemFav', null, {save: {method: 'POST', isArray: true}}),
+        addSchemFav: $resource('api/addSchemFav', null, {save: {method: 'POST', isArray: true}}),
+        delSchemFav: $resource('api/delSchemFav', null, {save: {method: 'POST', isArray: true}}),
         getFav: $resource('api/getFav', null, {query: {method: 'GET'}})
 	};
 }]);
