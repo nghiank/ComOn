@@ -69,7 +69,7 @@ angular.module('ace.schematic')
                     var localName = $scope.target.name.toUpperCase();
                     if(dbName.localeCompare(localName) === 0 && $scope.target._id !== comps.children[i]._id){
                         $scope.valid.name = false;
-                        $scope.error.name = 'This name already exists in database';
+                        $scope.error.name = 'This name already exists within the same group.';
                         return;
                     }
                 }
@@ -91,7 +91,7 @@ angular.module('ace.schematic')
             }
             else{
                 $scope.valid.id = false;
-                $scope.error.id = 'This id already exists in the database.';
+                $scope.error.id = 'This id already exists within the same group.';
             }
         });
     };
