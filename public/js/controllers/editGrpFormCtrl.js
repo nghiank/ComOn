@@ -114,6 +114,7 @@ angular.module('ace.schematic')
 		if(!$scope.target.id)
 		{
 			return;
+		}
 		if($scope.target.id === $scope.origin.id){
 			$scope.valid.id = true;
 			return;
