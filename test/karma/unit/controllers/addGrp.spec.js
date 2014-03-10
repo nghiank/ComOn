@@ -2,7 +2,7 @@
 
 (function() {
 	describe('ACE controllers', function() {
-		describe('AddCompFormCtrl', function() {
+		describe('AddGrpFormCtrl', function() {
 		// Load the controllers module
 			beforeEach(module('ace'));
 
@@ -13,10 +13,11 @@
 				scope = $rootScope.$new();
 				Service = Schematics;
 				$httpBackend = $injector.get('$httpBackend');
-				$httpBackend.when('GET', 'api/getChildren/1').respond(200,{'children': [{'name': 'PB','_id':'M0'}, {'name': 'Switch','_id':'M1'}]});
+				$httpBackend.when('GET', 'api/getChildren/1').respond(200,{'children': [{'name': 'PB','id':'M0'}, {'name': 'Switch','id':'M1'}]});
+				$httpBackend.when('GET','http://invalid.bmp').respond(302);
 				parent = { 'name' :'IEEE: Solenoids', 'parentNode' : '53168932e8f493000024bc4a', 'id' : 'M24', 'standard' : '53168932e8f493000024bc49', '_id' : '1', 'isComposite' : true, 'dl' : null, 'acad360l' : null, 'thumbnail' : 'https://dl.dropboxusercontent.com/s/t1mrbs8ijos53gr/s_sv.bmp', '__v' : 0 };
 
-				UploadController = $controller('addCompFormCtrl', {
+				UploadController = $controller('addGrpFormCtrl', {
 					$scope: scope,
 					Schematics: Service,
 					$modalInstance:modalInstance,
@@ -27,8 +28,8 @@
 			afterEach(function() {
 			         $httpBackend.verifyNoOutstandingExpectation();
 			         $httpBackend.verifyNoOutstandingRequest();
-			       });
-
+			    });
+			
 			it('ensures repetitive component name are caught', function(){
 				var names = ['Pb','PB','SwitcH'];
 				var ids = ['1', '2', '3'];
@@ -47,8 +48,6 @@
 				scope.valid.name = true;
 				expect(scope.createDisabled).toEqual(true);
 				scope.valid.id = true;
-				expect(scope.createDisabled).toEqual(true);
-				scope.valid.dl = true;
 				expect(scope.createDisabled).toEqual(true);
 				scope.valid.thumbnail = true;
 				scope.$apply();
@@ -99,32 +98,6 @@
 				scope.validateThumbnail();
 				$httpBackend.flush();
 				expect(scope.valid.thumbnail).toEqual(true);
-			});
-
-			it('ensures non-dwg file link to "download link" are caught',function(){
-				var dls = ['https://dl.dropboxusercontent.com/s/rx4be2kya1bxu38/_np_nt.bmp','http://valid.bmp'];
-				for (var dl in dls){
-					scope.target.dl = dl;
-					scope.validateDwg();
-					expect(scope.valid.dl).not.toEqual(true);
-				}
-			});
-
-			it('ensures broken linkes to "download link" are caught', function(){
-				var dl = 'http://invalid.dwg';
-				$httpBackend.expectGET('http://invalid.dwg').respond(302);
-				scope.target.dl = dl;
-				scope.validateDwg();
-				$httpBackend.flush();
-				expect(scope.valid.dl).not.toEqual(true);
-			});
-
-			it('ensures valid link to "download link" passes validation',function(){
-				scope.target.dl = 'http://valid.dwg';
-				$httpBackend.expectGET('http://valid.dwg').respond(200, '');
-				scope.validateDwg();
-				$httpBackend.flush();
-				expect(scope.valid.dl).toEqual(true);
 			});
 
 		});

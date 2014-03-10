@@ -41,7 +41,7 @@ angular.module('ace.schematic')
         $scope.error.thumbnail = null;
         if($scope.target.thumbnail){
             var imgPattern = new RegExp('^.*\\.(bmp|jpeg|jpg|png|ico)$');
-            if (imgPattern.test($scope.target.thumbnail)){
+            if (!imgPattern.test($scope.target.thumbnail)){
                 $scope.error.thumbnail = 'Thumbnail must be a .bmp file.';
                 return;
             }
@@ -61,7 +61,7 @@ angular.module('ace.schematic')
         $scope.error.dl = null;
         if($scope.target.dl){
             var dwgPattern = new RegExp('^.*\\.dwg$');
-            if (dwgPattern.test($scope.target.dl)){
+            if (!dwgPattern.test($scope.target.dl)){
                 $scope.error.dl = 'This file must be a .dwg file.';
                 return;
             }
