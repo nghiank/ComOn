@@ -14,7 +14,7 @@ angular.module('ace.schematic')
 
 	$scope.imgPreview = '<img src="'.concat($scope.origin.thumbnail, '"/>');
 
-	$scope.$watch('valid.thumbnail',function(){
+	$scope.$watchCollection('[target.thumbnail, valid.thumbnail]',function(){
 		if($scope.target.thumbnail && $scope.valid.thumbnail){
 			$scope.imgPreview = '<img src="'.concat($scope.target.thumbnail, '"/>');
 		}

@@ -16,8 +16,11 @@ angular.module('ace.schematic')
     $scope.$watch('valid.thumbnail',function(){
         if($scope.target.thumbnail && $scope.valid.thumbnail){
             $scope.imgPreview = '<img src="'.concat($scope.target.thumbnail, '"/>');
-        }else
-            $scope.imgPreview = '<i class="fa fa-ban fa-2x error"></i>';
+        }
+        else
+        {
+            $scope.imgPreview = '';
+        }
     });
 
     $scope.$watchCollection('valid',function(){
@@ -34,7 +37,7 @@ angular.module('ace.schematic')
     };
 
     $scope.validateThumbnail = function(){
-        $scope.valid.thumbnail = false;
+        $scope.valid.thumbnail = undefined;
         $scope.error.thumbnail = null;
         if($scope.target.thumbnail)
         {
@@ -58,7 +61,7 @@ angular.module('ace.schematic')
 
     $scope.validateDwg = function(){
         console.log('in validateDwg');
-        $scope.valid.dl = false;
+        $scope.valid.dl = undefined;
         $scope.error.dl = null;
         if($scope.target.dl){
             var dwgPattern = new RegExp('^.*\\.dwg$');
@@ -84,7 +87,7 @@ angular.module('ace.schematic')
     $scope.checkName = function(){
         $scope.error.name = null;
         $scope.success.name = null;
-        $scope.valid.name = false;
+        $scope.valid.name = undefined;
         if(!$scope.target.name)
         {
             return;
@@ -92,7 +95,6 @@ angular.module('ace.schematic')
         if($scope.target.name.length > 30) //Later check against all the other standard names too
         {
             $scope.error.name = 'Invalid name.';
-            $scope.$apply();
             return;
         }
         Schematics.children.get({nodeId:parent._id}, function(comps) {
@@ -115,6 +117,7 @@ angular.module('ace.schematic')
     $scope.checkId = function(){
         $scope.error.id = null;
         $scope.success.id = null;
+        $scope.valid.id = undefined;
         if(!$scope.target.id)
             return;
         $scope.target.id = $scope.target.id.toUpperCase();

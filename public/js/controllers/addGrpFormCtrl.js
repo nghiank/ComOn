@@ -16,8 +16,9 @@ angular.module('ace.schematic')
     $scope.$watch('valid.thumbnail',function(){
         if($scope.target.thumbnail && $scope.valid.thumbnail){
             $scope.imgPreview = '<img src="'.concat($scope.target.thumbnail, '"/>');
-        }else
-            $scope.imgPreview = '<i class="fa fa-ban fa-2x error"></i>';
+        }
+        else
+            $scope.imgPreview = '';
     });
 
     $scope.$watchCollection('[valid.name,valid.id,valid.thumbnail]',function(){
