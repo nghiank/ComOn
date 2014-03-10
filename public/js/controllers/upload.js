@@ -25,7 +25,6 @@ angular.module('ace.schematic').controller('UploadController', ['$timeout', '$sc
 	};
 
 	$scope.checkDatFile = function($files){
-		console.log('in checkDat');
 		$scope.error.dat = null;
 		var datPattern = new RegExp('^.*\\.dat$');
 		if($files[0] && !datPattern.test($files[0].name))
@@ -39,7 +38,6 @@ angular.module('ace.schematic').controller('UploadController', ['$timeout', '$sc
 	};
 
 	$scope.resetDAT = function() {
-		console.log('in resetDAT');
 		if($scope.jsonFile)
 			$scope.resetJSON();
 		$scope.uploadDisabled = true;
@@ -66,7 +64,6 @@ angular.module('ace.schematic').controller('UploadController', ['$timeout', '$sc
 	};
 
 	$scope.checkJsonFile = function($files){
-		console.log('in checkJsonFile');
 		$scope.error.json = null;
 		var jsonPattern = new RegExp('^.*\\.json$');
 		if($files[0] && !jsonPattern.test($files[0].name))
@@ -107,18 +104,15 @@ angular.module('ace.schematic').controller('UploadController', ['$timeout', '$sc
 		{
 			$scope.uploadDisabled = true;
 			$scope.error.name = 'Invalid name.';
-			$scope.$apply();
 			return;
 		}
 
 		Schematics.standardlist.query(function(stds) {
 			if(stds){
-				console.log(stds);
 				for (var i = 0; i < stds.length; i++){
 					var dbName = stds[i].name.toUpperCase();
 					var localName = $scope.stdName.toUpperCase();
 					if(dbName.localeCompare(localName) === 0){
-						console.log('wrong name');
 						$scope.valid.name = false;
 						$scope.error.name = 'A standard with this name already exists.';
 						return;
@@ -186,7 +180,6 @@ angular.module('ace.schematic').controller('UploadController', ['$timeout', '$sc
 		reader.onload = function(){
 			$scope.Parser.parse(reader.result);
 			$scope.Parser.generateSubMenuHierachy();
-			//MO is the node for the name of the standard.
 			$scope.stdName = $scope.Parser.rootNode.title;
 			$scope.datObject = $scope.Parser.rootNode;
 			$scope.checkName();

@@ -26,7 +26,6 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['$timeout', '$sco
 		$scope.json = null;
 		$scope.datFile = null;
 		$scope.jsonFile = null;
-		$scope.editStdForm.$setPristine();
 	});
 
 	$scope.abort = function(index) {
@@ -109,20 +108,17 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['$timeout', '$sco
 		{
 			return;
 		}
-		if(data.length > 30) //Later check against all the other standard names too
+		if(data.length > 60)
 		{
 			$scope.error.name = 'Invalid name.';
 			return;
 		}
-
 		Schematics.standardlist.query(function(stds) {
 			if(stds){
-				console.log(stds);
 				for (var i = 0; i < stds.length; i++){
 					var dbName = stds[i].name.toUpperCase();
 					var localName = $scope.stdName.toUpperCase();
-					if(dbName.localeCompare(localName) === 0 && $scope.$parent.currentStd._id.localeCompare(stds[i]._id) !== 0){
-						console.log('wrong name');
+					if(dbName.localeCompare(localName) === 0 && $scope.currentStd._id.localeCompare(stds[i]._id) !== 0){
 						$scope.valid.name = false;
 						$scope.error.name = 'A standard with this name already exists.';
 						return;

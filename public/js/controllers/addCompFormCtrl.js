@@ -68,7 +68,6 @@ angular.module('ace.schematic')
             $http.get($scope.target.dl)
             .success(function(){
                 $scope.valid.dl = true;
-                console.log('dl link valid');
             })
             .error(function(){
                 $scope.valid.dl = false;
@@ -91,12 +90,10 @@ angular.module('ace.schematic')
             return;
         }
         Schematics.children.get({nodeId:parent._id}, function(comps) {
-            console.log('in callback');
             if(comps){
                 for (var i = 0; i < comps.children.length; i++){
                     var dbName = comps.children[i].name.toUpperCase();
                     var localName = $scope.target.name.toUpperCase();
-                    console.log(dbName);
                     if(dbName.localeCompare(localName) === 0 && $scope.target._id !== comps.children[i]._id){
                         $scope.valid.name = false;
                         $scope.error.name = 'This name already exists within the same group.';

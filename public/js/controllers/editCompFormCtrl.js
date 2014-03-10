@@ -31,7 +31,6 @@ angular.module('ace.schematic')
 		var idCorrect = ($scope.target.id && $scope.valid.id) || !$scope.target.id;
 		var thumbnailCorrect = (($scope.valid.thumbnail && $scope.target.thumbnail) || !$scope.target.thumbnail);
 		var dlCorrect = (($scope.target.dl && $scope.valid.dl) || !$scope.target.dl);
-		console.log(nameCorrect,thumbnailCorrect,dlCorrect);
 		var cleanForm = !$scope.target.name && !$scope.target.dl && !$scope.target.thumbnail && !$scope.target.id;
 		$scope.editDisabled = !(idCorrect && nameCorrect && thumbnailCorrect && dlCorrect) || cleanForm;
 	});
@@ -46,7 +45,6 @@ angular.module('ace.schematic')
 	};
 
 	$scope.validateThumbnail = function(){
-		console.log($scope.target.thumbnail);
 		$scope.valid.thumbnail = undefined;
 		$scope.error.thumbnail = null;
 		if($scope.target.thumbnail)
@@ -61,12 +59,10 @@ angular.module('ace.schematic')
 			$http.get($scope.target.thumbnail)
 			.success(function(){
 				$scope.valid.thumbnail = true;
-				console.log('thumbnail link valid');
 			})
 			.error(function(){
 				$scope.valid.thumbnail = false;
 				$scope.error.thumbnail = 'The link is broken.';
-				console.log('thumbnail link broken');
 			});
 		}
 	};
@@ -82,22 +78,19 @@ angular.module('ace.schematic')
                 $scope.error.dl = 'Not a drawing file.';
                 return;
             }
-			console.log('in if');
 			$http.get($scope.target.dl)
 			.success(function(){
 				$scope.valid.dl = true;
-				console.log('dl link valid');
 			})
 			.error(function(){
 				$scope.valid.dl = false;
 				$scope.error.dl = 'The dl link is broken.';
-				console.log($scope.error.dl);
 			});
 		}
 	};
 
 	$scope.checkName = function(){
-		console.log($scope.origin.parentNode);
+
 		$scope.error.name = null;
 		$scope.success.name = null;
 		$scope.valid.name = undefined;
@@ -105,7 +98,7 @@ angular.module('ace.schematic')
 		{
 			return;
 		}
-		if($scope.target.name.length > 60) //Later check against all the other standard names too
+		if($scope.target.name.length > 60) 
 		{
 			$scope.error.name = 'Invalid name.';
 			return;
@@ -116,6 +109,7 @@ angular.module('ace.schematic')
 			$scope.success.name = 'This is a valid name.';
 			return;
 		}
+		console.log('scope.origin.parentNode:',$scope.origin.parentNode);
 		Schematics.children.get({nodeId:$scope.origin.parentNode._id}, function(comps) {
 			if(comps){
 				for (var i = 0; i < comps.children.length; i++){

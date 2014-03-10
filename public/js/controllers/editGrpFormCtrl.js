@@ -45,7 +45,6 @@ angular.module('ace.schematic')
 	};
 
 	$scope.validateThumbnail = function(){
-		console.log($scope.target.thumbnail);
 		$scope.valid.thumbnail = undefined;
 		$scope.error.thumbnail = null;
 		if($scope.target.thumbnail)
@@ -60,12 +59,10 @@ angular.module('ace.schematic')
 			$http.get($scope.target.thumbnail)
 			.success(function(){
 				$scope.valid.thumbnail = true;
-				console.log('thumbnail link valid');
 			})
 			.error(function(){
 				$scope.valid.thumbnail = false;
 				$scope.error.thumbnail = 'The link is broken.';
-				console.log('thumbnail link broken');
 			});
 		}
 	};
