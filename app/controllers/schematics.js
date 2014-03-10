@@ -169,7 +169,6 @@ exports.receiveFiles = function(req, res) {
 };
 
 exports.isUniqueId = function(req,res) {
-	console.log(req.body);
 	if(!req.body.standardId || !req.body.id)
 	{
 		return error.sendGenericError(res, 400, 'Error Encountered');
@@ -202,7 +201,7 @@ exports.getNodeChildren = function(req, res) {
 exports.delete = function(req, res) {
 	if(!req.node)
 	{
-		return error.sendGenericError(res, 400, 'Error Encountered...');
+		return error.sendGenericError(res, 400, 'Error Encountered');
 	}
 	deleteChildren(req.node._id);
 	res.send(200);
@@ -348,30 +347,37 @@ exports.node = function(req, res, next, id) {
 };
 
 exports.getNode = function(req,res){
-	if (req.node)
-		return res.jsonp(req.node);
-	return error.sendGenericError(res, 400, 'Error Encountered');
+	if (!req.node)
+		return error.sendGenericError(res, 400, 'Error Encountered');
+	return res.jsonp(req.node);
 };
 
 exports.createNode = function(req,res){
 	if(!req.body.node)
 		return error.sendGenericError(res, 400, 'No node sent to server');
 	var node = req.body.node;
-	var component = new ComponentSchem({
-		name: node.name,
-		parentNode: node.parentNode,
-		id: node.id,
-		standard: node.standard,
-		thumbnail: node.thumbnail,
-		dl: node.dl,
-		acad360l: null,
-		isComposite: node.isComposite,
-		isPublished: true
+	if(!node.parentNode)
+		return error.sendGenericError(res, 400, 'No node sent to server');
+	ComponentSchem.findOne({_id: node.parentNode}, function(err, component) {
+		if(err)
+			return error.sendGenericError(res, 400, 'No node sent to server');
+		if(!component)
+			return error.sendGenericError(res, 400, 'No node sent to server');
+		var child_component = new ComponentSchem({
+				name: node.name,
+				parentNode: node.parentNode,
+				id: node.id,
+				standard: node.standard,
+				thumbnail: node.thumbnail,
+				dl: node.dl,
+				acad360l: null,
+				isComposite: node.isComposite,
+				isPublished: true
+			});
+		child_component.save(function(err) {
+			if(err) return error.sendGenericError(res, 400, 'Error Encountered');
+			return res.jsonp(child_component);
+		});
 	});
-	component.save(function(err) {
-		if(err) return console.log(err);
-		return res.jsonp(component);
-	});
-
 };
 

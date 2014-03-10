@@ -16,7 +16,8 @@ angular.module('ace.schematic')
     $scope.$watch('valid.thumbnail',function(){
         if($scope.target.thumbnail && $scope.valid.thumbnail){
             $scope.imgPreview = '<img src="'.concat($scope.target.thumbnail, '"/>');
-        }else
+        }
+        else
             $scope.imgPreview = '';
     });
 
@@ -37,6 +38,14 @@ angular.module('ace.schematic')
         $scope.valid.thumbnail = false;
         $scope.error.thumbnail = null;
         if($scope.target.thumbnail)
+        {
+            var thumbnailPattern = new RegExp('^.*\\.(bmp|jpeg|jpg|ico)$');
+            if(!thumbnailPattern.test($scope.target.thumbnail))
+            {
+                $scope.valid.thumbnail = false;
+                $scope.error.thumbnail = 'Not an image.';
+                return;
+            }
             $http.get($scope.target.thumbnail)
             .success(function(){
                 $scope.valid.thumbnail = true;
@@ -45,6 +54,7 @@ angular.module('ace.schematic')
                 $scope.valid.thumbnail = false;
                 $scope.error.thumbnail = 'The link is broken.';
             });
+        }
     };
 
     $scope.checkName = function(){
@@ -69,7 +79,7 @@ angular.module('ace.schematic')
                     var localName = $scope.target.name.toUpperCase();
                     if(dbName.localeCompare(localName) === 0 && $scope.target._id !== comps.children[i]._id){
                         $scope.valid.name = false;
-                        $scope.error.name = 'This name already exists in database';
+                        $scope.error.name = 'This name already exists within the same group.';
                         return;
                     }
                 }
@@ -91,7 +101,7 @@ angular.module('ace.schematic')
             }
             else{
                 $scope.valid.id = false;
-                $scope.error.id = 'This id already exists in the database.';
+                $scope.error.id = 'This id already exists within the same group.';
             }
         });
     };

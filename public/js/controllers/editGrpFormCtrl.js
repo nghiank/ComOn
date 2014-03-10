@@ -9,25 +9,29 @@ angular.module('ace.schematic')
 	$scope.error = {};
 	$scope.success = {};
 	$scope.id = null;
-	$scope.valid = {'name':false,'thumbnail':false,'dl':false,'id':false};
+	$scope.valid = {'name':false,'thumbnail':false,'id':false};
 	$scope.editDisabled = true;
 
 	$scope.imgPreview = '<img src="'.concat($scope.origin.thumbnail, '"/>');
 
-	$scope.$watch('target.thumbnail',function(){
-		if($scope.target.thumbnail){
+	$scope.$watchCollection('[target.thumbnail, valid.thumbnail]',function(){
+		if($scope.target.thumbnail && $scope.valid.thumbnail){
 			$scope.imgPreview = '<img src="'.concat($scope.target.thumbnail, '"/>');
-		}else{
+		}
+		else if($scope.target.thumbnail && !$scope.valid.thumbnail){
+			$scope.imgPreview = '<i class="fa fa-ban fa-2x error"></i>';
+		}
+		else {
 			$scope.imgPreview = '<img src="'.concat($scope.origin.thumbnail, '"/>');
 		}
 	});
 
 	$scope.$watchCollection('valid',function(){
-		var nameCorrect = (($scope.target.name && $scope.valid.name) || typeof $scope.target.name ==='undefined');
-		var idCorrect = ($scope.target.id && $scope.valid.id) || typeof $scope.target.id === 'undefined';
-		var thumbnailCorrect = (($scope.valid.thumbnail && $scope.target.thumbnail) || typeof $scope.target.thumbnail === 'undefined');
+		var nameCorrect = (($scope.target.name && $scope.valid.name) || !$scope.target.name);
+		var idCorrect = ($scope.target.id && $scope.valid.id) || !$scope.target.id;
+		var thumbnailCorrect = (($scope.valid.thumbnail && $scope.target.thumbnail) || !$scope.target.thumbnail);
 		console.log(nameCorrect,thumbnailCorrect);
-		var cleanForm = typeof $scope.target.name === 'undefined' && typeof $scope.target.thumbnail === 'undefined' && typeof $scope.target.id === 'undefined';
+		var cleanForm = !$scope.target.name && !$scope.target.thumbnail && !$scope.target.id;
 		$scope.editDisabled = !(idCorrect && nameCorrect && thumbnailCorrect) || cleanForm;
 	});
 
@@ -42,9 +46,17 @@ angular.module('ace.schematic')
 
 	$scope.validateThumbnail = function(){
 		console.log($scope.target.thumbnail);
-		$scope.valid.thumbnail = false;
+		$scope.valid.thumbnail = undefined;
 		$scope.error.thumbnail = null;
 		if($scope.target.thumbnail)
+		{
+            var thumbnailPattern = new RegExp('^.*\\.(bmp|jpeg|jpg|ico)$');
+            if(!thumbnailPattern.test($scope.target.thumbnail))
+            {
+                $scope.valid.thumbnail = false;
+                $scope.error.thumbnail = 'Not an image.';
+                return;
+            }
 			$http.get($scope.target.thumbnail)
 			.success(function(){
 				$scope.valid.thumbnail = true;
@@ -55,13 +67,13 @@ angular.module('ace.schematic')
 				$scope.error.thumbnail = 'The link is broken.';
 				console.log('thumbnail link broken');
 			});
+		}
 	};
 
 	$scope.checkName = function(){
-		console.log($scope.origin.parentNode);
 		$scope.error.name = null;
 		$scope.success.name = null;
-		$scope.valid.name = false;
+		$scope.valid.name = undefined;
 		if(!$scope.target.name)
 		{
 			return;
@@ -72,7 +84,12 @@ angular.module('ace.schematic')
 			$scope.$apply();
 			return;
 		}
-
+		if($scope.origin.name.toUpperCase() === $scope.target.name.toUpperCase())
+		{
+			$scope.valid.name = true;
+			$scope.success.name = 'This is a valid name.';
+			return;
+		}
 		Schematics.children.get({nodeId:$scope.origin.parentNode._id}, function(comps) {
 			if(comps){
 				for (var i = 0; i < comps.children.length; i++){
@@ -80,7 +97,7 @@ angular.module('ace.schematic')
 					var localName = $scope.target.name.toUpperCase();
 					if(dbName.localeCompare(localName) === 0 && $scope.target._id !== comps.children[i]._id){
 						$scope.valid.name = false;
-						$scope.error.name = 'This name already exists in database';
+						$scope.error.name = 'This name already exists within the same group.';
 						return;
 					}
 				}
@@ -93,20 +110,27 @@ angular.module('ace.schematic')
 	$scope.checkId = function(){
 		$scope.error.id = null;
 		$scope.success.id = null;
+		$scope.valid.id = undefined;
 		if(!$scope.target.id)
+		{
 			return;
 		if($scope.target.id === $scope.origin.id){
 			$scope.valid.id = true;
 			return;
 		}
 		$scope.target.id = $scope.target.id.toUpperCase();
+		if($scope.origin.id.toUpperCase() === $scope.target.id.toUpperCase())
+		{
+			$scope.valid.id = true;
+			return;
+		}
 		Schematics.checkId.save({id:$scope.target.id, standardId:$scope.origin.standard._id},function(response){
 			if(response.unique === true){
 				$scope.valid.id = true;
 			}
 			else{
 				$scope.valid.id = false;
-				$scope.error.id = 'This id already exists in the database.';
+				$scope.error.id = 'This id already exists within the same group.';
 			}
 		});
 	};

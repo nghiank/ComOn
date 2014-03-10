@@ -16,8 +16,11 @@ angular.module('ace.schematic')
     $scope.$watch('valid.thumbnail',function(){
         if($scope.target.thumbnail && $scope.valid.thumbnail){
             $scope.imgPreview = '<img src="'.concat($scope.target.thumbnail, '"/>');
-        }else
+        }
+        else
+        {
             $scope.imgPreview = '';
+        }
     });
 
     $scope.$watchCollection('valid',function(){
@@ -34,7 +37,7 @@ angular.module('ace.schematic')
     };
 
     $scope.validateThumbnail = function(){
-        $scope.valid.thumbnail = false;
+        $scope.valid.thumbnail = undefined;
         $scope.error.thumbnail = null;
         if($scope.target.thumbnail){
             var imgPattern = new RegExp('^.*\\.bmp$');
@@ -42,7 +45,6 @@ angular.module('ace.schematic')
                 $scope.error.thumbnail = 'Thumbnail must be a .bmp file.';
                 return;
             }
-            console.log('dasdas');
             $http.get($scope.target.thumbnail)
             .success(function(){
                 $scope.valid.thumbnail = true;
@@ -71,7 +73,6 @@ angular.module('ace.schematic')
             .error(function(){
                 $scope.valid.dl = false;
                 $scope.error.dl = 'The dl link is broken.';
-                console.log($scope.error.dl);
             });
         }
     };
@@ -79,7 +80,7 @@ angular.module('ace.schematic')
     $scope.checkName = function(){
         $scope.error.name = null;
         $scope.success.name = null;
-        $scope.valid.name = false;
+        $scope.valid.name = undefined;
         if(!$scope.target.name)
         {
             return;
@@ -98,7 +99,7 @@ angular.module('ace.schematic')
                     console.log(dbName);
                     if(dbName.localeCompare(localName) === 0 && $scope.target._id !== comps.children[i]._id){
                         $scope.valid.name = false;
-                        $scope.error.name = 'This name already exists in database';
+                        $scope.error.name = 'This name already exists within the same group.';
                         return;
                     }
                 }
@@ -111,6 +112,7 @@ angular.module('ace.schematic')
     $scope.checkId = function(){
         $scope.error.id = null;
         $scope.success.id = null;
+        $scope.valid.id = undefined;
         if(!$scope.target.id)
             return;
         $scope.target.id = $scope.target.id.toUpperCase();
@@ -120,7 +122,7 @@ angular.module('ace.schematic')
             }
             else{
                 $scope.valid.id = false;
-                $scope.error.id = 'This id already exists in the database.';
+                $scope.error.id = 'This id already exists within the same group.';
             }
         });
     };

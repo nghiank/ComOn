@@ -124,7 +124,7 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['$timeout', '$sco
 					if(dbName.localeCompare(localName) === 0 && $scope.$parent.currentStd._id.localeCompare(stds[i]._id) !== 0){
 						console.log('wrong name');
 						$scope.valid.name = false;
-						$scope.error.name = 'This name already exists in database';
+						$scope.error.name = 'A standard with this name already exists.';
 						return;
 					}
 				}

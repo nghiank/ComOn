@@ -181,7 +181,7 @@ describe('<e2e API Test>', function() {
                             .attach('jsonFile', './test/mocha/RestAPI/mapping.json')
                             .end(function(err, res) {
                                 res.should.have.status(200);
-                                
+
                                 function getComponentId() {
                                     agent.get('/api/getSchemStds')
                                     .end(function(err, res) {
@@ -253,9 +253,11 @@ describe('<e2e API Test>', function() {
             });
 
             after(function(done) {
-                SchematicComponent.remove().exec();
-                SchematicStandard.remove().exec();
-                done();
+                SchematicComponent.remove().exec(function() {
+                    SchematicStandard.remove().exec(function() {
+                        setTimeout(done, 500);
+                    });
+                });
             });
         });
     });
@@ -378,6 +380,17 @@ describe('<e2e API Test>', function() {
                 });
             });
 
+            it('POST /api/editStd for an invalid standard Id should return 400', function(done) {
+                this.timeout(config.timeout);
+                agent
+                .post('/api/editStd')
+                .send({standardId: 'sfrgsdfs', stdName: 'JIC',desc: 'fail'})
+                .end(function(err, res) {
+                    (res.status).should.equal(400);
+                    done();
+                });
+            });
+
             it('POST /api/editComponent should return updated component with 200', function(done) {
                 this.timeout(config.timeout);
                 agent
@@ -390,17 +403,6 @@ describe('<e2e API Test>', function() {
                 });
             });
 
-            it('POST /api/editStd for an invalid standard Id should return 400', function(done) {
-                this.timeout(config.timeout);
-                agent
-                .post('/api/editStd')
-                .send({standardId: 'sfrgsdfs', stdName: 'JIC',desc: 'fail'})
-                .end(function(err, res) {
-                    (res.status).should.equal(400);
-                    done();
-                });
-            });
-
             it('POST /api/editComponent for an invalid component Id should return 400', function(done) {
                 this.timeout(config.timeout);
                 agent
@@ -408,6 +410,78 @@ describe('<e2e API Test>', function() {
                 .send({node: {_id: 'dsajhfiuwhes',name: 'JIC2'}})
                 .end(function(err, res) {
                     (res.status).should.equal(400);
+                    done();
+                });
+            });
+
+            it('GET api/getNode with a valid id should return the component with status 200', function(done) {
+                agent
+                .get('/api/getNode/'+id)
+                .end(function(err, res) {
+                    (res.status).should.equal(200);
+                    (res.body.name).should.equal('JIC2');
+                    done();
+                });
+            });
+
+            it('GET api/getNode with an invalid id should return 400', function(done) {
+                agent
+                .get('/api/getNode/dhdhg')
+                .end(function(err, res) {
+                    (res.status).should.equal(400);
+                    done();
+                });
+            });
+
+            it('POST api/isUniqueId without an Id should return 400', function(done) {
+                agent
+                .post('/api/isUniqueId')
+                .send({standardId: standard_id})
+                .end(function(err, res) {
+                    (res.status).should.equal(400);
+                    done();
+                });
+            });
+
+            it('POST api/isUniqueId without a standard id should return 400', function(done) {
+                agent
+                .post('/api/isUniqueId')
+                .send({id: id})
+                .end(function(err, res) {
+                    (res.status).should.equal(400);
+                    done();
+                });
+            });
+
+            it('POST api/isUniqueId with valid id and standardId should return true with status 200', function(done) {
+                agent
+                .post('/api/isUniqueId')
+                .send({id: 'asdasda', standardId: standard_id})
+                .end(function(err, res) {
+                    (res.body.unique).should.equal(true);
+                    (res.status).should.equal(200);
+                    done();
+                });
+            });
+
+            it('POST api/createNode without a proper parent will return 400', function(done) {
+                agent
+                .post('/api/createNode')
+                .send({node: {name: 'asdasd', id: 'asdasd', parentNode: 'as21asd', standard: standard_id}})
+                .end(function(err, res) {
+                    (res.status).should.equal(400);
+                    done();
+                });
+            });
+
+            it('POST api/createNode with a proper node (unique name, id, parent combination) will return the created component with status 200', function(done) {
+                agent
+                .post('/api/createNode')
+                .send({node: {name: 'asdasd', id: 'test_id', parentNode: id, standard: standard_id}})
+                .end(function(err, res) {
+                    (res.status).should.equal(200);
+                    (res.body.name).should.equal('asdasd');
+                    (res.body.id).should.equal('test_id');
                     done();
                 });
             });
@@ -431,7 +505,8 @@ describe('<e2e API Test>', function() {
             });
 
         });
-        describe('After delete', function() {
+        describe('After delete - testing authorization for various API', function() {
+            var test_node = {name: 'test',id: '123saasd',standard: 'asdasdas'};
             before(function(done) {
                 this.timeout(config.timeout);
                 agent.post('/api/upload')
@@ -470,6 +545,37 @@ describe('<e2e API Test>', function() {
                     (result.name).should.equal('JIC: Schematic Symbols');
                     (res.statusCode).should.equal(200);
                     id = result._id;
+                    standard_id = result.standard;
+                    done();
+                });
+            });
+
+            it('GET /api/getNode without credentials should return component with status 200', function(done) {
+                agent
+                .get('/api/getNode/'+id)
+                .end(function(err, res) {
+                    (res.status).should.equal(200);
+                    (res.body.name).should.equal('JIC: Schematic Symbols');
+                    done();
+                });
+            });
+
+            it('POST /api/isUniqueId without credentials should return 401', function(done) {
+                agent
+                .post('/api/isUniqueId')
+                .send({id: id, standardId: standard_id})
+                .end(function(err, res) {
+                    (res.status).should.equal(401);
+                    done();
+                });
+            });
+
+            it('POST /api/createNode without credentials should return 401', function(done) {
+                agent
+                .post('/api/createNode')
+                .send({node: test_node})
+                .end(function(err, res) {
+                    (res.status).should.equal(401);
                     done();
                 });
             });
@@ -510,7 +616,7 @@ describe('<e2e API Test>', function() {
         User.remove().exec(function(){
             SchematicComponent.remove().exec(function() {
                 SchematicStandard.remove().exec(function() {
-                    done();
+                    setTimeout(done, 500);
                 });
             });
         });

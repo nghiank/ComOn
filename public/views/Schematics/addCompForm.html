@@ -6,7 +6,7 @@
             <label class= "col-md-4 control-label">Component Name:</label>
             <div class = "col-md-8">
                 <div class="input-group">
-                <span class="input-group-addon"><i ng-show = "valid.name" class="fa fa-check success" ></i><i class="fa fa-times fileinput-exists error" ng-show="!valid.name && error.name"></i></span>
+                <span class="input-group-addon"><i ng-show = "valid.name" class="fa fa-check success" ></i><i class="fa fa-times error" ng-show="!valid.name && error.name"></i></span>
                 <input type="text" class="form-control" ng-model="target.name" ng-blur="checkName()">
                 </div>
                 <p data-ng-show="error.name" class="error">{{error.name}}</p>
@@ -16,7 +16,7 @@
             <label class= "col-md-4 control-label">ID:</label>
             <div class = "col-md-8">
                 <div class="input-group">
-                <span class="input-group-addon"><i ng-show = "valid.id" class="fa fa-check success" ></i><i class="fa fa-times fileinput-exists error" ng-show="!valid.id && error.id"></i></span>
+                <span class="input-group-addon"><i ng-show = "valid.id" class="fa fa-check success" ></i><i class="fa fa-times error" ng-show="!valid.id && error.id"></i></span>
                 <input type="text" class="form-control" ng-model="target.id" ng-blur="checkId()">
                 </div>
                 <p data-ng-show="error.id" class="error">{{error.id}}</p>
@@ -27,7 +27,7 @@
             <label class= "col-md-4 control-label">Thumbnail:</label>
             <div class = "col-md-8">
                 <div class="input-group">
-                    <span class="input-group-addon"><i ng-show="valid.thumbnail" class="fa fa-check success" ></i><i class="fa fa-times fileinput-exists error" ng-show="!valid.thumbnail && error.thumbnail"></i></span>
+                    <span class="input-group-addon"><i ng-show="valid.thumbnail" class="fa fa-check success" ></i><i class="fa fa-times error" ng-show="!valid.thumbnail && error.thumbnail"></i></span>
                     <input type="text" class="form-control" ng-model="target.thumbnail" ng-blur="validateThumbnail()"
                     tooltip-html-unsafe="{{imgPreview}}" tooltip-placement="right">                
                 </div>
@@ -39,7 +39,7 @@
             <label class= "col-md-4 control-label">.DWG File</label>
             <div class = "col-md-8">
                 <div class="input-group">
-                    <span class="input-group-addon"><i ng-show = "valid.dl" class="fa fa-check success"><i class="fa fa-times fileinput-exists error" ng-show="!valid.dl && error.dl"></i></i></span>
+                    <span class="input-group-addon"><i ng-show = "valid.dl" class="fa fa-check success"></i><i class="fa fa-times error" ng-show="!valid.dl && error.dl"></i></i></span>
                     <input type="text" class="form-control" ng-model="target.dl" ng-blur="validateDwg()">                
                 </div>
                 <p data-ng-show="error.dl && !valid.dl" class="error">{{error.dl}}</p>
