@@ -36,18 +36,7 @@
                 
             </div>
         </div>
-        <div class="form-group">
-            <label class= "col-md-4 control-label">.DWG File</label>
-            <div class = "col-md-8">
-                <div class="input-group">
-                    <span class="input-group-addon"><i ng-show = "valid.dl" class="fa fa-check success" ><i class="fa fa-times fileinput-exists error" ng-show="!valid.dl && error.dl"></i></i></span>
-                    <input type="text" class="form-control" ng-model="target.dl" ng-blur="validateDwg()" placeholder={{origin.dl}}>                
-                </div>
-                <p data-ng-show="error.dl && !valid.dl" class="error">{{error.dl}}</p>
-                 
-            </div>
-        </div>
-        <hr>            
+       <hr>
         <div class="form-group" style="margin-right:5px">
             <div class="col-md-3">
                 <button type="button" ng-click="delete()" class="btn btn-danger">Delete</button>

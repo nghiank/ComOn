@@ -123,11 +123,12 @@ img
 }
 
 .modal-body{
-    background-color: #e5e5e5;
+    background-color: white;
 }
 
 .modal-header{
     font-weight: bold;
+    background-color:#e5e5e5;
     font-size: 14px;
     font-family: "Trebuchet MS", Helvetica, sans-serif;
 }

@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('ace.schematic')
-.controller('editCompFormCtrl', ['$timeout', '$scope','$location', '$upload', 'DatParser', 'Global', '$http', 'Schematics', '$modalInstance', '$modal', 'target', function ($timeout, $scope, $location, $upload, ParseDat, Global, $http, Schematics, $modalInstance, $modal, target) {
+.controller('editGrpFormCtrl', ['$timeout', '$scope','$location', '$upload', 'DatParser', 'Global', '$http', 'Schematics', '$modalInstance', '$modal', 'target', function ($timeout, $scope, $location, $upload, ParseDat, Global, $http, Schematics, $modalInstance, $modal, target) {
 	$scope.target = {'_id':target._id};
 	$scope.origin = target;
 	$scope.global = Global;
@@ -26,10 +26,9 @@ angular.module('ace.schematic')
 		var nameCorrect = (($scope.target.name && $scope.valid.name) || typeof $scope.target.name ==='undefined');
 		var idCorrect = ($scope.target.id && $scope.valid.id) || typeof $scope.target.id === 'undefined';
 		var thumbnailCorrect = (($scope.valid.thumbnail && $scope.target.thumbnail) || typeof $scope.target.thumbnail === 'undefined');
-		var dlCorrect = (($scope.target.dl && $scope.valid.dl) || typeof $scope.target.dl === 'undefined');
-		console.log(nameCorrect,thumbnailCorrect,dlCorrect);
-		var cleanForm = typeof $scope.target.name === 'undefined' && typeof $scope.target.dl === 'undefined' && typeof $scope.target.thumbnail === 'undefined' && typeof $scope.target.id === 'undefined';
-		$scope.editDisabled = !(idCorrect && nameCorrect && thumbnailCorrect && dlCorrect) || cleanForm;
+		console.log(nameCorrect,thumbnailCorrect);
+		var cleanForm = typeof $scope.target.name === 'undefined' && typeof $scope.target.thumbnail === 'undefined' && typeof $scope.target.id === 'undefined';
+		$scope.editDisabled = !(idCorrect && nameCorrect && thumbnailCorrect) || cleanForm;
 	});
 
 	$scope.abort = function(index) {
@@ -56,25 +55,6 @@ angular.module('ace.schematic')
 				$scope.error.thumbnail = 'The link is broken.';
 				console.log('thumbnail link broken');
 			});
-	};
-
-	$scope.validateDwg = function(){
-		console.log('in validateDwg');
-		$scope.valid.dl = false;
-		$scope.error.dl = null;
-		if($scope.target.dl){
-			console.log('in if');
-			$http.get($scope.target.dl)
-			.success(function(){
-				$scope.valid.dl = true;
-				console.log('dl link valid');
-			})
-			.error(function(){
-				$scope.valid.dl = false;
-				$scope.error.dl = 'The dl link is broken.';
-				console.log($scope.error.dl);
-			});
-		}
 	};
 
 	$scope.checkName = function(){
