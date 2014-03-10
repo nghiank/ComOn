@@ -17,7 +17,7 @@ angular.module('ace.schematic')
         if($scope.target.thumbnail && $scope.valid.thumbnail){
             $scope.imgPreview = '<img src="'.concat($scope.target.thumbnail, '"/>');
         }else
-            $scope.imgPreview = '';
+            $scope.imgPreview = '<i class="fa fa-ban fa-2x error"></i>';
     });
 
     $scope.$watchCollection('[valid.name,valid.id,valid.thumbnail]',function(){
@@ -37,6 +37,14 @@ angular.module('ace.schematic')
         $scope.valid.thumbnail = false;
         $scope.error.thumbnail = null;
         if($scope.target.thumbnail)
+        {
+            var thumbnailPattern = new RegExp('^.*\\.(bmp|jpeg|jpg|ico)$');
+            if(!thumbnailPattern.test($scope.target.thumbnail))
+            {
+                $scope.valid.thumbnail = false;
+                $scope.error.thumbnail = 'Not an image.';
+                return;
+            }
             $http.get($scope.target.thumbnail)
             .success(function(){
                 $scope.valid.thumbnail = true;
@@ -45,6 +53,7 @@ angular.module('ace.schematic')
                 $scope.valid.thumbnail = false;
                 $scope.error.thumbnail = 'The link is broken.';
             });
+        }
     };
 
     $scope.checkName = function(){

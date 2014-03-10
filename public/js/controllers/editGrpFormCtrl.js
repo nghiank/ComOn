@@ -14,10 +14,14 @@ angular.module('ace.schematic')
 
 	$scope.imgPreview = '<img src="'.concat($scope.origin.thumbnail, '"/>');
 
-	$scope.$watch('target.thumbnail',function(){
-		if($scope.target.thumbnail){
+	$scope.$watch('valid.thumbnail',function(){
+		if($scope.target.thumbnail && $scope.valid.thumbnail){
 			$scope.imgPreview = '<img src="'.concat($scope.target.thumbnail, '"/>');
-		}else{
+		}
+		else if($scope.target.thumbnail && !$scope.valid.thumbnail){
+			$scope.imgPreview = '<i class="fa fa-ban fa-2x error"></i>';
+		}
+		else {
 			$scope.imgPreview = '<img src="'.concat($scope.origin.thumbnail, '"/>');
 		}
 	});
@@ -45,6 +49,14 @@ angular.module('ace.schematic')
 		$scope.valid.thumbnail = undefined;
 		$scope.error.thumbnail = null;
 		if($scope.target.thumbnail)
+		{
+            var thumbnailPattern = new RegExp('^.*\\.(bmp|jpeg|jpg|ico)$');
+            if(!thumbnailPattern.test($scope.target.thumbnail))
+            {
+                $scope.valid.thumbnail = false;
+                $scope.error.thumbnail = 'Not an image.';
+                return;
+            }
 			$http.get($scope.target.thumbnail)
 			.success(function(){
 				$scope.valid.thumbnail = true;
@@ -55,6 +67,7 @@ angular.module('ace.schematic')
 				$scope.error.thumbnail = 'The link is broken.';
 				console.log('thumbnail link broken');
 			});
+		}
 	};
 
 	$scope.checkName = function(){

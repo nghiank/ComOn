@@ -17,7 +17,7 @@ angular.module('ace.schematic')
         if($scope.target.thumbnail && $scope.valid.thumbnail){
             $scope.imgPreview = '<img src="'.concat($scope.target.thumbnail, '"/>');
         }else
-            $scope.imgPreview = '';
+            $scope.imgPreview = '<i class="fa fa-ban fa-2x error"></i>';
     });
 
     $scope.$watchCollection('valid',function(){
@@ -37,6 +37,14 @@ angular.module('ace.schematic')
         $scope.valid.thumbnail = false;
         $scope.error.thumbnail = null;
         if($scope.target.thumbnail)
+        {
+            var thumbnailPattern = new RegExp('^.*\\.(bmp|jpeg|jpg|ico)$');
+            if(!thumbnailPattern.test($scope.target.thumbnail))
+            {
+                $scope.valid.thumbnail = false;
+                $scope.error.thumbnail = 'Not an image.';
+                return;
+            }
             $http.get($scope.target.thumbnail)
             .success(function(){
                 $scope.valid.thumbnail = true;
@@ -45,6 +53,7 @@ angular.module('ace.schematic')
                 $scope.valid.thumbnail = false;
                 $scope.error.thumbnail = 'The link is broken.';
             });
+        }
     };
 
     $scope.validateDwg = function(){
@@ -52,6 +61,13 @@ angular.module('ace.schematic')
         $scope.valid.dl = false;
         $scope.error.dl = null;
         if($scope.target.dl){
+            var dwgPattern = new RegExp('^.*\\.dwg$');
+            if(!dwgPattern.test($scope.target.dl))
+            {
+                $scope.valid.dl = false;
+                $scope.error.dl = 'Not a drawing file.';
+                return;
+            }
             console.log('in if');
             $http.get($scope.target.dl)
             .success(function(){
@@ -61,7 +77,6 @@ angular.module('ace.schematic')
             .error(function(){
                 $scope.valid.dl = false;
                 $scope.error.dl = 'The dl link is broken.';
-                console.log($scope.error.dl);
             });
         }
     };
