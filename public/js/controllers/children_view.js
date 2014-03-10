@@ -78,11 +78,39 @@ angular.module('ace.schematic')
 	};
 
 	$scope.showSubtypeAddForm = function(){
-		$scope.showComingSoon();
+		Schematics.node.get({nodeId:$routeParams.nodeId}, function(node){
+			$scope.target = node;
+			var modalInstance = $modal.open({
+				templateUrl: 'views/Schematics/addGrpForm.html',
+				controller: 'addGrpFormCtrl',
+				backdrop: 'static',
+				resolve:{
+					parent: function(){
+						return ($scope.target);
+					}
+				}
+			});
+			modalInstance.result.then(function(){
+				$scope.getChildren();
+			});
+		});
 	};
 
-	$scope.showSubtypeEditForm = function(){
-		$scope.showComingSoon();
+	$scope.showSubtypeEditForm = function(child){
+		$scope.target = child;
+		var modalInstance = $modal.open({
+			templateUrl: 'views/Schematics/editGrpForm.html',
+			controller: 'editGrpFormCtrl',
+			backdrop: 'static',
+			resolve: {
+				target: function() {
+					return ($scope.target);
+				}
+			}
+		});
+		modalInstance.result.then(function(){
+			$scope.getChildren();
+		});
 	};
 
 	$scope.showComingSoon = function(){
