@@ -49,13 +49,13 @@ angular.module('ace.schematic')
 		$scope.error.thumbnail = null;
 		if($scope.target.thumbnail)
 		{
-            var thumbnailPattern = new RegExp('^.*\\.(bmp|jpeg|jpg|ico|png)$');
-            if(!thumbnailPattern.test($scope.target.thumbnail))
-            {
-                $scope.valid.thumbnail = false;
-                $scope.error.thumbnail = 'Not an image.';
-                return;
-            }
+			var thumbnailPattern = new RegExp('^.*\\.(bmp|jpeg|jpg|ico|png)$');
+			if(!thumbnailPattern.test($scope.target.thumbnail))
+			{
+				$scope.valid.thumbnail = false;
+				$scope.error.thumbnail = 'Not an image.';
+				return;
+			}
 			$http.get($scope.target.thumbnail)
 			.success(function(){
 				$scope.valid.thumbnail = true;
@@ -71,13 +71,13 @@ angular.module('ace.schematic')
 		$scope.valid.dl = undefined;
 		$scope.error.dl = null;
 		if($scope.target.dl){
-            var dwgPattern = new RegExp('^.*\\.dwg$');
-            if(!dwgPattern.test($scope.target.dl))
-            {
-                $scope.valid.dl = false;
-                $scope.error.dl = 'Not a drawing file.';
-                return;
-            }
+			var dwgPattern = new RegExp('^.*\\.dwg$');
+			if(!dwgPattern.test($scope.target.dl))
+			{
+				$scope.valid.dl = false;
+				$scope.error.dl = 'Not a drawing file.';
+				return;
+			}
 			$http.get($scope.target.dl)
 			.success(function(){
 				$scope.valid.dl = true;
@@ -98,7 +98,7 @@ angular.module('ace.schematic')
 		{
 			return;
 		}
-		if($scope.target.name.length > 60) 
+		if($scope.target.name.length > 60)
 		{
 			$scope.error.name = 'Invalid name.';
 			return;

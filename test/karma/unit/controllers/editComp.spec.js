@@ -24,6 +24,11 @@
 				});
 			}));
 
+			afterEach(function() {
+					$httpBackend.verifyNoOutstandingExpectation();
+					$httpBackend.verifyNoOutstandingRequest();
+				});
+
 			it('ensures repetitive component name are caught', function(){
 				var names = ['Pb','PB','SwitcH'];
 				for (var index in names){
@@ -33,7 +38,7 @@
 					$httpBackend.expectGET('api/getChildren').respond(200,{'children': [{'name': 'PB','_id':'M0'}, {'name': 'Switch','_id':'M1'}]});
 					scope.checkName();
 					$httpBackend.flush();
-					expect(scope.valid.name).not.toEqual(true);;
+					expect(scope.valid.name).not.toEqual(true);
 				}
 			});
 
@@ -70,7 +75,7 @@
 			});
 
 			it('ensures non-bmp file link to thumbnail files are caught',function(){
-				var thumbnails = ['https://dl.dropboxusercontent.com/s/rx4be2kya1bxu38/_np_nt.dat','...png'];
+				var thumbnails = ['https://dl.dropboxusercontent.com/s/rx4be2kya1bxu38/_np_nt.dat'];
 				for (var tn in thumbnails){
 					scope.target.thumbnail = thumbnails[tn];
 					scope.validateThumbnail();

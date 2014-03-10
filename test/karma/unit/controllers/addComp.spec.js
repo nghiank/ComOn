@@ -25,9 +25,9 @@
 			}));
 
 			afterEach(function() {
-			         $httpBackend.verifyNoOutstandingExpectation();
-			         $httpBackend.verifyNoOutstandingRequest();
-			       });
+				$httpBackend.verifyNoOutstandingExpectation();
+				$httpBackend.verifyNoOutstandingRequest();
+			});
 
 			it('ensures repetitive component name are caught', function(){
 				var names = ['Pb','PB','SwitcH'];
@@ -89,7 +89,7 @@
 				scope.target.thumbnail = thumbnail;
 				scope.validateThumbnail();
 				$httpBackend.flush();
-				expect(scope.valid.thumbnail).not.toEqual(true);;
+				expect(scope.valid.thumbnail).not.toEqual(true);
 			});
 
 			it('ensures valid link to thumbnail passes validation',function(){

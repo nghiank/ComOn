@@ -21,6 +21,11 @@
 				});
 			}));
 
+			afterEach(function() {
+					$httpBackend.verifyNoOutstandingExpectation();
+					$httpBackend.verifyNoOutstandingRequest();
+				});
+
 			it('ensure name larger than 60 chars are caught', function(){
 				scope.stdName = 'ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ';
 				scope.checkName();
@@ -39,13 +44,13 @@
 				}
 			});
 
-			// it('ensures the original name pass validation',function(){
-			// 	scope.currentStd = {'name': 'ABC','_id':'2'};
-			// 	scope.stdName = 'ABC';
-			// 	scope.checkName();
-			// 	$httpBackend.flush();
-			// 	expect(scope.valid.name).toEqual(true);
-			// });
+			it('ensures the original name pass validation',function(){
+				scope.currentStd = {'name': 'ABC','_id':'2'};
+				scope.stdName = 'ABC';
+				scope.checkName();
+				$httpBackend.flush();
+				expect(scope.valid.name).toEqual(true);
+			});
 
 			it('ensure valid name pass validation', function(){
 				scope.stdName = 'JIC New';
