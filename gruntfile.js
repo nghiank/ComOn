@@ -99,5 +99,8 @@ module.exports = function(grunt) {
     //Test task.
     grunt.registerTask('test', ['env:test', 'mochaTest', 'karma:unit']);
 
+    grunt.registerTask('karma_test', ['env:test', 'karma:unit']);
+
+
     grunt.registerTask('travis', ['env:test', 'jshint', 'mochaTest', 'karma:unit']);
 };

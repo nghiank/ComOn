@@ -95,6 +95,10 @@ angular.module('ace.schematic')
 		$scope.success.id = null;
 		if(!$scope.target.id)
 			return;
+		if($scope.target.id === $scope.origin.id){
+			$scope.valid.id = true;
+			return;
+		}
 		$scope.target.id = $scope.target.id.toUpperCase();
 		Schematics.checkId.save({id:$scope.target.id, standardId:$scope.origin.standard._id},function(response){
 			if(response.unique === true){

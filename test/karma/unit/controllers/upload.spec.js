@@ -29,10 +29,12 @@
 			});
 
 			it('ensures repetitive standard name are caught', function(){
-				scope.stdName = 'IEC';
-				scope.checkName();
-				$httpBackend.flush();
-				expect(scope.valid.name).toBe(false);
+				var names = ['IEC','iec','ieC'];
+				for (var name in names){
+					scope.stdName = name;
+					scope.checkName();
+					expect(scope.valid.name).toBe(false);
+				}
 			});
 
 			it('ensure valid name pass validaation', function(){
@@ -61,9 +63,11 @@
 			});
 
 			it('ensure invalid dat files (file name with .dat) are caught', function(){
-				var datFile = [{'name':'sth.dat.exe'}];
-				scope.checkDatFile(datFile);
-				expect(scope.valid.dat).not.toBe(true);
+				var datFiles = [[{'name':'sth.dat.exe'}],[{'name':'sth.date'}]];
+				for(var datFile in datFiles){
+					scope.checkDatFile(datFile);
+					expect(scope.valid.dat).not.toBe(true);
+				}
 			});
 
 			it('ensure invalid dat files are caught', function(){

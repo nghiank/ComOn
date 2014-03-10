@@ -28,7 +28,6 @@ angular.module('ace.schematic').controller('UploadController', ['$timeout', '$sc
 		console.log('in checkDat');
 		$scope.error.dat = null;
 		var datPattern = new RegExp('^.*\\.dat$');
-		$scope.datFileType = datPattern.test($files[0].name);
 		if($files[0] && !datPattern.test($files[0].name))
 		{
 			$scope.error.dat = 'Not a valid data file.';
