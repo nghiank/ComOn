@@ -39,7 +39,7 @@ angular.module('ace.schematic')
         $scope.error.thumbnail = null;
         if($scope.target.thumbnail)
         {
-            var thumbnailPattern = new RegExp('^.*\\.(bmp|jpeg|jpg|ico)$');
+            var thumbnailPattern = new RegExp('^.*\\.(bmp|jpeg|jpg|ico|png)$');
             if(!thumbnailPattern.test($scope.target.thumbnail))
             {
                 $scope.valid.thumbnail = false;
@@ -65,10 +65,9 @@ angular.module('ace.schematic')
         {
             return;
         }
-        if($scope.target.name.length > 30) //Later check against all the other standard names too
+        if($scope.target.name.length > 60) //Later check against all the other standard names too
         {
             $scope.error.name = 'Invalid name.';
-            $scope.$apply();
             return;
         }
 

@@ -40,7 +40,7 @@ angular.module('ace.schematic')
         $scope.valid.thumbnail = undefined;
         $scope.error.thumbnail = null;
         if($scope.target.thumbnail){
-            var imgPattern = new RegExp('^.*\\.bmp$');
+            var imgPattern = new RegExp('^.*\\.(bmp|jpeg|jpg|png|ico)$');
             if (imgPattern.test($scope.target.thumbnail)){
                 $scope.error.thumbnail = 'Thumbnail must be a .bmp file.';
                 return;

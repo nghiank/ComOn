@@ -27,7 +27,8 @@
 
 			it('ensures repetitive component name are caught', function(){
 				var names = ['Pb','PB','SwitcH'];
-				for (var name in names){
+				for (var index in names){
+					var name = names[index];
 					scope.target.name = name;
 					scope.checkName();
 					expect(scope.valid.name).not.toEqual(true);
@@ -39,8 +40,6 @@
 				for (var index in names){
 					var name = names[index];
 					scope.target.name = name;
-					console.log('name:',name);
-					console.log('parent:',parent);
 					scope.checkName();
 					$httpBackend.flush();
 					expect(scope.valid.name).toEqual(true);
@@ -49,8 +48,9 @@
 
 			it('ensures ids are checked on the server side',function(){
 				scope.target.id = 'M0';
+				$httpBackend.expectPOST('api/isUniqueId').respond(200);
 				scope.checkId();
-				$httpBackend.expectGET('api/isUniqueId');
+				$httpBackend.flush();
 			});
 
 			it('ensures non-bmp file link to thumbnail files are caught',function(){
