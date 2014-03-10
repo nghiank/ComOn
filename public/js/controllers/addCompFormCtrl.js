@@ -41,7 +41,7 @@ angular.module('ace.schematic')
         $scope.error.thumbnail = null;
         if($scope.target.thumbnail){
             var imgPattern = new RegExp('^.*\\.(bmp|jpeg|jpg|png|ico)$');
-            if (imgPattern.test($scope.target.thumbnail)){
+            if (!imgPattern.test($scope.target.thumbnail)){
                 $scope.error.thumbnail = 'Thumbnail must be a .bmp file.';
                 return;
             }
@@ -61,7 +61,7 @@ angular.module('ace.schematic')
         $scope.error.dl = null;
         if($scope.target.dl){
             var dwgPattern = new RegExp('^.*\\.dwg$');
-            if (dwgPattern.test($scope.target.dl)){
+            if (!dwgPattern.test($scope.target.dl)){
                 $scope.error.dl = 'This file must be a .dwg file.';
                 return;
             }
@@ -91,12 +91,10 @@ angular.module('ace.schematic')
             return;
         }
         Schematics.children.get({nodeId:parent._id}, function(comps) {
-            console.log('in callback');
             if(comps){
                 for (var i = 0; i < comps.children.length; i++){
                     var dbName = comps.children[i].name.toUpperCase();
                     var localName = $scope.target.name.toUpperCase();
-                    console.log(dbName);
                     if(dbName.localeCompare(localName) === 0 && $scope.target._id !== comps.children[i]._id){
                         $scope.valid.name = false;
                         $scope.error.name = 'This name already exists within the same group.';
