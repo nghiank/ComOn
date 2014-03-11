@@ -83,7 +83,7 @@
 				}
 			});
 
-			it('ensures broken linkes to thumbnail files are caught', function(){
+			it('ensures broken links to thumbnail files are caught', function(){
 				$httpBackend.expectGET('http://invalid.bmp').respond(302, '');
 				var thumbnail = 'http://invalid.bmp';
 				scope.target.thumbnail = thumbnail;
@@ -101,6 +101,30 @@
 				expect(scope.valid.thumbnail).toEqual(true);
 			});
 
+			it('ensures non-dwg file link to dl files are caught', function(){
+				var dls = ['https://something.png','https://iamadwgfile.bmp'];
+				for(var index in dls){
+					scope.target.dl= dls[index];
+					scope.validateDwg();
+					expect(scope.valid.dl).not.toEqual(true);
+				}
+			});
+
+			it('ensures broken links to dl files are caught',function(){
+				$httpBackend.expectGET('http://www.abcd.com/invalid.dwg').respond(302, '');
+				scope.target.dl = 'http://www.abcd.com/invalid.dwg';
+				scope.validateDwg();
+				$httpBackend.flush();
+				expect(scope.valid.dl).not.toEqual(true);
+			});
+
+			it('ensures valid link to dl passes validation',function(){
+				$httpBackend.expectGET('http://www.abcd.com/valid.dwg').respond(200, '');
+				scope.target.dl = 'http://www.abcd.com/valid.dwg';
+				scope.validateDwg();
+				$httpBackend.flush();
+				expect(scope.valid.dl).toEqual(true);
+			});
 		});
 	});
 })();
