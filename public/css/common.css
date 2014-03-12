@@ -38,7 +38,7 @@ footer p {
 
 
 .listing {
-    max-height: 428px;
+    height: 428px;
     overflow-y: auto;
 }
 

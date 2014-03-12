@@ -7,14 +7,11 @@ angular.module('ace')
 	$scope.getFavourites = function() {
 		Users.getFav.query(function(favourites) {
 			$scope.schematic = favourites.schematic;
-			if($scope.Global.authenticated)
-			{
-				var listofFav = [];
-				for (var i = 0; i < $scope.schematic.length; i++) {
-					listofFav.push($scope.schematic[i]._id);
-				}
-				$scope.Global.setFav(listofFav);
+			var listofFav = [];
+			for (var i = 0; i < $scope.schematic.length; i++) {
+				listofFav.push($scope.schematic[i]._id);
 			}
+			$scope.Global.setFav(listofFav);
 		});
 	};
 	$scope.toggleOption = function (child) {
@@ -33,8 +30,7 @@ angular.module('ace')
 			{
 				console.log('favourite deleted');
 				$scope.schematic.splice($scope.schematic.indexOf(child), 1);
-				if($scope.Global.authenticated)
-					$scope.Global.setFav(response);
+				$scope.Global.setFav(response);
 			}
 
 		});
