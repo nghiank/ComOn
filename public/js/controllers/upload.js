@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ace.schematic').controller('UploadController', ['$timeout', '$scope', '$location', '$upload', 'DatParser', 'Global', '$modal', 'Schematics', function ($timeout, $scope, $location, $upload, ParseDat, Global, $modal, Schematics) {
+angular.module('ace.schematic').controller('UploadController', ['ValidationService', '$timeout', '$scope', '$location', '$upload', 'DatParser', 'Global', '$modal', 'Schematics', function (ValidationService, $timeout, $scope, $location, $upload, ParseDat, Global, $modal, Schematics) {
 	$scope.global = Global;
 	$scope.Parser = new ParseDat();
 	$scope.uploadDisabled = true;
@@ -10,7 +10,7 @@ angular.module('ace.schematic').controller('UploadController', ['$timeout', '$sc
 	$scope.success = [];
 	$scope.valid = [];
 	$scope.desc = '';
-
+	$scope.validator = ValidationService;
 	$scope.abort = function(index) {
 		$scope.upload[index].abort();
 		$scope.upload[index] = null;
@@ -142,6 +142,9 @@ angular.module('ace.schematic').controller('UploadController', ['$timeout', '$sc
 			});
 			modalInstance.result.then(function(valid){
 				$scope.uploadDisabled = !valid;
+			}, function() {
+				console.log('Dismissed');
+				$scope.validator.reset();
 			});
 		}
 		$scope.uploadDisabled = true;

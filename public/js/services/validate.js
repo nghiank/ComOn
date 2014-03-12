@@ -1,7 +1,7 @@
 'use strict';
 
 //service for validating links in a mapping file.
-angular.module('ace.schematic').factory('ValidationService', ['$http', function($http) {
+angular.module('ace.schematic').factory('ValidationService', ['$http', '$timeout', function($http, $timeout) {
 	var g_result = false;
 	var dlList = [];
 	var thumbnailList = [];
@@ -10,6 +10,8 @@ angular.module('ace.schematic').factory('ValidationService', ['$http', function(
 	var total = 0;
 	var status = true;
 	var trial_number = 0;
+	var count = 10;
+	var start = 0;
 	var escape_regex = function(text) {
 		return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
 	};
@@ -49,12 +51,142 @@ angular.module('ace.schematic').factory('ValidationService', ['$http', function(
 		return null;
 	};
 
+	function breakdown(list, number, cb) {
+		if(number === trial_number)
+		{
+			for(var i = 0; i < list.length ; i++)
+			{
+				var item = list[i];
+				checkLinks(item.id, item.link, number, cb);
+			}
+		}
+	}
+
+	var checkLinks = function(id, link, number, cb) {
+		$http.get(link).success(function(){
+			if(number === trial_number)
+			{
+				count --;
+				g_messages.push({'type': 'success', 'info': 'Link for '+id+' valid.'});
+				checked++;
+				if(checked === total)
+				{
+					if(!cb)
+					{
+						g_result = status;
+						if(status)
+							g_messages.push({'type': 'center-result alert alert-info', 'info': 'Validation Succeeded.'});
+						else
+							g_messages.push({'type': 'center-result alert alert-danger', 'info': 'Validation Failed'});
+						return;
+					}
+					cb(number);
+
+				}
+				else if(count === 0)
+				{
+					console.log('recursing');
+					count = 10;
+					var list = cb? dlList: thumbnailList;
+					breakdown(list.splice(start, start+10), number, cb);
+				}
+			}
+		}).error(function() {
+			if(number === trial_number)
+			{
+				count --;
+				status = false;
+				g_messages.push({'type': 'error', 'info': 'Link for '+id+' invaild.'});
+				checked++;
+				if(checked === total)
+				{
+					if(!cb)
+					{
+						g_result = status;
+						if(status)
+							g_messages.push({'type': 'center-result alert alert-info', 'info': 'Validation Succeeded.'});
+						else
+							g_messages.push({'type': 'center-result alert alert-danger', 'info': 'Validation Failed'});
+						return;
+					}
+					cb(number);
+				}
+				else if(count === 0)
+				{
+					count = 10;
+					start += 10;
+					var list = cb? dlList: thumbnailList;
+					breakdown(list.splice(start, start+10), number, cb);
+				}
+			}
+		});
+	};
+
+	var startThumnailCheck = function(number) {
+		start = 0;
+		count = 10;
+		g_messages.push({'type': 'center-result alert alert-info', 'info': 'Starting validation of Thumbnail links.....'});
+		checked = 0;
+		total = thumbnailList.length;
+		for (var i = thumbnailList.length - 1; i >= 0; i--) {
+			var item = thumbnailList[i];
+			if(number === trial_number)
+			{
+				if(!item.link)
+				{
+					total--;
+					thumbnailList.splice(i, 1);
+					g_messages.push({'type': 'error', 'info': 'Thumbnail link for '+item.id+' not found.'});
+					if(checked === total)
+					{
+						g_result = status;
+						if(status)
+							g_messages.push({'type': 'center-result alert alert-info', 'info': 'Validation Succeeded.'});
+						else
+							g_messages.push({'type': 'center-result alert alert-danger', 'info': 'Validation Failed'});
+						return;
+					}
+				}
+			}
+		}
+		breakdown(thumbnailList.splice(start, 10), number);
+	};
+
+
+	var startDownloadCheck = function(err, number) {
+		start= 0;
+		count = 10;
+		if(err)
+		{
+			return g_messages.push({'type': 'error', 'info': 'Validation failed.'});
+		}
+		checked = 0;
+		total = dlList.length;
+		g_messages.push({'type': 'center-result alert alert-info', 'info': 'Starting validation of Download links.....'});
+		for (var i = dlList.length - 1; i >= 0; i--) {
+			var item = dlList[i];
+			if(number === trial_number)
+			{
+				if(!item.link)
+				{
+					total--;
+					dlList.splice(i, 1);
+					g_messages.push({'type': 'error', 'info': 'Download link for '+item.id+' not found.'});
+					if(checked === total)
+					{
+						return startThumnailCheck(number);
+					}
+				}
+			}
+		}
+		breakdown(dlList.splice(start, 10), number, startThumnailCheck);
+	};
 
 	var populateDlAndThumbnail = function(root, mapping, number, callback) {
 		var total = 0, processed = 0;
 		function isComposite(child) {
 			if(!child.isComponent) {
-				thumbnailList.push({'id': child.id, 'thumbnail': findThumbnail(child.thumbnail, mapping)});
+				thumbnailList.push({'id': child.id, 'link': findThumbnail(child.thumbnail, mapping)});
 				populateDlAndThumbnail(child, mapping, number, function() {
 					if(++processed === total) {
 						callback(null, number);
@@ -62,8 +194,8 @@ angular.module('ace.schematic').factory('ValidationService', ['$http', function(
 				});
 			}
 			else {
-				dlList.push({'id': child.component, 'dlurl': findDl(child.component, mapping)});
-				thumbnailList.push({'id': child.component, 'thumbnail': findThumbnail(child.thumbnail, mapping)});
+				dlList.push({'id': child.component, 'link': findDl(child.component, mapping)});
+				thumbnailList.push({'id': child.component, 'link': findThumbnail(child.thumbnail, mapping)});
 				if(++processed === total) {
 					callback(null, number);
 				}
@@ -89,119 +221,21 @@ angular.module('ace.schematic').factory('ValidationService', ['$http', function(
 		}
 	};
 
-	var checkLinks = function(id, link, cb, number) {
-		$http.get(link).success(function(){
-			if(number === trial_number)
-			{
-				g_messages.push({'type': 'success', 'info': 'Link for '+id+' valid.'});
-				checked++;
-				if(checked === total)
-				{
-					if(!cb)
-					{
-						g_result = status;
-						if(status)
-							g_messages.push({'type': 'center-result alert alert-info', 'info': 'Validation Succeeded.'});
-						else
-							g_messages.push({'type': 'center-result alert alert-danger', 'info': 'Validation Failed'});
-						return;
-					}
-					cb(number);
-
-				}
-			}
-		}).error(function() {
-			if(number === trial_number)
-			{
-				status = false;
-				g_messages.push({'type': 'error', 'info': 'Link for '+id+' invaild.'});
-				checked++;
-				if(checked === total)
-				{
-					if(!cb)
-					{
-						g_result = status;
-						if(status)
-							g_messages.push({'type': 'center-result alert alert-info', 'info': 'Validation Succeeded.'});
-						else
-							g_messages.push({'type': 'center-result alert alert-danger', 'info': 'Validation Failed'});
-						return;
-					}
-					cb(number);
-				}
-			}
-		});
-	};
-
-	var startThumnailCheck = function(number) {
-		g_messages.push({'type': 'center-result alert alert-info', 'info': 'Starting validation of Thumbnail links.....'});
-		checked = 0;
-		total = thumbnailList.length;
-		for (var i = thumbnailList.length - 1; i >= 0; i--) {
-			var item = thumbnailList[i];
-			if(number === trial_number)
-			{
-				if(!item.thumbnail)
-				{
-					checked++;
-					g_messages.push({'type': 'error', 'info': 'Thumbnail link for '+item.id+' not found.'});
-					if(checked === total)
-					{
-						g_result = status;
-						if(status)
-							g_messages.push({'type': 'center-result alert alert-info', 'info': 'Validation Succeeded.'});
-						else
-							g_messages.push({'type': 'center-result alert alert-danger', 'info': 'Validation Failed'});
-						return;
-					}
-					continue;
-				}
-				checkLinks(item.id, item.thumbnail, null, number);
-			}
-		}
-	};
-
-	var startDownloadCheck = function(err, number) {
-		if(err)
-		{
-			return g_messages.push({'type': 'error', 'info': 'Validation failed.'});
-		}
-		total = dlList.length;
-		g_messages.push({'type': 'center-result alert alert-info', 'info': 'Starting validation of Download links.....'});
-		for (var i = dlList.length - 1; i >= 0; i--) {
-			var item = dlList[i];
-			if(number === trial_number)
-			{
-				if(!item.dlurl)
-				{
-					checked++;
-					g_messages.push({'type': 'error', 'info': 'Download link for '+item.id+' not found.'});
-					if(checked === total)
-					{
-						return startThumnailCheck(number);
-					}
-					continue;
-				}
-				checkLinks(item.id, item.dlurl, startThumnailCheck, number);
-			}
-		}
-	};
 
 	var instance = {
 		reset: function() {
-			checked = 0;
-			total = 0;
 			g_messages = [];
 			dlList = [];
 			thumbnailList = [];
 			g_result = false;
 			status = true;
+			trial_number++;
 		},
 		messages: function() { return g_messages; },
 		validateLinks: function(data, mapping) {
 			this.reset();
-			var number = ++trial_number;
-			populateDlAndThumbnail(data, JSON.parse(mapping), number, startDownloadCheck);
+			var number = trial_number;
+			$timeout(function(){populateDlAndThumbnail(data, JSON.parse(mapping), number, startDownloadCheck);}, 1500);
 		},
 		result: function() { return g_result; }
 	};

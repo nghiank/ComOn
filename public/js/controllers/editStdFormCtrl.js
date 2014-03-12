@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ace.schematic').controller('editStdFormCtrl', ['$timeout', '$scope','$location', '$upload', 'DatParser', 'Global', '$modal', 'Schematics',function ($timeout, $scope, $location, $upload, ParseDat, Global, $modal, Schematics) {
+angular.module('ace.schematic').controller('editStdFormCtrl', ['ValidationService', '$timeout', '$scope','$location', '$upload', 'DatParser', 'Global', '$modal', 'Schematics',function (ValidationService, $timeout, $scope, $location, $upload, ParseDat, Global, $modal, Schematics) {
 	$scope.global = Global;
 	$scope.Parser = new ParseDat();
 	$scope.httpMethod = 'POST';
@@ -9,7 +9,7 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['$timeout', '$sco
 	$scope.valid = {'name':false,'json':false,'dat':false,'validation':false};
 	$scope.id = null;
 	$scope.uploadDisabled = true;
-
+	$scope.validator = ValidationService;
 	$scope.$watchCollection('[valid.name,desc,valid.validation]',function(){
 		$scope.editNameDescOnly = !$scope.valid.dat && ((!$scope.stdName && $scope.desc) || $scope.stdName && $scope.valid.name);
 		$scope.editDatFile = $scope.valid.name && $scope.valid.json && $scope.valid.dat && $scope.valid.validation;
@@ -148,6 +148,9 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['$timeout', '$sco
 			});
 			modalInstance.result.then(function(valid){
 				$scope.valid.validation = valid;
+			}, function() {
+				console.log('Dismissed');
+				$scope.validator.reset();
 			});
 		}
 		$scope.valid.validation = false;
