@@ -43,6 +43,7 @@ module.exports = function(config) {
             'public/js/controllers/uploadModalCtrl.js',
             'public/js/controllers/addCompFormCtrl.js',
             'public/js/controllers/editCompFormCtrl.js',
+            'public/js/controllers/editGrpFormCtrl.js',
             'public/js/controllers/editStdFormCtrl.js',
             'public/js/controllers/addGrpFormCtrl.js',
             'public/js/init.js',
