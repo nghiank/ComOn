@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ace.schematic').controller('editStdFormCtrl', ['ValidationService', 'formValidation', '$timeout', '$scope','$location', '$upload', 'DatParser', 'Global', '$modal', 'Schematics',function (ValidationService, formValidation, $timeout, $scope, $location, $upload, ParseDat, Global, $modal, Schematics) {
+angular.module('ace.schematic').controller('editStdFormCtrl', ['ValidationService', 'formValidation', '$timeout', '$scope','$location', '$upload', 'DatParser', 'Global', '$modal', 'SchematicsAPI',function (ValidationService, formValidation, $timeout, $scope, $location, $upload, ParseDat, Global, $modal, SchematicsAPI) {
 	$scope.global = Global;
 	$scope.Parser = new ParseDat();
 	$scope.httpMethod = 'POST';
@@ -168,7 +168,7 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['ValidationServic
 
 	$scope.editStd = function(){
 		if($scope.editNameDescOnly)
-			Schematics.editStd.save({standardId:$scope.currentStd.standard._id, stdName:$scope.stdName, desc: $scope.desc}, function(response){
+			SchematicsAPI.editStd.save({standardId:$scope.currentStd.standard._id, stdName:$scope.stdName, desc: $scope.desc}, function(response){
 				if(response)
 				{
 					console.log('standard updated!');
@@ -177,7 +177,7 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['ValidationServic
 				}
 			});
 		if($scope.editDatFile){
-			Schematics.delete.get({nodeId: $scope.currentStd._id}, function(response){
+			SchematicsAPI.delete.get({nodeId: $scope.currentStd._id}, function(response){
 				if(response){
 					console.log('deleted & re-uploading');
 					$scope.uploadFiles();
@@ -196,7 +196,7 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['ValidationServic
 			if(result){
 				if(!$scope.currentStd._id)
 					return;
-				Schematics.delete.get({nodeId: $scope.currentStd._id}, function(response) {
+				SchematicsAPI.delete.get({nodeId: $scope.currentStd._id}, function(response) {
 					if(response)
 					{
 						console.log('Deleted!');

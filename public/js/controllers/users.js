@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ace.users').controller('UsersController', ['$scope', '$routeParams', '$location', 'Global', 'Users', function ($scope, $routeParams, $location, Global, Users) {
+angular.module('ace.users').controller('UsersController', ['$scope', '$routeParams', '$location', 'Global', 'UsersAPI', function ($scope, $routeParams, $location, Global, UsersAPI) {
 
         $scope.global = Global;
         $scope.showMan = true;
@@ -18,7 +18,7 @@ angular.module('ace.users').controller('UsersController', ['$scope', '$routePara
                     break;
                 }
             }
-            Users.userlist.update({userId: id}, function(user) {
+            UsersAPI.userlist.update({userId: id}, function(user) {
                 users[index] = user;
                 if(user._id === Global.user._id){
                     Global.user.codeName = user.codeName;
@@ -30,7 +30,7 @@ angular.module('ace.users').controller('UsersController', ['$scope', '$routePara
         };
 
         $scope.find = function() {
-            Users.userlist.query(function(users) {
+            UsersAPI.userlist.query(function(users) {
                 $scope.users = users;
                 for (var i = 0; i < $scope.users.length; i++)
                     $scope.users[i].name += ($scope.users[i].codeName ===null) ? '': ' ('+$scope.users[i].codeName+')';

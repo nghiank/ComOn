@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ace.schematic').controller('ValidationController', ['$scope', '$modalInstance', 'ValidationService', 'items',function($scope, $modalInstance, ValidationService, items){
+angular.module('ace.schematic').controller('ValidationController', ['$scope', '$modalInstance', 'ValidationService', 'items', function($scope, $modalInstance, ValidationService, items){
 	$scope.validator = ValidationService;
 	$scope.result = function() {
 		return $scope.validator.result();

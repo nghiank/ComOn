@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('ace.users')
-.controller('ProfileController', ['$scope', 'Global', 'Users',  function ($scope, Global, Users) {
+.controller('ProfileController', ['$scope', 'Global', 'UsersAPI',  function ($scope, Global, UsersAPI) {
 
         $scope.global = Global;
         $scope.username = Global.user.name;
@@ -20,7 +20,7 @@ angular.module('ace.users')
 
         $scope.updateCodeName = function(){
             $scope.toggleEdit();
-            Users.profile.update({codeName:$scope.codeNameInput.value}, Global.user, function(){
+            UsersAPI.profile.update({codeName:$scope.codeNameInput.value}, Global.user, function(){
                 Global.user.codeName = $scope.codeNameInput.value;
                 $scope.setCodeName();
             });

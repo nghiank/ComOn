@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('ace.schematic')
-.controller('addGrpFormCtrl', ['$timeout', '$scope','$location', '$upload', 'DatParser', 'Global', '$http', 'Schematics', '$modalInstance', '$modal', 'parent', function ($timeout, $scope, $location, $upload, ParseDat, Global, $http, Schematics, $modalInstance, $modal, parent) {
+.controller('addGrpFormCtrl', ['$timeout', '$scope','$location', '$upload', 'DatParser', 'Global', '$http', 'SchematicsAPI', '$modalInstance', '$modal', 'parent', function ($timeout, $scope, $location, $upload, ParseDat, Global, $http, SchematicsAPI, $modalInstance, $modal, parent) {
     $scope.target = {};
     $scope.global = Global;
     $scope.httpMethod = 'POST';
@@ -71,7 +71,7 @@ angular.module('ace.schematic')
             return;
         }
 
-        Schematics.children.get({nodeId:parent._id}, function(comps) {
+        SchematicsAPI.children.get({nodeId:parent._id}, function(comps) {
             if(comps){
                 for (var i = 0; i < comps.children.length; i++){
                     var dbName = comps.children[i].name.toUpperCase();
@@ -94,7 +94,7 @@ angular.module('ace.schematic')
         if(!$scope.target.id)
             return;
         $scope.target.id = $scope.target.id.toUpperCase();
-        Schematics.checkId.save({id:$scope.target.id, standardId:parent.standard},function(response){
+        SchematicsAPI.checkId.save({id:$scope.target.id, standardId:parent.standard},function(response){
             if(response.unique === true){
                 $scope.valid.id = true;
             }
@@ -111,7 +111,7 @@ angular.module('ace.schematic')
         $scope.target.standard = parent.standard;
         $scope.target.dl = null;
         console.log('target:',$scope.target);
-        Schematics.createNode.save({node:$scope.target}, function(response){
+        SchematicsAPI.createNode.save({node:$scope.target}, function(response){
             if(response)
             {
                 console.log('Create Success!');

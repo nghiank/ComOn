@@ -8,17 +8,17 @@
 
 			var scope, UploadController, Service, $httpBackend, modalInstance,target;
 
-			beforeEach(inject(function($controller, $rootScope, $injector, Schematics) {
+			beforeEach(inject(function($controller, $rootScope, $injector, SchematicsAPI) {
 				
 				scope = $rootScope.$new();
-				Service = Schematics;
+				Service = SchematicsAPI;
 				$httpBackend = $injector.get('$httpBackend');
 				$httpBackend.when('GET', 'api/getChildren/1').respond(200,{'children': [{'name': 'PB','id':'M0'}, {'name': 'Switch','id':'M1'}]});
 				target = { 'name' :'IEEE: Solenoids', 'parentNode' : '2', 'id' : 'M24', 'standard' : '53168932e8f493000024bc49', '_id' : '1', 'isComposite' : true, 'dl' : null, 'acad360l' : null, 'thumbnail' : 'https://dl.dropboxusercontent.com/s/t1mrbs8ijos53gr/s_sv.bmp', '__v' : 0 };
 
 				UploadController = $controller('editCompFormCtrl', {
 					$scope: scope,
-					Schematics: Service,
+					SchematicsAPI: Service,
 					$modalInstance:modalInstance,
 					target:target
 				});

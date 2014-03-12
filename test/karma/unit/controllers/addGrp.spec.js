@@ -8,10 +8,10 @@
 
 			var scope, UploadController, Service, $httpBackend, modalInstance,parent;
 
-			beforeEach(inject(function($controller, $rootScope, $injector, Schematics) {
+			beforeEach(inject(function($controller, $rootScope, $injector, SchematicsAPI) {
 				
 				scope = $rootScope.$new();
-				Service = Schematics;
+				Service = SchematicsAPI;
 				$httpBackend = $injector.get('$httpBackend');
 				$httpBackend.when('GET', 'api/getChildren/1').respond(200,{'children': [{'name': 'PB','id':'M0'}, {'name': 'Switch','id':'M1'}]});
 				$httpBackend.when('GET','http://invalid.bmp').respond(302);
@@ -19,7 +19,7 @@
 
 				UploadController = $controller('addGrpFormCtrl', {
 					$scope: scope,
-					Schematics: Service,
+					SchematicsAPI: Service,
 					$modalInstance:modalInstance,
 					parent:parent
 				});

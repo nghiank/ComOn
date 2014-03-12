@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('ace.schematic')
-.controller('Children', ['$scope', 'Schematics', '$routeParams', 'Global', 'breadcrumbs', '$modal', 'Users', function ($scope, Schematics, $routeParams, Global, breadcrumbs, $modal, Users) {
+.controller('Children', ['$scope', 'SchematicsAPI', '$routeParams', 'Global', 'breadcrumbs', '$modal', 'UsersAPI', function ($scope, SchematicsAPI, $routeParams, Global, breadcrumbs, $modal, UsersAPI) {
 	$scope.breadcrumbs = breadcrumbs;
 	$scope.Global = Global;
 	$scope.admin = false;
@@ -12,7 +12,7 @@ angular.module('ace.schematic')
 		$scope.nodeId = nodeId;
 		if(!nodeId)
 			return;
-		Schematics.children.get({nodeId: nodeId}, function(children) {
+		SchematicsAPI.children.get({nodeId: nodeId}, function(children) {
 			$scope.children = children.children;
 			$scope.seperate();
 		});
@@ -59,7 +59,7 @@ angular.module('ace.schematic')
 	};
 
 	$scope.showLeafAddForm = function(){
-		Schematics.node.get({nodeId:$routeParams.nodeId}, function(node){
+		SchematicsAPI.node.get({nodeId:$routeParams.nodeId}, function(node){
 			$scope.target = node;
 			var modalInstance = $modal.open({
 				templateUrl: 'views/Schematics/addCompForm.html',
@@ -78,7 +78,7 @@ angular.module('ace.schematic')
 	};
 
 	$scope.showSubtypeAddForm = function(){
-		Schematics.node.get({nodeId:$routeParams.nodeId}, function(node){
+		SchematicsAPI.node.get({nodeId:$routeParams.nodeId}, function(node){
 			$scope.target = node;
 			var modalInstance = $modal.open({
 				templateUrl: 'views/Schematics/addGrpForm.html',
@@ -134,7 +134,7 @@ angular.module('ace.schematic')
 	$scope.addFav = function(child){
 		if(child.isComposite)
 			return;
-		Users.addSchemFav.save({_id: child._id}, function(response) {
+		UsersAPI.addSchemFav.save({_id: child._id}, function(response) {
 			if(response)
 			{
 				console.log('favourite added');
@@ -148,7 +148,7 @@ angular.module('ace.schematic')
 	$scope.delFav = function(child){
 		if(child.isComposite)
 			return;
-		Users.delSchemFav.save({_id: child._id}, function(response) {
+		UsersAPI.delSchemFav.save({_id: child._id}, function(response) {
 			if(response)
 			{
 				console.log('favourite deleted');

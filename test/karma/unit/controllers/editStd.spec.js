@@ -8,16 +8,16 @@
 
 			var scope, UploadController, Service, $httpBackend;
 
-			beforeEach(inject(function($controller, $rootScope, $injector, Schematics) {
+			beforeEach(inject(function($controller, $rootScope, $injector, SchematicsAPI) {
 				
 				scope = $rootScope.$new();
-				Service = Schematics;
+				Service = SchematicsAPI;
 				$httpBackend = $injector.get('$httpBackend');
 				$httpBackend.when('GET', 'api/getSchemStds').respond([{'name': 'IEC','_id':'1'}, {'name': 'ABC','_id':'2'}]);
 
 				UploadController = $controller('editStdFormCtrl', {
 					$scope: scope,
-					Schematics: Service
+					SchematicsAPI: Service
 				});
 			}));
 

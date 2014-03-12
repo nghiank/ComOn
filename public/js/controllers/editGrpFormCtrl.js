@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('ace.schematic')
-.controller('editGrpFormCtrl', ['$timeout', '$scope','$location', '$upload', 'DatParser', 'Global', '$http', 'Schematics', '$modalInstance', '$modal', 'target', function ($timeout, $scope, $location, $upload, ParseDat, Global, $http, Schematics, $modalInstance, $modal, target) {
+.controller('editGrpFormCtrl', ['$timeout', '$scope','$location', '$upload', 'DatParser', 'Global', '$http', 'SchematicsAPI', '$modalInstance', '$modal', 'target', function ($timeout, $scope, $location, $upload, ParseDat, Global, $http, SchematicsAPI, $modalInstance, $modal, target) {
 	$scope.target = {'_id':target._id};
 	$scope.origin = target;
 	$scope.global = Global;
@@ -86,7 +86,7 @@ angular.module('ace.schematic')
 			$scope.success.name = 'This is a valid name.';
 			return;
 		}
-		Schematics.children.get({nodeId:$scope.origin.parentNode._id}, function(comps) {
+		SchematicsAPI.children.get({nodeId:$scope.origin.parentNode._id}, function(comps) {
 			if(comps){
 				for (var i = 0; i < comps.children.length; i++){
 					var dbName = comps.children[i].name.toUpperCase();
@@ -121,7 +121,7 @@ angular.module('ace.schematic')
 			$scope.valid.id = true;
 			return;
 		}
-		Schematics.checkId.save({id:$scope.target.id, standardId:$scope.origin.standard._id},function(response){
+		SchematicsAPI.checkId.save({id:$scope.target.id, standardId:$scope.origin.standard._id},function(response){
 			if(response.unique === true){
 				$scope.valid.id = true;
 			}
@@ -143,7 +143,7 @@ angular.module('ace.schematic')
 			if(decision){
 				if(!$scope.target._id)
 					return;
-				Schematics.delete.get({nodeId: $scope.target._id}, function(response) {
+				SchematicsAPI.delete.get({nodeId: $scope.target._id}, function(response) {
 					if(response)
 					{
 						console.log('Deleted!');
@@ -156,7 +156,7 @@ angular.module('ace.schematic')
 	};
 
 	$scope.editComp = function(){
-		Schematics.editComponent.save({node:$scope.target}, function(response){
+		SchematicsAPI.editComponent.save({node:$scope.target}, function(response){
 			if(response)
 			{
 				console.log('Edit Success!');

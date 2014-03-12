@@ -1,11 +1,11 @@
 'use strict';
 
 angular.module('ace')
-.controller('Favourites', ['$scope', 'Global', 'Users', function ($scope, Global, Users) {
+.controller('Favourites', ['$scope', 'Global', 'UsersAPI', function ($scope, Global, UsersAPI) {
 	$scope.Global = Global;
 	$scope.schematic = [];
 	$scope.getFavourites = function() {
-		Users.getFav.query(function(favourites) {
+		UsersAPI.getFav.query(function(favourites) {
 			$scope.schematic = favourites.schematic;
 			var listofFav = [];
 			for (var i = 0; i < $scope.schematic.length; i++) {
@@ -25,7 +25,7 @@ angular.module('ace')
 	$scope.delSchemFav = function(child){
 		if(child.isComposite)
 			return;
-		Users.delSchemFav.save({_id: child._id}, function(response) {
+		UsersAPI.delSchemFav.save({_id: child._id}, function(response) {
 			if(response)
 			{
 				console.log('favourite deleted');

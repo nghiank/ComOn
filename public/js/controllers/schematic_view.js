@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('ace.schematic')
-.controller('Standards', ['$scope', 'Schematics', 'Global', 'breadcrumbs', function ($scope, Schematics, Global, breadcrumbs) {
+.controller('Standards', ['$scope', 'SchematicsAPI', 'Global', 'breadcrumbs', function ($scope, SchematicsAPI, Global, breadcrumbs) {
 	$scope.breadcrumbs = breadcrumbs;
 	$scope.admin = false;
 	$scope.Global = Global;
@@ -21,7 +21,7 @@ angular.module('ace.schematic')
 
 	$scope.getAll = function() {
 		$scope.breadcrumbs.reset();
-		Schematics.standardlist.query(function(standards) {
+		SchematicsAPI.standardlist.query(function(standards) {
 			$scope.stds = standards;
 			$scope.form = null;
 			for(var i = 0; i < standards.length; i++)
