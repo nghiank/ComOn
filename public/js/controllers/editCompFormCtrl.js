@@ -109,7 +109,6 @@ angular.module('ace.schematic')
 			$scope.success.name = 'This is a valid name.';
 			return;
 		}
-		console.log('scope.origin.parentNode:',$scope.origin.parentNode);
 		Schematics.children.get({nodeId:$scope.origin.parentNode._id}, function(comps) {
 			if(comps){
 				for (var i = 0; i < comps.children.length; i++){
