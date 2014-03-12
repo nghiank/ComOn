@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ace.schematic').controller('UploadController', ['ValidationService', '$timeout', '$scope', '$location', '$upload', 'DatParser', 'Global', '$modal', 'Schematics', function (ValidationService, $timeout, $scope, $location, $upload, ParseDat, Global, $modal, Schematics) {
+angular.module('ace.schematic').controller('UploadController', ['ValidationService', 'formValidation', '$timeout', '$scope', '$location', '$upload', 'DatParser', 'Global', '$modal', function (ValidationService, formValidation, $timeout, $scope, $location, $upload, ParseDat, Global, $modal) {
 	$scope.global = Global;
 	$scope.Parser = new ParseDat();
 	$scope.uploadDisabled = true;
@@ -11,13 +11,7 @@ angular.module('ace.schematic').controller('UploadController', ['ValidationServi
 	$scope.valid = [];
 	$scope.desc = '';
 	$scope.validator = ValidationService;
-	$scope.abort = function(index) {
-		$scope.upload[index].abort();
-		$scope.upload[index] = null;
-	};
-	$scope.hasUploader = function(index) {
-		return $scope.upload[index] !== null;
-	};
+	$scope.formValidator = formValidation;
 
 	$scope.datFileSelect = function($files) {
 		$scope.checkDatFile($files);
@@ -26,15 +20,14 @@ angular.module('ace.schematic').controller('UploadController', ['ValidationServi
 
 	$scope.checkDatFile = function($files){
 		$scope.error.dat = null;
-		var datPattern = new RegExp('^.*\\.dat$');
-		if($files[0] && !datPattern.test($files[0].name))
+		var check = $scope.formValidator.checkFileExtension($files[0]?$files[0].name:'', ['dat']);
+		if(check.result)
 		{
-			$scope.error.dat = 'Not a valid data file.';
-			return;
+			$scope.datFile = $files[0];
 		}
-		$scope.success.dat = 'A valid data file.';
-		$scope.valid.dat = true;
-		$scope.datFile = $files[0];
+		$scope.success.dat = check.suc_message;
+		$scope.valid.dat = check.result;
+		$scope.error.dat = check.err_message;
 	};
 
 	$scope.resetDAT = function() {
@@ -46,11 +39,11 @@ angular.module('ace.schematic').controller('UploadController', ['ValidationServi
 		$scope.error.dat = null;
 		$scope.success.dat = null;
 		$scope.datFile = null;
-		$scope.datProgress = -1 ;
-		if ($scope.datUpload) {
-			$scope.datUpload.abort();
+		$scope.progress = -1 ;
+		if ($scope.upload) {
+			$scope.upload.abort();
 		}
-		$scope.datUpload = null;
+		$scope.upload = null;
 		$scope.uploadResult = null;
 		$scope.stdName = null;
 		$scope.valid.name = false;
@@ -65,15 +58,14 @@ angular.module('ace.schematic').controller('UploadController', ['ValidationServi
 
 	$scope.checkJsonFile = function($files){
 		$scope.error.json = null;
-		var jsonPattern = new RegExp('^.*\\.json$');
-		if($files[0] && !jsonPattern.test($files[0].name))
+		var check = $scope.formValidator.checkFileExtension($files[0]?$files[0].name:'', ['json']);
+		if(check.result)
 		{
-			$scope.error.json = 'Not a valid json file.';
-			return;
+			$scope.jsonFile = $files[0];
 		}
-		$scope.success.json = 'A valid json file.';
-		$scope.valid.json = true;
-		$scope.jsonFile = $files[0];
+		$scope.success.json = check.suc_message;
+		$scope.valid.json = check.result;
+		$scope.error.json = check.err_message;
 	};
 
 	$scope.resetJSON = function() {
@@ -83,11 +75,11 @@ angular.module('ace.schematic').controller('UploadController', ['ValidationServi
 		$scope.error.json = null;
 		$scope.success.json = null;
 		$scope.jsonFile = null;
-		$scope.jsonProgress = -1 ;
-		if ($scope.jsonUpload) {
-			$scope.jsonUpload.abort();
+		$scope.progress = -1 ;
+		if ($scope.upload) {
+			$scope.upload.abort();
 		}
-		$scope.jsonUpload = null;
+		$scope.upload = null;
 		$scope.uploadResult = null;
 	};
 
@@ -96,34 +88,15 @@ angular.module('ace.schematic').controller('UploadController', ['ValidationServi
 		$scope.success.name = null;
 		$scope.valid.name = false;
 		var data = $scope.stdName;
-		if(data === '')
+		if(!data)
 		{
 			return;
 		}
-		if(data.length > 30) //Later check against all the other standard names too
-		{
-			$scope.uploadDisabled = true;
-			$scope.error.name = 'Invalid name.';
-			return;
-		}
-
-		Schematics.standardlist.query(function(stds) {
-			if(stds){
-				for (var i = 0; i < stds.length; i++){
-					var dbName = stds[i].name.toUpperCase();
-					var localName = $scope.stdName.toUpperCase();
-					if(dbName.localeCompare(localName) === 0){
-						$scope.valid.name = false;
-						$scope.error.name = 'A standard with this name already exists.';
-						return;
-					}
-				}
-			}
-			$scope.valid.name = true;
-			$scope.success.name = 'This is a valid name.';
+		$scope.formValidator.checkStandardName(data, function(check) {
+			$scope.valid.name = check.result;
+			$scope.error.name = check.err_message;
+			$scope.success.name = check.suc_message;
 		});
-
-		
 	};
 
 	$scope.validate = function() {
@@ -152,8 +125,8 @@ angular.module('ace.schematic').controller('UploadController', ['ValidationServi
 
 
 	$scope.uploadFiles = function() {
-		$scope.datProgress = 0;
-		$scope.datUpload = $upload.upload({
+		$scope.progress = 0;
+		$scope.upload = $upload.upload({
 			url : 'api/upload',
 			method: $scope.httpMethod,
 			headers: {'Content-Type': 'application/file'},
@@ -174,7 +147,7 @@ angular.module('ace.schematic').controller('UploadController', ['ValidationServi
 				}
 			}
 		}, null, function(evt) {
-			$scope.datProgress = parseInt(100.0 * evt.loaded / evt.total);
+			$scope.progress = parseInt(100.0 * evt.loaded / evt.total);
 		});
 	};
 	

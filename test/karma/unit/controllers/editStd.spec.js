@@ -27,6 +27,7 @@
 				});
 
 			it('ensure name larger than 60 chars are caught', function(){
+				scope.currentStd = {'name': 'ABC','_id':'4'};
 				scope.stdName = 'ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ';
 				scope.checkName();
 				expect(scope.valid.name).toBe(false);
@@ -48,7 +49,6 @@
 				scope.currentStd = {'name': 'ABC','_id':'2'};
 				scope.stdName = 'ABC';
 				scope.checkName();
-				$httpBackend.flush();
 				expect(scope.valid.name).toEqual(true);
 			});
 
