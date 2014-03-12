@@ -11,7 +11,6 @@ angular.module('ace.schematic').factory('ValidationService', ['$http', '$timeout
 	var status = true;
 	var trial_number = 0;
 	var count = 10;
-	var start = 0;
 	var escape_regex = function(text) {
 		return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
 	};
@@ -86,9 +85,8 @@ angular.module('ace.schematic').factory('ValidationService', ['$http', '$timeout
 				else if(count === 0)
 				{
 					count = 10;
-					start += 10;
 					var list = cb? dlList: thumbnailList;
-					breakdown(list.splice(start, start+10), number, cb);
+					breakdown(list.splice(0, 10), number, cb);
 				}
 			}
 		}).error(function() {
@@ -114,16 +112,14 @@ angular.module('ace.schematic').factory('ValidationService', ['$http', '$timeout
 				else if(count === 0)
 				{
 					count = 10;
-					start += 10;
 					var list = cb? dlList: thumbnailList;
-					breakdown(list.splice(start, start+10), number, cb);
+					breakdown(list.splice(0, 10), number, cb);
 				}
 			}
 		});
 	};
 
 	var startThumnailCheck = function(number) {
-		start = 0;
 		count = 10;
 		g_messages.push({'type': 'center-result alert alert-info', 'info': 'Starting validation of Thumbnail links.....'});
 		checked = 0;
@@ -149,12 +145,11 @@ angular.module('ace.schematic').factory('ValidationService', ['$http', '$timeout
 				}
 			}
 		}
-		breakdown(thumbnailList.splice(start, 10), number);
+		breakdown(thumbnailList.splice(0, 10), number);
 	};
 
 
 	var startDownloadCheck = function(err, number) {
-		start= 0;
 		count = 10;
 		if(err)
 		{
@@ -179,7 +174,7 @@ angular.module('ace.schematic').factory('ValidationService', ['$http', '$timeout
 				}
 			}
 		}
-		breakdown(dlList.splice(start, 10), number, startThumnailCheck);
+		breakdown(dlList.splice(0, 10), number, startThumnailCheck);
 	};
 
 	var populateDlAndThumbnail = function(root, mapping, number, callback) {
