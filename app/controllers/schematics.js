@@ -1,6 +1,6 @@
 'use strict';
 
-var parser = require('../utils/ParserDat');
+var parser = require('../../public/js/DataFileParser');
 var Inst = new parser();
 var mongoose = require('mongoose');
 var ComponentSchem = mongoose.model('SchematicComponent');

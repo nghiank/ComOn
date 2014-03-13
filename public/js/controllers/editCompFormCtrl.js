@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('ace.schematic')
-.controller('editCompFormCtrl', ['formValidation', '$timeout', '$scope','$location', '$upload', 'DatParser', 'Global', '$http', 'SchematicsAPI', '$modalInstance', '$modal', 'target', function (formValidation, $timeout, $scope, $location, $upload, ParseDat, Global, $http, SchematicsAPI, $modalInstance, $modal, target) {
+.controller('editCompFormCtrl', ['formValidation', '$timeout', '$scope','$location', '$upload', 'Global', '$http', 'SchematicsAPI', '$modalInstance', '$modal', 'target', function (formValidation, $timeout, $scope, $location, $upload, Global, $http, SchematicsAPI, $modalInstance, $modal, target) {
 	$scope.target = {};
 	$scope.origin = target;
 	$scope.global = Global;

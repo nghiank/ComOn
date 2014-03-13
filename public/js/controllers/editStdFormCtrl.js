@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ace.schematic').controller('editStdFormCtrl', ['ValidationService', 'formValidation', '$timeout', '$scope','$location', '$upload', 'DatParser', 'Global', '$modal', 'SchematicsAPI',function (ValidationService, formValidation, $timeout, $scope, $location, $upload, ParseDat, Global, $modal, SchematicsAPI) {
+angular.module('ace.schematic').controller('editStdFormCtrl', ['ValidationService', 'formValidation', '$timeout', '$scope','$location', '$upload', 'ParsingService', 'Global', '$modal', 'SchematicsAPI',function (ValidationService, formValidation, $timeout, $scope, $location, $upload, ParseDat, Global, $modal, SchematicsAPI) {
 	$scope.global = Global;
 	$scope.Parser = new ParseDat();
 	$scope.httpMethod = 'POST';

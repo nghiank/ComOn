@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('ace.schematic')
-.controller('addGrpFormCtrl', ['formValidation', '$timeout', '$scope','$location', '$upload', 'DatParser', 'Global', '$http', 'SchematicsAPI', '$modalInstance', '$modal', 'parent', function (formValidation, $timeout, $scope, $location, $upload, ParseDat, Global, $http, SchematicsAPI, $modalInstance, $modal, parent) {
+.controller('addGrpFormCtrl', ['formValidation', '$timeout', '$scope','$location', '$upload', 'Global', '$http', 'SchematicsAPI', '$modalInstance', '$modal', 'parent', function (formValidation, $timeout, $scope, $location, $upload, Global, $http, SchematicsAPI, $modalInstance, $modal, parent) {
     $scope.target = {};
     $scope.global = Global;
     $scope.httpMethod = 'POST';

@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ace.schematic').controller('UploadController', ['ValidationService', 'formValidation', '$timeout', '$scope', '$location', '$upload', 'DatParser', 'Global', '$modal', function (ValidationService, formValidation, $timeout, $scope, $location, $upload, ParseDat, Global, $modal) {
+angular.module('ace.schematic').controller('UploadController', ['ValidationService', 'formValidation', '$timeout', '$scope', '$location', '$upload', 'ParsingService', 'Global', '$modal', function (ValidationService, formValidation, $timeout, $scope, $location, $upload, ParseDat, Global, $modal) {
 	$scope.global = Global;
 	$scope.Parser = new ParseDat();
 	$scope.uploadDisabled = true;
