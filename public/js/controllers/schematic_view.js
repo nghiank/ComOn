@@ -8,7 +8,7 @@ angular.module('ace.schematic')
 	if($scope.Global.authenticated && $scope.Global.user.isAdmin)
 		$scope.admin = true;
 	$scope.form = null;
-	$scope.forms = [{'name':'addForm','URL':'views/Schematics/upload.html'},{'name':'editStdForm','URL':'views/Schematics/editStdForm.html'}];
+	$scope.forms = [{'name':'addForm','URL':'views/Schematics/addStdForm.html'},{'name':'editStdForm','URL':'views/Schematics/editStdForm.html'}];
 	
 	$scope.showAddForm = function () {
 		$scope.form = $scope.forms[0];

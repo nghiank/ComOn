@@ -41,7 +41,7 @@ module.exports = function(config) {
             'public/js/services/formValidation.js',
             'public/js/controllers/index.js',
             'public/js/controllers/header.js',
-            'public/js/controllers/upload.js',
+            'public/js/controllers/addStdFormCtrl.js',
             'public/js/controllers/ValidationCtrl.js',
             'public/js/controllers/addCompFormCtrl.js',
             'public/js/controllers/editCompFormCtrl.js',

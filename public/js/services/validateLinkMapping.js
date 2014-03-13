@@ -121,7 +121,7 @@ angular.module('ace.schematic').factory('ValidationService', ['$http', '$timeout
 
 	var startThumnailCheck = function(number) {
 		count = 10;
-		g_messages.push({'type': 'center-result alert alert-info', 'info': 'Starting validation of Thumbnail links.....'});
+		g_messages.push({'type': 'center-result alert alert-success', 'info': 'Starting validation of Thumbnail links.....'});
 		checked = 0;
 		total = thumbnailList.length;
 		for (var i = thumbnailList.length - 1; i >= 0; i--) {
@@ -153,11 +153,11 @@ angular.module('ace.schematic').factory('ValidationService', ['$http', '$timeout
 		count = 10;
 		if(err)
 		{
-			return g_messages.push({'type': 'error', 'info': 'Validation failed.'});
+			return g_messages.push({'type': 'center-result alert alert-danger', 'info': 'Validation failed.'});
 		}
 		checked = 0;
 		total = dlList.length;
-		g_messages.push({'type': 'center-result alert alert-info', 'info': 'Starting validation of Download links.....'});
+		g_messages.push({'type': 'center-result alert alert-success', 'info': 'Starting validation of Download links.....'});
 		for (var i = dlList.length - 1; i >= 0; i--) {
 			var item = dlList[i];
 			if(number === trial_number)

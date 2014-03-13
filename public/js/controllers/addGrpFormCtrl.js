@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('ace.schematic')
-.controller('addGrpFormCtrl', ['$timeout', '$scope','$location', '$upload', 'DatParser', 'Global', '$http', 'SchematicsAPI', '$modalInstance', '$modal', 'parent', function ($timeout, $scope, $location, $upload, ParseDat, Global, $http, SchematicsAPI, $modalInstance, $modal, parent) {
+.controller('addGrpFormCtrl', ['formValidation', '$timeout', '$scope','$location', '$upload', 'DatParser', 'Global', '$http', 'SchematicsAPI', '$modalInstance', '$modal', 'parent', function (formValidation, $timeout, $scope, $location, $upload, ParseDat, Global, $http, SchematicsAPI, $modalInstance, $modal, parent) {
     $scope.target = {};
     $scope.global = Global;
     $scope.httpMethod = 'POST';
@@ -10,7 +10,7 @@ angular.module('ace.schematic')
     $scope.id = null;
     $scope.valid = {'name':false,'thumbnail':false,'dl':false,'id':false};
     $scope.createDisabled = true;
-
+    $scope.formValidator = formValidation;
     $scope.imgPreview = '';
 
     $scope.$watch('valid.thumbnail',function(){
@@ -25,83 +25,53 @@ angular.module('ace.schematic')
         $scope.createDisabled = !($scope.valid.name && $scope.valid.id && $scope.valid.thumbnail);
     });
 
-    $scope.abort = function(index) {
-        $scope.upload[index].abort();
-        $scope.upload[index] = null;
-    };
-
-    $scope.hasUploader = function(index) {
-        return $scope.upload[index] !== null;
-    };
 
     $scope.validateThumbnail = function(){
-        $scope.valid.thumbnail = false;
+        $scope.valid.thumbnail = undefined;
+        $scope.success.thumbnail = null;
         $scope.error.thumbnail = null;
-        if($scope.target.thumbnail)
+        var string = $scope.target.thumbnail? $scope.target.thumbnail: '';
+        var check = $scope.formValidator.checkFileExtension(string, ['bmp', 'jpeg', 'jpg', 'png', 'ico']);
+        if(check.result)
         {
-            var thumbnailPattern = new RegExp('^.*\\.(bmp|jpeg|jpg|ico|png)$');
-            if(!thumbnailPattern.test($scope.target.thumbnail))
-            {
-                $scope.valid.thumbnail = false;
-                $scope.error.thumbnail = 'Not an image.';
-                return;
-            }
-            $http.get($scope.target.thumbnail)
-            .success(function(){
-                $scope.valid.thumbnail = true;
-            })
-            .error(function(){
-                $scope.valid.thumbnail = false;
-                $scope.error.thumbnail = 'The link is broken.';
+            $scope.formValidator.validateLink(string, function(result) {
+                $scope.success.thumbnail = result.suc_message;
+                $scope.valid.thumbnail = result.result;
+                $scope.error.thumbnail = result.err_message;
             });
+            return;
         }
+        $scope.success.thumbnail = check.suc_message;
+        $scope.valid.thumbnail = check.result;
+        $scope.error.thumbnail = check.err_message;
     };
 
     $scope.checkName = function(){
         $scope.error.name = null;
         $scope.success.name = null;
-        $scope.valid.name = false;
-        if(!$scope.target.name)
-        {
+        $scope.valid.name = undefined;
+        var data = $scope.target.name;
+        if(!data)
             return;
-        }
-        if($scope.target.name.length > 60) //Later check against all the other standard names too
-        {
-            $scope.error.name = 'Invalid name.';
-            return;
-        }
-
-        SchematicsAPI.children.get({nodeId:parent._id}, function(comps) {
-            if(comps){
-                for (var i = 0; i < comps.children.length; i++){
-                    var dbName = comps.children[i].name.toUpperCase();
-                    var localName = $scope.target.name.toUpperCase();
-                    if(dbName.localeCompare(localName) === 0 && $scope.target._id !== comps.children[i]._id){
-                        $scope.valid.name = false;
-                        $scope.error.name = 'This name already exists within the same group.';
-                        return;
-                    }
-                }
-            }
-            $scope.valid.name = true;
-            $scope.success.name = 'This is a valid name.';
+        $scope.formValidator.checkSchematicNodeName(data, parent._id, function(check) {
+            $scope.valid.name = check.result;
+            $scope.error.name = check.err_message;
+            $scope.success.name = check.suc_message;
         });
     };
 
     $scope.checkId = function(){
         $scope.error.id = null;
         $scope.success.id = null;
+        $scope.valid.id = undefined;
         if(!$scope.target.id)
             return;
         $scope.target.id = $scope.target.id.toUpperCase();
-        SchematicsAPI.checkId.save({id:$scope.target.id, standardId:parent.standard},function(response){
-            if(response.unique === true){
-                $scope.valid.id = true;
-            }
-            else{
-                $scope.valid.id = false;
-                $scope.error.id = 'This id already exists within the same group.';
-            }
+        var data = $scope.target.id;
+        $scope.formValidator.checkUniqueSchematicId(data, parent.standard, function(check) {
+            $scope.valid.id = check.result;
+            $scope.error.id = check.err_message;
+            $scope.success.id = check.suc_message;
         });
     };
 
@@ -110,7 +80,6 @@ angular.module('ace.schematic')
         $scope.target.parentNode = parent._id;
         $scope.target.standard = parent.standard;
         $scope.target.dl = null;
-        console.log('target:',$scope.target);
         SchematicsAPI.createNode.save({node:$scope.target}, function(response){
             if(response)
             {
