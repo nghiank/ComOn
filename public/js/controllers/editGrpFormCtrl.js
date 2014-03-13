@@ -2,7 +2,7 @@
 
 angular.module('ace.schematic')
 .controller('editGrpFormCtrl', ['formValidation', '$timeout', '$scope','$location', '$upload', 'Global', '$http', 'SchematicsAPI', '$modalInstance', '$modal', 'target', function (formValidation, $timeout, $scope, $location, $upload, Global, $http, SchematicsAPI, $modalInstance, $modal, target) {
-	$scope.target = {};
+	$scope.target = {'_id': target._id};
 	$scope.origin = target;
 	$scope.global = Global;
 	$scope.httpMethod = 'POST';
