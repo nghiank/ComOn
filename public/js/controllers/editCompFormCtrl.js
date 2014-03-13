@@ -36,43 +36,47 @@ angular.module('ace.schematic')
 	});
 
 	$scope.validateThumbnail = function(){
-        $scope.valid.thumbnail = undefined;
-        $scope.success.thumbnail = null;
-        $scope.error.thumbnail = null;
-        var string = $scope.target.thumbnail? $scope.target.thumbnail: '';
-        var check = $scope.formValidator.checkFileExtension(string, ['bmp', 'jpeg', 'jpg', 'png', 'ico']);
-        if(check.result)
-        {
-            $scope.formValidator.validateLink(string, function(result) {
-                $scope.success.thumbnail = result.suc_message;
-                $scope.valid.thumbnail = result.result;
-                $scope.error.thumbnail = result.err_message;
-            });
-            return;
-        }
-        $scope.success.thumbnail = check.suc_message;
-        $scope.valid.thumbnail = check.result;
-        $scope.error.thumbnail = check.err_message;
+		$scope.valid.thumbnail = undefined;
+		$scope.success.thumbnail = null;
+		$scope.error.thumbnail = null;
+		var string = $scope.target.thumbnail;
+		if(!string)
+			return;
+		var check = $scope.formValidator.checkFileExtension(string, ['bmp', 'jpeg', 'jpg', 'png', 'ico']);
+		if(check.result)
+		{
+			$scope.formValidator.validateLink(string, function(result) {
+				$scope.success.thumbnail = result.suc_message;
+				$scope.valid.thumbnail = result.result;
+				$scope.error.thumbnail = result.err_message;
+			});
+			return;
+		}
+		$scope.success.thumbnail = check.suc_message;
+		$scope.valid.thumbnail = check.result;
+		$scope.error.thumbnail = check.err_message;
 	};
 
 	$scope.validateDwg = function(){
-        $scope.valid.dl = false;
-        $scope.error.dl = null;
-        $scope.success.dl = null;
-        var string = $scope.target.dl? $scope.target.dl: '';
-        var check = $scope.formValidator.checkFileExtension(string, ['dwg']);
-        if(check.result)
-        {
-            $scope.formValidator.validateLink(string, function(result) {
-                $scope.success.dl = result.suc_message;
-                $scope.valid.dl = result.result;
-                $scope.error.dl = result.err_message;
-            });
-            return;
-        }
-        $scope.success.dl = check.suc_message;
-        $scope.valid.dl = check.result;
-        $scope.error.dl = check.err_message;
+		$scope.valid.dl = false;
+		$scope.error.dl = null;
+		$scope.success.dl = null;
+		var string = $scope.target.dl;
+		if(!string)
+			return;
+		var check = $scope.formValidator.checkFileExtension(string, ['dwg']);
+		if(check.result)
+		{
+			$scope.formValidator.validateLink(string, function(result) {
+				$scope.success.dl = result.suc_message;
+				$scope.valid.dl = result.result;
+				$scope.error.dl = result.err_message;
+			});
+			return;
+		}
+		$scope.success.dl = check.suc_message;
+		$scope.valid.dl = check.result;
+		$scope.error.dl = check.err_message;
 	};
 
 	$scope.checkName = function(){
@@ -90,11 +94,11 @@ angular.module('ace.schematic')
 			$scope.valid.name = true;
 			return;
 		}
-        $scope.formValidator.checkSchematicNodeName(data, parent._id, function(check) {
-            $scope.valid.name = check.result;
-            $scope.error.name = check.err_message;
-            $scope.success.name = check.suc_message;
-        });
+		$scope.formValidator.checkSchematicNodeName(data, $scope.origin.parentNode._id, function(check) {
+			$scope.valid.name = check.result;
+			$scope.error.name = check.err_message;
+			$scope.success.name = check.suc_message;
+		});
 	};
 
 	$scope.checkId = function(){
@@ -111,11 +115,11 @@ angular.module('ace.schematic')
 			$scope.valid.id = true;
 			return;
 		}
-        $scope.formValidator.checkUniqueSchematicId(data, parent.standard, function(check) {
-            $scope.valid.id = check.result;
-            $scope.error.id = check.err_message;
-            $scope.success.id = check.suc_message;
-        });
+		$scope.formValidator.checkUniqueSchematicId(data, $scope.orign.standard._id, function(check) {
+			$scope.valid.id = check.result;
+			$scope.error.id = check.err_message;
+			$scope.success.id = check.suc_message;
+		});
 	};
 
 	$scope.delete = function() {

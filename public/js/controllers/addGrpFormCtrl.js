@@ -30,7 +30,9 @@ angular.module('ace.schematic')
         $scope.valid.thumbnail = undefined;
         $scope.success.thumbnail = null;
         $scope.error.thumbnail = null;
-        var string = $scope.target.thumbnail? $scope.target.thumbnail: '';
+        var string = $scope.target.thumbnail;
+        if(!string)
+            return;
         var check = $scope.formValidator.checkFileExtension(string, ['bmp', 'jpeg', 'jpg', 'png', 'ico']);
         if(check.result)
         {
