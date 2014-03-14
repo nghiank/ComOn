@@ -6,7 +6,9 @@
 var mongoose = require('mongoose'),
     User = mongoose.model('User'),
     ComponentSchem = mongoose.model('SchematicComponent'),
-    error = require('../utils/error');
+    SchematicVersions = mongoose.model('Schematic__versions'),
+    error = require('../utils/error'),
+    _ = require('underscore');
 
 /**
  * Auth callback
@@ -179,7 +181,34 @@ exports.getFavourites = function(req, res) {
     ComponentSchem.find({_id: {$in: req.user.SchemFav}, isComposite: false}).exec(function(err, components) {
         if(err)
             return error.sendGenericError(res, 400, 'Error Encountered');
-        res.jsonp({'schematic': components});
+        if(!components)
+            return res.jsonp({'schematic': []});
+        var checked = 0;
+        var getVersion = function(i)
+        {
+            SchematicVersions.findOne({refId: components[i]._id}).exec(function(err, version) {
+                if(err)
+                    console.log(err);
+                else if(!version)
+                    console.log('No available version');
+                else
+                {
+                    var published = (components[i].published)? (components[i].published - 1): 0;
+                    var published_version = JSON.parse(JSON.stringify(version.versions[published]));
+                    var omit = ['refVersion', 'version', 'published', 'standard', 'parentNode'];
+                    published_version = _.omit(published_version, omit);
+                    _.extend(components[i], published_version);
+                }
+                if(++checked === components.length)
+                {
+                    res.jsonp({'schematic': components});
+                }
+            });
+            return;
+        };
+        for (var i = components.length - 1; i >= 0; i--) {
+            getVersion(i);
+        }
     });
 };
 

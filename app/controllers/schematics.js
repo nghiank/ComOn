@@ -176,10 +176,40 @@ exports.isUniqueId = function(req,res) {
 		return error.sendGenericError(res, 400, 'Error Encountered');
 	}
 	var s_id = req.body.standardId, id = req.body.id;
-	ComponentSchem.findOne({standard: s_id, id: id}).exec(function(err, component) {
+	ComponentSchem.find({standard: s_id}).exec(function(err, components) {
 		if(err)
 			return error.sendGenericError(res, 400, 'Error Encountered');
-		res.status(200).jsonp({'unique': !!!component});
+		if(!components)
+			return error.sendGenericError(res, 400, 'Error Encountered');
+		var checked = 0;
+		var status = true;
+		var getVersion = function(i)
+		{
+			SchematicVersions.findOne({refId: components[i]._id}).exec(function(err, version) {
+				if(err)
+					console.log(err);
+				else if(!version)
+					console.log('No available version');
+				else
+				{
+					if(components[i].published)
+					{
+						var published = components[i].published - 1;
+						var published_version = JSON.parse(JSON.stringify(version.versions[published]));
+						if(published_version.id === id)
+							status = false;
+					}
+				}
+				if(++checked === components.length)
+				{
+					res.jsonp({'unique': status});
+				}
+			});
+			return;
+		};
+		for (var i = components.length - 1; i >= 0; i--) {
+			getVersion(i);
+		}
 	});
 };
 
@@ -457,7 +487,6 @@ exports.publishComponent = function(req, res){
 		component.save(function(err) {
 			if(err)
 				return error.sendGenericError(res, 400, 'Error Encountered');
-			console.log(component);
 			res.send(200);
 		});
 	});
