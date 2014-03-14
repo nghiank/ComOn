@@ -198,6 +198,7 @@ exports.getNodeChildren = function(req, res) {
 				return error.sendGenericError(res, 400, 'Error Encountered');
 			if(!components)
 				return res.jsonp({'children': []});
+			var checked = 0;
 			var getVersion = function(i)
 			{
 				SchematicVersions.findOne({refId: components[i]._id}).exec(function(err, version) {
@@ -213,7 +214,7 @@ exports.getNodeChildren = function(req, res) {
 						published_version = _.omit(published_version, omit);
 						_.extend(components[i], published_version);
 					}
-					if(i === 0)
+					if(++checked === components.length)
 					{
 						res.jsonp({'children': components});
 					}
@@ -411,6 +412,27 @@ exports.createNode = function(req,res){
 		child_component.save(function(err) {
 			if(err) return error.sendGenericError(res, 400, 'Error Encountered');
 			return res.jsonp(child_component);
+		});
+	});
+};
+
+exports.getVersions = function(req, res) {
+	if(!req.body._id)
+	{
+		return error.sendGenericError(res, 400, 'Error Encountered');
+	}
+	var id = req.body._id;
+	ComponentSchem.findOne({_id: id}).exec(function(err, component) {
+		if(err)
+			return error.sendGenericError(res, 400, 'Error Encountered');
+		if(!component || component.isComposite)
+			return error.sendGenericError(res, 400, 'Error Encountered');
+		SchematicVersions.findOne({refId: id}).exec(function(err, version) {
+			if(err)
+				return error.sendGenericError(res, 400, 'Error Encountered');
+			if(!version)
+				return error.sendGenericError(res, 400, 'Error Encountered');
+			return res.jsonp(version);
 		});
 	});
 };

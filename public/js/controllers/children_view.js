@@ -173,7 +173,7 @@ angular.module('ace.schematic')
 	$scope.publishComponent = function(child, number) {
 		if(!number)
 			number = 0;
-		SchematicsAPI.publish.save({_id: child._id, number: 2}, function(response) {
+		SchematicsAPI.publish.save({_id: child._id, number: 1}, function(response) {
 			if(response)
 			{
 				console.log('guvytf');
