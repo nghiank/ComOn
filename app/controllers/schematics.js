@@ -65,7 +65,8 @@ var createComponent = function(child, parent, std) {
 		acad360l: null,
 		isComposite: !child.isComponent,
 		published: 1,
-		version: 1
+		version: 1,
+		dateModified: new Date()
 	});
 	component.save(function(err) {
 		if(err) return console.log(err);
@@ -147,7 +148,7 @@ var deleteChildren = function(id) {
 			Users.find({fav: deleted_id}, function(err, users) {
 				if(err)
 					return console.log(err);
-				if(!users)
+				if(!users || users.length === 0)
 					return;
 				for (var i = 0; i < users.length; i++) {
 					var user = users[i];
@@ -175,11 +176,11 @@ exports.isUniqueId = function(req,res) {
 	{
 		return error.sendGenericError(res, 400, 'Error Encountered');
 	}
-	var s_id = req.body.standardId, id = req.body.id;
+	var s_id = req.body.standardId, id = req.body.id, _id = req.body._id;
 	ComponentSchem.find({standard: s_id}).exec(function(err, components) {
 		if(err)
 			return error.sendGenericError(res, 400, 'Error Encountered');
-		if(!components)
+		if(!components || components.length === 0)
 			return error.sendGenericError(res, 400, 'Error Encountered');
 		var checked = 0;
 		var status = true;
@@ -194,10 +195,13 @@ exports.isUniqueId = function(req,res) {
 				{
 					if(components[i].published)
 					{
-						var published = components[i].published - 1;
-						var published_version = JSON.parse(JSON.stringify(version.versions[published]));
-						if(published_version.id === id)
-							status = false;
+						if(!!!_id || (!!_id && JSON.stringify(components[i]._id) !== JSON.stringify(_id) ))
+						{
+							var published = components[i].published - 1;
+							var published_version = JSON.parse(JSON.stringify(version.versions[published]));
+							if(published_version.id === id)
+								status = false;
+						}
 					}
 				}
 				if(++checked === components.length)
@@ -226,7 +230,7 @@ exports.getNodeChildren = function(req, res) {
 		.exec(function(err, components) {
 			if(err)
 				return error.sendGenericError(res, 400, 'Error Encountered');
-			if(!components)
+			if(!components || components.length === 0)
 				return res.jsonp({'children': []});
 			var checked = 0;
 			var getVersion = function(i)
@@ -240,7 +244,7 @@ exports.getNodeChildren = function(req, res) {
 					{
 						var published = (components[i].published)? (components[i].published - 1): 0;
 						var published_version = JSON.parse(JSON.stringify(version.versions[published]));
-						var omit = ['refVersion', 'version', 'published', 'standard', 'parentNode'];
+						var omit = ['refVersion', 'version', 'published', 'standard', 'parentNode', '_id', '__v'];
 						published_version = _.omit(published_version, omit);
 						_.extend(components[i], published_version);
 					}
@@ -324,6 +328,7 @@ exports.editComponent = function(req, res){
 		delete component.version;
 		_.extend(fetchedComponent, component);
 		fetchedComponent.version++;
+		fetchedComponent.dateModified = new Date();
 		if(fetchedComponent.isComposite)
 			fetchedComponent.published++;
 		fetchedComponent.save(function(err) {
@@ -437,7 +442,8 @@ exports.createNode = function(req,res){
 				acad360l: null,
 				isComposite: node.isComposite,
 				published: node.isComposite? 1: 0,
-				version: 1
+				version: 1,
+				dateModified: new Date()
 			});
 		child_component.save(function(err) {
 			if(err) return error.sendGenericError(res, 400, 'Error Encountered');

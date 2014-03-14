@@ -48,8 +48,8 @@ angular.module('ace.system').factory('formValidation', ['SchematicsAPI', '$http'
 			});
 		};
 
-		instance.checkUniqueSchematicId = function(id, standard, cb) {
-			SchematicsAPI.checkId.save({id: id, standardId: standard},function(response){
+		instance.checkUniqueSchematicId = function(id, standard, _id, cb) {
+			SchematicsAPI.checkId.save({id: id, standardId: standard, _id: _id},function(response){
 				if(response.unique === true){
 					return cb({result: true, suc_message: 'Valid ID.', err_message: null});
 				}

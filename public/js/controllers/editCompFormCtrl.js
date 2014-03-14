@@ -115,7 +115,7 @@ angular.module('ace.schematic')
 			$scope.valid.id = true;
 			return;
 		}
-		$scope.formValidator.checkUniqueSchematicId(data, $scope.origin.standard._id, function(check) {
+		$scope.formValidator.checkUniqueSchematicId(data, $scope.origin.standard._id, $scope.origin._id,  function(check) {
 			$scope.valid.id = check.result;
 			$scope.error.id = check.err_message;
 			$scope.success.id = check.suc_message;

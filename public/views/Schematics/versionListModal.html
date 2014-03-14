@@ -10,14 +10,16 @@
     		<thead>
 	    		<tr>
 	    			<th>Version #</th>
+            <th>Date Created</th>
 	    			<th>State</th>
 	    		</tr>
     		</thead>
     		<tbody>
-		       	<tr ng-repeat="v in versionInfo.versions">
-		       		<td>{{v.version}}</td>
-		       		<td ng-show="target.published === {{$index+1}}">Published</td>
-		       		<td ng-hide="target.published === {{$index+1}}">Published</td>
+		       	<tr ng-click="publishComponent($index+1)" ng-repeat="v in versionInfo.versions">
+              <td>{{$index+1}}</td>
+		       		<td>{{v.dateModified}}</td>
+		       		<td ng-show="target.published === {{$index+1}}"><p class="success">Published</p></td>
+		       		<td ng-hide="target.published === {{$index+1}}"><p class="grey">Not Published</p></td>
 		       	</tr>
 	    	</tbody>
     	</table>

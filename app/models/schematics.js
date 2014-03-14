@@ -70,6 +70,9 @@ var componentSchema = new Schema({
     version: {
         type: Number,
         default: 1
+    },
+    dateModified: {
+        type: Date
     }
 });
 componentSchema.index({id: 1, name: -1, parentNode: 1}, {unique: true});

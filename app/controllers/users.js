@@ -181,8 +181,8 @@ exports.getFavourites = function(req, res) {
     ComponentSchem.find({_id: {$in: req.user.SchemFav}, isComposite: false}).exec(function(err, components) {
         if(err)
             return error.sendGenericError(res, 400, 'Error Encountered');
-        if(!components)
-            return res.jsonp({'schematic': []});
+        if(!components || components.length === 0)
+            return res.jsonp({'schematic': components});
         var checked = 0;
         var getVersion = function(i)
         {
@@ -195,7 +195,7 @@ exports.getFavourites = function(req, res) {
                 {
                     var published = (components[i].published)? (components[i].published - 1): 0;
                     var published_version = JSON.parse(JSON.stringify(version.versions[published]));
-                    var omit = ['refVersion', 'version', 'published', 'standard', 'parentNode'];
+                    var omit = ['refVersion', 'version', 'published', 'standard', 'parentNode', '_id', '__v'];
                     published_version = _.omit(published_version, omit);
                     _.extend(components[i], published_version);
                 }
