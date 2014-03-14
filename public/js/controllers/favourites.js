@@ -25,6 +25,8 @@ angular.module('ace')
 	$scope.delSchemFav = function(child){
 		if(child.isComposite)
 			return;
+		if(child.published === 0)
+			return;
 		UsersAPI.delSchemFav.save({_id: child._id}, function(response) {
 			if(response)
 			{
@@ -36,8 +38,16 @@ angular.module('ace')
 		});
 	};
 
-	$scope.unpublished = function(child) {
-		return child.isPublished || $scope.admin;
+	$scope.published = function(child) {
+		return (child.published !== 0) || $scope.admin;
+	};
+
+	$scope.checkAllPublished = function() {
+		for (var i = $scope.schematic.length - 1; i >= 0; i--) {
+			if($scope.published($scope.schematic[i]))
+				return false;
+		}
+		return true;
 	};
 
 }]);

@@ -5,6 +5,8 @@ angular.module('ace.schematic')
 	$scope.breadcrumbs = breadcrumbs;
 	$scope.Global = Global;
 	$scope.admin = false;
+	$scope.leaves = [];
+	$scope.subtypes = [];
 	if($scope.Global.authenticated && $scope.Global.user.isAdmin)
 		$scope.admin = true;
 	$scope.getChildren = function() {
@@ -134,6 +136,8 @@ angular.module('ace.schematic')
 	$scope.addFav = function(child){
 		if(child.isComposite)
 			return;
+		if(child.published === 0)
+			return;
 		UsersAPI.addSchemFav.save({_id: child._id}, function(response) {
 			if(response)
 			{
@@ -148,6 +152,8 @@ angular.module('ace.schematic')
 	$scope.delFav = function(child){
 		if(child.isComposite)
 			return;
+		if(child.published === 0)
+			return;
 		UsersAPI.delSchemFav.save({_id: child._id}, function(response) {
 			if(response)
 			{
@@ -160,8 +166,27 @@ angular.module('ace.schematic')
 		});
 	};
 
-	$scope.unpublished = function(child) {
-		return child.isPublished || $scope.admin;
+	$scope.published = function(child) {
+		return (child.published !== 0) || $scope.admin;
+	};
+
+	$scope.publishComponent = function(child, number) {
+		if(!number)
+			number = 0;
+		SchematicsAPI.publish.save({_id: child._id, number: 2}, function(response) {
+			if(response)
+			{
+				console.log('guvytf');
+			}
+		});
+	};
+
+	$scope.checkAllPublished = function() {
+		for (var i = $scope.leaves.length - 1; i >= 0; i--) {
+			if($scope.published($scope.leaves[i]))
+				return false;
+		}
+		return true;
 	};
 
 }]);

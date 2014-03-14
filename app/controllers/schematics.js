@@ -5,6 +5,7 @@ var Inst = new parser();
 var mongoose = require('mongoose');
 var ComponentSchem = mongoose.model('SchematicComponent');
 var StandardSchem = mongoose.model('SchematicStandard');
+var SchematicVersions = mongoose.model('Schematic__versions');
 var Users = mongoose.model('User');
 var error = require('../utils/error');
 var formidable = require('formidable');
@@ -63,7 +64,8 @@ var createComponent = function(child, parent, std) {
 		dl: child.isComponent? findDl(child.component): null,
 		acad360l: null,
 		isComposite: !child.isComponent,
-		isPublished: true
+		published: 1,
+		version: 1
 	});
 	component.save(function(err) {
 		if(err) return console.log(err);
@@ -194,7 +196,33 @@ exports.getNodeChildren = function(req, res) {
 		.exec(function(err, components) {
 			if(err)
 				return error.sendGenericError(res, 400, 'Error Encountered');
-			return res.jsonp({'children': components});
+			if(!components)
+				return res.jsonp({'children': []});
+			var getVersion = function(i)
+			{
+				SchematicVersions.findOne({refId: components[i]._id}).exec(function(err, version) {
+					if(err)
+						console.log(err);
+					else if(!version)
+						console.log('No available version');
+					else
+					{
+						var published = (components[i].published)? (components[i].published - 1): 0;
+						var published_version = JSON.parse(JSON.stringify(version.versions[published]));
+						var omit = ['refVersion', 'version', 'published', 'standard', 'parentNode'];
+						published_version = _.omit(published_version, omit);
+						_.extend(components[i], published_version);
+					}
+					if(i === 0)
+					{
+						res.jsonp({'children': components});
+					}
+				});
+				return;
+			};
+			for (var i = components.length - 1; i >= 0; i--) {
+				getVersion(i);
+			}
 		});
 };
 
@@ -261,10 +289,15 @@ exports.editComponent = function(req, res){
 		if(!fetchedComponent)
 			return error.sendGenericError(res, 400, 'Error Encountered');
 		var old_name = fetchedComponent.name;
+		delete component.published;
+		delete component.version;
 		_.extend(fetchedComponent, component);
+		fetchedComponent.version++;
+		if(fetchedComponent.isComposite)
+			fetchedComponent.published++;
 		fetchedComponent.save(function(err) {
 			if(err)
-				return error.sendGenericError(res, 400, 'Error Encountered1');
+				return error.sendGenericError(res, 400, 'Error Encountered');
 			if(!fetchedComponent.parentNode && component.name)
 			{
 				return StandardSchem.findOne({name: old_name}, function(err, standard) {
@@ -372,7 +405,8 @@ exports.createNode = function(req,res){
 				dl: node.dl,
 				acad360l: null,
 				isComposite: node.isComposite,
-				isPublished: true
+				published: node.isComposite? 1: 0,
+				version: 1
 			});
 		child_component.save(function(err) {
 			if(err) return error.sendGenericError(res, 400, 'Error Encountered');
@@ -381,3 +415,27 @@ exports.createNode = function(req,res){
 	});
 };
 
+exports.publishComponent = function(req, res){
+	console.log(req.body);
+	if(!req.body.hasOwnProperty('_id') || !req.body.hasOwnProperty('number'))
+	{
+		return error.sendGenericError(res, 400, 'Error Encountered');
+	}
+	var id = req.body._id;
+	var number = req.body.number;
+	ComponentSchem.findOne({_id: id}).exec(function(err, component) {
+		if(err)
+			return error.sendGenericError(res, 400, 'Error Encountered');
+		if(!component)
+			return error.sendGenericError(res, 400, 'Error Encountered');
+		if(component.version < number)
+			return error.sendGenericError(res, 400, 'Error Encountered');
+		component.published = number;
+		component.save(function(err) {
+			if(err)
+				return error.sendGenericError(res, 400, 'Error Encountered');
+			console.log(component);
+			res.send(200);
+		});
+	});
+};

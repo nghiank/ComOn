@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('ace.schematic')
-.controller('Standards', ['$scope', 'SchematicsAPI', 'Global', 'breadcrumbs', function ($scope, SchematicsAPI, Global, breadcrumbs) {
+.controller('Standards', ['$modal', '$scope', 'SchematicsAPI', 'Global', 'breadcrumbs', function ($modal, $scope, SchematicsAPI, Global, breadcrumbs) {
 	$scope.breadcrumbs = breadcrumbs;
 	$scope.admin = false;
 	$scope.Global = Global;
@@ -36,7 +36,15 @@ angular.module('ace.schematic')
 		return (std.showOption = !std.showOption);
 	};
 
-	$scope.unpublished = function(child) {
-		return child.isPublished || $scope.admin;
+	$scope.downloadStandard = function(){
+		$scope.showComingSoon();
 	};
+	
+	$scope.showComingSoon = function(){
+		$modal.open({
+			templateUrl: 'views/ComingModal.html',
+			controller: 'ComingModalCtrl'
+		});
+	};
+
 }]);

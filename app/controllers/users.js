@@ -135,6 +135,8 @@ exports.addSchemFavourite = function(req, res) {
             return error.sendGenericError(res, 400, 'Error Encountered');
         if(!component)
             return error.sendGenericError(res, 400, 'Error Encountered');
+        if(component.published === 0)
+            return error.sendGenericError(res, 400, 'Error Encountered');
         var list = req.user.SchemFav;
         if(list.indexOf(id) < 0)
         {

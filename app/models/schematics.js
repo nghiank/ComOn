@@ -63,13 +63,22 @@ var componentSchema = new Schema({
         type: Boolean,
         default: false
     },
-    isPublished: {
-        type: Boolean,
-        default: true
+    published: {
+        type: Number,
+        default: 0
+    },
+    version: {
+        type: Number,
+        default: 1
     }
 });
 componentSchema.index({id: 1, name: -1, parentNode: 1}, {unique: true});
-componentSchema.plugin(version, { collection: 'Schematic__versions' });
-
+componentSchema.plugin(version, { collection: 'Schematic__versions' , removeVersions: true, ignorePaths: ['version', 'published']});
+componentSchema.pre('save', function(next) {
+    if(this.published > this.version)
+        next(new Error('Version to be published does not exist.'));
+    else
+        next();
+});
 mongoose.model('SchematicComponent', componentSchema);
 
