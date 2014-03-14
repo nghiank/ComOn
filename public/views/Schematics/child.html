@@ -34,7 +34,7 @@
                         <i class="fa fa-star star"></i>
                     </a>
                     <a ng-click="publishComponent(child)" class="btn pull-right btn-link" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}" ng-show="(child.published === 0)?true:child.showOption && admin">
-                        <i class="fa fa-cloud-upload" ng-class="{'error': {{child.published === 0}}}"></i>
+                        <i class="fa fa-clock-o" ng-class="{'error': {{child.published === 0}}}" ng-click="showVersionModal(child)"></i>
                     </a>
                     <a class="btn pull-right btn-link" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}" ng-click="showEditForm(child)" ng-show="child.showOption && admin">
                         <i class="fa fa-pencil"></i>

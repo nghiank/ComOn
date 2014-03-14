@@ -7,6 +7,7 @@ angular.module('ace.schematic').factory('SchematicsAPI', ['$resource', function(
 		children: $resource('api/getChildren/:nodeId', {nodeId: '@_id'}),
 		node:$resource('api/getNode/:nodeId', {nodeId:'@_id'}),
 		createNode:$resource('api/createNode',null),
+		nodeVersion:$resource('/api/getCompVersions',null),
 		delete: $resource('api/delete/:nodeId', {nodeId: '@_id'}),
 		editComponent: $resource('api/editComponent',null),
 		editStd: $resource('api/editStd',null),
