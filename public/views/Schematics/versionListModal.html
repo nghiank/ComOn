@@ -8,14 +8,16 @@
     	<p>Last modified on <i>{{versionInfo.modified | date:'short'}}</i></p>
        <ul class="list-group">
        	<li class="list-title list-group-item">Versions</li>
-       	<li class="list-group-item" ng-repeat="v in versionInfo.versions">
-       		{{v.version}}
-       		<span class="pull-right success" ng-show="v.published">Published</span>
+       	<li ng-click="publishComponent($index+1)" class="list-group-item" ng-repeat="v in versionInfo.versions">
+       		{{$index+1}}
+          <span class="pull-right success" ng-show="target.published === {{$index+1}}">Published</span>
+       		<span class="pull-right error" ng-hide="target.published === {{$index+1}}">Unpublished</span>
        	</li>
        </ul>
 		<div class="row">
 			<div class="col-md-12">
-       			<button class="btn btn-default pull-right" ng-click="cancel()">Done</button>
+            <button class="btn btn-default pull-right" ng-click="cancel()">Done</button>
+       			<button class="btn btn-danger" ng-click="publishComponent(0)">Unpublish Completely</button>
 			</div>
 		</div>
     </div>
