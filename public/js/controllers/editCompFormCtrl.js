@@ -2,7 +2,7 @@
 
 angular.module('ace.schematic')
 .controller('editCompFormCtrl', ['formValidation', '$timeout', '$scope','$location', '$upload', 'Global', '$http', 'SchematicsAPI', '$modalInstance', '$modal', 'target', function (formValidation, $timeout, $scope, $location, $upload, Global, $http, SchematicsAPI, $modalInstance, $modal, target) {
-	$scope.target = {};
+	$scope.target = {'_id': target._id};
 	$scope.origin = target;
 	$scope.global = Global;
 	$scope.httpMethod = 'POST';
@@ -94,7 +94,7 @@ angular.module('ace.schematic')
 			$scope.valid.name = true;
 			return;
 		}
-		$scope.formValidator.checkSchematicNodeName(data, parent._id, function(check) {
+		$scope.formValidator.checkSchematicNodeName(data, $scope.origin.parentNode._id, function(check) {
 			$scope.valid.name = check.result;
 			$scope.error.name = check.err_message;
 			$scope.success.name = check.suc_message;
@@ -115,7 +115,7 @@ angular.module('ace.schematic')
 			$scope.valid.id = true;
 			return;
 		}
-		$scope.formValidator.checkUniqueSchematicId(data, parent.standard, function(check) {
+		$scope.formValidator.checkUniqueSchematicId(data, $scope.origin.standard._id, function(check) {
 			$scope.valid.id = check.result;
 			$scope.error.id = check.err_message;
 			$scope.success.id = check.suc_message;
