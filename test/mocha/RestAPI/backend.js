@@ -529,13 +529,16 @@ describe('<e2e API Test>', function() {
 
             it('POST /api/upload without credentials should return 401', function(done) {
                 this.timeout(config.timeout);
-                agent.post('/api/upload')
-                .attach('datFile', './test/mocha/RestAPI/ACE_JIC_MENU.dat')
-                .attach('jsonFile', './test/mocha/RestAPI/mapping.json')
-                .end(function(err, res) {
-                    (res.status).should.equal(401);
-                    done();
-                });
+                function delay() {
+                    agent.post('/api/upload')
+                    .attach('datFile', './test/mocha/RestAPI/ACE_JIC_MENU.dat')
+                    .attach('jsonFile', './test/mocha/RestAPI/mapping.json')
+                    .end(function(err, res) {
+                        (res.status).should.equal(401);
+                        done();
+                    });
+                }
+                setTimeout(delay, 500);
             });
 
             it('GET /api/getSchemStds without credentials returns 200', function(done) {

@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('ace.schematic')
-.controller('Children', ['$scope', 'SchematicsAPI', '$routeParams', 'Global', 'breadcrumbs', '$modal', 'UsersAPI', function ($scope, SchematicsAPI, $routeParams, Global, breadcrumbs, $modal, UsersAPI) {
+.controller('Children', ['$timeout', '$scope', 'SchematicsAPI', '$routeParams', 'Global', 'breadcrumbs', '$modal', 'UsersAPI', function ($timeout, $scope, SchematicsAPI, $routeParams, Global, breadcrumbs, $modal, UsersAPI) {
 	$scope.breadcrumbs = breadcrumbs;
 	$scope.Global = Global;
 	$scope.admin = false;
@@ -185,17 +185,6 @@ angular.module('ace.schematic')
 
 	$scope.published = function(child) {
 		return (child.published !== 0) || $scope.admin;
-	};
-
-	$scope.publishComponent = function(child, number) {
-		if(!number)
-			number = 0;
-		SchematicsAPI.publish.save({_id: child._id, number: 1}, function(response) {
-			if(response)
-			{
-				console.log('guvytf');
-			}
-		});
 	};
 
 	$scope.checkAllPublished = function() {

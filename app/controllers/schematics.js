@@ -438,7 +438,6 @@ exports.getVersions = function(req, res) {
 };
 
 exports.publishComponent = function(req, res){
-	console.log(req.body);
 	if(!req.body.hasOwnProperty('_id') || !req.body.hasOwnProperty('number'))
 	{
 		return error.sendGenericError(res, 400, 'Error Encountered');
@@ -452,6 +451,8 @@ exports.publishComponent = function(req, res){
 			return error.sendGenericError(res, 400, 'Error Encountered');
 		if(component.version < number)
 			return error.sendGenericError(res, 400, 'Error Encountered');
+		if(component.published === number)
+			return res.send(200);
 		component.published = number;
 		component.save(function(err) {
 			if(err)

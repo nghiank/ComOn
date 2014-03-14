@@ -16,13 +16,16 @@
     		<tbody>
 		       	<tr ng-repeat="v in versionInfo.versions">
 		       		<td>{{v.version}}</td>
-		       		<td ng-show="v.published">Published</td>
+		       		<td ng-show="target.published === {{$index+1}}">Published</td>
+		       		<td ng-hide="target.published === {{$index+1}}">Published</td>
 		       	</tr>
 	    	</tbody>
     	</table>
+
 		<div class="row">
 			<div class="col-md-12">
-       			<button class="btn btn-default pull-right" ng-click="cancel()">Done</button>
+            <button class="btn btn-default pull-right" ng-click="cancel()">Done</button>
+       			<button class="btn btn-danger" ng-click="publishComponent(0)">Unpublish This Component</button>
 			</div>
 		</div>
     </div>
