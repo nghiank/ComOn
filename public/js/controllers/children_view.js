@@ -115,6 +115,23 @@ angular.module('ace.schematic')
 		});
 	};
 
+	$scope.showVersionModal = function(child){
+		$scope.target = child;
+		var modalInstance = $modal.open({
+			templateUrl: 'views/Schematics/versionListModal.html',
+			controller: 'versionListCtrl',
+			backdrop: 'static',
+			resolve: {
+				target: function() {
+					return ($scope.target);
+				}
+			}
+		});
+		modalInstance.result.then(function(){
+			$scope.getChildren();
+		});
+	};
+
 	$scope.showComingSoon = function(){
 		$modal.open({
 			templateUrl: 'views/ComingModal.html',
