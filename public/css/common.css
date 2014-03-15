@@ -143,5 +143,8 @@ img
 }
 
 .unpublished {
-    background-color: grey;
+    font-weight: bold;
+    font-family: "Trebuchet MS", Helvetica, sans-serif;
+    color: green;
+    padding-left: 15px;
 }

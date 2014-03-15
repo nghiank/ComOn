@@ -24,9 +24,9 @@
              <ul class="list-group">
                 <div class="list-group-item list-title">Components<a class="pull-right list-title-btn" ng-show="admin" ng-click="showLeafAddForm()"><i class="fa fa-plus fa-2x"></i></a></div>
                 <li class="list-group-item" ng-show="checkAllPublished()">No components at this level.</li>          
-                <li class="list-group-item" ng-class="{'unpublished': {{child.published !== child.version}}}" ng-repeat="child in leaves | filter: published" ng-mouseenter = "toggleOption(child)" ng-mouseleave = "toggleOption(child)">
+                <li class="list-group-item" ng-repeat="child in leaves | filter: published" ng-mouseenter = "toggleOption(child)" ng-mouseleave = "toggleOption(child)">
                     <img ng-src='{{child.thumbnail}}' ng-show="child.thumbnail" style="width: 40px; height: 40px; margin-right:10px;">
-                    {{child.name}}
+                    {{child.name}} <i class="unpublished" ng-show="child.published !== child.version" >NEW!</i>
                     <a class="btn pull-right btn-link" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}" ng-click="addFav(child)" ng-show="child.showOption && child.published !==0 && !child.isFavourite && !child.isComposite && Global.authenticated">
                         <i class="fa fa-star-o"></i>
                     </a>
