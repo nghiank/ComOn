@@ -6,7 +6,7 @@
     <div class="modal-body">
     	<p>Created on <i>{{versionInfo.created | date:'short'}}</i></p>
     	<p>Last modified on <i>{{versionInfo.modified | date:'short'}}</i></p>
-    	<table class="table table-condensed table-hover">
+    	<table class="table table-hover">
     		<thead>
 	    		<tr>
 	    			<th>Version #</th>
@@ -15,11 +15,15 @@
 	    		</tr>
     		</thead>
     		<tbody>
-		       	<tr ng-click="publishComponent($index+1)" ng-repeat="v in versionInfo.versions">
-              <td>{{$index+1}}</td>
-		       		<td>{{v.dateModified}}</td>
-		       		<td ng-show="target.published === {{$index+1}}"><p class="success">Published</p></td>
-		       		<td ng-hide="target.published === {{$index+1}}"><p class="grey">Not Published</p></td>
+		       	<tr ng-repeat="v in versionInfo.versions" ng-mouseenter="chooseHoverTarget($index+1)" ng-mouseleave="chooseHoverTarget(-1)">
+                    <td>{{$index+1}}</td>
+		       		<td>{{v.dateModified | date:'short'}}</td>
+		       		<td ng-show="target.published === {{$index+1}}"><div class="success">Published</div></td>
+		       		<td ng-hide="target.published === {{$index+1}}" class="fixed-width">
+                        <span class="grey">Not Published</span>
+                        <a ng-show="hoverTgt === ($index+1)" ng-click="publishComponent($index+1)"class="unpublished"><i class="fa fa-book"></i></a>
+                    </td>
+                    
 		       	</tr>
 	    	</tbody>
     	</table>
