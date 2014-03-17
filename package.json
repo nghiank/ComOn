@@ -63,7 +63,9 @@
     "underscore": "~1.6.0",
     "oauth": "~0.9.11",
     "formidable": "~1.0.14",
-    "mongoose-version": "~0.2.4"
+    "mongoose-version": "~0.2.4",
+    "xlsjs":"~0.6.9-c",
+    "xlsx":"~0.5.10-b.3"
   },
   "devDependencies": {
     "supertest": "0.8.2",
