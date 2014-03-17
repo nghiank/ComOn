@@ -33,6 +33,11 @@ angular.module('ace.schematic')
         });
     };
 
+    $scope.chooseHoverTarget = function(index){
+        $scope.hoverTgt = index;
+        console.log($scope.hoverTgt);
+    };
+
     $scope.cancel = function(){
         $modalInstance.dismiss('Cancelled by User');
     };
