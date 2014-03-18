@@ -3,9 +3,9 @@
   "description": "Upload ACE Schematics to dropbox.",
   "author": "Akaash Gupta",
   "dependencies": {
-    "assert": "latest",
-    "dropbox": "latest",
-    "request": "latest",
-    "oauth": "latest"
+    "assert": "~1.1.1",
+    "dropbox": "~0.10.2",
+    "request": "~2.34.0",
+    "oauth": "~0.9.11"
   }
 }

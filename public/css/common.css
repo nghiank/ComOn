@@ -1,11 +1,12 @@
-.navbar .nav>li>a.brand {
-    padding-left: 20px;
-    margin-left: 0px;
+.content {
+    margin-top:50px;
+    width:100%;
+    max-height: 90%;
+    overflow-y:hidden;
 }
 
-.content {
-    margin-top:70px;
-    width:100%
+.container{
+    height:90%;
 }
 
 h1 {
@@ -27,4 +28,111 @@ footer {
 
 footer p {
     padding:5px 0 12px 10px
+}
+
+.alert-thin {
+    margin-top: 10px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+
+.listing {
+    height: 428px;
+    overflow-y: auto;
+}
+
+.thick {
+    min-height: 62px;
+}
+
+.local
+{
+    background-color:#F9F9F9;
+}
+
+.btn-separate
+{
+    margin-left: 10px;
+}
+
+.list-group-item:hover
+{
+    background-color:#ADD8E6;
+}
+
+.success
+{
+    color:green;
+}
+
+.error
+{
+    color:red;
+}
+
+.info
+{
+    color: black;
+}
+
+.validation-box 
+{
+    padding-left: 0px;
+    line-height: 0.5em;
+    font-size: 10px;
+}
+
+.center-result
+{
+    margin-left: 15px;
+}
+
+.list-title {
+    padding-top: 15px;
+    padding-bottom: 15px;
+    background-color: #428bca;
+    color: white;
+}
+
+.list-title:hover{
+    background-color: #428bca;
+}
+
+.list-title-btn
+{
+    margin-top: -3px;
+    color:#f5f5f5;
+}
+
+.list-title-btn:hover
+{
+    color:white;
+}
+
+.header
+{
+    padding-top: 5px;
+    padding-bottom: 5px;
+    font-style: italic;
+}
+
+img
+{
+    background: url('../img/loaders/loader-small.gif') no-repeat center;
+}
+
+.modal-body{
+    background-color: white;
+}
+
+.modal-header{
+    font-weight: bold;
+    background-color:#e5e5e5;
+    font-size: 14px;
+    font-family: "Trebuchet MS", Helvetica, sans-serif;
+}
+
+.star{
+    color: #FFD700;
 }

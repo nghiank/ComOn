@@ -1,23 +1,48 @@
 'use strict';
 
-//Setting up route
+
+//Setting up route and client interceptor and breadcrumbs
 angular.module('ace').config(['$routeProvider',
     function($routeProvider) {
         $routeProvider.
         when('/', {
-            templateUrl: 'views/index.html'
+            templateUrl: 'views/index.html',
+            label: 'Home'
         }).
         when('/users', {
             templateUrl: 'views/Users/list.html'
         }).
-        when('/profile/:username', {
+        when('/profile', {
             templateUrl: 'views/profile.html'
+        }).
+        when('/standards', {
+            templateUrl: 'views/Schematics/all.html'
+        }).
+        when('/favourites', {
+            templateUrl: 'views/favourites.html'
+        }).
+        when('/standards/:nodeId', {
+            templateUrl: 'views/Schematics/child.html'
         }).
         otherwise({
             redirectTo: '/'
         });
     }
-]);
+]).run(function(Global, $rootScope, $location) {
+    // register listener to watch route changes
+    $rootScope.$on('$locationChangeStart', function() { //function(event, next, current)
+        if (Global.authenticated === false) {
+            var path = $location.$$path;
+        // no logged user, can still browse the schematics
+            if (path === '/' || path.substring(0, 10) === '/standards') {
+                return;
+            } else {
+                // not going to #login, we should redirect now
+                $location.path('/');
+            }
+        }
+    });
+});
 
 //Setting HTML5 Location Mode
 angular.module('ace').config(['$locationProvider',

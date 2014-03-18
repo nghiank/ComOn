@@ -5,6 +5,7 @@
  */
 var mongoose = require('mongoose'),
     User = mongoose.model('User'),
+    ComponentSchem = mongoose.model('SchematicComponent'),
     error = require('../utils/error');
 
 /**
@@ -117,6 +118,66 @@ exports.changeStatus = function(req,res) {
         } else {
             res.jsonp(user);
         }
+    });
+};
+
+/**
+ * Change User Schematic Favourites
+ */
+exports.addSchemFavourite = function(req, res) {
+    if(!req.user)
+        return error.sendUnauthorizedError(res);
+    if(!req.body.hasOwnProperty('_id'))
+        return error.sendGenericError(res, 400, 'Error Encountered');
+    var id = req.body._id;
+    ComponentSchem.findOne({_id: id}, function(err, component) {
+        if(err)
+            return error.sendGenericError(res, 400, 'Error Encountered');
+        if(!component)
+            return error.sendGenericError(res, 400, 'Error Encountered');
+        var list = req.user.SchemFav;
+        if(list.indexOf(id) < 0)
+        {
+            list.push(id);
+            req.user.SchemFav = list;
+            req.user.save(function(err) {
+                if(err)
+                    return error.sendGenericError(res, 400, 'Error Encountered');
+                res.jsonp(list);
+            });
+            return;
+        }
+        res.jsonp(list);
+    });
+};
+
+exports.removeSchemFavourite = function(req,res) {
+    if(!req.user)
+        return error.sendUnauthorizedError(res);
+    if(!req.body.hasOwnProperty('_id'))
+        return error.sendGenericError(res, 400, 'Error Encountered');
+    var id = req.body._id;
+    var list = req.user.SchemFav;
+    if(list.indexOf(id) > -1)
+    {
+        req.user.SchemFav.remove(id);
+        req.user.save(function(err) {
+            if(err)
+                return error.sendGenericError(res, 400, 'Error Encountered');
+            res.jsonp(req.user.SchemFav);
+        });
+        return;
+    }
+    res.jsonp(list);
+};
+
+exports.getFavourites = function(req, res) {
+    if(!req.user)
+        return error.sendUnauthorizedError(res);
+    ComponentSchem.find({_id: {$in: req.user.SchemFav}, isComposite: false}).exec(function(err, components) {
+        if(err)
+            return error.sendGenericError(res, 400, 'Error Encountered');
+        res.jsonp({'schematic': components});
     });
 };
 
