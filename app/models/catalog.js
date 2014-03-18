@@ -9,7 +9,7 @@ var mongoose = require('mongoose'),
 //---------------------------------------------//
 
 var catalogSchema = new Schema({
-    id: {
+    catalog: {
         type: String,
         required: true,
         trim: true
@@ -20,19 +20,26 @@ var catalogSchema = new Schema({
         trim: true
     },
     assemblyCode: {
-        type: Schema.Types.ObjectId
+        type: String,
+        default: null
     },
-    type: {
+    typeCode: {
         type: String,
         required: true,
         trim: true
     },
-    description: {
+    typeName: {
         type: String,
+        required: true,
+        trim: true
+    },
+    additionalInfo: {
+        type: Schema.Types.Mixed,
         default: null
     }
+
 });
-catalogSchema.index({id: 1, manufacturer: -1, assemblyCode: 1, type: 1}, {unique: true});
+catalogSchema.index({catalog: 1, manufacturer: -1, assemblyCode: 1, typeCode: 1}, {unique: true});
 
 mongoose.model('Catalog', catalogSchema);
 

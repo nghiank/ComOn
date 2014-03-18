@@ -6,6 +6,16 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 	$scope.uploadDisabled = true;
 	$scope.xls = window.XLS;
 	$scope.xlsx = window.XLSX;
+
+	$scope.init = function() {
+		CatalogAPI.entries.query({type: 'FU'}, function(response) {
+			if(response)
+			{
+				console.log(response);
+			}
+		});
+	};
+	
 	$scope.authorized = function() {
 		if($scope.Global.authenticated && ($scope.Global.user.isAdmin || $scope.global.user.isManufacturer))
 			return true;
@@ -98,7 +108,7 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 						rowFlag = false;
 						break;
 					}
-					while(columnFlag && column !== 'O')
+					while(columnFlag)
 					{
 						if(!sheet[column+'2'] || !sheet[column+'2'].w)
 						{
@@ -106,7 +116,8 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 							break;
 						}
 						var column_title = sheet[column+'2'].w;
-						row_data[column_title] = sheet[column+row.toString()]?sheet[column+row.toString()].w: '';
+						if(!row_data[column_title.toLowerCase()])
+							row_data[column_title.toLowerCase()] = sheet[column+row.toString()]?sheet[column+row.toString()].w: '';
 						column = $scope.getNextColumnToRead(column.split(''));
 						if(!column)
 						{
