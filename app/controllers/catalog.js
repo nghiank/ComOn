@@ -60,7 +60,7 @@ exports.getCatalogEntries = function(req, res) {
 		return error.sendGenericError(res, 400, 'Error Encountered');
 	}
 	var type = req.body.type;
-	var upper = req.body.upper? req.body.upper: 10000;
+	var upper = req.body.upper? req.body.upper: 2000;
 	var lower = req.body.lower? req.body.lower: 0;
 	if(upper < lower)
 	{
@@ -68,8 +68,8 @@ exports.getCatalogEntries = function(req, res) {
 		lower = upper - lower;
 		upper = upper - lower;
 	}
-	if(upper - lower > 10000)
-		upper = lower + 10000;
+	if(upper - lower > 2000)
+		upper = lower + 2000;
 	var searchCriteria = {typeCode: type};
 	if(req.body.manufacturer)
 		searchCriteria.manufacturer = req.body.manufacturer;

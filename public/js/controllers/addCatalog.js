@@ -15,14 +15,14 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 			}
 		});
 	};
-	
+
 	$scope.authorized = function() {
 		if($scope.Global.authenticated && ($scope.Global.user.isAdmin || $scope.global.user.isManufacturer))
 			return true;
 		return false;
 	};
 	$scope.fileSelect = function($files) {
-		var check = $scope.formValidator.checkFileExtension($files[0]?$files[0].name:'', ['xls', 'xlsx']);
+		var check = $scope.formValidator.checkFileExtension($files[0]?$files[0].name:'', ['xls']);
 		if(check.result)
 		{
 			$scope.uploadDisabled = false;
