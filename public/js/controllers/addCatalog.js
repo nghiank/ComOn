@@ -1,11 +1,16 @@
 'use strict';
 
-angular.module('ace.catalog').controller('catalogController', ['formValidation', '$scope', '$upload', 'Global', function (formValidation, $scope, $upload, Global) {
+angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'formValidation', '$scope', '$upload', 'Global', function (CatalogAPI, formValidation, $scope, $upload, Global) {
 	$scope.global = Global;
 	$scope.formValidator = formValidation;
 	$scope.uploadDisabled = true;
 	$scope.xls = window.XLS;
 	$scope.xlsx = window.XLSX;
+	$scope.authorized = function() {
+		if($scope.Global.authenticated && ($scope.Global.user.isAdmin || $scope.global.user.isManufacturer))
+			return true;
+		return false;
+	};
 	$scope.fileSelect = function($files) {
 		var check = $scope.formValidator.checkFileExtension($files[0]?$files[0].name:'', ['xls', 'xlsx']);
 		if(check.result)
@@ -119,7 +124,12 @@ angular.module('ace.catalog').controller('catalogController', ['formValidation',
 				sheet_data = [];
 			}
 		}
-		console.log(json_obj);
+		CatalogAPI.updateCatalog.save({data: json_obj}, function(response) {
+			if(response)
+			{
+				console.log('Catalog Updated');
+			}
+		});
 	};
 
 }]);

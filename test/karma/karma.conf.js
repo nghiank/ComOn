@@ -36,7 +36,7 @@ module.exports = function(config) {
             'public/js/DataFileParser.js',
             'public/js/services/underscore.js',
             'public/js/services/usersAPI.js',
-            'public/js/services/SchematicsAPI.js',
+            'public/js/services/schematicsAPI.js',
             'public/js/services/validateLinkMapping.js',
             'public/js/services/ParsingService.js',
             'public/js/services/formValidation.js',

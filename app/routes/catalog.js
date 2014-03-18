@@ -11,6 +11,6 @@ var hasAuthorization = function(req, res, next) {
 
 module.exports = function(app) {
     
-    app.post('/api/uploadCatalog', authorization.requiresLogin , hasAuthorization, catalog.populateCatalog);
+    app.post('/api/updateCatalog', authorization.requiresLogin , hasAuthorization, catalog.populateCatalog);
 
 };
