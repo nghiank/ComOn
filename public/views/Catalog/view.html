@@ -1,0 +1,29 @@
+<section ng-init="init()" ng-show="authorized()" class="col-md-6" style="padding-top: 30px;" ng-controller="catalogController">
+    <!-- 2. ng-file-select | ng-file-select="options" -->
+   <div class="panel panel-default">
+    <div class="panel-heading">Upload Catalog</div>
+    <div class="panel-body">
+    <form class="form-horizontal">
+        <div class="form-group">
+            <div class="alert alert-success alert-thin" ng-show="!datFile">
+                    <h5>Step: Choose the .Xls file</h5>
+            </div>
+            <label class= "col-md-3 control-label">.Xls File</label>
+            <div class = "col-md-9">
+                <div class="fileinput fileinput-new" data-provides="fileinput">
+                    <div class="input-group">
+                        <div class="form-control" data-trigger="fileinput"><i class="fa fa-check success fileinput-exists" ng-show="!error && success"></i><i class="fa fa-times fileinput-exists error" ng-hide="!error && success"></i> <span class="fileinput-filename"></span></div>
+                        <span class="input-group-addon btn btn-default btn-file"><span class="fileinput-new">Select file</span><span class="fileinput-exists">Change</span><input type="file" name="..." ng-file-select="fileSelect($files)"></span>
+                        <a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput" >Remove</a>
+                    </div>
+                </div>
+                <p data-ng-show="error" class="error">{{error}}</p>                                   
+            </div>
+        </div>
+        <div class="form-group pull-right" style="margin-right:5px">
+            <button type="button" ng-disabled="uploadDisabled" class="btn btn-primary btn-separate" ng-click="populate()">Populate</button>
+        </div>
+    </form>
+</div>
+</div>
+</section>
