@@ -8,7 +8,7 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 	$scope.xlsx = window.XLSX;
 
 	$scope.init = function() {
-		CatalogAPI.entries.query({type: 'FU', search: 'BUSSFU'}, function(response) {
+		CatalogAPI.entries.query({type: 'FU'}, function(response) {
 			if(response)
 			{
 				console.log(response);

@@ -50,7 +50,7 @@ exports.populateCatalog = function(req, res) {
 		return error.sendGenericError(res, 400, 'Error Encountered');
 	}
 	var data = req.body.data;
-/*	function nextColumn(column)
+	function nextColumn(column)
 	{
 		var length = column.join('').length;
 		function repeatChar(count, ch) {
@@ -93,14 +93,14 @@ exports.populateCatalog = function(req, res) {
 			column[length-1] = getNextAlphabet(column[length-1])[0];
 		}
 		return column.join('');
-	}*/
+	}
 	_.each(data, function(value, key) {
 		if(!key || !value.title)
 			return;
 		var typeCode = key.toString();
 		var typeName = value.title.toString();
 		for (var i = 0; i < value.data.length; i++) {
-/*			var column = 'A';
+			var column = 'A';
 			for(var j=0 ;j< 50;j++)
 			{
 				var entry = value.data[i];
@@ -108,10 +108,10 @@ exports.populateCatalog = function(req, res) {
 				catalog += column;
 				createEntry(entry, catalog, typeName, typeCode);
 				column = nextColumn(column.split(''));
-			}*/
-			var entry = value.data[i];
+			}
+/*			var entry = value.data[i];
 			var catalog = entry.catalog.replace(' ','');
-			createEntry(entry, catalog, typeName, typeCode);
+			createEntry(entry, catalog, typeName, typeCode);*/
 		}
 
 	});
@@ -124,51 +124,28 @@ exports.getCatalogEntries = function(req, res) {
 	}
 	var type = req.body.type;
 	var MAX_LIMIT = 1000;
-	var upper = req.body.upper? req.body.upper: MAX_LIMIT;
 	var lower = req.body.lower? req.body.lower: 0;
-	if(upper < lower)
-	{
-		upper = upper + lower;
-		lower = upper - lower;
-		upper = upper - lower;
-	}
-	if(upper - lower > MAX_LIMIT)
-		upper = lower + MAX_LIMIT;
 	var searchCriteria = {typeCode: type};
 	var searchString = req.body.search? req.body.search: '';
 	if(req.body.manufacturer)
 		searchCriteria.manufacturer = req.body.manufacturer;
-/*	CatalogSchem.find(searchCriteria).exec(function(err, entries) {
-		if(err)
-			return error.sendGenericError(res, 400, 'Error Encountered');
-		console.log('got here');
-		var nextIndex = false;
-		if(!searchString)
-		{
-			if(entries.length > (upper-lower))
+	(function search(start) {
+		CatalogSchem.find(searchCriteria).skip(start).limit(MAX_LIMIT).exec(function(err, entries) {
+			if(err)
+				return error.sendGenericError(res, 400, 'Error Encountered');
+			var nextIndex = false;
+			if(!searchString)
+			{
+				if(entries.length > (MAX_LIMIT))
+					nextIndex = true;
+				return res.jsonp({data: entries, nextIndex: nextIndex});
+			}
+			var filteredEntries = _.filter(entries, function(item) {
+				return JSON.stringify(item).toLowerCase().indexOf(searchString.toLowerCase()) > -1;
+			});
+			if(filteredEntries.length > (MAX_LIMIT))
 				nextIndex = true;
-			return res.jsonp({data: entries.splice(lower, upper), nextIndex: nextIndex});
-		}
-		var filteredEntries = _.filter(entries, function(item) {
-			return JSON.stringify(item).toLowerCase().indexOf(searchString.toLowerCase()) > -1;
+			res.jsonp({data: filteredEntries, nextIndex: nextIndex});
 		});
-		if(filteredEntries.length > (upper-lower))
-			nextIndex = true;
-		res.jsonp({data: filteredEntries.splice(lower, upper), nextIndex: nextIndex});
-	});*/
-/*	CatalogSchem.search({from: lower, size: (upper-lower), query: {match: {_all: searchString}}, filter: {terms: searchCriteria}}, function(err, response) {
-		if(err){
-			console.log(err);
-			return error.sendGenericError(res, 400, 'Error Encountered');
-		}
-		res.jsonp({results: response.hits.hits});
-	});*/
-	var options = {
-		filter: searchCriteria,
-		limit: 100000
-	};
-	CatalogSchem.textSearch(searchString, options, function(err, output) {
-		console.log(err, output);
-		res.send(200);
-	});
+	})(lower);
 };
