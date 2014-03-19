@@ -136,3 +136,7 @@ img
 .star{
     color: #FFD700;
 }
+
+.clicked{
+    background-color: #f5f5f5;
+}

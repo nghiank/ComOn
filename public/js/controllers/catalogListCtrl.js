@@ -8,33 +8,16 @@ angular.module('ace.catalog')
 	if($scope.Global.authenticated && $scope.Global.user.isAdmin)
 		$scope.admin = true;
 
-	$scope.getChildren = function() {
-		var nodeId = $routeParams.nodeId;
-		$scope.nodeId = nodeId;
-		if(!nodeId)
-			return;
-		/*SchematicsAPI.children.get({nodeId: nodeId}, function(children) {
-			$scope.children = children.children;
-			$scope.seperate();
-		});
-		breadcrumbs.fetch.get({nodeId: nodeId}, function(result) {
-			var hiearchy = result.parentHiearchy;
-			for (var i = hiearchy.length - 1; i >= 0; i--) {
-				hiearchy[i].link = '#!/catalog/' + hiearchy[i].link;
-			}
-			breadcrumbs.add(hiearchy);
-		});*/
-	};
-
-	$scope.fields = ['Description','Misc1','Misc2','3DSymbol','Weblink'];
-	$scope.additionalCols = [];
+	$scope.fields = ['Description','Misc1','Misc2','weblink'];
+	$scope.items = [{'Catalog':'ABCD-1234','Manufacturer':'AB','Description':'STH,ANYTHING','Assembly Code':'ABCList'}];
+	$scope.cols = ['Catalog','Manufacturer','Assembly Code'];
 
 	$scope.toggleField = function(field){
-		if($scope.additionalCols.indexOf(field) === -1){
-			$scope.additionalCols.push(field);
-		}
+		if($scope.cols.indexOf(field) === -1)
+			$scope.cols.push(field);
 		else
-			$scope.additionalCols.splice($scope.additionalCols.indexOf(field),1);
+			$scope.cols.splice($scope.cols.indexOf(field),1);
+		field.inTable = !field.inTable;
 	};
 
 	$scope.toggleOption = function (child) {
@@ -72,60 +55,7 @@ angular.module('ace.catalog')
 		});
 	};
 
-	$scope.showLeafAddForm = function(){
-		SchematicsAPI.node.get({nodeId:$routeParams.nodeId}, function(node){
-			$scope.target = node;
-			var modalInstance = $modal.open({
-				templateUrl: 'views/Schematics/addCompForm.html',
-				controller: 'addCompFormCtrl',
-				backdrop: 'static',
-				resolve:{
-					parent: function(){
-						return ($scope.target);
-					}
-				}
-			});
-			modalInstance.result.then(function(){
-				$scope.getChildren();
-			});
-		});
-	};
-
-	$scope.showSubtypeAddForm = function(){
-		SchematicsAPI.node.get({nodeId:$routeParams.nodeId}, function(node){
-			$scope.target = node;
-			var modalInstance = $modal.open({
-				templateUrl: 'views/Schematics/addGrpForm.html',
-				controller: 'addGrpFormCtrl',
-				backdrop: 'static',
-				resolve:{
-					parent: function(){
-						return ($scope.target);
-					}
-				}
-			});
-			modalInstance.result.then(function(){
-				$scope.getChildren();
-			});
-		});
-	};
-
-	$scope.showSubtypeEditForm = function(child){
-		$scope.target = child;
-		var modalInstance = $modal.open({
-			templateUrl: 'views/Schematics/editGrpForm.html',
-			controller: 'editGrpFormCtrl',
-			backdrop: 'static',
-			resolve: {
-				target: function() {
-					return ($scope.target);
-				}
-			}
-		});
-		modalInstance.result.then(function(){
-			$scope.getChildren();
-		});
-	};
+	
 
 	$scope.showComingSoon = function(){
 		$modal.open({
