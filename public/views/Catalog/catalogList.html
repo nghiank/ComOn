@@ -1,0 +1,45 @@
+<div class="container" ng-controller="catalogListCtrl" style="min-height: 800px; padding-top:30px;">
+	<ol class="breadcrumb">
+		<li ng-repeat="breadcrumb in breadcrumbs.all()">
+			<a href="{{breadcrumb.link}}" ng-hide="$last">
+			{{breadcrumb.title}}
+			</a>
+		<span ng-show="$last">{{breadcrumb.title}}</span></li>
+	</ol>
+	<div class="well">
+	<div class="row">
+		<form class="form-horizontal col-md-8 col-md-offset-2">
+			<div class="form-group">
+    			<label class="col-sm-2 control-label">Search</label>
+    			<div class="col-sm-8 input-group">
+	      			<input type="text" class="form-control" placeholder="Search Text Here">
+	      			<span class="input-group-btn"><a class="btn btn-default"><i class="fa fa-search"> Search</i></a></span>
+   				</div>
+   			</div>
+		</form>
+	</div>
+	<div class="row">
+		<div class="col-md-8 col-md-offset-2">
+			<label class="col-sm-2 control-label">Show More</label>
+			<div class="col-sm-8 input-group">
+      			<button class="btn btn-default" style="margin-right:10px" ng-repeat="field in fields"  ng-click="toggleField(field)" ng-class={'clicked':{{!additionalCols.indexOf(field)}}}>{{field}}</button>
+			</div>
+		</div>
+	</div>
+	</div>
+
+
+	<div>
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th>Catalog</th>
+					<th>Manufacturer</th>
+					<th>Assembly Code</th>
+					<th ng-repeat="col in additionalCols">{{col}}</th>
+				</tr>
+			</thead>
+		</table>
+	</div>
+
+</div>
