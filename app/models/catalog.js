@@ -4,7 +4,8 @@
  * Module dependencies.
  */
 var mongoose = require('mongoose'),
-    Schema = mongoose.Schema;
+    Schema = mongoose.Schema,
+    textSearch = require('mongoose-text-search');
 
 //---------------------------------------------//
 
@@ -39,6 +40,8 @@ var catalogSchema = new Schema({
     }
 
 });
+catalogSchema.plugin(textSearch);
+catalogSchema.index({ catalog: 'text' ,additionalInfo: 'text', manufacturer: 'text', typeName: 'text'});
 catalogSchema.index({catalog: 1, manufacturer: -1, assemblyCode: 1, typeCode: 1}, {unique: true});
 
 mongoose.model('Catalog', catalogSchema);

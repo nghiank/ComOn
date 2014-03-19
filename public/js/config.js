@@ -19,7 +19,7 @@ angular.module('ace').config(['$routeProvider',
             templateUrl: 'views/Schematics/all.html'
         }).
         when('/catalog', {
-            templateUrl: 'views/Catalog/catalogList.html'
+            templateUrl: 'views/Catalog/view.html'
         }).
         when('/favourites', {
             templateUrl: 'views/favourites.html'

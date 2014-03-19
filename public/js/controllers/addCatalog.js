@@ -8,7 +8,7 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 	$scope.xlsx = window.XLSX;
 
 	$scope.init = function() {
-		CatalogAPI.entries.query({type: 'FU'}, function(response) {
+		CatalogAPI.entries.query({type: 'FU', search: 'BUSSFU'}, function(response) {
 			if(response)
 			{
 				console.log(response);
@@ -17,7 +17,7 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 	};
 
 	$scope.authorized = function() {
-		if($scope.Global.authenticated && ($scope.Global.user.isAdmin || $scope.global.user.isManufacturer))
+		if($scope.global.authenticated && ($scope.global.user.isAdmin || $scope.global.user.isManufacturer))
 			return true;
 		return false;
 	};

@@ -5,18 +5,19 @@ var CatalogSchem = mongoose.model('Catalog');
 var error = require('../utils/error');
 var _ = require('underscore');
 
-var createEntry = function(entry, typeName, typeCode) {
-	CatalogSchem.findOne({catalog: entry.catalog, manufacturer: entry.manufacturer, typeCode: typeCode}).exec(function(err, fetchedEntry) {
+var createEntry = function(entry, catalog, typeName, typeCode) {
+	CatalogSchem.findOne({catalog: catalog, assemblyCode: null, manufacturer: entry.manufacturer, typeCode: typeCode}).exec(function(err, fetchedEntry) {
 		if(err)
 			return console.log(err);
 		if(!fetchedEntry)
 		{
 			var additionalInfo = _.omit(entry, ['catalog', 'manufacturer']);
 			var newEntry = new CatalogSchem({
-				catalog: entry.catalog,
+				catalog: catalog,
 				manufacturer: entry.manufacturer,
 				typeCode: typeCode,
 				typeName: typeName,
+				assemblyCode: null,
 				additionalInfo: additionalInfo
 			});
 			newEntry.save(function(err) {
@@ -25,7 +26,16 @@ var createEntry = function(entry, typeName, typeCode) {
 			});
 		}
 		else{
-			_.extend(fetchedEntry, entry);
+			var info = _.omit(entry, ['catalog', 'manufacturer']);
+			var replacingEntry = {
+				catalog: catalog,
+				manufacturer: entry.manufacturer,
+				typeCode: typeCode,
+				typeName: typeName,
+				assemblyCode: null,
+				additionalInfo: info
+			};
+			_.extend(fetchedEntry, replacingEntry);
 			fetchedEntry.save(function(err) {
 				if(err)
 					return console.log(err);
@@ -40,7 +50,7 @@ exports.populateCatalog = function(req, res) {
 		return error.sendGenericError(res, 400, 'Error Encountered');
 	}
 	var data = req.body.data;
-	function nextColumn(column)
+/*	function nextColumn(column)
 	{
 		var length = column.join('').length;
 		function repeatChar(count, ch) {
@@ -83,22 +93,25 @@ exports.populateCatalog = function(req, res) {
 			column[length-1] = getNextAlphabet(column[length-1])[0];
 		}
 		return column.join('');
-	}
+	}*/
 	_.each(data, function(value, key) {
 		if(!key || !value.title)
 			return;
-		var typeCode = key;
-		var typeName = value.title;
-		var column = 'A';
+		var typeCode = key.toString();
+		var typeName = value.title.toString();
 		for (var i = 0; i < value.data.length; i++) {
-			var entry = value.data[i];
-			entry.catalog = entry.catalog.replace(' ','');
-			for(var j=0 ;j< 100;j++)
+/*			var column = 'A';
+			for(var j=0 ;j< 50;j++)
 			{
-				entry.catalog += column;
-				createEntry(entry, typeName, typeCode);
+				var entry = value.data[i];
+				var catalog = entry.catalog.replace(' ','');
+				catalog += column;
+				createEntry(entry, catalog, typeName, typeCode);
 				column = nextColumn(column.split(''));
-			}
+			}*/
+			var entry = value.data[i];
+			var catalog = entry.catalog.replace(' ','');
+			createEntry(entry, catalog, typeName, typeCode);
 		}
 
 	});
@@ -125,7 +138,7 @@ exports.getCatalogEntries = function(req, res) {
 	var searchString = req.body.search? req.body.search: '';
 	if(req.body.manufacturer)
 		searchCriteria.manufacturer = req.body.manufacturer;
-	CatalogSchem.find(searchCriteria).exec(function(err, entries) {
+/*	CatalogSchem.find(searchCriteria).exec(function(err, entries) {
 		if(err)
 			return error.sendGenericError(res, 400, 'Error Encountered');
 		console.log('got here');
@@ -142,5 +155,20 @@ exports.getCatalogEntries = function(req, res) {
 		if(filteredEntries.length > (upper-lower))
 			nextIndex = true;
 		res.jsonp({data: filteredEntries.splice(lower, upper), nextIndex: nextIndex});
+	});*/
+/*	CatalogSchem.search({from: lower, size: (upper-lower), query: {match: {_all: searchString}}, filter: {terms: searchCriteria}}, function(err, response) {
+		if(err){
+			console.log(err);
+			return error.sendGenericError(res, 400, 'Error Encountered');
+		}
+		res.jsonp({results: response.hits.hits});
+	});*/
+	var options = {
+		filter: searchCriteria,
+		limit: 100000
+	};
+	CatalogSchem.textSearch(searchString, options, function(err, output) {
+		console.log(err, output);
+		res.send(200);
 	});
 };

@@ -1,11 +1,4 @@
 <div class="container" ng-controller="catalogListCtrl" style="min-height: 800px; padding-top:30px;">
-	<ol class="breadcrumb">
-		<li ng-repeat="breadcrumb in breadcrumbs.all()">
-			<a href="{{breadcrumb.link}}" ng-hide="$last">
-			{{breadcrumb.title}}
-			</a>
-		<span ng-show="$last">{{breadcrumb.title}}</span></li>
-	</ol>
 	<div class="well">
 	<div class="row">
 		<form class="form-horizontal col-md-8 col-md-offset-2">
