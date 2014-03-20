@@ -1,27 +1,18 @@
 'use strict';
 
-angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'formValidation', '$scope', 'Global', function (CatalogAPI, formValidation, $scope, Global) {
+angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'formValidation', '$scope', 'Global', '$modal', function (CatalogAPI, formValidation, $scope, Global, $modal) {
 	$scope.global = Global;
 	$scope.formValidator = formValidation;
 	$scope.uploadDisabled = true;
 	$scope.xls = window.XLS;
 	$scope.xlsx = window.XLSX;
 
-	$scope.init = function() {
-		CatalogAPI.entries.query({type: 'FU'}, function(response) {
-			if(response)
-			{
-				console.log(response);
-			}
-		});
-	};
-
 	$scope.authorized = function() {
 		if($scope.global.authenticated && ($scope.global.user.isAdmin || $scope.global.user.isManufacturer))
 			return true;
 		return false;
 	};
-	
+
 	$scope.fileSelect = function($files) {
 		var check = $scope.formValidator.checkFileExtension($files[0]?$files[0].name:'', ['xls']);
 		if(check.result)
@@ -90,6 +81,14 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 	};
 
 	$scope.startProcessing = function(wb) {
+		var user = $scope.global.user;
+		function checkAuthority(manufacturerEntry)
+		{
+			return user.isAdmin? true: (user.codeName.toLowerCase() === manufacturerEntry.toLowerCase());
+		}
+		function invalid_man() {
+			return 'The codename in your profile does not match the manufacturer field in the sheet '+key+'.';
+		}
 		var json_obj = {};
 		for (var key in wb.Sheets) {
 			var sheet, sheet_data, row_data, columnFlag, rowFlag, column, row;
@@ -118,7 +117,24 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 						}
 						var column_title = sheet[column+'2'].w;
 						if(!row_data[column_title.toLowerCase()])
-							row_data[column_title.toLowerCase()] = sheet[column+row.toString()]?sheet[column+row.toString()].w: '';
+						{
+							var newCell = sheet[column+row.toString()]?sheet[column+row.toString()].w: '';
+							if(column_title.toLowerCase() === 'manufacturer' && newCell !== '')
+							{
+								if(!checkAuthority(newCell))
+								{
+									$modal.open({
+										templateUrl: 'views/errorAlertModal.html',
+										controller: 'errorAlertModalCtrl',
+										resolve: {
+											message: invalid_man
+										}
+									});
+									return;
+								}
+							}
+							row_data[column_title.toLowerCase()] = newCell;
+						}
 						column = $scope.getNextColumnToRead(column.split(''));
 						if(!column)
 						{
@@ -129,7 +145,8 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 					columnFlag = true;
 					column = 'A';
 					row+=1;
-					sheet_data.push(row_data);
+					if(row_data)
+						sheet_data.push(row_data);
 					row_data = {};
 				}
 				json_obj[key] = {title: sheet.A1? sheet.A1.w: '', data: sheet_data};

@@ -22,6 +22,7 @@ angular.module('ace.users')
             $scope.toggleEdit();
             UsersAPI.profile.update({codeName:$scope.codeNameInput.value}, Global.user, function(){
                 Global.user.codeName = $scope.codeNameInput.value;
+                Global.user.isManufacturer = false;
                 $scope.setCodeName();
             });
         };
@@ -33,7 +34,7 @@ angular.module('ace.users')
         };
 
         $scope.setCodeName = function(){
-            $scope.codename = (Global.user.codeName === null) ? Global.user.name : (Global.user.isManufacturer ? Global.user.codeName : Global.user.codeName + ' (pending)');
+            $scope.codename = (Global.user.codeName === null) ? 'Not Assigned' : (Global.user.isManufacturer ? Global.user.codeName : Global.user.codeName + ' (pending)');
         };
         $scope.setCodeName();
 

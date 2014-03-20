@@ -79,6 +79,7 @@ exports.updateCodeName = function(req, res) {
     {
         var updatedProfile = req.user;
         updatedProfile.codeName = req.params.codeName;
+        updatedProfile.isManufacturer = false;
         updatedProfile.save(function(err) {
             if(err)
             {
