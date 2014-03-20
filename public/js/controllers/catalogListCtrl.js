@@ -9,13 +9,14 @@ angular.module('ace.catalog')
 		return false;
 	};
 
-	$scope.breadcrumbs = [{'title':'Catalog','link':'#!/views/Catalog/catalogTypeList.html'}];
+	$scope.breadcrumbs = [{'title':'Catalog','link':'#!/catalog'}];
 
 	$scope.init = function() {
-		console.log($routeParams.type);
+		console.log($scope.breadcrumbs);
 		CatalogAPI.entries.query({type: $routeParams.type}, function(response) {
 			if(response)
 			{
+				$scope.items = response.data;
 				console.log(response);
 			}
 		});
@@ -23,8 +24,8 @@ angular.module('ace.catalog')
 	};
 
 	$scope.fields = ['Description','Misc1','Misc2','weblink'];
-	$scope.items = [{'Catalog':'ABCD-1234','Manufacturer':'AB','Description':'STH,ANYTHING','Assembly Code':'ABCList'},
-	{'Catalog':'ABCD-1254','Manufacturer':'SIEMENS','Description':'ANYTHING','Assembly Code':'ABCList','weblink':'www.siemens.com'}];
+	//$scope.items = [{'Catalog':'ABCD-1234','Manufacturer':'AB','Description':'STH,ANYTHING','Assembly Code':'ABCList'},
+	//{'Catalog':'ABCD-1254','Manufacturer':'SIEMENS','Description':'ANYTHING','Assembly Code':'ABCList','weblink':'www.siemens.com'}];
 	$scope.cols = ['Catalog','Manufacturer','Assembly Code'];
 
 	$scope.toggleField = function(field){

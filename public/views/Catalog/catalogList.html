@@ -1,4 +1,4 @@
-<div class="container" ng-controller="catalogListCtrl" style="min-height: 800px; padding-top:30px;">
+<div class="container" ng-controller="catalogListCtrl" ng-init="init()" style="min-height: 800px; padding-top:30px;">
 	<ol class="breadcrumb">
     	<li ng-repeat="item in breadcrumbs">
 	     	<a href="{{item.link}}" ng-hide="$last">
@@ -40,7 +40,7 @@
 			<tbody>
 				<tr ng-repeat="item in items">
 					<td ng-repeat="col in cols">
-						<span ng-repeat="(field,data) in item" ng-show="col == field">{{data}}</span>
+						<span ng-repeat="(field,data) in item">{{data}}</span>
 					</td>
 				</tr>
 			</tbody>

@@ -5,7 +5,7 @@
                 <div class="list-group-item list-title">Catalog Types</div> 
                 <li class="list-group-item" ng-show="types.length == 0">No catalog available</li>          
                 <li class="list-group-item" ng-repeat="type in types" ng-mouseenter = "toggleOption(type)" ng-mouseleave = "toggleOption(type)" href="#!/catalog/{{type.name}}">
-                    <a href="#!/catalog/{{type.name}}">{{type.name}}</a>
+                    <a href="#!/catalog/{{type.code}}">{{type.name}}</a>
                 </li>
             </ul>
         </div>

@@ -11,9 +11,7 @@ angular.module('ace.catalog')
 
 
 	$scope.getTypes = function (){
-		console.log('in');
 		$scope.types = CatalogAPI.types.query();
-		console.log($scope.types);
 	};
 
 	$scope.toggleOption = function(type){
