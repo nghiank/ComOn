@@ -12,6 +12,7 @@ var hasAuthorization = function(req, res, next) {
 module.exports = function(app) {
     
     app.post('/api/updateCatalog', authorization.requiresLogin , hasAuthorization, catalog.populateCatalog);
+    app.post('/api/getTypeFields', catalog.getAllFields);
     app.post('/api/getEntries', catalog.getCatalogEntries);
     app.get('/api/getTypes', catalog.getAllTypes);
 

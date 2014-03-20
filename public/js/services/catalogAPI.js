@@ -5,6 +5,7 @@ angular.module('ace.catalog').factory('CatalogAPI', ['$resource', function($reso
     return {
 			updateCatalog: $resource('api/updateCatalog',null),
 			entries: $resource('api/getEntries', null, {query: {method: 'POST'}}),
-			types: $resource('api/getTypes', null, {query:{method:'GET', isArray:true}})
+			types: $resource('api/getTypes', null, {query:{method:'GET', isArray:true}}),
+			fields: $resource('api/getTypeFields', null, {query:{method:'POST', isArray:true}})
 		};
 }]);
