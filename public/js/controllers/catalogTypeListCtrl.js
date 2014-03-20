@@ -9,7 +9,6 @@ angular.module('ace.catalog')
 		return false;
 	};
 
-
 	$scope.getTypes = function (){
 		$scope.types = CatalogAPI.types.query();
 	};

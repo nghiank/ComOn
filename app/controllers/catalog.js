@@ -146,6 +146,23 @@ exports.getAllTypes = function(req, res) {
 	});
 };
 
+exports.getAllFields = function(req, res) {
+	if(!req.body.type) {
+		return error.sendGenericError(res, 400, 'Error Encountered');
+	}
+	var type = req.body.type;
+	CatalogSchem.findOne({typeCode: type}).lean(true).exec(function(err, entry) {
+		if(err)
+			return error.sendGenericError(res, 400, 'Error Encountered');
+		if(!entry)
+			return error.sendGenericError(res, 400, 'Error Encountered');
+		var fields = _.keys(_.omit(entry, ['additionalInfo', '_id', '__v']));
+		var additionalInfo = _.keys(entry.additionalInfo);
+		fields = _.union(fields, _.map(additionalInfo, function(key) { return 'additionalInfo.'+key; }));
+		res.jsonp(fields);
+	});
+};
+
 exports.getCatalogEntries = function(req, res) {
 	if(!req.body.type) {
 		return error.sendGenericError(res, 400, 'Error Encountered');
