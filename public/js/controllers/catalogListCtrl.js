@@ -72,6 +72,8 @@ angular.module('ace.catalog')
 					var newField = $scope._.findWhere(response.data, {_id: $scope.items[i]._id});
 					if(newField)
 						$scope.items[i][field.field] = newField.additionalInfo[field.field.replace('additionalInfo.','')];
+					else
+						$scope.items[i][field.field] = '';
 				}
 			});
 		}
