@@ -10,6 +10,8 @@ angular.module('ace.system').controller('HeaderController', ['$scope', 'Global',
 		$scope.menu.push({'title': 'Favourites','link': 'favourites'});
 		if(Global.user.isAdmin === true)
 			$scope.menu.push({'title': 'Users','link': 'users'});
+		if(Global.user.isManufacturer === true || Global.user.isAdmin === true)
+			$scope.menu.push({'title': 'Manage My Catalog','link': 'catalog/new'});
 	}
 
 	$scope.isCollapsed = false;
