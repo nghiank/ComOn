@@ -1,13 +1,16 @@
 <div class="container" ng-controller="catalogListCtrl" ng-init="init()" style="min-height: 800px; padding-top:30px;">
-	<div class="col-md-4" ng-hide="!showTypes" style="background-color:#ffffff;position:fixed;left:0;top:51px;height:100%;z-index:9999">
-		<ul class="list-group" ng-init="getTypes()">
-            <div class="list-group-item list-title" ng-click="toggleType()">Catalog Types</div> 
-            <li class="list-group-item" ng-show="types.length == 0">No catalog available</li>          
-            <li class="list-group-item" ng-repeat="type in types" ng-mouseenter = "toggleOption(type)" ng-mouseleave = "toggleOption(type)" href="#!/catalog/{{type.name}}" ng-click="showTypeList(type)">
+	<div class="col-md-4 navmenu navmenu-default" ng-hide="!showTypes" style="position:fixed;left:0;z-index:9999; height:80%">
+		<ul class="nav navmenu-nav" ng-init="getTypes()">
+            <div class="nav navmenu-brand" ng-click="toggleType()">Catalog Types</div> 
+            <li class="nav navmenu-nav" ng-show="types.length == 0">No catalog available</li>          
+            <li class="nav navmenu-nav" ng-repeat="type in types" ng-mouseenter = "toggleOption(type)" ng-mouseleave = "toggleOption(type)" href="#!/catalog/{{type.name}}" ng-click="showTypeList(type)">
                 <a>{{type.name}}</a>
             </li>
         </ul>
 	</div>
+	<span>
+		<a ng-click="toggleType()"><i class="fa fa-forward fa-lg" style="position:fixed; left:1%; top:50%;"></i></a>
+	</span>
 	<div  ng-show="showList" ng-click="closeType()">
 		<div class="well">
 			<p>{{target.name}}</p>

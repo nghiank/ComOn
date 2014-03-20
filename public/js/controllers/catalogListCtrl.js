@@ -25,11 +25,11 @@ angular.module('ace.catalog')
 		CatalogAPI.entries.query({type:type.code,upper:$scope.pageItemLimit}, function(response) {
 			if(response)
 			{
-				console.log(response.data);
 				$scope.items = response.data;
 			}
 		});
-		$scope.fields = ['Description','Misc1','Misc2','weblink'];
+		$scope.fields = [];
+		
 		//$scope.items = [{'Catalog':'ABCD-1234','Manufacturer':'AB','Description':'STH,ANYTHING','Assembly Code':'ABCList'},
 		//{'Catalog':'ABCD-1254','Manufacturer':'SIEMENS','Description':'ANYTHING','Assembly Code':'ABCList','weblink':'www.siemens.com'}];
 		$scope.cols = ['Catalog','Manufacturer','Assembly Code'];
