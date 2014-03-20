@@ -1,35 +1,39 @@
-<div class="container" ng-controller="catalogListCtrl" ng-init="init()" style="min-height: 800px; padding-top:30px;">
-	<ol class="breadcrumb">
-    	<li ng-repeat="item in breadcrumbs">
-	     	<a href="{{item.link}}" ng-hide="$last">
-	        {{item.title}}
-	      	</a>
-      		<span ng-show="$last">{{item.title}}</span>
-      	</li>
- 	</ol>
-	<div class="well">
-		<div class="row">
-			<form class="form-horizontal col-md-8 col-md-offset-2">
-				<div class="form-group">
-	    			<label class="col-sm-2 control-label">Search</label>
-	    			<div class="col-sm-8 input-group">
-		      			<input type="text" class="form-control" placeholder="Search Text Here">
-		      			<span class="input-group-btn"><a class="btn btn-default"><i class="fa fa-search"> Search</i></a></span>
-	   				</div>
-	   			</div>
-			</form>
-		</div>
-		<div class="row">
-			<div class="col-md-8 col-md-offset-2">
-				<label class="col-sm-2 control-label">Show More</label>
-				<div class="col-sm-8 input-group">
-	      			<button class="btn btn-default" style="margin-right:10px; margin-bottom: 10px" ng-repeat="field in fields"  ng-click="toggleField(field)" ng-class={'clicked':cols.indexOf(field)+1}><i ng-show="cols.indexOf(field)+1" class="fa fa-check success" ></i>{{'  '+field.title+'  '}}</button>
+<div class="container" ng-controller="catalogListCtrl" ng-init="init()" style="padding-top:30px;">
+	<div class="col-md-4 navmenu navmenu-default" ng-hide="!showTypes" style="height: 85%; position:fixed; left:0;z-index:9999; overflow-y: auto;">
+		<ul class="nav navmenu-nav" ng-init="getTypes()" style="overflow-y: auto;">
+            <div class="nav navmenu-brand" ng-click="toggleType()">Catalog Types</div> 
+            <li class="nav navmenu-nav" ng-show="types.length == 0">No catalog available</li>          
+            <li class="nav navmenu-nav" ng-repeat="type in types | orderBy: 'name'" ng-mouseenter = "toggleOption(type)" ng-mouseleave = "toggleOption(type)" href="#!/catalog/{{type.name}}" ng-click="showTypeList(type)">
+                <a>{{type.name}}</a>
+            </li>
+        </ul>
+	</div>
+	<span>
+		<a ng-click="toggleType()"><i class="fa fa-forward fa-lg" style="position:fixed; left:1%; top:50%;"></i></a>
+	</span>
+	<div  ng-show="showList" ng-click="closeType()">
+		<div class="well">
+			<p>{{target.name}}</p>
+			<div class="row">
+				<form class="form-horizontal col-md-8 col-md-offset-2">
+					<div class="form-group">
+		    			<label class="col-sm-2 control-label">Search</label>
+		    			<div class="col-sm-8 input-group">
+			      			<input type="text" class="form-control" placeholder="Search Text Here">
+			      			<span class="input-group-btn"><a class="btn btn-default"><i class="fa fa-search"> Search</i></a></span>
+		   				</div>
+		   			</div>
+				</form>
+			</div>
+			<div class="row">
+				<div class="col-md-8 col-md-offset-2">
+					<label class="col-sm-2 control-label">Show More</label>
+					<div class="col-sm-8 input-group">
+		      			<button class="btn btn-default" style="margin-right:10px; margin-bottom: 10px" ng-repeat="field in fields | orderBy:'title'"  ng-click="toggleField(field)" ng-class={'clicked':cols.indexOf(field)+1}><i ng-show="cols.indexOf(field)+1" class="fa fa-check success" ></i>{{'  '+field.title+'  '}}</button>
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
-
-
 	<div class="col-md-12" style="overflow:auto;">
 		<table class="table table-striped">
 			<thead>
@@ -40,11 +44,12 @@
 			<tbody>
 				<tr ng-repeat="item in items">
 					<td ng-repeat="col in cols">
-						<span ng-repeat="(field,data) in item" ng-show="{{field !== '_id' && col.field === field}}">{{data? data: '-'}}</span>
+						<span ng-repeat="(field,data) in item" ng-show="{{field !== '_id' && col.field === field}}"><i ng-show="col.field !== 'additionalInfo.weblink'">{{data? data: '-'}}</i><a ng-hide="col.field !== 'additionalInfo.weblink'" href="{{data? data: '#'}}"><i class="fa fa-external-link"></i></span>
 					</td>
 				</tr>
 			</tbody>
 
-		</table>
+			</table>
+		</div>
 	</div>
 </div>

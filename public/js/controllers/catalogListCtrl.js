@@ -5,20 +5,31 @@ angular.module('ace.catalog')
 	$scope.global = Global;
 	$scope.fields = [];
 	$scope._ = underscore;
+	$scope.pageItemLimit = 15;
 	$scope.authorized = function() {
 		if($scope.global.authenticated && ($scope.global.user.isAdmin || $scope.global.user.isManufacturer))
 			return true;
 		return false;
 	};
 
-	$scope.breadcrumbs = [{'title':'Catalog','link':'#!/catalog'}];
+	$scope.toggleOption = function(type){
+		$scope.target = type.code;
+	};
 
 	$scope.init = function() {
+		$scope.showTypes = true;
+		$scope.types = CatalogAPI.types.query();
+		$scope.showList = false;
+	};
+
+	$scope.showTypeList = function(type){
+		$scope.showList = true;
+		$scope.showTypes = false;
 		function parseCamelCase(input)
 		{
 			return input.charAt(0).toUpperCase() + input.substr(1).replace(/[A-Z0-9]/g, ' $&');
 		}
-		CatalogAPI.fields.query({type: $routeParams.type}, function(response) {
+		CatalogAPI.fields.query({type: type.code}, function(response) {
 			if(response)
 			{
 				for (var i = 0; i < response.length; i++) {
@@ -34,23 +45,33 @@ angular.module('ace.catalog')
 				}
 			}
 		});
-		CatalogAPI.entries.query({type: $routeParams.type, lower: 0, upper: 10}, function(response) {
+		CatalogAPI.entries.query({type: type.code, lower: 0, upper: $scope.pageItemLimit}, function(response) {
 			if(response)
 			{
 				$scope.items = response.data;
 			}
 		});
-		$scope.breadcrumbs.push({'title':$routeParams.type,'link':'#'});
+		$scope.fields = [];
+		$scope.cols = [{title: 'Catalog', field: 'catalog'},{title: 'Manufacturer', field: 'manufacturer'},{title: 'Assembly Code', field: 'assemblyCode'}];
 	};
-	$scope.cols = [{title: 'Catalog', field: 'catalog'},{title: 'Manufacturer', field: 'manufacturer'},{title: 'Assembly Code', field: 'assemblyCode'}];
+
+	$scope.toggleType = function(){
+		$scope.showTypes = !$scope.showTypes;
+	};
+
+	$scope.closeType = function(){
+		$scope.showTypes = false;
+	};
+
 	$scope.toggleField = function(field){
 		if($scope.cols.indexOf(field) === -1)
 		{
 			$scope.cols.push(field);
-			CatalogAPI.entries.query({type: $routeParams.type, lower: 0, upper: 10, fields: field.field}, function(response) {
+			CatalogAPI.entries.query({type: $scope.target, lower: 0, upper: $scope.pageItemLimit, fields: field.field}, function(response) {
 				for (var i = 0; i < $scope.items.length; i++) {
 					var newField = $scope._.findWhere(response.data, {_id: $scope.items[i]._id});
-					$scope.items[i][field.field] = newField.additionalInfo[field.field.replace('additionalInfo.','')];
+					if(newField)
+						$scope.items[i][field.field] = newField.additionalInfo[field.field.replace('additionalInfo.','')];
 				}
 			});
 		}
