@@ -32,7 +32,8 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['ValidationServic
 
 	$scope.datFileSelect = function($files) {
 		$scope.checkDatFile($files);
-		$scope.parseDatForStdName();
+		if($scope.valid.dat)
+			$scope.parseDatForStdName();
 	};
 
 	$scope.checkDatFile = function($files){
@@ -66,7 +67,8 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['ValidationServic
 
 	$scope.jsonFileSelect = function($files) {
 		$scope.checkJsonFile($files);
-		$scope.parseJsonFile();
+		if($scope.valid.json)
+			$scope.parseJsonFile();
 	};
 
 	$scope.checkJsonFile = function($files){

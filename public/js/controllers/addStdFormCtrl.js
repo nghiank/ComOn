@@ -15,7 +15,8 @@ angular.module('ace.schematic').controller('UploadController', ['ValidationServi
 
 	$scope.datFileSelect = function($files) {
 		$scope.checkDatFile($files);
-		$scope.parseDatForStdName();
+		if($scope.valid.dat)
+			$scope.parseDatForStdName();
 	};
 
 	$scope.checkDatFile = function($files){
@@ -53,7 +54,8 @@ angular.module('ace.schematic').controller('UploadController', ['ValidationServi
 
 	$scope.jsonFileSelect = function($files) {
 		$scope.checkJsonFile($files);
-		$scope.parseJsonFile();
+		if($scope.valid.json)
+			$scope.parseJsonFile();
 	};
 
 	$scope.checkJsonFile = function($files){
@@ -170,5 +172,4 @@ angular.module('ace.schematic').controller('UploadController', ['ValidationServi
 		};
 		reader.readAsText($scope.jsonFile);
 	};
-
 }]);
