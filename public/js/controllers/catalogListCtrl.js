@@ -66,13 +66,13 @@ angular.module('ace.catalog')
 	$scope.toggleField = function(field){
 		if($scope.cols.indexOf(field) === -1)
 		{
-			$scope.cols.push(field);
 			CatalogAPI.entries.query({type: $scope.target, lower: 0, upper: $scope.pageItemLimit, fields: field.field}, function(response) {
 				for (var i = 0; i < $scope.items.length; i++) {
 					var newField = $scope._.findWhere(response.data, {_id: $scope.items[i]._id});
 					if(newField)
 						$scope.items[i][field.field] = newField.additionalInfo[field.field.replace('additionalInfo.','')];
 				}
+				$scope.cols.push(field);
 			});
 		}
 		else
