@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'formValidation', '$scope', '$upload', 'Global', function (CatalogAPI, formValidation, $scope, $upload, Global) {
+angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'formValidation', '$scope', 'Global', function (CatalogAPI, formValidation, $scope, Global) {
 	$scope.global = Global;
 	$scope.formValidator = formValidation;
 	$scope.uploadDisabled = true;
@@ -21,6 +21,7 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 			return true;
 		return false;
 	};
+	
 	$scope.fileSelect = function($files) {
 		var check = $scope.formValidator.checkFileExtension($files[0]?$files[0].name:'', ['xls']);
 		if(check.result)

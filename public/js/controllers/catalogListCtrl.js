@@ -1,12 +1,21 @@
 'use strict';
 
 angular.module('ace.catalog')
-.controller('catalogListCtrl', ['$scope','Global', function ($scope, Global) {
-	$scope.Global = Global;
-	$scope.admin = false;
-	if($scope.Global.authenticated && $scope.Global.user.isAdmin)
-		$scope.admin = true;
-
+.controller('catalogListCtrl', ['$scope', 'Global', 'CatalogAPI', function ($scope, Global, CatalogAPI) {
+	$scope.global = Global;
+	$scope.authorized = function() {
+		if($scope.global.authenticated && ($scope.global.user.isAdmin || $scope.global.user.isManufacturer))
+			return true;
+		return false;
+	};
+	$scope.init = function() {
+		CatalogAPI.entries.query({type: 'FU'}, function(response) {
+			if(response)
+			{
+				console.log(response);
+			}
+		});
+	};
 	$scope.fields = ['Description','Misc1','Misc2','weblink'];
 	$scope.items = [{'Catalog':'ABCD-1234','Manufacturer':'AB','Description':'STH,ANYTHING','Assembly Code':'ABCList'},
 	{'Catalog':'ABCD-1254','Manufacturer':'SIEMENS','Description':'ANYTHING','Assembly Code':'ABCList','weblink':'www.siemens.com'}];

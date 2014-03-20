@@ -109,9 +109,9 @@ exports.all = function(req, res) {
  */
 exports.changeStatus = function(req,res) {
     var user = req.profile;
-
+    if(!user.codeName)
+        return error.sendGenericError(res, 400, 'Error Encountered');
     user.isManufacturer = !user.isManufacturer;
-
     user.save(function(err) {
         if (err) {
             return error.sendGenericError(res, 400, 'Error Encountered');

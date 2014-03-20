@@ -50,6 +50,11 @@ exports.populateCatalog = function(req, res) {
 		return error.sendGenericError(res, 400, 'Error Encountered');
 	}
 	var data = req.body.data;
+	var user = req.user;
+	function checkAuthority(manufacturerEntry)
+	{
+		return user.isAdmin? true: (user.codeName.toLowerCase() === manufacturerEntry.toLowerCase());
+	}
 	function nextColumn(column)
 	{
 		var length = column.join('').length;
@@ -106,8 +111,11 @@ exports.populateCatalog = function(req, res) {
 				var entry = value.data[i];
 				var catalog = entry.catalog.replace(' ','');
 				catalog += column;
-				createEntry(entry, catalog, typeName, typeCode);
-				column = nextColumn(column.split(''));
+				if(checkAuthority(entry.manufacturer.trim()))
+				{
+					createEntry(entry, catalog, typeName, typeCode);
+					column = nextColumn(column.split(''));
+				}
 			}
 /*			var entry = value.data[i];
 			var catalog = entry.catalog.replace(' ','');
@@ -118,34 +126,53 @@ exports.populateCatalog = function(req, res) {
 	res.send(200);
 };
 
+exports.getAllTypes = function(req, res) {
+	CatalogSchem.distinct('typeCode', {}, function(err, result) {
+		if(err)
+			return error.sendGenericError(res, 400, 'Error Encountered');
+		var total = result.length;
+		var checked = 0;
+		var array = [];
+		_.each(result, function(value) {
+			CatalogSchem.findOne({typeCode: value}).select('typeName').lean().exec(function(err, result) {
+				if(err)
+					return error.sendGenericError(res, 400, 'Error Encountered');
+				if(result.length !== 0)
+					array.push({code: value, name: result.typeName});
+				if(++checked === total)
+					res.jsonp(array);
+			});
+		});
+	});
+};
+
 exports.getCatalogEntries = function(req, res) {
 	if(!req.body.type) {
 		return error.sendGenericError(res, 400, 'Error Encountered');
 	}
 	var type = req.body.type;
-	var MAX_LIMIT = 1000;
+	var MAX_LIMIT = 5000;
+	var default_upper = 1000;
 	var lower = req.body.lower? req.body.lower: 0;
+	var upper = req.body.upper? req.body.upper: lower+default_upper;
+	var fields = req.body.fields? req.body.fields: ' catalog manufacturer assemblyCode ';
+	if(upper < lower)
+	{
+		upper = upper + lower;
+		lower = upper - lower;
+		upper = upper - lower;
+	}
+
+	if(upper - lower > MAX_LIMIT)
+		upper = lower + default_upper;
 	var searchCriteria = {typeCode: type};
-	var searchString = req.body.search? req.body.search: '';
 	if(req.body.manufacturer)
 		searchCriteria.manufacturer = req.body.manufacturer;
-	(function search(start) {
-		CatalogSchem.find(searchCriteria).skip(start).limit(MAX_LIMIT).exec(function(err, entries) {
-			if(err)
-				return error.sendGenericError(res, 400, 'Error Encountered');
-			var nextIndex = false;
-			if(!searchString)
-			{
-				if(entries.length > (MAX_LIMIT))
-					nextIndex = true;
-				return res.jsonp({data: entries, nextIndex: nextIndex});
-			}
-			var filteredEntries = _.filter(entries, function(item) {
-				return JSON.stringify(item).toLowerCase().indexOf(searchString.toLowerCase()) > -1;
-			});
-			if(filteredEntries.length > (MAX_LIMIT))
-				nextIndex = true;
-			res.jsonp({data: filteredEntries, nextIndex: nextIndex});
-		});
-	})(lower);
+	CatalogSchem.find(searchCriteria).select(fields).skip(lower).limit(upper-lower).lean().exec(function(err, entries) {
+		if(err){
+			console.log(err);
+			return error.sendGenericError(res, 400, 'Error Encountered');
+		}
+		return res.jsonp({data: entries, range: {lower: lower, upper: upper}, length: entries.length});
+	});
 };
