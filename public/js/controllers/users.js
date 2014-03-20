@@ -1,13 +1,12 @@
 'use strict';
 
-angular.module('ace.users').controller('UsersController', ['$scope', '$routeParams', '$location', 'Global', 'UsersAPI', function ($scope, $routeParams, $location, Global, UsersAPI) {
+angular.module('ace.users').controller('UsersController', ['$scope', '$routeParams', '$location', 'Global', 'UsersAPI', '$modal', function ($scope, $routeParams, $location, Global, UsersAPI, $modal) {
 
         $scope.global = Global;
         $scope.showMan = true;
         $scope.showUser = true;
 
         $scope.update = function(id) {
-
             var users = $scope.users;
             var index = 0;
             for(var i in users)
@@ -17,6 +16,19 @@ angular.module('ace.users').controller('UsersController', ['$scope', '$routePara
                     index = i;
                     break;
                 }
+            }
+            if(!users[index].codeName)
+            {
+                $modal.open({
+                    templateUrl: 'views/errorAlertModal.html',
+                    controller: 'errorAlertModalCtrl',
+                    resolve: {
+                        message: function() {
+                            return 'The user needs to have a codename before he can be promoted to a manufacturer.';
+                        }
+                    }
+                });
+                return;
             }
             UsersAPI.userlist.update({userId: id}, function(user) {
                 users[index] = user;

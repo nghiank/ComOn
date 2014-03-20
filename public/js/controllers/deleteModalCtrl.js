@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ace.schematic').controller('DeleteModalCtrl', ['$scope', '$timeout', '$modalInstance', function($scope, $timeout, $modalInstance){
+angular.module('ace.schematic').controller('DeleteModalCtrl', ['$scope', '$modalInstance', function($scope, $modalInstance){
 	
 	$scope.delete = function(){
 		$modalInstance.close(true);

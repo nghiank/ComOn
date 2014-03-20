@@ -83,6 +83,17 @@ footer p {
     font-size: 10px;
 }
 
+.grey
+{
+    color: #c7c7c7;
+    font-style: italic;
+}
+
+.yellow
+{
+    color: #ffdb58;
+}
+
 .center-result
 {
     margin-left: 15px;
