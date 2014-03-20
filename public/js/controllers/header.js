@@ -8,10 +8,10 @@ angular.module('ace.system').controller('HeaderController', ['$scope', 'Global',
 	if(Global.authenticated)
 	{
 		$scope.menu.push({'title': 'Favourites','link': 'favourites'});
+		if(Global.user.isManufacturer === true || Global.user.isAdmin === true)
+			$scope.menu.push({'title': 'Catalog Upload','link': 'catalog/new'});
 		if(Global.user.isAdmin === true)
 			$scope.menu.push({'title': 'Users','link': 'users'});
-		if(Global.user.isManufacturer === true || Global.user.isAdmin === true)
-			$scope.menu.push({'title': 'Manage My Catalog','link': 'catalog/new'});
 	}
 
 	$scope.isCollapsed = false;

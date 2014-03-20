@@ -1,0 +1,13 @@
+<div class="container" ng-controller="catalogTypeListCtrl" ng-init="getTypes()" style="min-height: 800px; padding-top:30px;">
+    <div class="row">
+        <div class="col-md-6">
+            <ul class="list-group" ng-init="getTypes()">
+                <div class="list-group-item list-title">Catalog Types</div> 
+                <li class="list-group-item" ng-show="types.length == 0">No catalog available</li>          
+                <li class="list-group-item" ng-repeat="type in types" ng-mouseenter = "toggleOption(type)" ng-mouseleave = "toggleOption(type)" href="#!/catalog/{{type.name}}">
+                    <a href="#!/catalog/{{type.name}}">{{type.name}}</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
