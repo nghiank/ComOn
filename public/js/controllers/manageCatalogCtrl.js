@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('ace.catalog')
-.controller('manageCatalogCtrl', ['$scope', 'Global', 'CatalogAPI','$routeParams', '_', function ($scope, Global, CatalogAPI, $routeParams, underscore) {
+.controller('manageCatalogCtrl', ['$scope', 'Global', 'CatalogAPI','$routeParams', '_','$modal', function ($scope, Global, CatalogAPI, $routeParams, underscore, $modal) {
 	$scope.global = Global;
 	$scope.fields = [];
 	$scope._ = underscore;
@@ -46,6 +46,7 @@ angular.module('ace.catalog')
 			if(response)
 			{
 				$scope.items = response.data;
+				console.log(response.data);
 			}
 		});
 		$scope.fields = [];
@@ -79,5 +80,12 @@ angular.module('ace.catalog')
 		{
 			$scope.cols.splice($scope.cols.indexOf(field),1);
 		}
+	};
+
+	$scope.showComingModal = function(){
+		$modal.open({
+			templateUrl: 'views/ComingModal.html',
+			controller: 'ComingModalCtrl',
+		});
 	};
 }]);

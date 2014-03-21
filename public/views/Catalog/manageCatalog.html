@@ -16,7 +16,7 @@
 		   			<div class="form-group">
 		    			<label class="control-label col-sm-2">Type</label>
 		    			<div class="col-sm-4">
-			      			<select class="form-control" ng-model="target" ng-options="type.name for type in types">
+			      			<select class="form-control" ng-model="target" ng-options="type.name for type in types | orderBy:'name'">
 			      			</select>		      			
 		   				</div>
 		   			</div>
@@ -51,8 +51,8 @@
 							<span ng-repeat="(field,data) in item" ng-show="{{field !== '_id' && col.field === field}}"><i ng-show="col.field !== 'additionalInfo.weblink'">{{data? data: '-'}}</i><a ng-hide="col.field !== 'additionalInfo.weblink'" href="{{data? data: '#'}}"><i class="fa fa-external-link"></i></span>
 						</td>
 						<td>
-							<a><i class="fa fa-pencil" style="margin-right:10px"></i></a>
-							<a><i class="fa fa-clock-o"></i></a>
+							<a><i class="fa fa-pencil" style="margin-right:10px" ng-click="showComingModal()"></i></a>
+							<a><i class="fa fa-clock-o" ng-click="showComingModal()"></i></a>
 						</td>
 					</tr>
 				</tbody>
