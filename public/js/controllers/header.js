@@ -9,7 +9,7 @@ angular.module('ace.system').controller('HeaderController', ['$scope', 'Global',
 	{
 		$scope.menu.push({'title': 'Favourites','link': 'favourites'});
 		if(Global.user.isManufacturer === true || Global.user.isAdmin === true)
-			$scope.menu.push({'title': 'Manage Catalog','link': 'updateCatalog'});
+			$scope.menu.push({'title': 'Manage My Catalog','link': 'manageCatalog'});
 		if(Global.user.isAdmin === true)
 			$scope.menu.push({'title': 'Manage Users','link': 'users'});
 	}
