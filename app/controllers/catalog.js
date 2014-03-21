@@ -130,6 +130,8 @@ exports.getAllTypes = function(req, res) {
 	CatalogSchem.distinct('typeCode', {}, function(err, result) {
 		if(err)
 			return error.sendGenericError(res, 400, 'Error Encountered');
+		if(result.length === 0)
+			res.jsonp([]);
 		var total = result.length;
 		var checked = 0;
 		var array = [];
@@ -187,9 +189,13 @@ exports.getCatalogEntries = function(req, res) {
 		searchCriteria.manufacturer = req.body.manufacturer;
 	CatalogSchem.find(searchCriteria).select(fields).skip(lower).limit(upper-lower).lean().exec(function(err, entries) {
 		if(err){
-			console.log(err);
 			return error.sendGenericError(res, 400, 'Error Encountered');
 		}
-		return res.jsonp({data: entries, range: {lower: lower, upper: upper}, length: entries.length});
+		CatalogSchem.count(searchCriteria).exec(function(err, count) {
+			if(err){
+				return error.sendGenericError(res, 400, 'Error Encountered');
+			}
+			return res.jsonp({data: entries, range: {lower: lower, upper: upper}, total: count});
+		});
 	});
 };
