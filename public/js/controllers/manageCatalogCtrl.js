@@ -17,7 +17,7 @@ angular.module('ace.catalog')
 		$scope.types = CatalogAPI.types.query(function(){
 			$scope.target = $scope.types[0];
 		});
-		$scope.showList = false;		
+		$scope.showList = false;
 	};
 
 	$scope.showTypeList = function(){
@@ -44,7 +44,7 @@ angular.module('ace.catalog')
 		});
 		CatalogAPI.entries.query({type: type.code, manufacturer:Global.user.codeName,lower: 0, upper: $scope.pageItemLimit}, function(response) {
 			if(response)
-			{ 
+			{
 				$scope.items = response.data;
 			}
 		});
