@@ -55,7 +55,7 @@ exports.populateCatalog = function(req, res) {
 	{
 		return user.isAdmin? true: (user.codeName.toLowerCase() === manufacturerEntry.toLowerCase());
 	}
-	function nextColumn(column)
+/*	function nextColumn(column)
 	{
 		var length = column.join('').length;
 		function repeatChar(count, ch) {
@@ -98,14 +98,14 @@ exports.populateCatalog = function(req, res) {
 			column[length-1] = getNextAlphabet(column[length-1])[0];
 		}
 		return column.join('');
-	}
+	}*/
 	_.each(data, function(value, key) {
 		if(!key || !value.title)
 			return;
 		var typeCode = key.toString();
 		var typeName = value.title.toString();
 		for (var i = 0; i < value.data.length; i++) {
-			var column = 'A';
+/*			var column = 'A';
 			for(var j=0 ;j< 50;j++)
 			{
 				var entry = value.data[i];
@@ -116,10 +116,12 @@ exports.populateCatalog = function(req, res) {
 					createEntry(entry, catalog, typeName, typeCode);
 					column = nextColumn(column.split(''));
 				}
-			}
-/*			var entry = value.data[i];
+			}*/
+			var entry = value.data[i];
 			var catalog = entry.catalog.replace(' ','');
-			createEntry(entry, catalog, typeName, typeCode);*/
+			if(checkAuthority(entry.manufacturer.trim())){
+				createEntry(entry, catalog, typeName, typeCode);
+			}
 		}
 
 	});
@@ -185,7 +187,7 @@ exports.getCatalogEntries = function(req, res) {
 	if(upper - lower > MAX_LIMIT)
 		upper = lower + default_upper;
 	var searchCriteria = {typeCode: type};
-	if(req.body.manufacturer)
+	if(req.body.manufacturer && req.body.manufacturer !== null)
 		searchCriteria.manufacturer = req.body.manufacturer;
 	CatalogSchem.find(searchCriteria).select(fields).skip(lower).limit(upper-lower).lean().exec(function(err, entries) {
 		if(err){

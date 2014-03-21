@@ -18,9 +18,9 @@
                     </div>
                     <div class="form-group">
                         <div class="col-sm-offset-2 col-sm-2">
-                            <button type="button" ng-disabled="uploadDisabled" class="btn" ng-click="populate()" ng-class={'btn-default':populateProgress===100,'btn-primary':populateProgress!==100}><i class="fa fa-check" ng-show="showProgress && populateProgress === 100"></i>Upload</button>
+                            <button type="button" ng-disabled="uploadDisabled" class="btn" ng-click="populate()" ng-class={'btn-default':populateProgress===100,'btn-primary':populateProgress!==100}><i class="fa fa-check success" ng-show="showProgress && populateProgress === 100"></i>Upload</button>
                         </div>
-                        <progressbar max="100" value="populateProgress" ng-show="showProgress" type="success"><span style="color:black; white-space:nowrap;">{{populateProgress}}%</span></progressbar>
+                        <progressbar max="100" value="populateProgress" ng-show="showProgress" type="success"><span style="color:white; white-space:nowrap;">{{populateProgress}}%</span></progressbar>
                     </div>
                 </form>
             </div>

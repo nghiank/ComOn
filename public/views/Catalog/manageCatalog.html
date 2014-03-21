@@ -36,26 +36,19 @@
 				</div>
 			</div>
 		</div>
-
-		<div class="col-md-12 panel panel-default" style="overflow:auto;" ng-show="!!items">
-			<table class="table table-striped">
-				<thead>
-					<tr>
-						<th ng-repeat="col in cols">{{col.title}}</th>
-						<th>Actions</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr ng-repeat="item in items">
-						<td ng-repeat="col in cols">
-							<span ng-repeat="(field,data) in item" ng-show="{{field !== '_id' && col.field === field}}"><i ng-show="col.field !== 'additionalInfo.weblink'">{{data? data: '-'}}</i><a ng-hide="col.field !== 'additionalInfo.weblink'" href="{{data? data: '#'}}"><i class="fa fa-external-link"></i></span>
-						</td>
-						<td>
-							<a><i class="fa fa-pencil" style="margin-right:10px" ng-click="showComingModal()"></i></a>
-							<a><i class="fa fa-clock-o" ng-click="showComingModal()"></i></a>
-						</td>
-					</tr>
-				</tbody>
+	<div class="col-md-12" style="overflow:auto;">
+	<pager style="margin-top: 10px;" ng-show="showList && !searchMode" total-items="total" items-per-page="pageItemLimit" page="currentPage" ng-click="getPage(currentPage)"></pager>
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th ng-repeat="col in cols">{{col.title}}</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="item in items">
+					<td ng-repeat="data in sortedValues(item) track by $index" transform-link="data">{{data}}</td>
+				</tr>
+			</tbody>
 			</table>
 		</div>
     </tab>
