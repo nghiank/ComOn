@@ -11,11 +11,14 @@
 	<span>
 		<a ng-click="toggleType()"><i class="fa fa-forward fa-lg" style="position:fixed; left:1%; top:50%;"></i></a>
 	</span>
-	<ol ng-show="!!selected" class="breadcrumb">
-		<li>
+	<div ng-show="!!selected" class="panel panel-default">
+		<div class="panel-heading">
 			{{selected.name}}
-		</li>
-	</ol>
+			<p class="pull-right">
+				Page: &nbsp&nbsp <b>{{currentPage}}</b>
+			</p>
+	  	</div>
+	</div>
 	<div ng-show="showList" ng-click="closeType()">
 		<div class="well">
 			<div class="row">
