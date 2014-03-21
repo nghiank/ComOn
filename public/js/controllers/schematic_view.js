@@ -36,8 +36,17 @@ angular.module('ace.schematic')
 		return (std.showOption = !std.showOption);
 	};
 
-	$scope.unpublished = function(child) {
-		return child.isPublished || $scope.admin;
+	$scope.unpublished = function(array) {
+		var newArray = [];
+		if(array)
+		{
+			for (var i = 0; i < array.length; i++) {
+				var child = array[i];
+				if(child.isPublished || $scope.admin)
+					newArray.push(child);
+			}
+		}
+		return newArray;
 	};
 
 	$scope.downloadStandard = function(){

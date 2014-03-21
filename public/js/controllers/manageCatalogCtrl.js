@@ -9,6 +9,7 @@ angular.module('ace.catalog')
 	$scope.searchMode = false;
 	$scope.lower = 0;
 	$scope.upper = $scope.lower + $scope.pageItemLimit;
+	
 	$scope.authorized = function() {
 		if($scope.global.authenticated && ($scope.global.user.isAdmin || $scope.global.user.isManufacturer))
 			return true;

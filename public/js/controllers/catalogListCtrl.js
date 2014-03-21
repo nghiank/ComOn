@@ -9,7 +9,6 @@ angular.module('ace.catalog')
 	$scope.searchMode = false;
 	$scope.lower = 0;
 	$scope.upper = $scope.lower + $scope.pageItemLimit;
-	$scope.currentPage = 1;
 	$scope.authorized = function() {
 		if($scope.global.authenticated && ($scope.global.user.isAdmin || $scope.global.user.isManufacturer))
 			return true;
@@ -143,11 +142,4 @@ angular.module('ace.catalog')
 		}
 		return val_array;
 	};
-
-	$scope.$watch('currentPage', function() {
-		if(!$scope.searchMode && !!$scope.selected)
-		{
-			$scope.getPage($scope.currentPage);
-		}
-	});
 }]);

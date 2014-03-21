@@ -15,15 +15,13 @@
 		<div class="panel-heading">
 			{{selected.name}}
 			<p class="pull-right">
-				Page: &nbsp&nbsp <b>{{currentPage}}</b>
+				Page: &nbsp&nbsp <b>{{currentPage? currentPage: 1}}</b>
 			</p>
 	  	</div>
 	</div>
 	<div ng-show="showList" ng-click="closeType()">
 		<div class="well">
 			<div class="row">
-				
-	abcd{{currentPage}}
 				<form class="form-horizontal col-md-8 col-md-offset-2">
 					<div class="form-group">
 		    			<label class="col-sm-2 control-label">Search</label>
@@ -43,7 +41,7 @@
 				</div>
 			</div>
 		</div>
-	<pager style="margin-top: 10px;" ng-show="showList && !searchMode" total-items="total" items-per-page="pageItemLimit" page="currentPage"></pager>
+	<pager style="margin-top: 10px;" ng-show="showList && !searchMode" total-items="total" items-per-page="pageItemLimit" page="currentPage" ng-click="getPage(currentPage)"></pager>
 	<div class="col-md-12" style="overflow:auto;">
 
 		<table class="table table-striped">
