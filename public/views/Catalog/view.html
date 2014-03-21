@@ -1,6 +1,7 @@
 <section ng-init="init()" ng-show="authorized()" ng-controller="catalogController">
         <div class="well">
             <div class="row">
+
                 <form class="form-horizontal col-md-8 col-md-offset-2">
                     <div class="form-group">
                         <label class="col-sm-2 control-label">.xls File</label>
@@ -12,12 +13,14 @@
                                     <a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput" >Remove</a>
                                 </div>
                             </div>
+                            <p ng-show="!valid" class="error">{{error}}</p>
                         </div>
                     </div>
                     <div class="form-group">
-                        <div class="col-sm-offset-2 col-sm-10">
-                            <button type="button" ng-disabled="uploadDisabled" class="btn btn-primary" ng-click="populate()">Populate</button>
-                        </div>                       
+                        <div class="col-sm-offset-2 col-sm-2">
+                            <button type="button" ng-disabled="uploadDisabled" class="btn" ng-click="populate()" ng-class={'btn-default':populateProgress===100,'btn-primary':populateProgress!==100}><i class="fa fa-check" ng-show="showProgress && populateProgress === 100"></i>Upload</button>
+                        </div>
+                        <progressbar max="100" value="populateProgress" ng-show="showProgress" type="success"><span style="color:black; white-space:nowrap;">{{populateProgress}}%</span></progressbar>
                     </div>
                 </form>
             </div>
