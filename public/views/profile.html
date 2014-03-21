@@ -30,7 +30,7 @@
            </p>
          </div>
          <div ng-switch="editable">
-          <div ng-switch-when=false class="col-md-4" ng-class="{'grey': {{codename === 'Not Assigned'}}}">{{codename}}</div>
+          <div ng-switch-when=false class="col-md-4" ng-class="{'grey italic': {{codename === 'Not Assigned'}}}">{{codename}}</div>
           <div ng-switch-when=true>
             <div class="col-md-4 pull-left">
               <input type="text" 

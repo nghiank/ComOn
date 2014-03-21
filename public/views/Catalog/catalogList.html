@@ -1,19 +1,26 @@
 <div class="container" ng-controller="catalogListCtrl" ng-init="init()" style="padding-top:30px;">
-	<div class="col-md-4 navmenu navmenu-default" ng-hide="!showTypes" style="height: 85%; position:fixed; left:0;z-index:9999; overflow-y: auto;">
+	<div class="col-md-4 navmenu navmenu-default" ng-hide="!showTypes" style="height: 85%; position: fixed; left: 0; z-index: 9999; overflow-y: auto;">
 		<ul class="nav navmenu-nav" ng-init="getTypes()" style="overflow-y: auto;">
             <div class="nav navmenu-brand" ng-click="toggleType()">Catalog Types</div> 
             <li class="nav navmenu-nav" ng-show="types.length == 0">No catalog available</li>          
             <li class="nav navmenu-nav" ng-repeat="type in types | orderBy: 'name'" ng-mouseenter = "toggleOption(type)" ng-mouseleave = "toggleOption(type)" href="#!/catalog/{{type.name}}" ng-click="showTypeList(type)">
-                <a>{{type.name}}</a>
+                <a>{{type.name + '  ('+ type.code + ')'}}</a>
             </li>
         </ul>
 	</div>
 	<span>
 		<a ng-click="toggleType()"><i class="fa fa-forward fa-lg" style="position:fixed; left:1%; top:50%;"></i></a>
 	</span>
-	<div  ng-show="showList" ng-click="closeType()">
+	<div ng-show="!!selected" class="panel panel-default">
+		<div class="panel-heading">
+			{{selected.name}}
+			<p class="pull-right">
+				Page: &nbsp&nbsp <b>{{currentPage}}</b>
+			</p>
+	  	</div>
+	</div>
+	<div ng-show="showList" ng-click="closeType()">
 		<div class="well">
-			<p>{{target.name}}</p>
 			<div class="row">
 				<form class="form-horizontal col-md-8 col-md-offset-2">
 					<div class="form-group">
@@ -34,6 +41,7 @@
 				</div>
 			</div>
 		</div>
+	<pager style="margin-top: 10px;" ng-show="showList && !searchMode" total-items="total" items-per-page="pageItemLimit" page="currentPage"></pager>
 	<div class="col-md-12" style="overflow:auto;">
 		<table class="table table-striped">
 			<thead>
@@ -43,12 +51,9 @@
 			</thead>
 			<tbody>
 				<tr ng-repeat="item in items">
-					<td ng-repeat="col in cols">
-						<span ng-repeat="(field,data) in item" ng-show="{{field !== '_id' && col.field === field}}"><i ng-show="col.field !== 'additionalInfo.weblink'">{{data? data: '-'}}</i><a ng-hide="col.field !== 'additionalInfo.weblink'" href="{{data? data: '#'}}"><i class="fa fa-external-link"></i></span>
-					</td>
+					<td ng-repeat="data in sortedValues(item) track by $index" transform-link="data">{{data}}</td>
 				</tr>
 			</tbody>
-
 			</table>
 		</div>
 	</div>
