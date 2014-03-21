@@ -79,7 +79,6 @@ angular.module('ace.catalog')
 	$scope.toggleField = function(field){
 		if($scope.cols.indexOf(field) === -1)
 		{
-			$scope.cols.push(field);
 			CatalogAPI.entries.query({type: $scope.selected.code, lower: $scope.lower, upper: $scope.upper, fields: field.field}, function(response) {
 				if(response)
 				{
@@ -93,6 +92,7 @@ angular.module('ace.catalog')
 						else
 							$scope.items[i][field.field] = '';
 					}
+					$scope.cols.push(field);
 				}
 			});
 		}
@@ -136,7 +136,9 @@ angular.module('ace.catalog')
 			if(index > -1)
 			{
 				if(data[key])
+				{
 					val_array[index] = data[key];
+				}
 			}
 		}
 		return val_array;

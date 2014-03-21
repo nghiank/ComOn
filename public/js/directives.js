@@ -16,4 +16,21 @@ angular.module('ace').directive('resetForm',
 				});
 			}
 		};
+	}).directive('transformLink', function() {
+		return {
+			restrict: 'A',
+			scope: {
+				transformLink: '@'
+			},
+			link: function(scope, element) {
+				scope.$watch('transformLink', function () {
+					if(element.context.textContent.indexOf('http://') === 0)
+					{
+						var link = element.context.textContent;
+						element.text('');
+						element.html('<a href="'+link+'"><i class="fa fa-external-link"></i>');
+					}
+				});
+			}
+		};
 	});
