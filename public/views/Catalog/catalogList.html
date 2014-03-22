@@ -1,9 +1,13 @@
 <div class="container" ng-controller="catalogListCtrl" ng-init="init()" style="padding-top:30px;">
 	<nav class="col-md-4 navmenu navmenu-default" ng-hide="!showTypes" style="height: 85%; position: fixed; left: 0; z-index: 9999; overflow-y: auto;">
 		<ul class="nav navmenu-nav" ng-init="getTypes()" style="overflow-y: auto;">
-            <div class="navmenu-brand" ng-click="toggleType()">Catalog Types</div> 
+            <div class="navmenu-brand">Catalog Types</div> 
+            <form class="navbar-form" role="search">
+				<input type="text" class="form-control" placeholder="Search Type..." ng-model="searchType">
+			</form>
+
             <li ng-show="types.length == 0">No catalog available</li>          
-            <li class="ng-class:{active: (!!selected? type.code===selected.code: false)}" ng-repeat="type in types | orderBy: 'name'" ng-mouseenter = "toggleOption(type)" ng-mouseleave = "toggleOption(type)" href="#!/catalog/{{type.name}}" ng-click="showTypeList(type)">
+            <li class="ng-class:{active: (!!selected? type.code===selected.code: false)}" ng-repeat="type in types | orderBy: 'name' |filter: searchType" ng-mouseenter = "toggleOption(type)" ng-mouseleave = "toggleOption(type)" href="#!/catalog/{{type.name}}" ng-click="showTypeList(type)">
                 <a>{{type.name + '  ('+ type.code + ')'}}</a>
             </li>
         </ul>
