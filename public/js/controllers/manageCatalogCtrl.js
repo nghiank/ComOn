@@ -18,14 +18,17 @@ angular.module('ace.catalog')
 	$scope.manufacturer = $scope.authorized()?($scope.global.user.isAdmin?null:$scope.global.user.codeName):null;
 	$scope.init = function() {
 		$scope.showTypes = true;
-		$scope.types = CatalogAPI.types.query(function(){
-			$scope.target = $scope.types[0];
+		CatalogAPI.types.query(function(response){
+			if(response){
+				$scope.types = response;
+				$scope.target = $scope.types[0];
+			}
 		});
 		$scope.showList = false;
 	};
 
-	$scope.showTypeList = function(){
-		var type = $scope.target;
+	$scope.showTypeList = function(type){
+		if (!type) {return;}
 		$scope.showList = true;
 		$scope.showTypes = false;
 		$scope.selected = $scope.target;
