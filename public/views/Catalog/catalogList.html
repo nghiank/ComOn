@@ -1,13 +1,13 @@
 <div class="container" ng-controller="catalogListCtrl" ng-init="init()" style="padding-top:30px;">
-	<div class="col-md-4 navmenu navmenu-default" ng-hide="!showTypes" style="height: 85%; position: fixed; left: 0; z-index: 9999; overflow-y: auto;">
+	<nav class="col-md-4 navmenu navmenu-default" ng-hide="!showTypes" style="height: 85%; position: fixed; left: 0; z-index: 9999; overflow-y: auto;">
 		<ul class="nav navmenu-nav" ng-init="getTypes()" style="overflow-y: auto;">
-            <div class="nav navmenu-brand" ng-click="toggleType()">Catalog Types</div> 
-            <li class="nav navmenu-nav" ng-show="types.length == 0">No catalog available</li>          
-            <li class="nav navmenu-nav" ng-repeat="type in types | orderBy: 'name'" ng-mouseenter = "toggleOption(type)" ng-mouseleave = "toggleOption(type)" href="#!/catalog/{{type.name}}" ng-click="showTypeList(type)">
+            <div class="navmenu-brand" ng-click="toggleType()">Catalog Types</div> 
+            <li ng-show="types.length == 0">No catalog available</li>          
+            <li class="ng-class:{active: (!!selected? type.code===selected.code: false)}" ng-repeat="type in types | orderBy: 'name'" ng-mouseenter = "toggleOption(type)" ng-mouseleave = "toggleOption(type)" href="#!/catalog/{{type.name}}" ng-click="showTypeList(type)">
                 <a>{{type.name + '  ('+ type.code + ')'}}</a>
             </li>
         </ul>
-	</div>
+	</nav>
 	<span>
 		<a ng-click="toggleType()"><i class="fa fa-forward fa-lg" style="position:fixed; left:1%; top:50%;"></i></a>
 	</span>
