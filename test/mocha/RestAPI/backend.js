@@ -611,6 +611,34 @@ describe('<e2e API Test>', function() {
             });
         });
     });
+    
+    describe('Catalog Controller', function() {
+        var acess_token, acess_token_secret;
+
+        before(function(done) {
+            this.timeout(config.timeout);
+            var callback = function(e, at, at_s) {
+                if(e) throw (e);
+                if(!e)
+                {
+                    acess_token = at;
+                    acess_token_secret = at_s;
+                }
+                agent
+                .post('/xauth')
+                .send({oauth_token: acess_token, oauth_verifier: acess_token_secret})
+                .end(function(err,res) {
+                    (res.status).should.equal(302);
+                    done();
+                });
+            };
+            xauth.login('akaash.gupta@autodesk.com', 'Iceman123', callback);
+        });
+
+        describe('Functions', function() {
+            //Nothing so far
+        });
+    });
 
     after(function(done) {
         User.remove().exec(function(){
