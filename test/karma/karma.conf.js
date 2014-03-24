@@ -24,6 +24,7 @@ module.exports = function(config) {
             'public/lib/angular-bootstrap/ui-bootstrap-tpls.js',
             'public/lib/angular-bootstrap/ui-bootstrap.js',
             'public/lib/angular-ui-utils/ui-utils.js',
+            'public/lib/angular-animate/angular-animate.js',
             'public/lib/underscore/underscore.js',
             'public/lib/ng-file-upload/angular-file-upload.js',
             'public/lib/ng-file-upload/angular-file-upload-shim.js',
