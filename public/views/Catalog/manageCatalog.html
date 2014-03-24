@@ -7,7 +7,7 @@
     	<div class="well" style="margin-top:15px">
 			<div class="row">
 				<form class="form-horizontal col-md-8 col-md-offset-2">
-					<div class="form-group" ng-show="global.user && global.user.!isAdmin && global.user.isManufacturer">
+					<div class="form-group" ng-show="global.user && !global.user.isAdmin && global.user.isManufacturer">
 		    			<label class="control-label col-sm-2">Code Name:</label>
 		    			<div class="col-sm-4">
 		    				<p class="form-control-static">{{global.user.codeName? global.user.codeName: 'Not available.'}}</p>
