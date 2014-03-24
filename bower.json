@@ -7,7 +7,7 @@
     "angular-cookies": "latest",
     "angular-mocks": "latest",
     "angular-route": "latest",
-    "angular-animate":"1.2.15",
+    "angular-animate":"1.2.8",
     "bootstrap": "3.0.3",
     "angular-bootstrap": "0.10.0",
     "angular-ui-utils": "0.1.0",
@@ -17,7 +17,7 @@
     "jasny-bootstrap": "3.1.0",
     "angularjs-scroll-glue": "0.0.1",
     "js-xls": "0.6.9",
-    "js-xlsx": "0.5.10",
+    "js-xlsx": "0.5.10"
   },
   "resolutions": {
     "angular": "1.2.8"
