@@ -136,6 +136,22 @@ angular.module('ace.catalog')
 		return val_array;
 	};
 
+	$scope.toggleAll = function() {
+		if(($scope.fields.length+3) !== $scope.cols.length)
+		{
+			for (var i = 0; i < $scope.fields.length; i++) {
+				var field = $scope.fields[i];
+				if($scope.cols.indexOf(field) === -1)
+					$scope.toggleField(field);
+			}
+			return;
+		}
+		for (var j = 0; j < $scope.fields.length; j++) {
+			var remove_field = $scope.fields[j];
+			$scope.cols.splice($scope.cols.indexOf(remove_field),1);
+		}
+	};
+	
 	$scope.showComingModal = function(){
 		$modal.open({
 			templateUrl: 'views/ComingModal.html',

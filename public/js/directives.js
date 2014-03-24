@@ -30,6 +30,13 @@ angular.module('ace').directive('resetForm',
 						element.text('');
 						element.html('<a href="'+link+'"><i class="fa fa-external-link"></i>');
 					}
+					else if(element.context.textContent.indexOf('www.') > -1)
+					{
+						var unmodified_link = element.context.textContent;
+						var modified_link = 'http://' + unmodified_link.substring(unmodified_link.indexOf('www.'));
+						element.text('');
+						element.html('<a href="'+modified_link+'"><i class="fa fa-external-link"></i>');
+					}
 				});
 			}
 		};

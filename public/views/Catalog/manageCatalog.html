@@ -38,6 +38,7 @@
 					<label style="margin-top: 10px" class="col-sm-2 control-label">Show More</label>
 					<div class="col-sm-8 input-group">
 		      			<button class="btn btn-default" style="margin-right:10px; margin-top: 5px; margin-bottom: 5px" ng-repeat="field in fields | orderBy:'title'"  ng-click="toggleField(field)" ng-class={'clicked':cols.indexOf(field)+1}><i ng-show="cols.indexOf(field)+1" class="fa fa-check success" ></i>{{'  '+field.title+'  '}}</button>
+		      			<button ng-click="toggleAll()" class="btn btn-info" style="margin-right:10px; margin-top: 5px; margin-bottom: 5px" ng-show="fields.length !== 0">{{(cols.length === fields.length+3)? 'Remove ': 'Select '}}All</button>
 					</div>
 				</div>
 			</div>
