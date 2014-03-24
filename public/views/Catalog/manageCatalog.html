@@ -48,7 +48,7 @@
 			<thead>
 				<tr>
 					<th ng-repeat="col in cols">{{col.title}}</th>
-					<th>Actions</th>
+					<th ng-show="showList && !searchMode">Actions</th>
 				</tr>
 			</thead>
 			<tbody>
