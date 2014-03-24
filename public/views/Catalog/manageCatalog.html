@@ -1,12 +1,18 @@
-<div class="container" ng-controller="manageCatalogCtrl" ng-init="init()" style="padding-top:30px;">
+<div class="container" style="padding-top:30px;">
 	<tabset justified="true">
-    <tab>
+    <tab ng-init="init()" ng-controller="manageCatalogCtrl">
     	<tab-heading>
         	<i class="fa fa-pencil"></i> Edit Existing Items
       	</tab-heading>
     	<div class="well" style="margin-top:15px">
 			<div class="row">
 				<form class="form-horizontal col-md-8 col-md-offset-2">
+					<div class="form-group" ng-show="global.user && global.user.!isAdmin && global.user.isManufacturer">
+		    			<label class="control-label col-sm-2">Code Name:</label>
+		    			<div class="col-sm-4">
+		    				<p class="form-control-static">{{global.user.codeName? global.user.codeName: 'Not available.'}}</p>
+		   				</div>
+		   			</div>
 					<div class="form-group">
 		    			<label class="col-sm-2 control-label">Search</label>
 		    			<div class="col-sm-8">
@@ -18,12 +24,6 @@
 		    			<div class="col-sm-4">
 			      			<select class="form-control" ng-model="target.type" ng-options="type.name for type in types | orderBy:'name'">
 			      			</select>	      			
-		   				</div>
-		   			</div>
-		   			<div class="form-group" ng-show="global.user && !global.user.isAdmin && global.user.isManufacturer">
-		    			<label class="control-label col-sm-2">Manufacturer</label>
-		    			<div class="col-sm-4">
-		    				<p class="form-control-static">{{global.user.codeName? global.user.codeName: 'Not available.'}}</p>
 		   				</div>
 		   			</div>
 		   			<div class="form-group">

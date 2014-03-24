@@ -27,6 +27,7 @@ angular.module('ace.catalog')
 
 	$scope.showTypeList = function(){
 		var type = $scope.target.type;
+		if (!type) {return;}
 		$scope.showList = true;
 		$scope.showTypes = false;
 		function parseCamelCase(input)
