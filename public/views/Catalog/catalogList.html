@@ -1,5 +1,5 @@
 <div class="container" ng-controller="catalogListCtrl" ng-init="init()" style="padding-top:30px;">
-	<nav class="col-md-4 navmenu navmenu-default" ng-hide="!showTypes" style="height: 85%; position: fixed; left: 0; z-index: 9999; overflow-y: auto;">
+	<nav class="col-md-4 navmenu navmenu-default animate-show" ng-show="showTypes" style="height: 85%; position: fixed; left: 0; z-index: 9999; overflow-y: auto;">
 		<ul class="nav navmenu-nav" ng-init="getTypes()" style="overflow-y: auto;">
             <div class="navmenu-brand">Catalog Types</div> 
             <form class="navbar-form" role="search">

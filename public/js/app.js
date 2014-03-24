@@ -5,6 +5,6 @@ angular.module('ace', ['ngCookies', 'luegg.directives', 'angularFileUpload' , 'n
 
 angular.module('ace.system', []);
 angular.module('ace.schematic', []);
-angular.module('ace.catalog', []);
+angular.module('ace.catalog', ['ngAnimate']);
 angular.module('ace.users', []);
 angular.module('underscore', []);
