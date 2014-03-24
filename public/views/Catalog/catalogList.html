@@ -52,7 +52,7 @@
 		<table class="table table-striped">
 			<thead>
 				<tr>
-					<th ng-repeat="col in cols">{{col.title}}</th>
+					<th ng-click="sortTable(col)" ng-repeat="col in cols">{{col.title}}<i style="margin-left: 5px" class="fa fa-angle-double-down" ng-show="col.sort !== null && col.sort === 1" ></i><i style="margin-left: 5px" class="fa fa-angle-double-up" ng-show="col.sort !== null && col.sort === -1" ></i></th>
 				</tr>
 			</thead>
 			<tbody>

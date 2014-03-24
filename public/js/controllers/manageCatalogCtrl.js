@@ -9,6 +9,7 @@ angular.module('ace.catalog')
 	$scope.searchMode = false;
 	$scope.lower = 0;
 	$scope.upper = $scope.lower + $scope.pageItemLimit;
+	$scope.sort = null;
 	
 	$scope.authorized = function() {
 		if($scope.global.authenticated && ($scope.global.user.isAdmin || $scope.global.user.isManufacturer))
@@ -44,7 +45,7 @@ angular.module('ace.catalog')
 						displayed_field = displayed_field.replace('additionalInfo.', '');
 						displayed_field = displayed_field.replace('_', ' ');
 						displayed_field = parseCamelCase(displayed_field);
-						$scope.fields.push({title: displayed_field, field: field});
+						$scope.fields.push({title: displayed_field, field: field, sort: null});
 					}
 				}
 			}
@@ -57,7 +58,7 @@ angular.module('ace.catalog')
 			}
 		});
 		$scope.fields = [];
-		$scope.cols = [{title: 'Catalog', field: 'catalog'},{title: 'Manufacturer', field: 'manufacturer'},{title: 'Assembly Code', field: 'assemblyCode'}];
+		$scope.cols = [{title: 'Catalog', field: 'catalog', sort: null},{title: 'Manufacturer', field: 'manufacturer', sort: null},{title: 'Assembly Code', field: 'assemblyCode', sort: null}];
 	};
 
 	$scope.toggleType = function(){
@@ -71,7 +72,7 @@ angular.module('ace.catalog')
 	$scope.toggleField = function(field){
 		if($scope.cols.indexOf(field) === -1)
 		{
-			CatalogAPI.entries.query({type: $scope.target.code, manufacturer: $scope.manufacturer ,lower: $scope.lower, upper: $scope.upper, fields: field.field}, function(response) {
+			CatalogAPI.entries.query({type: $scope.target.code, manufacturer: $scope.manufacturer ,lower: $scope.lower, sortField: $scope.sort, upper: $scope.upper, fields: field.field}, function(response) {
 				if(response)
 				{
 					var data = response.data;
@@ -98,7 +99,7 @@ angular.module('ace.catalog')
 		var lower = (page? (page-1): 0) * $scope.pageItemLimit;
 		var upper = page * $scope.pageItemLimit;
 		var cols = $scope._.map($scope.cols, function(value) {return value.field;});
-		CatalogAPI.entries.query({type: $scope.target.code, manufacturer: $scope.manufacturer , lower: lower, upper: upper, fields: cols.join(' ')}, function(response) {
+		CatalogAPI.entries.query({type: $scope.target.code, lower: lower, sortField: $scope.sort, upper: upper, fields: cols.join(' ')}, function(response) {
 			$scope.items = $scope._.map(response.data, function(value) {return $scope._.omit(value, ['additionalInfo', '__v']);});
 			if($scope.fields.length > 0)
 			{
@@ -152,6 +153,16 @@ angular.module('ace.catalog')
 		}
 	};
 	
+	$scope.sortTable = function(col) {
+		var order = col.sort;
+		for (var i = 0; i < $scope.cols.length; i++) {
+			$scope.cols[i].sort = null;
+		}
+		col.sort = (order === 1)? -1: 1;
+		$scope.sort = col;
+		$scope.getPage($scope.currentPage? $scope.currentPage: 1);
+	};
+
 	$scope.showComingModal = function(){
 		$modal.open({
 			templateUrl: 'views/ComingModal.html',

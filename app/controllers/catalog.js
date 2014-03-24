@@ -183,13 +183,19 @@ exports.getCatalogEntries = function(req, res) {
 		lower = upper - lower;
 		upper = upper - lower;
 	}
-
 	if(upper - lower > MAX_LIMIT)
 		upper = lower + default_upper;
 	var searchCriteria = {typeCode: type};
+	var sortCriteria = {};
+	if(req.body.sortField)
+	{
+		var field = req.body.sortField.field;
+		var sort = req.body.sortField.sort;
+		sortCriteria[field] = sort;
+	}
 	if(req.body.manufacturer && req.body.manufacturer !== null)
 		searchCriteria.manufacturer = req.body.manufacturer;
-	CatalogSchem.find(searchCriteria).select(fields).skip(lower).limit(upper-lower).lean().exec(function(err, entries) {
+	CatalogSchem.find(searchCriteria).sort(sortCriteria).select(fields).skip(lower).limit(upper-lower).lean().exec(function(err, entries) {
 		if(err){
 			return error.sendGenericError(res, 400, 'Error Encountered');
 		}
