@@ -22,7 +22,7 @@
 		   			<div class="form-group">
 		    			<label class="control-label col-sm-2">Type</label>
 		    			<div class="col-sm-4">
-			      			<select class="form-control" ng-model="target.type" ng-options="type.name for type in types | orderBy:'name'">
+			      			<select class="form-control" ng-model="target" ng-options="type.name for type in types | orderBy:'name'">
 			      			</select>	      			
 		   				</div>
 		   			</div>
@@ -48,7 +48,7 @@
 			<thead>
 				<tr>
 					<th ng-repeat="col in cols">{{col.title}}</th>
-					<th>Actions</th>
+					<th ng-show="showList">Actions</th>
 				</tr>
 			</thead>
 			<tbody>

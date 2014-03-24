@@ -9,7 +9,6 @@ angular.module('ace.catalog')
 	$scope.searchMode = false;
 	$scope.lower = 0;
 	$scope.upper = $scope.lower + $scope.pageItemLimit;
-	$scope.target = {'type':''};
 	
 	$scope.authorized = function() {
 		if($scope.global.authenticated && ($scope.global.user.isAdmin || $scope.global.user.isManufacturer))
@@ -20,13 +19,13 @@ angular.module('ace.catalog')
 	$scope.init = function() {
 		$scope.showTypes = true;
 		$scope.types = CatalogAPI.types.query(function(){
-			$scope.target.type=$scope.types[0];
+			$scope.target = $scope.types[0];
 		});
 		$scope.showList = false;
 	};
 
 	$scope.showTypeList = function(){
-		var type = $scope.target.type;
+		var type = $scope.target;
 		if (!type) {return;}
 		$scope.showList = true;
 		$scope.showTypes = false;
@@ -72,7 +71,7 @@ angular.module('ace.catalog')
 	$scope.toggleField = function(field){
 		if($scope.cols.indexOf(field) === -1)
 		{
-			CatalogAPI.entries.query({type: $scope.target.type.code, manufacturer: $scope.manufacturer ,lower: $scope.lower, upper: $scope.upper, fields: field.field}, function(response) {
+			CatalogAPI.entries.query({type: $scope.target.code, manufacturer: $scope.manufacturer ,lower: $scope.lower, upper: $scope.upper, fields: field.field}, function(response) {
 				if(response)
 				{
 					var data = response.data;
@@ -99,7 +98,7 @@ angular.module('ace.catalog')
 		var lower = (page? (page-1): 0) * $scope.pageItemLimit;
 		var upper = page * $scope.pageItemLimit;
 		var cols = $scope._.map($scope.cols, function(value) {return value.field;});
-		CatalogAPI.entries.query({type: $scope.target.type.code, manufacturer: $scope.manufacturer , lower: lower, upper: upper, fields: cols.join(' ')}, function(response) {
+		CatalogAPI.entries.query({type: $scope.target.code, manufacturer: $scope.manufacturer , lower: lower, upper: upper, fields: cols.join(' ')}, function(response) {
 			$scope.items = $scope._.map(response.data, function(value) {return $scope._.omit(value, ['additionalInfo', '__v']);});
 			if($scope.fields.length > 0)
 			{
