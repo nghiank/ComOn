@@ -19,11 +19,9 @@ angular.module('ace').directive('resetForm',
 	}).directive('transformLink', function() {
 		return {
 			restrict: 'A',
-			scope: {
-				transformLink: '@'
-			},
 			link: function(scope, element) {
-				scope.$watch('transformLink', function () {
+				scope.$watch('cols.length', function () {
+					console.log(element);
 					if(element.context.textContent.indexOf('http://') === 0)
 					{
 						var link = element.context.textContent;
