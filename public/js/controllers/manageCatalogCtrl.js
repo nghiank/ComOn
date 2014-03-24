@@ -142,4 +142,14 @@ angular.module('ace.catalog')
 			controller: 'ComingModalCtrl',
 		});
 	};
+
+	$scope.showEditItemModal = function(){
+		var modalInstance = $modal.open({
+			templateUrl: 'views/Catalog/editItemForm.html',
+			controller: 'editItemFormCtrl',
+		});
+		modalInstance.result.then(function(){
+			console.log('alala');
+		});
+	};
 }]);

@@ -1,0 +1,32 @@
+<section>
+    <!-- 2. ng-file-select | ng-file-select="options" -->
+<div class="panel panel-default">
+    <div class="panel-heading">Edit Item: 
+    	<div class="pull-right"><strong>Catalog Number</strong></div>
+    </div>
+    <div class="panel-body">
+	    <form class="form-horizontal">
+	        <div class="form-group">
+	            <label class= "col-md-3 control-label">Catalog Name: </label>
+	        </div>              
+	        <div class="form-group">
+	            <label class= "col-md-3 control-label">Description:</label>
+	            <div class = "col-md-9">
+	            </div>
+	        </div>  
+	        <hr> 
+
+	        <hr>            
+	        <div class="form-group" style="margin-right:5px">
+	            <div class="col-md-3">
+	                <button type="button" ng-click="delete()" class="btn btn-danger">Delete</button>
+	            </div>
+	            <div class="pull-right">
+	                <button type="button" ng-click="validate()" class="btn btn-default" ng-show="(valid.dat && valid.json && valid.name)">Validate</button>
+	                <button type="button" ng-disabled="uploadDisabled" class="btn btn-primary btn-separate" ng-click="editStd()">Update</button>
+	            </div>
+	        </div>
+	    </form>
+	</div>
+</div>
+</section>
