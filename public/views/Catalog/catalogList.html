@@ -1,7 +1,7 @@
 <div class="container" ng-controller="catalogListCtrl" ng-init="init()" style="padding-top:30px;">
 	<nav class="col-md-4 navmenu navmenu-default animate-show" ng-show="showTypes" style="height: 85%; position: fixed; left: 0; z-index: 9999; overflow-y: auto;">
 		<ul class="nav navmenu-nav" ng-init="getTypes()" style="overflow-y: auto;">
-            <div class="navmenu-brand">Catalog Types</div> 
+            <div class="navmenu-brand">Catalog Types</i></div> 
             <form class="navbar-form" role="search">
 				<input type="text" class="form-control" placeholder="Search Type..." ng-model="searchType">
 			</form>
@@ -13,7 +13,7 @@
         </ul>
 	</nav>
 	<span>
-		<a ng-click="showType()"><i class="fa fa-forward fa-lg" style="position:fixed; left:1%; top:50%;"></i></a>
+		<a ng-click="showType()"><i class="fa fa-ellipsis-vertical fa-4x" style="position:fixed; left:1%; top:50%;"></i></a>
 	</span>
 	<div ng-show="!!selected" class="panel panel-default">
 		<div class="panel-heading">
@@ -52,7 +52,11 @@
 		<table class="table table-striped">
 			<thead>
 				<tr>
-					<th ng-click="sortTable(col)" ng-repeat="col in cols">{{col.title}}<i style="margin-left: 5px" class="fa fa-angle-double-down" ng-show="col.sort !== null && col.sort === 1" ></i><i style="margin-left: 5px" class="fa fa-angle-double-up" ng-show="col.sort !== null && col.sort === -1" ></i></th>
+					<th ng-click="sortTable(col)" ng-repeat="col in cols" class="showIconOnHover">{{col.title}}
+						<a><i style="margin-left: 5px" class="fa fa-sort-alpha-asc" ng-show="col.sort !== null && col.sort === 1" ></i></a>
+						<a><i style="margin-left: 5px" class="fa fa-sort-alpha-desc" ng-show="col.sort !== null && col.sort === -1"></i></a>
+						<a><i class="fa fa-sort onHover" ng-show="col.sort == null"}></i></a>
+					</th>
 				</tr>
 			</thead>
 			<tbody>
