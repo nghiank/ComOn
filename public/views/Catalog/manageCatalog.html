@@ -53,6 +53,7 @@
 				</tr>
 			</thead>
 			<tbody>
+				<td colspan="{{cols.length+1}}" style="text-align: center" ng-show="items.length === 0">No Entries available.</td>
 				<tr ng-repeat="item in items">
 					<td ng-repeat="data in sortedValues(item) track by $index" transform-link="{{data}}">{{data}}</td>
 					<td>
