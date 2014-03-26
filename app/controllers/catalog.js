@@ -242,5 +242,5 @@ exports.getCatalogEntries = function(req, res) {
 		});
 		return;
 	}
-	find_function();
+	find_function(filterCriteria);
 };
