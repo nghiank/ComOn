@@ -106,7 +106,7 @@ exports.populateCatalog = function(req, res) {
 		var typeName = value.title.toString();
 		for (var i = 0; i < value.data.length; i++) {
 /*			var column = 'A';
-			for(var j=0 ;j< 50;j++)
+			for(var j=0 ;j< 400;j++)
 			{
 				var entry = value.data[i];
 				var catalog = entry.catalog.replace(' ','');
@@ -185,7 +185,7 @@ exports.getCatalogEntries = function(req, res) {
 	}
 	if(upper - lower > MAX_LIMIT)
 		upper = lower + default_upper;
-	var searchCriteria = {typeCode: type};
+	var filterCriteria = {typeCode: type};
 	var sortCriteria = {};
 	if(req.body.sortField)
 	{
@@ -194,16 +194,53 @@ exports.getCatalogEntries = function(req, res) {
 		sortCriteria[field] = sort;
 	}
 	if(req.body.manufacturer && req.body.manufacturer !== null)
-		searchCriteria.manufacturer = req.body.manufacturer;
-	CatalogSchem.find(searchCriteria).sort(sortCriteria).select(fields).skip(lower).limit(upper-lower).lean().exec(function(err, entries) {
-		if(err){
-			return error.sendGenericError(res, 400, 'Error Encountered');
-		}
-		CatalogSchem.count(searchCriteria).exec(function(err, count) {
+		filterCriteria.manufacturer = req.body.manufacturer;
+	var default_search = null;
+	var count_function = function(final_find) {
+		CatalogSchem.count(final_find).exec(function(err, count) {
 			if(err){
 				return error.sendGenericError(res, 400, 'Error Encountered');
 			}
-			return res.jsonp({data: entries, range: {lower: lower, upper: upper}, total: count});
+			return res.jsonp({total: count});
 		});
-	});
+	};
+	var find_function = function(final_find) {
+		CatalogSchem.find(final_find).sort(sortCriteria).select(fields).skip(lower).limit(upper-lower).lean().exec(function(err, entries) {
+			if(err){
+				return error.sendGenericError(res, 400, 'Error Encountered');
+			}
+			return res.jsonp({data: entries, range: {lower: lower, upper: upper}});
+		});
+	};
+	if(req.body.search)
+	{
+		default_search = [];
+		var regex = new RegExp(req.body.search.trim(), 'i');
+		CatalogSchem.findOne({typeCode: type}).exec(function(err, entry) {
+			if(err)
+				return error.sendGenericError(res, 400, 'Error Encountered');
+			if(!entry)
+				return res.jsonp({data: [], range: {lower: lower, upper: upper}, total: 0});
+			var search_fields = _.keys(_.pick(entry, 'additionalInfo').additionalInfo);
+			for (var i = search_fields.length -1 ; i >=0 ; i--) {
+				var newEntry = {};
+				newEntry['additionalInfo.'+search_fields[i]] = regex;
+				default_search.push(newEntry);
+			}
+			if(!req.body.manufacturer)
+				default_search.push({manufacturer: regex});
+			default_search.push({catalog: regex});
+			default_search.push({assemblyCode: regex});
+			var filter_array = _.map(filterCriteria, function(value, key) {var newObj = {}; newObj[key] = value; return newObj;});
+			var final_find = {$and: filter_array};
+			if(default_search)
+				final_find.$and.push({$or: default_search});
+			if(!req.body.total)
+				find_function(final_find);
+			else
+				count_function(final_find);
+		});
+		return;
+	}
+	find_function();
 };

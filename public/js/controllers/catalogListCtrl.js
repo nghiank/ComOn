@@ -101,7 +101,7 @@ angular.module('ace.catalog')
 
 	$scope.getPage = function(page) {
 		var lower = (page? (page-1): 0) * $scope.pageItemLimit;
-		var upper = page * $scope.pageItemLimit;
+		var upper = (page? (page): 1) * $scope.pageItemLimit;
 		var cols = $scope._.map($scope.cols, function(value) {return value.field;});
 		CatalogAPI.entries.query({type: $scope.selected.code, lower: lower, sortField: $scope.sort, upper: upper, fields: cols.join(' ')}, function(response) {
 			$scope.items = $scope._.map(response.data, function(value) {return $scope._.omit(value, ['additionalInfo', '__v']);});
