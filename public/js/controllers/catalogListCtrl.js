@@ -10,6 +10,8 @@ angular.module('ace.catalog')
 	$scope.lower = 0;
 	$scope.upper = $scope.lower + $scope.pageItemLimit;
 	$scope.sort = null;
+	$scope.defaultFilters = ['Catalog','Manufacturer','Assembly Code','Description'];
+	$scope.filters = [];
 	$scope.authorized = function() {
 		if($scope.global.authenticated && ($scope.global.user.isAdmin || $scope.global.user.isManufacturer))
 			return true;
@@ -22,11 +24,31 @@ angular.module('ace.catalog')
 
 	$scope.init = function() {
 		$scope.showTypes = true;
+		$scope.searchBox = true;
 		CatalogAPI.types.query(function(response) {
 			if(response)
 				$scope.types = response;
 		});
 		$scope.showList = false;
+	};
+
+
+	$scope.addFilter = function(f){
+		if($scope.filters.indexOf(f) === -1)
+			$scope.filters.push(f);
+	};
+
+	$scope.removeFilter = function(f){
+		if($scope.filters.indexOf(f) !== -1)
+			$scope.filters.splice(f,1);
+	};
+
+	$scope.showSearchBox = function(){
+		$scope.searchBox = true;
+	};
+
+	$scope.hideSearchBox = function(){
+		$scope.searchBox = false;
 	};
 
 	$scope.showTypeList = function(type){

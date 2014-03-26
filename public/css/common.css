@@ -168,6 +168,15 @@ footer p {
     display:none;
 }
 
+.showBtnOnHover:hover .onHover
+{
+    display:table-cell;
+}
+
+.showBtnOnHoer input{
+    border-radius: 4px !important;
+}
+
 .showIconOnHover:hover .onHover 
 {
     display:inline;

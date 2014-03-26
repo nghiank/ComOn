@@ -15,8 +15,8 @@
 	<span>
 		<a ng-click="showType()"><i class="fa fa-ellipsis-vertical fa-4x" style="position:fixed; left:1%; top:50%;"></i></a>
 	</span>
-	<div ng-show="!!selected" class="panel panel-default">
-		<div class="panel-heading">
+	<div ng-show="!!selected" class="panel panel-default" ng-click="showSearchBox()">
+		<div class="panel-heading" >
 			{{selected.name}}
 			<p class="pull-right">
 				Page: &nbsp&nbsp <b>{{currentPage? currentPage: 1}}</b>
@@ -24,16 +24,49 @@
 	  	</div>
 	</div>
 	<div ng-show="showList" ng-click="closeType()">
-		<div class="well">
+		<div class="well slide-down" ng-show="searchBox">
 			<div class="row">
 				<form class="form-horizontal col-md-8 col-md-offset-2">
 					<div class="form-group">
 		    			<label class="col-sm-2 control-label">Search</label>
-		    			<div class="col-sm-8 input-group">
+		    			<div class="col-sm-8">
 			      			<input type="text" class="form-control" placeholder="Search Text Here">
-			      			<span class="input-group-btn"><a class="btn btn-default"><i class="fa fa-search"> Search</i></a></span>
 		   				</div>
 		   			</div>
+		   			<div class="form-group">
+		    			<label class="col-sm-2 control-label">Filters</label>
+		    			<div class="col-sm-8">
+		    				<div class="form-group" ng-repeat = 'filter in filters'>
+				      			<div class="col-sm-12">
+				      			<div class="input-group showBtnOnHover">
+				      				<span class="input-group-addon">{{filter}}</span>
+				      				<input type="text" class="form-control">
+				      				<span class="input-group-btn onHover" ng-click="removeFilter(filter)">
+				      					<button class="btn btn-default"><i class="fa fa-times"></i></button>
+				      				</span>
+				      			</inpujt>
+				      			</div>
+				      			</div>
+		   					</div>
+
+							<div class="form-group">
+								<div class="dropdown col-sm-2">
+									<button class="btn dropdown-toggle btn-default" type="button" data-toggle="dropdown">
+									Add Filter
+									<span class="caret"></span>
+									</button>
+									<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+										<li role="presentation" ng-repeat="f in defaultFilters" ng-click="addFilter(f)"><a role="menuitem">{{f}}</a></li>
+									</ul>
+								</div>
+			      			</div>
+		   				</div>
+		   			</div>
+		   			<div class="form-group">
+		   				<div class="col-sm-offset-2">
+		    				<a class="btn btn-primary" ng-click="hideSearchBox()"><i class="fa fa-search"></i> Search</a>
+		    			</div>
+		   			</div>					
 				</form>
 			</div>
 			<div class="row">
