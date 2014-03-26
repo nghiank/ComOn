@@ -127,7 +127,14 @@ footer p {
     font-style: italic;
 }
 
-img
+.brand
+{
+    height:45px;
+    padding-top: 5px !important;
+    margin-top: 0px;
+}
+
+.imgLoader img
 {
     background: url('../img/loaders/loader-small.gif') no-repeat center;
 }

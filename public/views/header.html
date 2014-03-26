@@ -3,7 +3,7 @@
         <div class="container">
             <ul class="navbar-nav nav">
                 <li>
-                    <a onclick="_gaq.push(['_trackEvent', 'Home', 'clicked'])" class="navbar-brand" href="/">AutoCAD Electrical</a>
+                    <a class="brand" onclick="_gaq.push(['_trackEvent', 'Home', 'clicked'])" class="navbar-brand" href="/"><img src="img/icons/Autodesk Logo copy.png"></a>
                 </li>
                 <li data-ng-repeat="item in menu" ui-route="/{{item.link}}[a-z0-9/]*" ng-class="{active: $uiRoute}">
                     <a href="#!/{{item.link}}">{{item.title}}</a>

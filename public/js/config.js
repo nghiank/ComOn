@@ -1,13 +1,12 @@
 'use strict';
 
 
-//Setting up route and client interceptor and breadcrumbs
+//Setting up route and client interceptor
 angular.module('ace').config(['$routeProvider',
     function($routeProvider) {
         $routeProvider.
         when('/', {
-            templateUrl: 'views/index.html',
-            label: 'Home'
+            templateUrl: 'views/index.html'
         }).
         when('/users', {
             templateUrl: 'views/Users/list.html'
@@ -36,15 +35,28 @@ angular.module('ace').config(['$routeProvider',
     }
 ]).run(function(Global, $rootScope, $location) {
     // register listener to watch route changes
-    $rootScope.$on('$locationChangeStart', function() { //function(event, next, current)
+    $rootScope.$on('$locationChangeStart', function() {
+        var path = $location.$$path;//function(event, next, current)
         if (Global.authenticated === false) {
-            var path = $location.$$path;
         // no logged user, can still browse the schematics
             if (path === '/' || path.substring(0, 10) === '/standards' || path.substring(0, 8) === '/catalog') {
                 return;
             } else {
                 // not going to #login, we should redirect now
                 $location.path('/');
+            }
+        }
+        else if(!Global.user.isAdmin)
+        {
+            if(Global.user.isManufacturer)
+            {
+                if(path === '/')
+                    $location.path('/manageCatalog');
+            }
+            else
+            {
+                if(path === '/')
+                    $location.path('/favourites');
             }
         }
     });
@@ -68,11 +80,9 @@ angular.module('ace').config(['$httpProvider',
                 var status = response.status;
                 if(status === 401) {
                     window.location = '/';
-                    return;
                 }
                 else if(status === 400) {
                     window.alert(response.data.error);
-                    return;
                 }
                 return $q.reject(response); //similar to throw response;
             }
