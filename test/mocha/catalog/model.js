@@ -25,15 +25,13 @@ describe('<Unit Test>', function() {
 				catalog_entry = new CatalogSchem({
 					catalog: 'A',
 					manufacturer: 'B',
-					typeCode: 'C',
-					typeName: 'D',
+					type: {code: 'C', name: 'D'},
 					assemblyCode: null
 				});
 				catalog_entry2 = new CatalogSchem({
 					catalog: 'A',
 					manufacturer: 'B',
-					typeCode: 'C',
-					typeName: 'D',
+					type: {code: 'C', name: 'D'},
 					assemblyCode: null
 				});
 				done();
@@ -74,7 +72,7 @@ describe('<Unit Test>', function() {
 			});
 
 			it('should fail to save a entry without a typeCode', function(done) {
-				catalog_entry.typeCode = null;
+				catalog_entry.type.code = null;
 				return catalog_entry.save(function(err) {
 					should.exist(err);
 					done();
@@ -82,7 +80,7 @@ describe('<Unit Test>', function() {
 			});
 
 			it('should fail to save a entry without a typeName', function(done) {
-				catalog_entry.typeName = null;
+				catalog_entry.type.name = null;
 				return catalog_entry.save(function(err) {
 					should.exist(err);
 					done();
