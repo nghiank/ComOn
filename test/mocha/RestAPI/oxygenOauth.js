@@ -39,7 +39,7 @@ OxygenOAuth.prototype.login = function(username, password, callback)
     this.oauth.getOAuthRequestToken(public_cred, function(e, oauth_accesstoken, oauth_accesstoken_secret, results) {
         self.oauth_accesstoken = oauth_accesstoken;
         self.oauth_accesstoken_secret = oauth_accesstoken_secret;
-        if(results.hasOwnProperty('oauth_session_handle')) {
+        if(results !== undefined && null !== results && results.hasOwnProperty('oauth_session_handle')) {
             self.oauth_session_handle = results.oauth_session_handle;
         }
         //console.log('oauth_accesstoken ' + oauth_accesstoken);
