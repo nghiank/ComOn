@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('ace.catalog')
-.controller('catalogListCtrl', ['$scope', 'Global', 'CatalogAPI','$routeParams', '_', function ($scope, Global, CatalogAPI, $routeParams, underscore) {
+.controller('catalogListCtrl', ['$scope', 'Global', 'CatalogAPI','$routeParams', '_', '$modal', '$http', function ($scope, Global, CatalogAPI, $routeParams, underscore, $modal, $http) {
 	$scope.global = Global;
 	$scope.fields = [];
 	$scope._ = underscore;
@@ -13,6 +13,7 @@ angular.module('ace.catalog')
 	$scope.defaultFilters = ['Catalog','Manufacturer','Assembly Code','Description'];
 	$scope.filters = [];
 	$scope.searchBox = {};
+	$scope.typeAheadValues = [];
 	$scope.authorized = function() {
 		if($scope.global.authenticated && ($scope.global.user.isAdmin || $scope.global.user.isManufacturer))
 			return true;
@@ -21,6 +22,21 @@ angular.module('ace.catalog')
 
 	$scope.toggleOption = function(type){
 		$scope.target = type;
+	};
+
+	$scope.showConfigureModal = function() {
+		var modalInstance = $modal.open({
+			templateUrl: 'views/Catalog/configureTableModal.html',
+			controller: 'configureTableModalCtrl',
+			resolve: {
+				data: function() {
+					return ({fields: $scope.fields, cols: $scope.cols, toggleField: $scope.toggleField, toggleAll: $scope.toggleAll});
+				}
+			}
+		});
+		modalInstance.result.then(function(result){
+			console.log(result);
+		});
 	};
 
 	$scope.init = function() {
@@ -35,8 +51,10 @@ angular.module('ace.catalog')
 
 
 	$scope.addFilter = function(f){
-		if($scope.filters.indexOf(f) === -1)
-			$scope.filters.push({'field':f,'value':''});
+		for(var i in $scope.filters)
+			if($scope.filters[i].field === f)
+				return;
+		$scope.filters.push({'field':f,'value':''});
 	};
 
 	$scope.removeFilter = function(f){
@@ -50,6 +68,35 @@ angular.module('ace.catalog')
 
 	$scope.hideSearchBox = function(){
 		$scope.searchBox.show = false;
+	};
+
+	/*$scope.getTypeAheadValues = function(field){
+		CatalogAPI.uniqueValues.query({type:$scope.selected.code, field:field}, function(response){
+			var array = [];
+			for(var i = 0; i < response.length; i++)
+			{
+				var string = $scope._.values(response[i]).join('');
+				array.push(string);
+			}
+			$scope.typeAheadValues = array;
+			console.log('taV:',$scope.typeAheadValues);
+		});
+	};*/
+
+	$scope.getTypeAheadValues = function(field){
+		return $http.post('/api/getAllUniqueValues', {
+			field:field,
+			type:$scope.selected.code
+		}).then(function(response){
+			var array = [];
+			for(var i = 0; i < response.length; i++)
+			{
+				var string = $scope._.values(response[i]).join('');
+				array.push(string);
+			}
+			$scope.typeAheadValues = response.data;
+			console.log('taV:',$scope.typeAheadValues);
+		});
 	};
 
 	$scope.showTypeList = function(type){
@@ -95,6 +142,27 @@ angular.module('ace.catalog')
 	$scope.showType = function(){
 		$scope.showTypes = true;
 	};
+
+	$scope.getEntries = function(field)
+	{
+		console.log('ads');
+		CatalogAPI.entries.query({type: $scope.selected.code, lower: $scope.lower, sortField: $scope.sort, upper: $scope.upper, fields: field.field}, function(response) {
+			if(response)
+			{
+				var data = response.data;
+				for (var i = 0; i < $scope.items.length; i++) {
+					var newField = $scope._.findWhere(data, {_id: $scope.items[i]._id});
+					if(newField && newField.additionalInfo)
+					{
+						$scope.items[i][field.field] = newField.additionalInfo[field.field.replace('additionalInfo.','')];
+					}
+					else
+						$scope.items[i][field.field] = '';
+				}
+			}
+		});
+	};
+
 
 	$scope.toggleField = function(field){
 		if($scope.cols.indexOf(field) === -1)
@@ -189,4 +257,5 @@ angular.module('ace.catalog')
 			$scope.cols.splice($scope.cols.indexOf(remove_field),1);
 		}
 	};
+
 }]);

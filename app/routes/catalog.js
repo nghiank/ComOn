@@ -15,5 +15,5 @@ module.exports = function(app) {
     app.post('/api/getTypeFields', catalog.getAllFields);
     app.post('/api/getEntries', catalog.getCatalogEntries);
     app.get('/api/getTypes', catalog.getAllTypes);
-
+    app.post('/api/getAllUniqueValues',catalog.getAllUniqueValues);
 };
