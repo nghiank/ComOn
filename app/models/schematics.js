@@ -76,7 +76,7 @@ var componentSchema = new Schema({
     }
 });
 componentSchema.index({id: 1, name: -1, parentNode: 1}, {unique: true});
-componentSchema.plugin(version, { collection: 'Schematic__versions' , removeVersions: true, ignorePaths: ['version', 'published', '__v']});
+componentSchema.plugin(version, { collection: 'Schematic__versions' , removeVersions: true, ignorePaths: ['version', 'published','acad360l' ,'__v']});
 componentSchema.pre('save', function(next) {
     if(this.published > this.version)
         next(new Error('Version to be published does not exist.'));

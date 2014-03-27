@@ -12,8 +12,59 @@ var formidable = require('formidable');
 var fs = require('fs');
 var g_mapping;
 var _ = require('underscore');
-
+var shardingService = require('./shardservice');
 var populateComponents;
+
+var shardPublishedComponent = function(id, version){
+    ComponentSchem.VersionedModel.findOne({refId: id}, function(err, versionedModel) {
+        if(err){
+            console.error(err);
+            return;
+        }
+        if(!versionedModel){
+            console.error('The versionedModel was ', versionedModel);
+            return;
+        }
+        //now find the version which was published
+        var index =  (version) ? version -1 : 0;
+        var modelVersion = versionedModel.versions[index];
+        if (!modelVersion){
+            console.error( 'No such version of component ', id);
+            console.error( 'version ', version);
+            return;
+        }
+
+        // if already there then do nothing
+        if (modelVersion.acad360l)
+            return;
+
+        var files = [];
+        var downloadLink = modelVersion.dl;
+        //get filename
+        var fileName = downloadLink.substr(downloadLink.lastIndexOf('/')+1);
+        files.push({url:downloadLink, name:fileName});
+
+        //shard the files
+        shardingService.sendFilesForSharding(files, function(error, res, drawingId){
+            if (undefined === drawingId || 0 === drawingId){
+                if (error)
+                    console.error(error);
+                console.error('Cannot shard component of Id', id);
+                return;
+            }
+            else{
+                // update the versioned model
+                modelVersion.acad360l = drawingId;
+                versionedModel.save(function (err, product, numberAffected){
+                    if (err)
+                        console.error(err);
+                    console.log('The number of updated documents was %d', numberAffected);
+                    console.log('The product was ', product);
+                });
+            }
+        });//shard
+    });// find component
+};
 
 var escape_regex = function(text) {
 	return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
@@ -64,7 +115,7 @@ var createComponent = function(child, parent, std) {
 		dl: child.isComponent? findDl(child.component): null,
 		acad360l: null,
 		isComposite: !child.isComponent,
-		published: 1,
+		published: 0,
 		version: 1,
 		dateModified: new Date()
 	});
@@ -490,10 +541,13 @@ exports.publishComponent = function(req, res){
 		if(component.published === number)
 			return res.send(200);
 		component.published = number;
-		component.save(function(err) {
-			if(err)
-				return error.sendGenericError(res, 400, 'Error Encountered');
-			res.send(200);
-		});
+        if (number !== 0){
+            shardPublishedComponent(id);
+        }
+        component.save(function(err) {
+            if(err)
+                return error.sendGenericError(res, 400, 'Error Encountered');
+            res.send(200);
+        });
 	});
 };
