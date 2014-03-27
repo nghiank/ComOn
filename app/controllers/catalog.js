@@ -6,7 +6,7 @@ var error = require('../utils/error');
 var _ = require('underscore');
 
 var createEntry = function(entry, catalog, typeName, typeCode) {
-	CatalogSchem.findOne({catalog: catalog, assemblyCode: null, manufacturer: entry.manufacturer, typeCode: typeCode}).exec(function(err, fetchedEntry) {
+	CatalogSchem.findOne({catalog: catalog, assemblyCode: null, manufacturer: entry.manufacturer, 'type.code': typeCode}).exec(function(err, fetchedEntry) {
 		if(err)
 			return console.log(err);
 		if(!fetchedEntry)
@@ -15,8 +15,7 @@ var createEntry = function(entry, catalog, typeName, typeCode) {
 			var newEntry = new CatalogSchem({
 				catalog: catalog,
 				manufacturer: entry.manufacturer,
-				typeCode: typeCode,
-				typeName: typeName,
+				type: {code: typeCode, name: typeName},
 				assemblyCode: null,
 				additionalInfo: additionalInfo
 			});
@@ -30,8 +29,7 @@ var createEntry = function(entry, catalog, typeName, typeCode) {
 			var replacingEntry = {
 				catalog: catalog,
 				manufacturer: entry.manufacturer,
-				typeCode: typeCode,
-				typeName: typeName,
+				type: {code: typeCode, name: typeName},
 				assemblyCode: null,
 				additionalInfo: info
 			};
@@ -55,7 +53,7 @@ exports.populateCatalog = function(req, res) {
 	{
 		return user.isAdmin? true: (user.codeName.toLowerCase() === manufacturerEntry.toLowerCase());
 	}
-/*	function nextColumn(column)
+	function nextColumn(column)
 	{
 		var length = column.join('').length;
 		function repeatChar(count, ch) {
@@ -98,15 +96,16 @@ exports.populateCatalog = function(req, res) {
 			column[length-1] = getNextAlphabet(column[length-1])[0];
 		}
 		return column.join('');
-	}*/
+	}
 	_.each(data, function(value, key) {
 		if(!key || !value.title)
 			return;
 		var typeCode = key.toString();
 		var typeName = value.title.toString();
 		for (var i = 0; i < value.data.length; i++) {
-/*			var column = 'A';
-			for(var j=0 ;j< 400;j++)
+			var column = 'CAA';
+			console.log(i);
+			for(var j=0 ;j< 200;j++)
 			{
 				var entry = value.data[i];
 				var catalog = entry.catalog.replace(' ','');
@@ -116,12 +115,12 @@ exports.populateCatalog = function(req, res) {
 					createEntry(entry, catalog, typeName, typeCode);
 					column = nextColumn(column.split(''));
 				}
-			}*/
-			var entry = value.data[i];
+			}
+/*			var entry = value.data[i];
 			var catalog = entry.catalog.replace(' ','');
 			if(checkAuthority(entry.manufacturer.trim())){
 				createEntry(entry, catalog, typeName, typeCode);
-			}
+			}*/
 		}
 
 	});
@@ -133,7 +132,7 @@ exports.getAllUniqueValues = function(req, res) {
 	{
 		return error.sendGenericError(res, 400, 'Error Encountered');
 	}
-	CatalogSchem.distinct(req.body.field.toLowerCase(), {typeCode: req.body.type}, function(err, result) {
+	CatalogSchem.distinct(req.body.field.toLowerCase(), {'type.code': req.body.type}, function(err, result) {
 		if(err)
 			return error.sendGenericError(res, 400, 'Error Encountered');
 		if(result.length === 0)
@@ -143,24 +142,12 @@ exports.getAllUniqueValues = function(req, res) {
 };
 
 exports.getAllTypes = function(req, res) {
-	CatalogSchem.distinct('typeCode', {}, function(err, result) {
+	CatalogSchem.distinct('type', {}, function(err, result) {
 		if(err)
 			return error.sendGenericError(res, 400, 'Error Encountered');
 		if(result.length === 0)
 			res.jsonp([]);
-		var total = result.length;
-		var checked = 0;
-		var array = [];
-		_.each(result, function(value) {
-			CatalogSchem.findOne({typeCode: value}).select('typeName').lean().exec(function(err, result) {
-				if(err)
-					return error.sendGenericError(res, 400, 'Error Encountered');
-				if(result.length !== 0)
-					array.push({code: value, name: result.typeName});
-				if(++checked === total)
-					res.jsonp(array);
-			});
-		});
+		res.jsonp(result);
 	});
 };
 
@@ -169,7 +156,7 @@ exports.getAllFields = function(req, res) {
 		return error.sendGenericError(res, 400, 'Error Encountered');
 	}
 	var type = req.body.type;
-	CatalogSchem.findOne({typeCode: type}).lean(true).exec(function(err, entry) {
+	CatalogSchem.findOne({'type.code': type}).lean(true).exec(function(err, entry) {
 		if(err)
 			return error.sendGenericError(res, 400, 'Error Encountered');
 		if(!entry)
@@ -199,7 +186,7 @@ exports.getCatalogEntries = function(req, res) {
 	}
 	if(upper - lower > MAX_LIMIT)
 		upper = lower + default_upper;
-	var filterCriteria = {typeCode: type};
+	var filterCriteria = {'type.code': type};
 	var sortCriteria = {};
 	if(req.body.sortField)
 	{
@@ -215,7 +202,7 @@ exports.getCatalogEntries = function(req, res) {
 			if(err){
 				return error.sendGenericError(res, 400, 'Error Encountered');
 			}
-			return res.jsonp({total: count});
+			return res.jsonp({count: count});
 		});
 	};
 	var find_function = function(final_find) {
@@ -230,7 +217,11 @@ exports.getCatalogEntries = function(req, res) {
 	{
 		default_search = [];
 		var regex = new RegExp(req.body.search.trim(), 'i');
-		CatalogSchem.findOne({typeCode: type}).exec(function(err, entry) {
+		if(!req.body.manufacturer)
+			default_search.push({manufacturer: regex});
+		default_search.push({catalog: regex});
+		default_search.push({assemblyCode: regex});
+		CatalogSchem.findOne({'type.code': type}).exec(function(err, entry) {
 			if(err)
 				return error.sendGenericError(res, 400, 'Error Encountered');
 			if(!entry)
@@ -241,10 +232,6 @@ exports.getCatalogEntries = function(req, res) {
 				newEntry['additionalInfo.'+search_fields[i]] = regex;
 				default_search.push(newEntry);
 			}
-			if(!req.body.manufacturer)
-				default_search.push({manufacturer: regex});
-			default_search.push({catalog: regex});
-			default_search.push({assemblyCode: regex});
 			var filter_array = _.map(filterCriteria, function(value, key) {var newObj = {}; newObj[key] = value; return newObj;});
 			var final_find = {$and: filter_array};
 			if(default_search)
@@ -256,5 +243,7 @@ exports.getCatalogEntries = function(req, res) {
 		});
 		return;
 	}
+	if(req.body.total)
+		return count_function(filterCriteria);
 	find_function(filterCriteria);
 };

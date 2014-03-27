@@ -13,6 +13,7 @@ angular.module('ace.catalog')
 	$scope.defaultFilters = ['Catalog','Manufacturer','Assembly Code','Description'];
 	$scope.filters = [];
 	$scope.searchBox = {};
+	$scope.searchText = {};
 	$scope.typeAheadValues = [];
 	$scope.authorized = function() {
 		if($scope.global.authenticated && ($scope.global.user.isAdmin || $scope.global.user.isManufacturer))
@@ -55,6 +56,7 @@ angular.module('ace.catalog')
 			if($scope.filters[i].field === f)
 				return;
 		$scope.filters.push({'field':f,'value':''});
+		$scope.getTypeAheadValues(f);
 	};
 
 	$scope.removeFilter = function(f){
@@ -70,33 +72,22 @@ angular.module('ace.catalog')
 		$scope.searchBox.show = false;
 	};
 
-	/*$scope.getTypeAheadValues = function(field){
-		CatalogAPI.uniqueValues.query({type:$scope.selected.code, field:field}, function(response){
-			var array = [];
-			for(var i = 0; i < response.length; i++)
-			{
-				var string = $scope._.values(response[i]).join('');
-				array.push(string);
-			}
-			$scope.typeAheadValues = array;
-			console.log('taV:',$scope.typeAheadValues);
-		});
-	};*/
-
 	$scope.getTypeAheadValues = function(field){
-		return $http.post('/api/getAllUniqueValues', {
-			field:field,
-			type:$scope.selected.code
-		}).then(function(response){
-			var array = [];
-			for(var i = 0; i < response.length; i++)
-			{
-				var string = $scope._.values(response[i]).join('');
-				array.push(string);
-			}
-			$scope.typeAheadValues = response.data;
-			console.log('taV:',$scope.typeAheadValues);
-		});
+		if(field === 'Manufacturer')
+		{
+			return $http.post('/api/getAllUniqueValues', {
+				field: field,
+				type: $scope.selected.code
+			}).then(function(response){
+				var array = [];
+				for(var i = 0; i < response.length; i++)
+				{
+					var string = $scope._.values(response[i]).join('');
+					array.push(string);
+				}
+				$scope.typeAheadValues[field] = response.data;
+			});
+		}
 	};
 
 	$scope.showTypeList = function(type){
@@ -123,11 +114,16 @@ angular.module('ace.catalog')
 				}
 			}
 		});
-		CatalogAPI.entries.query({type: type.code, lower: $scope.lower, upper: $scope.upper}, function(response) {
+		CatalogAPI.entries.query({type: type.code, lower: $scope.lower, upper: $scope.upper, search: $scope.searchText.value}, function(response) {
 			if(response)
 			{
 				$scope.items = $scope._.map(response.data, function(value) {return $scope._.omit(value, ['__v']);});
-				$scope.total = response.total;
+				$scope.total = CatalogAPI.entries.query({type: type.code, total: true}, function(response) {
+					if(response)
+					{
+						$scope.total = response.count;
+					}
+				});
 			}
 		});
 		$scope.fields = [];
@@ -143,31 +139,10 @@ angular.module('ace.catalog')
 		$scope.showTypes = true;
 	};
 
-	$scope.getEntries = function(field)
-	{
-		console.log('ads');
-		CatalogAPI.entries.query({type: $scope.selected.code, lower: $scope.lower, sortField: $scope.sort, upper: $scope.upper, fields: field.field}, function(response) {
-			if(response)
-			{
-				var data = response.data;
-				for (var i = 0; i < $scope.items.length; i++) {
-					var newField = $scope._.findWhere(data, {_id: $scope.items[i]._id});
-					if(newField && newField.additionalInfo)
-					{
-						$scope.items[i][field.field] = newField.additionalInfo[field.field.replace('additionalInfo.','')];
-					}
-					else
-						$scope.items[i][field.field] = '';
-				}
-			}
-		});
-	};
-
-
 	$scope.toggleField = function(field){
 		if($scope.cols.indexOf(field) === -1)
 		{
-			CatalogAPI.entries.query({type: $scope.selected.code, lower: $scope.lower, sortField: $scope.sort, upper: $scope.upper, fields: field.field}, function(response) {
+			CatalogAPI.entries.query({type: $scope.selected.code, lower: $scope.lower, sortField: $scope.sort, upper: $scope.upper, fields: field.field, search: $scope.searchText.value}, function(response) {
 				if(response)
 				{
 					var data = response.data;
@@ -194,7 +169,7 @@ angular.module('ace.catalog')
 		var lower = (page? (page-1): 0) * $scope.pageItemLimit;
 		var upper = (page? (page): 1) * $scope.pageItemLimit;
 		var cols = $scope._.map($scope.cols, function(value) {return value.field;});
-		CatalogAPI.entries.query({type: $scope.selected.code, lower: lower, sortField: $scope.sort, upper: upper, fields: cols.join(' ')}, function(response) {
+		CatalogAPI.entries.query({type: $scope.selected.code, lower: lower, sortField: $scope.sort, upper: upper, fields: cols.join(' '), search: $scope.searchText.value}, function(response) {
 			$scope.items = $scope._.map(response.data, function(value) {return $scope._.omit(value, ['additionalInfo', '__v']);});
 			if($scope.fields.length > 0)
 			{
@@ -209,7 +184,6 @@ angular.module('ace.catalog')
 					}
 				}
 			}
-			$scope.total = response.total;
 			$scope.lower = lower;
 			$scope.upper = upper;
 		});
