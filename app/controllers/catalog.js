@@ -128,6 +128,20 @@ exports.populateCatalog = function(req, res) {
 	res.send(200);
 };
 
+exports.getAllUniqueValues = function(req, res) {
+	if(!req.body.field || !req.body.type)
+	{
+		return error.sendGenericError(res, 400, 'Error Encountered');
+	}
+	CatalogSchem.distinct(req.body.field, {typeCode: req.body.type}, function(err, result) {
+		if(err)
+			return error.sendGenericError(res, 400, 'Error Encountered');
+		if(result.length === 0)
+			res.jsonp([]);
+		res.jsonp(result);
+	});
+};
+
 exports.getAllTypes = function(req, res) {
 	CatalogSchem.distinct('typeCode', {}, function(err, result) {
 		if(err)

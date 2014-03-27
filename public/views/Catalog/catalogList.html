@@ -16,12 +16,11 @@
 		<a ng-click="showType()"><i class="fa fa-ellipsis-vertical fa-4x" style="position:fixed; left:1%; top:50%;"></i></a>
 	</span>
 	<div class="panel panel-default">
-	<div ng-show="!!selected" ng-click="showSearchBox()"  class="panel-heading">
+	<div ng-show="!!selected" class="panel-heading">
 		{{selected.name}}
 		<a style="position:fixed; left:50%;"><i class="fa fa-caret-down fa-lg" ng-show="!searchBox"  ng-click="showSearchBox()"></i></a>
-		<p class="pull-right">
-			Page: &nbsp&nbsp <b>{{currentPage? currentPage: 1}}</b>
-		</p>
+		<a style="position:fixed; left:50%;"><i class="fa fa-caret-up fa-lg" ng-hide="!searchBox"  ng-click="hideSearchBox()"></i></a>
+		<a style="margin-top: -5px; margin-right: -10px" ng-click="showConfigureModal()" class=" pull-right btn btn-default btn-sm"><i class="fa fa-gear"> Configure Table</i></a>
 	</div>
 	<div class="panel-body slide-down" ng-show="searchBox && selected">
 		<div class="row">
@@ -61,16 +60,16 @@
 		      			</div>
 	   				</div>
 		   		</div>
-	   			<div class="form-group">
+<!-- 	   			<div class="form-group">
     				<label class="col-sm-2 control-label">Columns</label>
 					<div class="col-sm-8">
 						<a class="btn btn-default"><i class="fa fa-gear"> Show More</i></a>
-						<!-- <div class="col-sm-12">
+						<div class="col-sm-12">
 	      				<button class="btn btn-default btn-sm" style="margin-right:10px; margin-top: 5px; margin-bottom: 5px" ng-repeat="field in fields | orderBy:'title'"  ng-click="toggleField(field)" ng-class={'clicked':cols.indexOf(field)+1}><i ng-show="cols.indexOf(field)+1" class="fa fa-check success" ></i>{{'  '+field.title+'  '}}</button>
 	      				<button ng-click="toggleAll()" class="btn btn-info btn-sm" style="margin-right:10px; margin-top: 5px; margin-bottom: 5px" ng-show="fields.length !== 0">{{(cols.length === fields.length+3)? 'Remove ': 'Select '}}All</button>
-	      				</div> -->
+	      				</div>
 	    			</div>
-	   			</div>
+	   			</div> -->
 	   			<div class="form-group">
 	   				<div class="col-sm-offset-2">
 	   					<div class="col-sm-8">

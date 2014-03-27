@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('ace.catalog')
-.controller('catalogListCtrl', ['$scope', 'Global', 'CatalogAPI','$routeParams', '_', function ($scope, Global, CatalogAPI, $routeParams, underscore) {
+.controller('catalogListCtrl', ['$scope', 'Global', 'CatalogAPI','$routeParams', '_', '$modal', function ($scope, Global, CatalogAPI, $routeParams, underscore, $modal) {
 	$scope.global = Global;
 	$scope.fields = [];
 	$scope._ = underscore;
@@ -20,6 +20,21 @@ angular.module('ace.catalog')
 
 	$scope.toggleOption = function(type){
 		$scope.target = type;
+	};
+
+	$scope.showConfigureModal = function() {
+		var modalInstance = $modal.open({
+			templateUrl: 'views/Catalog/configureTableModal.html',
+			controller: 'configureTableModalCtrl',
+			resolve: {
+				data: function() {
+					return ({fields: $scope.fields, cols: $scope.cols, toggleField: $scope.toggleField, toggleAll: $scope.toggleAll});
+				}
+			}
+		});
+		modalInstance.result.then(function(result){
+			console.log(result);
+		});
 	};
 
 	$scope.init = function() {
@@ -94,6 +109,27 @@ angular.module('ace.catalog')
 	$scope.showType = function(){
 		$scope.showTypes = true;
 	};
+
+	$scope.getEntries = function(field)
+	{
+		console.log('ads');
+		CatalogAPI.entries.query({type: $scope.selected.code, lower: $scope.lower, sortField: $scope.sort, upper: $scope.upper, fields: field.field}, function(response) {
+			if(response)
+			{
+				var data = response.data;
+				for (var i = 0; i < $scope.items.length; i++) {
+					var newField = $scope._.findWhere(data, {_id: $scope.items[i]._id});
+					if(newField && newField.additionalInfo)
+					{
+						$scope.items[i][field.field] = newField.additionalInfo[field.field.replace('additionalInfo.','')];
+					}
+					else
+						$scope.items[i][field.field] = '';
+				}
+			}
+		});
+	};
+
 
 	$scope.toggleField = function(field){
 		if($scope.cols.indexOf(field) === -1)
@@ -188,4 +224,5 @@ angular.module('ace.catalog')
 			$scope.cols.splice($scope.cols.indexOf(remove_field),1);
 		}
 	};
+
 }]);
