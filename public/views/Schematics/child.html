@@ -1,10 +1,18 @@
 <div class="container" data-ng-init="getChildren()" ng-controller="Children" style="min-height: 800px; padding-top:30px;">
   <ol class="breadcrumb">
     <li ng-repeat="breadcrumb in breadcrumbs.all()">
-      <a href="{{breadcrumb.link}}" ng-hide="$last">
+       <a href="{{breadcrumb.link}}" ng-hide="$last">
         {{breadcrumb.title}}
-      </a>
-      <span ng-show="$last">{{breadcrumb.title}}</span></li>
+       </a>
+       <span class="dropdown"><a ng-hide="$last" class="dropdown-toggle" ng-click="getSiblings(breadcrumb)"><i class="fa fa-caret-down"></i></a>
+        <ul class="dropdown-menu pull-left">
+            <li ng-repeat="s in bcMenu">
+                <a href={{s.link}}>{{s.title}}</a>
+            </li>
+        </ul>
+        </span>
+        <span ng-show="$last">{{breadcrumb.title}}</span>
+    </li>
   </ol>
     <div class="row">
         <div class="col-md-6">

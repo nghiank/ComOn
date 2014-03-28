@@ -1,8 +1,10 @@
 'use strict';
 
 angular.module('ace.schematic')
-.controller('Children', ['$scope', 'SchematicsAPI', '$routeParams', 'Global', 'breadcrumbs', '$modal', 'UsersAPI', function ($scope, SchematicsAPI, $routeParams, Global, breadcrumbs, $modal, UsersAPI) {
+.controller('Children', ['$scope', 'SchematicsAPI', '$routeParams', 'Global', 'breadcrumbs', '$modal', 'UsersAPI', '_', function ($scope, SchematicsAPI, $routeParams, Global, breadcrumbs, $modal, UsersAPI, underscore) {
 	$scope.breadcrumbs = breadcrumbs;
+	$scope.bcMenu = [];
+	$scope._ = underscore;
 	$scope.Global = Global;
 	$scope.admin = false;
 	if($scope.Global.authenticated && $scope.Global.user.isAdmin)
@@ -23,10 +25,56 @@ angular.module('ace.schematic')
 			}
 			breadcrumbs.add(hiearchy);
 		});
+		/*$scope.getSiblings($scope.breadcrumbs.all());*/
 	};
+
 	$scope.toggleOption = function (child) {
 		return (child.showOption = !child.showOption);
 	};
+
+	/*$scope.getSiblings = function(breadcrumbs){
+		for (var index in breadcrumbs){
+			var name = breadcrumbs[index].title;
+			var _id = breadcrumbs[index].link.split('/');
+			_id = _id[_id.length - 1];
+			if(breadcrumbs[index].title !== 'Standards'){
+				SchematicsAPI.children.get({nodeId:_id}, function(result){
+					var menuArray = [];
+					for(var i in result.children){
+						if(result.children[i].isComposite === true){
+							var menuItem = {};
+							menuItem.title = result.children[i].name;
+							menuItem.link = '#!/standards/' + result.children[i]._id;
+							menuArray.push(menuItem);
+						}
+					}
+					$scope.bcMenu[name] = menuArray;
+					console.log(name, _id);
+					console.log('result:', $scope.bcMenu);
+				});
+			}
+		}
+	};*/
+	$scope.getSiblings = function(breadcrumb){
+		var name = breadcrumb.title;
+		var _id = breadcrumb.link.split('/');
+		_id = _id[_id.length - 1];
+		if(breadcrumb.title !== 'Standards'){
+			SchematicsAPI.children.get({nodeId:_id}, function(result){
+				for(var i in result.children){
+					if(result.children[i].isComposite === true){
+						var menuItem = {};
+						menuItem.title = result.children[i].name;
+						menuItem.link = '#!/standards/' + result.children[i]._id;
+						$scope.bcMenu.unshift(menuItem);
+					}
+				}
+				console.log(name, _id);
+				console.log('result:', $scope.bcMenu);
+			});
+		}
+	};
+
 	$scope.seperate = function() {
 		$scope.leaves = [];
 		$scope.subtypes = [];

@@ -6,7 +6,7 @@ var error = require('../utils/error');
 var _ = require('underscore');
 
 var createEntry = function(entry, catalog, typeName, typeCode) {
-	CatalogSchem.findOne({catalog: catalog, assemblyCode: null, manufacturer: entry.manufacturer, typeCode: typeCode}).exec(function(err, fetchedEntry) {
+	CatalogSchem.findOne({catalog: catalog, assemblyCode: null, manufacturer: entry.manufacturer, 'type.typeCode': typeCode}).exec(function(err, fetchedEntry) {
 		if(err)
 			return console.log(err);
 		if(!fetchedEntry)
@@ -15,8 +15,7 @@ var createEntry = function(entry, catalog, typeName, typeCode) {
 			var newEntry = new CatalogSchem({
 				catalog: catalog,
 				manufacturer: entry.manufacturer,
-				typeCode: typeCode,
-				typeName: typeName,
+				type: {code: typeCode, name: typeName},
 				assemblyCode: null,
 				additionalInfo: additionalInfo
 			});
@@ -30,8 +29,7 @@ var createEntry = function(entry, catalog, typeName, typeCode) {
 			var replacingEntry = {
 				catalog: catalog,
 				manufacturer: entry.manufacturer,
-				typeCode: typeCode,
-				typeName: typeName,
+				type: {code: typeCode, name: typeName},
 				assemblyCode: null,
 				additionalInfo: info
 			};
@@ -133,7 +131,7 @@ exports.getAllUniqueValues = function(req, res) {
 	{
 		return error.sendGenericError(res, 400, 'Error Encountered');
 	}
-	CatalogSchem.distinct(req.body.field.toLowerCase(), {typeCode: req.body.type}, function(err, result) {
+	CatalogSchem.distinct(req.body.field.toLowerCase(), {'type.code': req.body.type}, function(err, result) {
 		if(err)
 			return error.sendGenericError(res, 400, 'Error Encountered');
 		if(result.length === 0)
@@ -143,24 +141,13 @@ exports.getAllUniqueValues = function(req, res) {
 };
 
 exports.getAllTypes = function(req, res) {
-	CatalogSchem.distinct('typeCode', {}, function(err, result) {
+	CatalogSchem.distinct('type', {}, function(err, result) {
 		if(err)
 			return error.sendGenericError(res, 400, 'Error Encountered');
 		if(result.length === 0)
 			res.jsonp([]);
-		var total = result.length;
-		var checked = 0;
-		var array = [];
-		_.each(result, function(value) {
-			CatalogSchem.findOne({typeCode: value}).select('typeName').lean().exec(function(err, result) {
-				if(err)
-					return error.sendGenericError(res, 400, 'Error Encountered');
-				if(result.length !== 0)
-					array.push({code: value, name: result.typeName});
-				if(++checked === total)
-					res.jsonp(array);
-			});
-		});
+		console.log(result);
+		res.jsonp(result);
 	});
 };
 
@@ -169,7 +156,7 @@ exports.getAllFields = function(req, res) {
 		return error.sendGenericError(res, 400, 'Error Encountered');
 	}
 	var type = req.body.type;
-	CatalogSchem.findOne({typeCode: type}).lean(true).exec(function(err, entry) {
+	CatalogSchem.findOne({'type.code': type}).lean(true).exec(function(err, entry) {
 		if(err)
 			return error.sendGenericError(res, 400, 'Error Encountered');
 		if(!entry)
@@ -199,7 +186,7 @@ exports.getCatalogEntries = function(req, res) {
 	}
 	if(upper - lower > MAX_LIMIT)
 		upper = lower + default_upper;
-	var filterCriteria = {typeCode: type};
+	var filterCriteria = {'type.code': type};
 	var sortCriteria = {};
 	if(req.body.sortField)
 	{
