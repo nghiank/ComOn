@@ -39,7 +39,7 @@
 			      			<div class="col-sm-12">
 			      			<div class="input-group showBtnOnHover">
 			      				<span class="input-group-addon">{{filter.field}}</span>
-			      				<input type="text" ng-if="filter.field !== 'Manufacturer'" class="form-control">
+			      				<input type="text" ng-model="filter.value" ng-if="filter.field !== 'Manufacturer'" class="form-control">
 			      				<input type="text" ng-model="filter.value" class="form-control" ng-if="filter.field === 'Manufacturer'" typeahead="value for value in typeAheadValues[filter.field]| filter:$viewValue | limitTo:8">
 			      				<span class="input-group-btn onHover" ng-click="removeFilter(filter)">
 			      					<button class="btn btn-default"><i class="fa fa-times"></i></button>
@@ -65,7 +65,7 @@
 	   			<div class="form-group">
 	   				<div class="col-sm-offset-2">
 	   					<div class="col-sm-8">
-	    					<a class="btn btn-primary" ng-click="getPage();hideSearchBox();"><i class="fa fa-search"></i> Search</a>
+	    					<a class="btn btn-primary" ng-click="search();hideSearchBox();"><i class="fa fa-search"></i> Search</a>
 	    				</div>
 	    			</div>
 	   			</div>					

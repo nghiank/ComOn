@@ -13,10 +13,10 @@ var createEntry = function(entry, catalog, typeName, typeCode) {
 		{
 			var additionalInfo = _.omit(entry, ['catalog', 'manufacturer']);
 			var newEntry = new CatalogSchem({
-				catalog: catalog,
-				manufacturer: entry.manufacturer,
-				type: {code: typeCode, name: typeName},
-				assemblyCode: null,
+				catalog: catalog.toUpperCase(),
+				manufacturer: entry.manufacturer.toUpperCase(),
+				type: {code: typeCode.toUpperCase(), name: typeName},
+				assemblyCode: entry.assemblycode? entry.assemblycode.toUpperCase(): null,
 				additionalInfo: additionalInfo
 			});
 			newEntry.save(function(err) {
@@ -27,10 +27,10 @@ var createEntry = function(entry, catalog, typeName, typeCode) {
 		else{
 			var info = _.omit(entry, ['catalog', 'manufacturer']);
 			var replacingEntry = {
-				catalog: catalog,
-				manufacturer: entry.manufacturer,
-				type: {code: typeCode, name: typeName},
-				assemblyCode: null,
+				catalog: catalog.toUpperCase(),
+				manufacturer: entry.manufacturer.toUpperCase(),
+				type: {code: typeCode.toUpperCase(), name: typeName},
+				assemblyCode: entry.assemblycode? entry.assemblycode.toUpperCase(): null,
 				additionalInfo: info
 			};
 			_.extend(fetchedEntry, replacingEntry);
@@ -178,6 +178,7 @@ exports.getCatalogEntries = function(req, res) {
 	var lower = req.body.lower? req.body.lower: 0;
 	var upper = req.body.upper? req.body.upper: lower+default_upper;
 	var fields = req.body.fields? req.body.fields: ' catalog manufacturer assemblyCode ';
+	var index_hint = {'type.code': 1};
 	if(upper < lower)
 	{
 		upper = upper + lower;
@@ -194,9 +195,6 @@ exports.getCatalogEntries = function(req, res) {
 		var sort = req.body.sortField.sort;
 		sortCriteria[field] = sort;
 	}
-	if(req.body.manufacturer && req.body.manufacturer !== null)
-		filterCriteria.manufacturer = req.body.manufacturer;
-	var default_search = null;
 	var count_function = function(final_find) {
 		CatalogSchem.count(final_find).exec(function(err, count) {
 			if(err){
@@ -206,13 +204,47 @@ exports.getCatalogEntries = function(req, res) {
 		});
 	};
 	var find_function = function(final_find) {
-		CatalogSchem.find(final_find).sort(sortCriteria).select(fields).skip(lower).limit(upper-lower).lean().exec(function(err, entries) {
+		CatalogSchem.find(final_find).sort(sortCriteria).select(fields).skip(lower).limit(upper-lower).hint(index_hint).lean().exec(function(err, entries) {
 			if(err){
 				return error.sendGenericError(res, 400, 'Error Encountered');
 			}
 			return res.jsonp({data: entries, range: {lower: lower, upper: upper}});
 		});
 	};
+	if(req.body.filters)
+	{
+		var all_filters = req.body.filters;
+		var index = null;
+		var filters = {};
+		if(all_filters.catalog)
+		{
+			filters.catalog =  new RegExp('^'+all_filters.catalog.toUpperCase());
+			index = {'catalog': 1};
+		}
+		if(all_filters.manufacturer)
+		{
+			filters.manufacturer = new RegExp(all_filters.manufacturer.toUpperCase());
+			if(!index)
+				index = {'manufacturer': 1};
+		}
+		if(all_filters.assemblyCode)
+		{
+			filters.assemblyCode =  new RegExp(all_filters.assemblyCode, 'i');
+			if(!index)
+				index = {'assemblyCode': 1};
+		}
+		if(all_filters.description)
+		{
+			filters['additionalInfo.description'] =  new RegExp(all_filters.description, 'i');
+			if(!index)
+				index = {'additionalInfo.description': 1, 'type.code': 1};
+		}
+		if(index)
+			index_hint = index;
+		filters['type.code'] = type;
+		filterCriteria = filters;
+	}
+/*	var default_search = null;
 	if(req.body.search)
 	{
 		default_search = [];
@@ -232,17 +264,16 @@ exports.getCatalogEntries = function(req, res) {
 				newEntry['additionalInfo.'+search_fields[i]] = regex;
 				default_search.push(newEntry);
 			}
-			var filter_array = _.map(filterCriteria, function(value, key) {var newObj = {}; newObj[key] = value; return newObj;});
-			var final_find = {$and: filter_array};
+			var final_find = filterCriteria;
 			if(default_search)
-				final_find.$and.push({$or: default_search});
+				final_find.$or = default_search;
 			if(!req.body.total)
 				find_function(final_find);
 			else
 				count_function(final_find);
 		});
 		return;
-	}
+	}*/
 	if(req.body.total)
 		return count_function(filterCriteria);
 	find_function(filterCriteria);

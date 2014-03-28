@@ -42,6 +42,13 @@ var catalogSchema = new Schema({
 
 });
 catalogSchema.index({catalog: 1, manufacturer: -1, assemblyCode: 1, 'type.code': 1}, {unique: true});
+catalogSchema.index({'type.code': 1});
+catalogSchema.index({catalog: 1});
+catalogSchema.index({assemblyCode: 1});
+catalogSchema.index({'additionalInfo.description': 1, 'type.code': 1});
+catalogSchema.index({additionalInfo: 1});
+catalogSchema.index({manufacturer: 1});
+
 
 mongoose.model('Catalog', catalogSchema);
 
