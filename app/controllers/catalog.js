@@ -53,7 +53,7 @@ exports.populateCatalog = function(req, res) {
 	{
 		return user.isAdmin? true: (user.codeName.toLowerCase() === manufacturerEntry.toLowerCase());
 	}
-/*	function nextColumn(column)
+	function nextColumn(column)
 	{
 		var length = column.join('').length;
 		function repeatChar(count, ch) {
@@ -96,14 +96,14 @@ exports.populateCatalog = function(req, res) {
 			column[length-1] = getNextAlphabet(column[length-1])[0];
 		}
 		return column.join('');
-	}*/
+	}
 	_.each(data, function(value, key) {
 		if(!key || !value.title)
 			return;
 		var typeCode = key.toString();
 		var typeName = value.title.toString();
 		for (var i = 0; i < value.data.length; i++) {
-/*			var column = 'CAA';
+			var column = 'CAA';
 			console.log(i);
 			for(var j=0 ;j< 200;j++)
 			{
@@ -115,12 +115,12 @@ exports.populateCatalog = function(req, res) {
 					createEntry(entry, catalog, typeName, typeCode);
 					column = nextColumn(column.split(''));
 				}
-			}*/
-			var entry = value.data[i];
+			}
+/*			var entry = value.data[i];
 			var catalog = entry.catalog.replace(' ','');
 			if(checkAuthority(entry.manufacturer.trim())){
 				createEntry(entry, catalog, typeName, typeCode);
-			}
+			}*/
 		}
 
 	});
@@ -215,29 +215,34 @@ exports.getCatalogEntries = function(req, res) {
 	{
 		var all_filters = req.body.filters;
 		var index = null;
+		var filters = {};
 		if(all_filters.catalog)
 		{
-			filterCriteria.catalog =  new RegExp('^'+all_filters.catalog.toUpperCase());
+			filters.catalog =  new RegExp('^'+all_filters.catalog.toUpperCase());
 			index = {'catalog': 1};
 		}
 		if(all_filters.manufacturer)
 		{
-			filterCriteria.manufacturer = new RegExp(all_filters.manufacturer.toUpperCase());
+			filters.manufacturer = new RegExp(all_filters.manufacturer.toUpperCase());
 			if(!index)
 				index = {'manufacturer': 1};
 		}
 		if(all_filters.assemblyCode)
 		{
-			filterCriteria.assemblyCode =  new RegExp(all_filters.assemblyCode, 'i');
+			filters.assemblyCode =  new RegExp(all_filters.assemblyCode, 'i');
 			if(!index)
 				index = {'assemblyCode': 1};
 		}
 		if(all_filters.description)
 		{
-			filterCriteria['additionalInfo.description'] =  new RegExp(all_filters.description, 'i');
+			filters['additionalInfo.description'] =  new RegExp(all_filters.description, 'i');
+			if(!index)
+				index = {'additionalInfo.description': 1, 'type.code': 1};
 		}
 		if(index)
 			index_hint = index;
+		filters['type.code'] = type;
+		filterCriteria = filters;
 	}
 /*	var default_search = null;
 	if(req.body.search)
