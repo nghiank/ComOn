@@ -26,7 +26,7 @@ angular.module('ace.catalog')
 	};
 
 	$scope.showConfigureModal = function() {
-		var modalInstance = $modal.open({
+		$modal.open({
 			templateUrl: 'views/Catalog/configureTableModal.html',
 			controller: 'configureTableModalCtrl',
 			resolve: {
@@ -34,9 +34,6 @@ angular.module('ace.catalog')
 					return ({fields: $scope.fields, cols: $scope.cols, toggleField: $scope.toggleField, toggleAll: $scope.toggleAll});
 				}
 			}
-		});
-		modalInstance.result.then(function(result){
-			console.log(result);
 		});
 	};
 
@@ -114,22 +111,37 @@ angular.module('ace.catalog')
 				}
 			}
 		});
-		CatalogAPI.entries.query({type: type.code, lower: $scope.lower, upper: $scope.upper, search: $scope.searchText.value}, function(response) {
+		CatalogAPI.entries.query({type: type.code, lower: $scope.lower, upper: $scope.upper}, function(response) {
 			if(response)
 			{
 				$scope.items = $scope._.map(response.data, function(value) {return $scope._.omit(value, ['__v']);});
-				$scope.total = CatalogAPI.entries.query({type: type.code, total: true}, function(response) {
-					if(response)
-					{
-						$scope.total = response.count;
-					}
-				});
+				if(response.data.length === $scope.pageItemLimit)
+				{
+					CatalogAPI.entries.query({type: type.code, total: true}, function(response) {
+						if(response)
+						{
+							$scope.total = response.count;
+						}
+					});
+				}
+				else
+					$scope.total = response.data.length;
 			}
 		});
 		$scope.fields = [];
 		$scope.cols = [{title: 'Catalog', field: 'catalog', sort: null},{title: 'Manufacturer', field: 'manufacturer', sort: null},{title: 'Assembly Code', field: 'assemblyCode', sort: null}];
 	};
 
+	$scope.processFilters = function(filters) {
+		if(!filters)
+			return null;
+		var newObj = {};
+		for (var i = 0; i < filters.length; i++) {
+			var filter = filters[i];
+			newObj[filter.field.toLowerCase()] = filter.value;
+		}
+		return newObj;
+	};
 
 	$scope.closeType = function(){
 		$scope.showTypes = false;
@@ -142,7 +154,7 @@ angular.module('ace.catalog')
 	$scope.toggleField = function(field){
 		if($scope.cols.indexOf(field) === -1)
 		{
-			CatalogAPI.entries.query({type: $scope.selected.code, lower: $scope.lower, sortField: $scope.sort, upper: $scope.upper, fields: field.field, search: $scope.searchText.value}, function(response) {
+			CatalogAPI.entries.query({type: $scope.selected.code, lower: $scope.lower, sortField: $scope.sort, upper: $scope.upper, fields: field.field, search: $scope.searchText.value, filters: $scope.processFilters($scope.filters)}, function(response) {
 				if(response)
 				{
 					var data = response.data;
@@ -169,7 +181,7 @@ angular.module('ace.catalog')
 		var lower = (page? (page-1): 0) * $scope.pageItemLimit;
 		var upper = (page? (page): 1) * $scope.pageItemLimit;
 		var cols = $scope._.map($scope.cols, function(value) {return value.field;});
-		CatalogAPI.entries.query({type: $scope.selected.code, lower: lower, sortField: $scope.sort, upper: upper, fields: cols.join(' '), search: $scope.searchText.value}, function(response) {
+		CatalogAPI.entries.query({type: $scope.selected.code, lower: lower, sortField: $scope.sort, upper: upper, fields: cols.join(' '), search: $scope.searchText.value, filters: $scope.processFilters($scope.filters)}, function(response) {
 			$scope.items = $scope._.map(response.data, function(value) {return $scope._.omit(value, ['additionalInfo', '__v']);});
 			if($scope.fields.length > 0)
 			{
@@ -186,6 +198,42 @@ angular.module('ace.catalog')
 			}
 			$scope.lower = lower;
 			$scope.upper = upper;
+		});
+	};
+
+	$scope.search = function() {
+		$scope.currentPage = 1;
+		var lower = 0;
+		var upper = $scope.pageItemLimit;
+		var cols = $scope._.map($scope.cols, function(value) {return value.field;});
+		CatalogAPI.entries.query({type: $scope.selected.code, lower: lower, sortField: $scope.sort, upper: upper, fields: cols.join(' '), search: $scope.searchText.value, filters: $scope.processFilters($scope.filters)}, function(response) {
+			$scope.items = $scope._.map(response.data, function(value) {return $scope._.omit(value, ['additionalInfo', '__v']);});
+			if($scope.fields.length > 0)
+			{
+				for (var i = 0; i < $scope.fields.length; i++) {
+					var field = $scope.fields[i];
+					for (var j = 0; j < $scope.items.length; j++) {
+						var newField = $scope._.findWhere(response.data, {_id: $scope.items[j]._id});
+						if(newField && newField.additionalInfo)
+							$scope.items[j][field.field] = newField.additionalInfo[field.field.replace('additionalInfo.','')];
+						else
+							$scope.items[j][field.field] = '';
+					}
+				}
+			}
+			$scope.lower = lower;
+			$scope.upper = upper;
+			if(response.data.length === $scope.pageItemLimit)
+			{
+				CatalogAPI.entries.query({type: $scope.selected.code, search: $scope.searchText.value, total: true, filters: $scope.processFilters($scope.filters)}, function(response) {
+					if(response)
+					{
+						$scope.total = response.count;
+					}
+				});
+			}
+			else
+				$scope.total = response.data.length;
 		});
 	};
 
