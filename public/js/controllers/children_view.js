@@ -56,21 +56,35 @@ angular.module('ace.schematic')
 		}
 	};*/
 	$scope.getSiblings = function(breadcrumb){
-		var name = breadcrumb.title;
+		$scope.bcMenu = [];
 		var _id = breadcrumb.link.split('/');
 		_id = _id[_id.length - 1];
 		if(breadcrumb.title !== 'Standards'){
+			//list = _.map($scope.bcMenu, function(value) { return _.pick(value, ['title']).title; });
 			SchematicsAPI.children.get({nodeId:_id}, function(result){
 				for(var i in result.children){
 					if(result.children[i].isComposite === true){
 						var menuItem = {};
 						menuItem.title = result.children[i].name;
 						menuItem.link = '#!/standards/' + result.children[i]._id;
-						$scope.bcMenu.unshift(menuItem);
+						if($scope.nodeId !== result.children[i]._id)
+							$scope.bcMenu.unshift(menuItem);
 					}
 				}
-				console.log(name, _id);
-				console.log('result:', $scope.bcMenu);
+				return;
+			});
+		}
+		if(breadcrumb.title === 'Standards'){
+			//list = _.map($scope.bcMenu, function(value) { return _.pick(value, ['title']).title; });
+			SchematicsAPI.standardlist.query(function(stds){
+				for(var i in stds){
+					var menuItem = {};
+					menuItem.title = stds[i].name;
+					menuItem.link = '#!/standards/' + stds[i]._id;
+					if(menuItem.title && $scope.nodeId !== stds[i]._id)
+						$scope.bcMenu.unshift(menuItem);
+				}
+				console.log($scope.bcMenu);
 			});
 		}
 	};
