@@ -5,6 +5,23 @@ var CatalogSchem = mongoose.model('Catalog');
 var error = require('../utils/error');
 var _ = require('underscore');
 
+var convertToUpper = function(item) {
+	if(_.isString(item))
+		item.toUpperCase();
+	else if(_.isArray(item))
+	{
+		for (var j = 0; j < item.length; j++) {
+			item[j] = item[j].toUpperCase();
+		}
+	}
+	else if(_.isObject(item))
+	{
+		for(var i in item)
+			item[i] = item[i].toUpperCase();
+	}
+	return item;
+};
+
 var createEntry = function(entry, catalog, typeName, typeCode) {
 	CatalogSchem.findOne({catalog: catalog, assemblyCode: null, manufacturer: entry.manufacturer, 'type.code': typeCode}).exec(function(err, fetchedEntry) {
 		if(err)
@@ -17,7 +34,7 @@ var createEntry = function(entry, catalog, typeName, typeCode) {
 				manufacturer: entry.manufacturer.toUpperCase(),
 				type: {code: typeCode.toUpperCase(), name: typeName},
 				assemblyCode: entry.assemblycode? entry.assemblycode.toUpperCase(): null,
-				additionalInfo: additionalInfo
+				additionalInfo: convertToUpper(additionalInfo)
 			});
 			newEntry.save(function(err) {
 				if(err)
@@ -31,7 +48,7 @@ var createEntry = function(entry, catalog, typeName, typeCode) {
 				manufacturer: entry.manufacturer.toUpperCase(),
 				type: {code: typeCode.toUpperCase(), name: typeName},
 				assemblyCode: entry.assemblycode? entry.assemblycode.toUpperCase(): null,
-				additionalInfo: info
+				additionalInfo: convertToUpper(info)
 			};
 			_.extend(fetchedEntry, replacingEntry);
 			fetchedEntry.save(function(err) {
@@ -53,7 +70,7 @@ exports.populateCatalog = function(req, res) {
 	{
 		return user.isAdmin? true: (user.codeName.toLowerCase() === manufacturerEntry.toLowerCase());
 	}
-	function nextColumn(column)
+/*	function nextColumn(column)
 	{
 		var length = column.join('').length;
 		function repeatChar(count, ch) {
@@ -96,14 +113,14 @@ exports.populateCatalog = function(req, res) {
 			column[length-1] = getNextAlphabet(column[length-1])[0];
 		}
 		return column.join('');
-	}
+	}*/
 	_.each(data, function(value, key) {
 		if(!key || !value.title)
 			return;
 		var typeCode = key.toString();
 		var typeName = value.title.toString();
 		for (var i = 0; i < value.data.length; i++) {
-			var column = 'CAA';
+/*			var column = 'CAA';
 			console.log(i);
 			for(var j=0 ;j< 200;j++)
 			{
@@ -115,12 +132,12 @@ exports.populateCatalog = function(req, res) {
 					createEntry(entry, catalog, typeName, typeCode);
 					column = nextColumn(column.split(''));
 				}
-			}
-/*			var entry = value.data[i];
+			}*/
+			var entry = value.data[i];
 			var catalog = entry.catalog.replace(' ','');
 			if(checkAuthority(entry.manufacturer.trim())){
 				createEntry(entry, catalog, typeName, typeCode);
-			}*/
+			}
 		}
 
 	});
@@ -173,8 +190,8 @@ exports.getCatalogEntries = function(req, res) {
 		return error.sendGenericError(res, 400, 'Error Encountered');
 	}
 	var type = req.body.type;
-	var MAX_LIMIT = 5000;
-	var default_upper = 1000;
+	var MAX_LIMIT = 10000;
+	var default_upper = 5000;
 	var lower = req.body.lower? req.body.lower: 0;
 	var upper = req.body.upper? req.body.upper: lower+default_upper;
 	var fields = req.body.fields? req.body.fields: ' catalog manufacturer assemblyCode ';
@@ -229,7 +246,7 @@ exports.getCatalogEntries = function(req, res) {
 		}
 		if(all_filters.assemblyCode)
 		{
-			filters.assemblyCode =  new RegExp(all_filters.assemblyCode, 'i');
+			filters.assemblyCode =  new RegExp(all_filters.assemblyCode.toUpperCase());
 			if(!index)
 				index = {'assemblyCode': 1};
 		}
@@ -244,7 +261,7 @@ exports.getCatalogEntries = function(req, res) {
 		filters['type.code'] = type;
 		filterCriteria = filters;
 	}
-/*	var default_search = null;
+	var default_search = null;
 	if(req.body.search)
 	{
 		default_search = [];
@@ -273,7 +290,7 @@ exports.getCatalogEntries = function(req, res) {
 				count_function(final_find);
 		});
 		return;
-	}*/
+	}
 	if(req.body.total)
 		return count_function(filterCriteria);
 	find_function(filterCriteria);

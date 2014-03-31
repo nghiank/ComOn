@@ -201,12 +201,21 @@ angular.module('ace.catalog')
 		});
 	};
 
+	$scope.prepareSearchString = function(string) {
+		var copy = string.replace(/"/g, '\'');
+/*		var array = string.split('');*/
+		console.log(copy);
+		var result = copy.match(/[^']+(?=(' ')|'$)/g);
+		console.log(result);
+		return string;
+	};
+
 	$scope.search = function() {
 		$scope.currentPage = 1;
 		var lower = 0;
 		var upper = $scope.pageItemLimit;
 		var cols = $scope._.map($scope.cols, function(value) {return value.field;});
-		CatalogAPI.entries.query({type: $scope.selected.code, lower: lower, sortField: $scope.sort, upper: upper, fields: cols.join(' '), search: $scope.searchText.value, filters: $scope.processFilters($scope.filters)}, function(response) {
+		CatalogAPI.entries.query({type: $scope.selected.code, lower: lower, sortField: $scope.sort, upper: upper, fields: cols.join(' '), search: $scope.prepareSearchString($scope.searchText.value), filters: $scope.processFilters($scope.filters)}, function(response) {
 			$scope.items = $scope._.map(response.data, function(value) {return $scope._.omit(value, ['additionalInfo', '__v']);});
 			if($scope.fields.length > 0)
 			{

@@ -94,8 +94,8 @@
 				</tbody>
 			</table>
 		</div>
-		<div style="margin-top: 10px;" class="col-md-12">
-			<pager  ng-show="showList && !searchMode" total-items="total" items-per-page="pageItemLimit" page="currentPage" ng-click="getPage(currentPage)"></pager>
+		<div style="text-align: center; margin-top: 10px; background-color: #f6f6f6; border-radius: 10px; border: 1px solid #eeeeee" class="col-md-offset-3 col-md-6">
+			<pagination ng-show="showList && items.length !== 0" total-items="total" page="currentPage" max-size="7" items-per-page="pageItemLimit" class="pagination-sm" boundary-links="true" rotate="false" num-pages="numPages" ng-click="getPage(currentPage)"></pagination>
 		</div>
 	</div>
 </div>
