@@ -1,32 +1,44 @@
-<section>
+<section ng-init="init()" ng-hide="hide">
     <!-- 2. ng-file-select | ng-file-select="options" -->
-<div class="panel panel-default">
-    <div class="panel-heading">Edit Item: 
-    	<div class="pull-right"><strong>Catalog Number</strong></div>
+    <div class="modal-header">Edit Item: 
+    	<div class="pull-right"><strong>{{item.catalog}}</strong></div>
     </div>
     <div class="panel-body">
 	    <form class="form-horizontal">
+	    	<div class="form-group">
+	            <label class= "col-md-4 control-label">Catalog Number: </label>
+	            <div class="col-md-8">
+	            	<input type="text" class= "form-control" ng-model="item.catalog">
+	        	</div>
+	        </div>
 	        <div class="form-group">
-	            <label class= "col-md-3 control-label">Catalog Name: </label>
-	        </div>              
+	            <label class= "col-md-4 control-label">Type: </label>
+	            <div class="col-md-8">
+	            	<select type="text" class= "form-control" ng-model="selectedType.type" ng-options="type.name+' ('+type.code+')' for type in types| orderBy:'name'" ng-change="confirmTypeChange()"></select>
+	        	</div>
+	        </div>
 	        <div class="form-group">
-	            <label class= "col-md-3 control-label">Description:</label>
-	            <div class = "col-md-9">
-	            </div>
-	        </div>  
-	        <hr> 
-
+	            <label class= "col-md-4 control-label">Assembly Code: </label>
+	            <div class="col-md-8">
+	            	<input type="text" class= "form-control" ng-model="item.assemblyCode">
+	        	</div>
+	        </div>
+	        <div class="form-group" ng-repeat="field in additionalInfo">
+	            <label class= "col-md-4 control-label">{{field[0]}}</label>
+	            <div class="col-md-8">
+	            	<input type="text" class= "form-control"ng-model="field[1]">
+	        	</div>
+	        </div>
 	        <hr>            
 	        <div class="form-group" style="margin-right:5px">
-	            <div class="col-md-3">
+	            <div class="col-md-4">
 	                <button type="button" ng-click="delete()" class="btn btn-danger">Delete</button>
 	            </div>
 	            <div class="pull-right">
-	                <button type="button" ng-click="validate()" class="btn btn-default" ng-show="(valid.dat && valid.json && valid.name)">Validate</button>
-	                <button type="button" ng-disabled="uploadDisabled" class="btn btn-primary btn-separate" ng-click="editStd()">Update</button>
+	                <button type="button" class="btn btn-default" ng-click="cancel()">Cancel</button>
+	                <button type="button"class="btn btn-primary btn-separate" ng-click="update()">Update</button>
 	            </div>
 	        </div>
 	    </form>
 	</div>
-</div>
 </section>

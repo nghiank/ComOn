@@ -278,3 +278,60 @@ exports.getCatalogEntries = function(req, res) {
 		return count_function(filterCriteria);
 	find_function(filterCriteria);
 };
+
+exports.getCatalogEntryById = function(req,res){
+	if(!req.body._id)
+		return error.sendGenericError(res, 400, 'Error Encountered');
+	CatalogSchem.findOne({_id:req.body._id}).exec(function(err,entry){
+		if(err)
+			return error.sendGenericError(res, 400, 'Error Encountered');
+		if(!entry)
+			return error.sendGenericError(res, 400, 'Error Encountered');
+		res.jsonp(entry);
+	});
+};
+
+exports.editCatalogEntry = function(req,res){
+	var fetchedEntry, newEntry;
+	if(!req.body.item)
+		return error.sendGenericError(res, 400, 'Error Encountered');
+	newEntry = req.body.item;
+	if(!newEntry._id)
+		return error.sendGenericError(res, 400, 'Error Encountered');
+	CatalogSchem.findOne({_id:newEntry._id}).exec(function(err, entry){
+		if(err)
+			return console.log(err);
+		if(!entry)
+			return console.log(err);
+		console.log('entry:',entry);
+		fetchedEntry = entry;
+		//if the type changes, all additional info must be reset.
+		console.log('fetched:',fetchedEntry);
+		console.log('new:',newEntry);
+		if(fetchedEntry.type.code !== newEntry.type.code)
+			fetchedEntry.additionalInfo = {};
+		_.extend(fetchedEntry,newEntry);
+		fetchedEntry.save(function(err){
+			if(err)
+				return console.log(err);
+			console.log('saved');
+			return res.jsonp(fetchedEntry);
+		});
+	});
+};
+
+exports.deleteCatalogEntry = function(req,res){
+	if(!req.body._id)
+		return error.sendGenericError(res, 400, 'Error Encountered');
+	CatalogSchem.findOne({_id:req.body._id}).exec(function(err,entry){
+		if (err)
+			return error.sendGenericError(res, 400, 'Error Encountered');
+		if (!entry)
+			return error.sendGenericError(res, 400, 'Error Encountered');
+		entry.remove(function(err){
+			if(err)
+				return error.sendGenericError(res, 400, 'Error Encountered');
+			return res.jsonp(entry);
+		});
+	});
+};
