@@ -5,10 +5,11 @@
         {{breadcrumb.title}}
        </a>
        <span class="dropdown"><a ng-hide="$last" class="dropdown-toggle" ng-click="getSiblings(breadcrumb)"><i class="fa fa-caret-down"></i></a>
-        <ul class="dropdown-menu pull-left">
+        <ul class="dropdown-menu adjusted">
             <li ng-repeat="s in bcMenu">
                 <a href={{s.link}}>{{s.title}}</a>
             </li>
+            <li ng-show="bcMenu.length == 0" class="disabled"><a>No other groups.</a></li>
         </ul>
         </span>
         <span ng-show="$last">{{breadcrumb.title}}</span>

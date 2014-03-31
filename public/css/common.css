@@ -181,3 +181,13 @@ footer p {
 {
     display:inline;
 }
+
+.adjusted
+{
+    margin-left: -50px;
+}
+
+.disabled
+{
+    color:grey;
+}
