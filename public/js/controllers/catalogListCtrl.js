@@ -184,7 +184,7 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 					sortField: $scope.sort,
 					upper: $scope.upper,
 					fields: field.field,
-					search: $scope.searchText.value,
+					search: $scope.prepareSearchString($scope.searchText.value),
 					filters: $scope.processFilters($scope.filters)
 				}, function (response) {
 					if (response) {
@@ -215,7 +215,7 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 				sortField: $scope.sort,
 				upper: upper,
 				fields: cols.join(' '),
-				search: $scope.searchText.value,
+				search: $scope.prepareSearchString($scope.searchText.value),
 				filters: $scope.processFilters($scope.filters)
 			}, function (response) {
 				$scope.items = $scope._.map(response.data, function (value) {
@@ -244,6 +244,8 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 			function escapeRegExp(un_string) {
 				return un_string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, '\\$1');
 			}
+			if(!copy)
+				return '';
 			var string = escapeRegExp(copy);
 			var exact = [];
 			var words = [];
@@ -358,7 +360,7 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 			}
 			function cleanSearchString() {
 				// Remove all OR operator strings
-				string = string.replace(' OR ', '').trim();
+				string = string.replace(/ OR /ig, '').trim();
 
 				// Sort such that longer strings are in front and replaced first,
 				// to avoid replacement of shorter substrings hosing things
@@ -366,7 +368,7 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 
 				// Remove all exact and OR operands identified
 				for (var i = 0; i < temp.length; i++) {
-					string = string.replace(temp[i], '');
+					string = string.replace(new RegExp(temp[i], 'ig'), ' ');
 				}
 
 				temp = [];
@@ -408,8 +410,7 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 			removeDuplicates();
 			gatherRemainingWords();
 			filterExtraOrExps();
-			console.log(words, exact, orExps);
-			return string;
+			return {words: words, exacts: exact, or: orExps, string: escapeRegExp(copy)};
 		};
 		$scope.search = function () {
 			$scope.currentPage = 1;
@@ -450,8 +451,9 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 				if (response.data.length === $scope.pageItemLimit) {
 					CatalogAPI.entries.query({
 						type: $scope.selected.code,
-						search: $scope.searchText.value,
+						search: $scope.prepareSearchString($scope.searchText.value),
 						total: true,
+						fields: cols.join(' '),
 						filters: $scope.processFilters($scope.filters)
 					}, function (response) {
 						if (response) {
