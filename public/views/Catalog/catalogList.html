@@ -1,0 +1,43 @@
+<div class="container" ng-controller="catalogListCtrl" style="min-height: 800px; padding-top:30px;">
+	<div class="well">
+	<div class="row">
+		<form class="form-horizontal col-md-8 col-md-offset-2">
+			<div class="form-group">
+    			<label class="col-sm-2 control-label">Search</label>
+    			<div class="col-sm-8 input-group">
+	      			<input type="text" class="form-control" placeholder="Search Text Here">
+	      			<span class="input-group-btn"><a class="btn btn-default"><i class="fa fa-search"> Search</i></a></span>
+   				</div>
+   			</div>
+		</form>
+	</div>
+	<div class="row">
+		<div class="col-md-8 col-md-offset-2">
+			<label class="col-sm-2 control-label">Show More</label>
+			<div class="col-sm-8 input-group">
+      			<button class="btn btn-default" style="margin-right:10px" ng-repeat="field in fields"  ng-click="toggleField(field)" ng-class={'clicked':cols.indexOf(field)+1}>{{field}}</button>
+			</div>
+		</div>
+	</div>
+	</div>
+
+
+	<div>
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th ng-repeat="col in cols">{{col}}</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="item in items">
+					<td ng-repeat="col in cols">
+						<span ng-repeat="(field,data) in item" ng-show="col == field">{{data}}</span>
+					</td>
+				</tr>
+			</tbody>
+
+		</table>
+	</div>
+
+</div>

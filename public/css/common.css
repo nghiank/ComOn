@@ -49,7 +49,6 @@ footer p {
 .local
 {
     background-color:#F9F9F9;
-    color:#D5D5D5;
 }
 
 .btn-separate
@@ -70,11 +69,6 @@ footer p {
 .error
 {
     color:red;
-}
-
-.grey
-{
-    color: #d7d7d7;
 }
 
 .info
@@ -143,28 +137,6 @@ img
     color: #FFD700;
 }
 
-.unpublished {
-    font-weight: bold;
-    font-family: "Trebuchet MS", Helvetica, sans-serif;
-    color: grey;
-    padding-left: 15px;
-}
-
-.fixed-width{
-    width:30%;
-}
-
-.thumbnail{
-    width: 40px; 
-    height: 40px; 
-    margin-right:10px;
-}
-
-.light-badge{
-    background-color: #C5C5C5;
-}
-
-.badge-unpublished{
-    color:#FAFAFA;
-    background-color:#D5D5D5;
+.clicked{
+    background-color: #f5f5f5;
 }
