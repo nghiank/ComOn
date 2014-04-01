@@ -78,6 +78,38 @@ angular.module('ace.schematic')
 			$scope.addFavouriteKey();
 	};
 
+    $scope.setDownloadLink = function(link){
+        var download;
+        if (link === undefined || !link){
+            download = '#';
+        }
+        else{
+            download = link;
+        }
+        try{
+            if (exec === undefined){
+                return download;
+            }
+        }
+        catch(e){
+            console.error(e);
+            return download;
+        }
+        // return empty link if its in ACAD
+        return '';
+    };
+
+    $scope.downloadLink = function (link) {
+        try{
+            if (exec !== undefined){
+                var response = exec(JSON.stringify({ functionName: 'DownloadInsertSymbol', invokeAsCommand: false, functionParams: {'link': link} }));
+            }
+        }
+        catch(e){
+            console.error(e);
+        }
+    };
+
 	$scope.showEditForm  = function(child){
 		$scope.target = child;
 		var modalInstance = $modal.open({

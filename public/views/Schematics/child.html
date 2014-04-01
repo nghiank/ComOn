@@ -48,7 +48,7 @@
                     <a class="btn pull-right btn-link" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}" ng-click="showEditForm(child)" ng-show="child.showOption && admin">
                         <i class="fa fa-pencil"></i>
                     </a>
-                    <a href="{{child.dl? child.dl: '#'}}" class="btn pull-right btn-link" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}" ng-show="child.showOption" >
+                    <a ng-href="{{setDownloadLink(child.dl)}}" class="btn pull-right btn-link" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}" ng-click="downloadLink(child.dl)" ng-show="child.showOption" >
                         <i class="fa fa-download"></i>
                     </a>
                 </li>
