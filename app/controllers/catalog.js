@@ -372,11 +372,7 @@ exports.editCatalogEntry = function(req,res){
 			return console.log(err);
 		if(!entry)
 			return console.log(err);
-		console.log('entry:',entry);
 		fetchedEntry = entry;
-		//if the type changes, all additional info must be reset.
-		console.log('fetched:',fetchedEntry);
-		console.log('new:',newEntry);
 		if(fetchedEntry.type.code !== newEntry.type.code)
 			fetchedEntry.additionalInfo = {};
 		_.extend(fetchedEntry,newEntry);
