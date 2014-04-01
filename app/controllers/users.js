@@ -81,6 +81,7 @@ exports.updateCodeName = function(req, res) {
     {
         var updatedProfile = req.user;
         updatedProfile.codeName = req.params.codeName;
+        updatedProfile.isManufacturer = false;
         updatedProfile.save(function(err) {
             if(err)
             {
@@ -111,9 +112,9 @@ exports.all = function(req, res) {
  */
 exports.changeStatus = function(req,res) {
     var user = req.profile;
-
+    if(!user.codeName)
+        return error.sendGenericError(res, 400, 'Error Encountered');
     user.isManufacturer = !user.isManufacturer;
-
     user.save(function(err) {
         if (err) {
             return error.sendGenericError(res, 400, 'Error Encountered');

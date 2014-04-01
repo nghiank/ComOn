@@ -83,6 +83,16 @@ footer p {
     font-size: 10px;
 }
 
+.grey
+{
+    color: #c7c7c7;
+}
+
+.yellow
+{
+    color: #ffdb58;
+}
+
 .center-result
 {
     margin-left: 15px;
@@ -139,4 +149,19 @@ img
 
 .clicked{
     background-color: #f5f5f5;
+}
+
+.italic
+{
+    font-style: italic;
+}
+
+.onHover
+{
+    display:none;
+}
+
+.showIconOnHover:hover .onHover 
+{
+    display:inline;
 }

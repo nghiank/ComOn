@@ -50,7 +50,12 @@ exports.populateCatalog = function(req, res) {
 		return error.sendGenericError(res, 400, 'Error Encountered');
 	}
 	var data = req.body.data;
-	function nextColumn(column)
+	var user = req.user;
+	function checkAuthority(manufacturerEntry)
+	{
+		return user.isAdmin? true: (user.codeName.toLowerCase() === manufacturerEntry.toLowerCase());
+	}
+/*	function nextColumn(column)
 	{
 		var length = column.join('').length;
 		function repeatChar(count, ch) {
@@ -93,29 +98,73 @@ exports.populateCatalog = function(req, res) {
 			column[length-1] = getNextAlphabet(column[length-1])[0];
 		}
 		return column.join('');
-	}
+	}*/
 	_.each(data, function(value, key) {
 		if(!key || !value.title)
 			return;
 		var typeCode = key.toString();
 		var typeName = value.title.toString();
 		for (var i = 0; i < value.data.length; i++) {
-			var column = 'A';
+/*			var column = 'A';
 			for(var j=0 ;j< 50;j++)
 			{
 				var entry = value.data[i];
 				var catalog = entry.catalog.replace(' ','');
 				catalog += column;
-				createEntry(entry, catalog, typeName, typeCode);
-				column = nextColumn(column.split(''));
-			}
-/*			var entry = value.data[i];
+				if(checkAuthority(entry.manufacturer.trim()))
+				{
+					createEntry(entry, catalog, typeName, typeCode);
+					column = nextColumn(column.split(''));
+				}
+			}*/
+			var entry = value.data[i];
 			var catalog = entry.catalog.replace(' ','');
-			createEntry(entry, catalog, typeName, typeCode);*/
+			if(checkAuthority(entry.manufacturer.trim())){
+				createEntry(entry, catalog, typeName, typeCode);
+			}
 		}
 
 	});
 	res.send(200);
+};
+
+exports.getAllTypes = function(req, res) {
+	CatalogSchem.distinct('typeCode', {}, function(err, result) {
+		if(err)
+			return error.sendGenericError(res, 400, 'Error Encountered');
+		if(result.length === 0)
+			res.jsonp([]);
+		var total = result.length;
+		var checked = 0;
+		var array = [];
+		_.each(result, function(value) {
+			CatalogSchem.findOne({typeCode: value}).select('typeName').lean().exec(function(err, result) {
+				if(err)
+					return error.sendGenericError(res, 400, 'Error Encountered');
+				if(result.length !== 0)
+					array.push({code: value, name: result.typeName});
+				if(++checked === total)
+					res.jsonp(array);
+			});
+		});
+	});
+};
+
+exports.getAllFields = function(req, res) {
+	if(!req.body.type) {
+		return error.sendGenericError(res, 400, 'Error Encountered');
+	}
+	var type = req.body.type;
+	CatalogSchem.findOne({typeCode: type}).lean(true).exec(function(err, entry) {
+		if(err)
+			return error.sendGenericError(res, 400, 'Error Encountered');
+		if(!entry)
+			return error.sendGenericError(res, 400, 'Error Encountered');
+		var fields = _.keys(_.omit(entry, ['additionalInfo', '_id', '__v']));
+		var additionalInfo = _.keys(entry.additionalInfo);
+		fields = _.union(fields, _.map(additionalInfo, function(key) { return 'additionalInfo.'+key; }));
+		res.jsonp(fields);
+	});
 };
 
 exports.getCatalogEntries = function(req, res) {
@@ -123,29 +172,38 @@ exports.getCatalogEntries = function(req, res) {
 		return error.sendGenericError(res, 400, 'Error Encountered');
 	}
 	var type = req.body.type;
-	var MAX_LIMIT = 1000;
+	var MAX_LIMIT = 5000;
+	var default_upper = 1000;
 	var lower = req.body.lower? req.body.lower: 0;
+	var upper = req.body.upper? req.body.upper: lower+default_upper;
+	var fields = req.body.fields? req.body.fields: ' catalog manufacturer assemblyCode ';
+	if(upper < lower)
+	{
+		upper = upper + lower;
+		lower = upper - lower;
+		upper = upper - lower;
+	}
+	if(upper - lower > MAX_LIMIT)
+		upper = lower + default_upper;
 	var searchCriteria = {typeCode: type};
-	var searchString = req.body.search? req.body.search: '';
-	if(req.body.manufacturer)
+	var sortCriteria = {};
+	if(req.body.sortField)
+	{
+		var field = req.body.sortField.field;
+		var sort = req.body.sortField.sort;
+		sortCriteria[field] = sort;
+	}
+	if(req.body.manufacturer && req.body.manufacturer !== null)
 		searchCriteria.manufacturer = req.body.manufacturer;
-	(function search(start) {
-		CatalogSchem.find(searchCriteria).skip(start).limit(MAX_LIMIT).exec(function(err, entries) {
-			if(err)
+	CatalogSchem.find(searchCriteria).sort(sortCriteria).select(fields).skip(lower).limit(upper-lower).lean().exec(function(err, entries) {
+		if(err){
+			return error.sendGenericError(res, 400, 'Error Encountered');
+		}
+		CatalogSchem.count(searchCriteria).exec(function(err, count) {
+			if(err){
 				return error.sendGenericError(res, 400, 'Error Encountered');
-			var nextIndex = false;
-			if(!searchString)
-			{
-				if(entries.length > (MAX_LIMIT))
-					nextIndex = true;
-				return res.jsonp({data: entries, nextIndex: nextIndex});
 			}
-			var filteredEntries = _.filter(entries, function(item) {
-				return JSON.stringify(item).toLowerCase().indexOf(searchString.toLowerCase()) > -1;
-			});
-			if(filteredEntries.length > (MAX_LIMIT))
-				nextIndex = true;
-			res.jsonp({data: filteredEntries, nextIndex: nextIndex});
+			return res.jsonp({data: entries, range: {lower: lower, upper: upper}, total: count});
 		});
-	})(lower);
+	});
 };

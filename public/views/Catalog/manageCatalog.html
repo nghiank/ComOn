@@ -1,0 +1,76 @@
+<div class="container" style="padding-top:30px;">
+	<tabset justified="true">
+    <tab ng-init="init()" ng-controller="manageCatalogCtrl">
+    	<tab-heading>
+        	<i class="fa fa-pencil"></i> Edit Existing Items
+      	</tab-heading>
+    	<div class="well" style="margin-top:15px">
+			<div class="row">
+				<form class="form-horizontal col-md-8 col-md-offset-2">
+					<div class="form-group" ng-show="global.user && !global.user.isAdmin && global.user.isManufacturer">
+		    			<label class="control-label col-sm-2">Code Name:</label>
+		    			<div class="col-sm-4">
+		    				<p class="form-control-static">{{global.user.codeName? global.user.codeName: 'Not available.'}}</p>
+		   				</div>
+		   			</div>
+					<div class="form-group">
+		    			<label class="col-sm-2 control-label">Search</label>
+		    			<div class="col-sm-8">
+			      			<input type="text" class="form-control" placeholder="Search Text Here">			      			
+		   				</div>
+		   			</div>
+		   			<div class="form-group">
+		    			<label class="control-label col-sm-2">Type</label>
+		    			<div class="col-sm-4">
+			      			<select class="form-control" ng-model="target" ng-options="type.name for type in types | orderBy:'name'">
+			      			</select>	      			
+		   				</div>
+		   			</div>
+		   			<div class="form-group">
+		   				<div class="col-sm-offset-2 col-sm-10">
+		   					<button class="btn btn-primary" ng-click="showTypeList()">Search</button>
+		   				</div>
+		   			</div>
+				</form>
+			</div>
+			<div class="row" ng-show="!!items">
+				<div class="col-md-8 col-md-offset-2">
+					<label style="margin-top: 10px" class="col-sm-2 control-label">Show More</label>
+					<div class="col-sm-8 input-group">
+		      			<button class="btn btn-default" style="margin-right:10px; margin-top: 5px; margin-bottom: 5px" ng-repeat="field in fields | orderBy:'title'"  ng-click="toggleField(field)" ng-class={'clicked':cols.indexOf(field)+1}><i ng-show="cols.indexOf(field)+1" class="fa fa-check success" ></i>{{'  '+field.title+'  '}}</button>
+		      			<button ng-click="toggleAll()" class="btn btn-info" style="margin-right:10px; margin-top: 5px; margin-bottom: 5px" ng-show="fields.length !== 0">{{(cols.length === fields.length+3)? 'Remove ': 'Select '}}All</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	<div class="col-md-12" style="overflow:auto;">
+	<pager style="margin-top: 10px;" ng-show="showList && !searchMode" total-items="total" items-per-page="pageItemLimit" page="currentPage" ng-click="getPage(currentPage)"></pager>
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th ng-click="sortTable(col)" ng-repeat="col in cols">{{col.title}}<i style="margin-left: 5px" class="fa fa-angle-double-down" ng-show="col.sort !== null && col.sort === 1" ></i><i style="margin-left: 5px" class="fa fa-angle-double-up" ng-show="col.sort !== null && col.sort === -1" ></i></th>
+					<th ng-show="showList && !searchMode">Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="item in items">
+					<td ng-repeat="data in sortedValues(item) track by $index" transform-link="data">{{data}}</td>
+					<td>
+						<a><i class="fa fa-pencil" ng-click="showEditItemModal()" style="margin-right:20px"></i></a>
+						<a><i class="fa fa-clock-o"></i></a>
+					</td>
+				</tr>
+			</tbody>
+			</table>
+		</div>
+    </tab>
+    <tab>
+    	<tab-heading>
+        	<i class="fa fa-plus"></i> Upload New Items
+      	</tab-heading>
+      	<div data-ng-include src="'views/Catalog/view.html'" style="margin-top:15px">
+      	</div>
+    </tab>
+    </tabset>
+		
+</div>

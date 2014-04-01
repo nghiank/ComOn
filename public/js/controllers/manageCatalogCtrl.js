@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('ace.catalog')
-.controller('catalogListCtrl', ['$scope', 'Global', 'CatalogAPI','$routeParams', '_', function ($scope, Global, CatalogAPI, $routeParams, underscore) {
+.controller('manageCatalogCtrl', ['$scope', 'Global', 'CatalogAPI', '_','$modal', function ($scope, Global, CatalogAPI, underscore, $modal) {
 	$scope.global = Global;
 	$scope.fields = [];
 	$scope._ = underscore;
@@ -10,29 +10,26 @@ angular.module('ace.catalog')
 	$scope.lower = 0;
 	$scope.upper = $scope.lower + $scope.pageItemLimit;
 	$scope.sort = null;
+	
 	$scope.authorized = function() {
 		if($scope.global.authenticated && ($scope.global.user.isAdmin || $scope.global.user.isManufacturer))
 			return true;
 		return false;
 	};
-
-	$scope.toggleOption = function(type){
-		$scope.target = type;
-	};
-
+	$scope.manufacturer = $scope.authorized()?($scope.global.user.isAdmin?null:$scope.global.user.codeName):null;
 	$scope.init = function() {
 		$scope.showTypes = true;
-		CatalogAPI.types.query(function(response) {
-			if(response)
-				$scope.types = response;
+		$scope.types = CatalogAPI.types.query(function(){
+			$scope.target = $scope.types[0];
 		});
 		$scope.showList = false;
 	};
 
-	$scope.showTypeList = function(type){
+	$scope.showTypeList = function(){
+		var type = $scope.target;
+		if (!type) {return;}
 		$scope.showList = true;
 		$scope.showTypes = false;
-		$scope.selected = $scope.target;
 		function parseCamelCase(input)
 		{
 			return input.charAt(0).toUpperCase() + input.substr(1).replace(/[A-Z0-9]/g, ' $&');
@@ -53,7 +50,7 @@ angular.module('ace.catalog')
 				}
 			}
 		});
-		CatalogAPI.entries.query({type: type.code, lower: $scope.lower, upper: $scope.upper}, function(response) {
+		CatalogAPI.entries.query({type: type.code, manufacturer: $scope.manufacturer, lower: $scope.lower, upper: $scope.upper}, function(response) {
 			if(response)
 			{
 				$scope.items = $scope._.map(response.data, function(value) {return $scope._.omit(value, ['__v']);});
@@ -64,19 +61,18 @@ angular.module('ace.catalog')
 		$scope.cols = [{title: 'Catalog', field: 'catalog', sort: null},{title: 'Manufacturer', field: 'manufacturer', sort: null},{title: 'Assembly Code', field: 'assemblyCode', sort: null}];
 	};
 
+	$scope.toggleType = function(){
+		$scope.showTypes = !$scope.showTypes;
+	};
 
 	$scope.closeType = function(){
 		$scope.showTypes = false;
 	};
 
-	$scope.showType = function(){
-		$scope.showTypes = true;
-	};
-
 	$scope.toggleField = function(field){
 		if($scope.cols.indexOf(field) === -1)
 		{
-			CatalogAPI.entries.query({type: $scope.selected.code, lower: $scope.lower, sortField: $scope.sort, upper: $scope.upper, fields: field.field}, function(response) {
+			CatalogAPI.entries.query({type: $scope.target.code, manufacturer: $scope.manufacturer ,lower: $scope.lower, sortField: $scope.sort, upper: $scope.upper, fields: field.field}, function(response) {
 				if(response)
 				{
 					var data = response.data;
@@ -103,7 +99,7 @@ angular.module('ace.catalog')
 		var lower = (page? (page-1): 0) * $scope.pageItemLimit;
 		var upper = page * $scope.pageItemLimit;
 		var cols = $scope._.map($scope.cols, function(value) {return value.field;});
-		CatalogAPI.entries.query({type: $scope.selected.code, lower: lower, sortField: $scope.sort, upper: upper, fields: cols.join(' ')}, function(response) {
+		CatalogAPI.entries.query({type: $scope.target.code, lower: lower, sortField: $scope.sort, upper: upper, fields: cols.join(' ')}, function(response) {
 			$scope.items = $scope._.map(response.data, function(value) {return $scope._.omit(value, ['additionalInfo', '__v']);});
 			if($scope.fields.length > 0)
 			{
@@ -141,16 +137,6 @@ angular.module('ace.catalog')
 		return val_array;
 	};
 
-	$scope.sortTable = function(col) {
-		var order = col.sort;
-		for (var i = 0; i < $scope.cols.length; i++) {
-			$scope.cols[i].sort = null;
-		}
-		col.sort = (order === 1)? -1: 1;
-		$scope.sort = col;
-		$scope.getPage($scope.currentPage? $scope.currentPage: 1);
-	};
-
 	$scope.toggleAll = function() {
 		if(($scope.fields.length+3) !== $scope.cols.length)
 		{
@@ -165,5 +151,32 @@ angular.module('ace.catalog')
 			var remove_field = $scope.fields[j];
 			$scope.cols.splice($scope.cols.indexOf(remove_field),1);
 		}
+	};
+	
+	$scope.sortTable = function(col) {
+		var order = col.sort;
+		for (var i = 0; i < $scope.cols.length; i++) {
+			$scope.cols[i].sort = null;
+		}
+		col.sort = (order === 1)? -1: 1;
+		$scope.sort = col;
+		$scope.getPage($scope.currentPage? $scope.currentPage: 1);
+	};
+
+	$scope.showComingModal = function(){
+		$modal.open({
+			templateUrl: 'views/ComingModal.html',
+			controller: 'ComingModalCtrl',
+		});
+	};
+
+	$scope.showEditItemModal = function(){
+		var modalInstance = $modal.open({
+			templateUrl: 'views/Catalog/editItemForm.html',
+			controller: 'editItemFormCtrl',
+		});
+		modalInstance.result.then(function(){
+			console.log('alala');
+		});
 	};
 }]);

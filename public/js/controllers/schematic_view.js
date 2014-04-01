@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('ace.schematic')
-.controller('Standards', ['$modal', '$scope', 'SchematicsAPI', 'Global', 'breadcrumbs', function ($modal, $scope, SchematicsAPI, Global, breadcrumbs) {
+.controller('Standards', ['$scope', 'SchematicsAPI', 'Global', 'breadcrumbs', '$modal', function ($scope, SchematicsAPI, Global, breadcrumbs, $modal) {
 	$scope.breadcrumbs = breadcrumbs;
 	$scope.admin = false;
 	$scope.Global = Global;
@@ -36,6 +36,19 @@ angular.module('ace.schematic')
 		return (std.showOption = !std.showOption);
 	};
 
+	$scope.unpublished = function(array) {
+		var newArray = [];
+		if(array)
+		{
+			for (var i = 0; i < array.length; i++) {
+				var child = array[i];
+				if(child.isPublished || $scope.admin)
+					newArray.push(child);
+			}
+		}
+		return newArray;
+	};
+
 	$scope.downloadStandard = function(){
 		$scope.showComingSoon();
 	};
@@ -46,5 +59,4 @@ angular.module('ace.schematic')
 			controller: 'ComingModalCtrl'
 		});
 	};
-
 }]);

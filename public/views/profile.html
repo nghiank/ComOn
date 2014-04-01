@@ -26,18 +26,16 @@
              name = "codeNamePopover"
              popover = "CODE name is the CODE for manufacturers, shown in the catalog list. By changing the CODE name you automatically apply to be a manufacturer."
              popover-title = "What is CODE Name?"
-             
              popover-trigger="mouseenter"  ></a>           
            </p>
          </div>
          <div ng-switch="editable">
-          <div ng-switch-when=false class="col-md-4">{{codename}}</div>
+          <div ng-switch-when=false class="col-md-4" ng-class="{'grey italic': {{codename === 'Not Assigned'}}}">{{codename}}</div>
           <div ng-switch-when=true>
             <div class="col-md-4 pull-left">
-
               <input type="text" 
               class="form-control" 
-              placeholder={{codename}}
+              placeholder={{(codename==='N.A.')?'':codeName}}
               ng-model="codeNameInput.value"
               ng-blur="checkValid()"
               name="codeNameInput">

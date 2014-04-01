@@ -1,43 +1,69 @@
-<div class="container" ng-controller="catalogListCtrl" style="min-height: 800px; padding-top:30px;">
-	<div class="well">
-	<div class="row">
-		<form class="form-horizontal col-md-8 col-md-offset-2">
-			<div class="form-group">
-    			<label class="col-sm-2 control-label">Search</label>
-    			<div class="col-sm-8 input-group">
-	      			<input type="text" class="form-control" placeholder="Search Text Here">
-	      			<span class="input-group-btn"><a class="btn btn-default"><i class="fa fa-search"> Search</i></a></span>
-   				</div>
-   			</div>
-		</form>
+<div class="container" ng-controller="catalogListCtrl" ng-init="init()" style="padding-top:30px;">
+	<nav class="col-md-4 navmenu navmenu-default animate-show" ng-show="showTypes" style="height: 85%; position: fixed; left: 0; z-index: 9999; overflow-y: auto;">
+		<ul class="nav navmenu-nav" ng-init="getTypes()" style="overflow-y: auto;">
+            <div class="navmenu-brand">Catalog Types</i></div> 
+            <form class="navbar-form" role="search">
+				<input type="text" class="form-control" placeholder="Search Type..." ng-model="searchType">
+			</form>
+
+            <li ng-show="types.length == 0">No catalog available</li>          
+            <li class="ng-class:{active: (!!selected? type.code===selected.code: false)}" ng-repeat="type in types | orderBy: 'name' |filter: searchType" ng-mouseenter = "toggleOption(type)" ng-mouseleave = "toggleOption(type)" href="#!/catalog/{{type.name}}" ng-click="showTypeList(type)">
+                <a>{{type.name + '  ('+ type.code + ')'}}</a>
+            </li>
+        </ul>
+	</nav>
+	<span>
+		<a ng-click="showType()"><i class="fa fa-ellipsis-vertical fa-4x" style="position:fixed; left:1%; top:50%;"></i></a>
+	</span>
+	<div ng-show="!!selected" class="panel panel-default">
+		<div class="panel-heading">
+			{{selected.name}}
+			<p class="pull-right">
+				Page: &nbsp&nbsp <b>{{currentPage? currentPage: 1}}</b>
+			</p>
+	  	</div>
 	</div>
-	<div class="row">
-		<div class="col-md-8 col-md-offset-2">
-			<label class="col-sm-2 control-label">Show More</label>
-			<div class="col-sm-8 input-group">
-      			<button class="btn btn-default" style="margin-right:10px" ng-repeat="field in fields"  ng-click="toggleField(field)" ng-class={'clicked':cols.indexOf(field)+1}>{{field}}</button>
+	<div ng-show="showList" ng-click="closeType()">
+		<div class="well">
+			<div class="row">
+				<form class="form-horizontal col-md-8 col-md-offset-2">
+					<div class="form-group">
+		    			<label class="col-sm-2 control-label">Search</label>
+		    			<div class="col-sm-8 input-group">
+			      			<input type="text" class="form-control" placeholder="Search Text Here">
+			      			<span class="input-group-btn"><a class="btn btn-default"><i class="fa fa-search"> Search</i></a></span>
+		   				</div>
+		   			</div>
+				</form>
+			</div>
+			<div class="row">
+				<div class="col-md-8 col-md-offset-2">
+					<label style="margin-top: 10px" class="col-sm-2 control-label">Show More</label>
+					<div class="col-sm-8 input-group">
+		      			<button class="btn btn-default" style="margin-right:10px; margin-top: 5px; margin-bottom: 5px" ng-repeat="field in fields | orderBy:'title'"  ng-click="toggleField(field)" ng-class={'clicked':cols.indexOf(field)+1}><i ng-show="cols.indexOf(field)+1" class="fa fa-check success" ></i>{{'  '+field.title+'  '}}</button>
+		      			<button ng-click="toggleAll()" class="btn btn-info" style="margin-right:10px; margin-top: 5px; margin-bottom: 5px" ng-show="fields.length !== 0">{{(cols.length === fields.length+3)? 'Remove ': 'Select '}}All</button>
+					</div>
+				</div>
 			</div>
 		</div>
-	</div>
-	</div>
-
-
-	<div>
+	<pager style="margin-top: 10px;" ng-show="showList && !searchMode" total-items="total" items-per-page="pageItemLimit" page="currentPage" ng-click="getPage(currentPage)"></pager>
+	<div class="col-md-12" style="overflow:auto;">
 		<table class="table table-striped">
 			<thead>
 				<tr>
-					<th ng-repeat="col in cols">{{col}}</th>
+					<th ng-click="sortTable(col)" ng-repeat="col in cols" class="showIconOnHover">{{col.title}}
+						<a><i style="margin-left: 5px" class="fa fa-sort-alpha-asc" ng-show="col.sort !== null && col.sort === 1" ></i></a>
+						<a><i style="margin-left: 5px" class="fa fa-sort-alpha-desc" ng-show="col.sort !== null && col.sort === -1"></i></a>
+						<a><i class="fa fa-sort onHover" ng-show="col.sort == null"}></i></a>
+					</th>
 				</tr>
 			</thead>
 			<tbody>
 				<tr ng-repeat="item in items">
-					<td ng-repeat="col in cols">
-						<span ng-repeat="(field,data) in item" ng-show="col == field">{{data}}</span>
-					</td>
+					<td ng-repeat="data in sortedValues(item) track by $index" transform-link="{{data}}">{{data}}</td>
 				</tr>
 			</tbody>
-
-		</table>
+			</table>
+		</div>
 	</div>
-
 </div>

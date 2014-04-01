@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('ace.users')
-.controller('ProfileController', ['$scope', 'Global', 'UsersAPI',  function ($scope, Global, UsersAPI) {
+.controller('ProfileController', ['$scope', '$rootScope', 'Global', 'UsersAPI',  function ($scope, $rootScope, Global, UsersAPI) {
 
         $scope.global = Global;
         $scope.username = Global.user.name;
@@ -22,7 +22,10 @@ angular.module('ace.users')
             $scope.toggleEdit();
             UsersAPI.profile.update({codeName:$scope.codeNameInput.value}, Global.user, function(){
                 Global.user.codeName = $scope.codeNameInput.value;
+                Global.user.isManufacturer = false;
                 $scope.setCodeName();
+                $rootScope.$broadcast('changeUserStatus');
+
             });
         };
 
@@ -33,7 +36,7 @@ angular.module('ace.users')
         };
 
         $scope.setCodeName = function(){
-            $scope.codename = (Global.user.codeName === null) ? Global.user.name : (Global.user.isManufacturer ? Global.user.codeName : Global.user.codeName + ' (pending)');
+            $scope.codename = (Global.user.codeName === null) ? 'Not Assigned' : (Global.user.isManufacturer ? Global.user.codeName : Global.user.codeName + ' (pending)');
         };
         $scope.setCodeName();
 
