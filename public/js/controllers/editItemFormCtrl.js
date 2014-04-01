@@ -7,25 +7,10 @@ angular.module('ace.schematic').controller('editItemFormCtrl', ['$scope', '$time
 			$scope.additionalInfo = _.pairs(response.additionalInfo);
 			$scope.hide = false;
 			$scope.selectedType = {};
+			$scope.unique = true;
 		});
 		$scope.getTypes();
 	};
-
-	/*$scope.confirmTypeChange = function(oldType){
-		$scope.hide = true;
-		console.log('!:',oldType);
-		var modalInstance = $modal.open({
-			templateUrl: 'views/Schematics/DeleteModal.html',
-			controller:'DeleteModalCtrl',
-			backdrop: 'static',
-		});
-		modalInstance.result.then(function(decision){
-			if(decision)
-				$scope.loadFieldsByType();
-			$scope.hide = false;
-		});
-
-	};*/
 
 	$scope.getTypes = function(){
 		CatalogAPI.types.query(function(response){
@@ -73,9 +58,17 @@ angular.module('ace.schematic').controller('editItemFormCtrl', ['$scope', '$time
 	$scope.confirmTypeChange = function(){
 		$scope.hide = true;
 		var modalInstance = $modal.open({
-			templateUrl: 'views/Schematics/DeleteModal.html',
-			controller:'DeleteModalCtrl',
+			templateUrl: 'views/confirmationModal.html',
+			controller:'confirmationModalCtrl',
 			backdrop: 'static',
+			resolve:{
+				msg: function(){
+					return 'Changing the type will discard all type-specific information on the item.';
+				},
+				title:function(){
+					return 'Are you sure to change the type?';
+				}
+			}
 		});
 		modalInstance.result.then(function(decision){
 			if(decision){
@@ -113,9 +106,13 @@ angular.module('ace.schematic').controller('editItemFormCtrl', ['$scope', '$time
 	$scope.delete = function(){
 		$scope.hide = true;
 		var modalInstance = $modal.open({
-			templateUrl: 'views/Schematics/DeleteModal.html',
-			controller:'DeleteModalCtrl',
+			templateUrl: 'views/confirmationModal.html',
+			controller:'confirmationModalCtrl',
 			backdrop: 'static',
+			resolve:{
+				title:function(){return 'Are you sure to delete?';},
+				msg:function(){return 'This cannot be undone';}
+			}
 		});
 		modalInstance.result.then(function(decision){
 			if(decision){
@@ -128,6 +125,13 @@ angular.module('ace.schematic').controller('editItemFormCtrl', ['$scope', '$time
 			$scope.hide = false;
 			return;
 		});
+	};
+
+	$scope.checkUnique = function(){
+		if($scope.item.catalog)
+			CatalogAPI.checkUnique.save({catalog:$scope.item.catalog, manufacturer: $scope.item.manufacturer, _id:$scope.item._id, type:$scope.selectedType.type, assemblyCode:$scope.item.assemblyCode}, function(response){
+				$scope.unique = response.unique;
+			});
 	};
 
 }]);

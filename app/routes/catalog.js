@@ -19,4 +19,5 @@ module.exports = function(app) {
     app.post('/api/deleteEntryById', authorization.requiresLogin, hasAuthorization, catalog.deleteCatalogEntry);
     app.get('/api/getTypes', catalog.getAllTypes);
     app.post('/api/getAllUniqueValues',catalog.getAllUniqueValues);
+    app.post('/api/checkCatUnique', catalog.checkUnique);
 };

@@ -10,6 +10,7 @@ angular.module('ace.catalog').factory('CatalogAPI', ['$resource', function($reso
 			uniqueValues:$resource('api/getAllUniqueValues',null,{query:{method:'POST', isArray:true}}),
 			getEntryById: $resource('api/getEntryById',null),
 			updateEntry:$resource('api/updateEntry',null),
-			deleteEntry:$resource('api/deleteEntryById',null)
+			deleteEntry:$resource('api/deleteEntryById',null),
+			checkUnique:$resource('api/checkCatUnique',null)
 		};
 }]);

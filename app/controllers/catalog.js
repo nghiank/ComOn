@@ -352,3 +352,20 @@ exports.deleteCatalogEntry = function(req,res){
 		});
 	});
 };
+
+exports.checkUnique = function(req, res){
+	if(!req.body.catalog || !req.body.manufacturer || typeof req.body.assemblyCode === 'undefined' || !req.body.type || !req.body._id){
+		return error.sendGenericError(res, 400, 'Error Encountered');
+	}
+		
+	CatalogSchem.find({catalog:req.body.catalog, manufacturer:req.body.manufacturer, assemblycode:req.body.assemblyCode}).exec(function(err, entry){
+		if(err)
+			return console.log(err);
+		for(var i in entry){
+			if(entry[i]._id !== req.body._id && entry[i].type.code === req.body.type.code)
+				return res.jsonp({'unique':false});
+		}
+		return res.jsonp({'unique':true});
+		
+	});
+};
