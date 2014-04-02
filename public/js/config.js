@@ -46,19 +46,6 @@ angular.module('ace').config(['$routeProvider',
                 $location.path('/');
             }
         }
-        else if(!Global.user.isAdmin)
-        {
-            if(Global.user.isManufacturer)
-            {
-                if(path === '/')
-                    $location.path('/manageCatalog');
-            }
-            else
-            {
-                if(path === '/')
-                    $location.path('/favourites');
-            }
-        }
     });
 });
 
