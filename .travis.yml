@@ -13,3 +13,4 @@ deploy:
   on:
     repo: nghiank/ComOn
     branch: Deployment
+  strategy: git
