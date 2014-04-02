@@ -8,9 +8,6 @@ angular.module('ace').config(['$routeProvider',
         when('/', {
             templateUrl: 'views/index.html'
         }).
-        when('/users', {
-            templateUrl: 'views/Users/list.html'
-        }).
         when('/profile', {
             templateUrl: 'views/profile.html'
         }).
@@ -19,12 +16,6 @@ angular.module('ace').config(['$routeProvider',
         }).
         when('/catalog', {
             templateUrl: 'views/Catalog/catalogList.html'
-        }).
-        when('/manageCatalog', {
-            templateUrl: 'views/Catalog/manageCatalog.html'
-        }).
-        when('/favourites', {
-            templateUrl: 'views/favourites.html'
         }).
         when('/standards/:nodeId', {
             templateUrl: 'views/Schematics/child.html'
