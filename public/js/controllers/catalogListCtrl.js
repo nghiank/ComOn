@@ -288,5 +288,4 @@ angular.module('ace.catalog')
 			$scope.cols.splice($scope.cols.indexOf(remove_field),1);
 		}
 	};
-
 }]);
