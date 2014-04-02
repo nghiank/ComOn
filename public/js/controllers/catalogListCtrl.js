@@ -288,4 +288,9 @@ angular.module('ace.catalog')
 			$scope.cols.splice($scope.cols.indexOf(remove_field),1);
 		}
 	};
+
+	$scope.noSubmit = function(evt){
+		if(evt.which === 13)
+			evt.preventDefault();
+	};
 }]);

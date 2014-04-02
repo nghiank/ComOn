@@ -39,8 +39,8 @@
 			      			<div class="col-sm-12">
 			      			<div class="input-group showBtnOnHover">
 			      				<span class="input-group-addon">{{filter.field}}</span>
-			      				<input type="text" ng-model="filter.value" ng-if="filter.field !== 'Manufacturer'" class="form-control" ng-keydown="$event.preventDefault()">
-			      				<input type="text" ng-model="filter.value" class="form-control" ng-if="filter.field === 'Manufacturer'" typeahead="value for value in typeAheadValues[filter.field]| filter:$viewValue | limitTo:8" ng-keydown="$event.preventDefault()">
+			      				<input type="text" ng-model="filter.value" ng-if="filter.field !== 'Manufacturer'" class="form-control" ng-keydown="noSubmit($event)">
+			      				<input type="text" ng-model="filter.value" class="form-control" ng-if="filter.field === 'Manufacturer'" typeahead="value for value in typeAheadValues[filter.field]| filter:$viewValue | limitTo:8" ng-keydown="noSubmit($event)">
 			      				<span class="input-group-btn onHover" ng-click="removeFilter(filter)">
 			      					<button class="btn btn-default" ><i class="fa fa-times"></i></button>
 			      				</span>
