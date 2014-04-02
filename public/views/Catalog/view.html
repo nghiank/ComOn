@@ -1,9 +1,11 @@
 <section ng-init="init()" ng-show="authorized()" ng-controller="catalogController">
         <div class="well">
             <div class="row">
-
                 <form class="form-horizontal col-md-8 col-md-offset-2">
-                    <div class="form-group">
+                    <div class="alert alert-thin alert-info"  ng-show="states[0]">
+                        Step 1. Select .xls File
+                    </div>
+                    <div class="form-group" ng-show="states[0]">
                         <label class="col-sm-2 control-label">.xls File</label>
                         <div class="col-sm-10">
                             <div class="fileinput fileinput-new" data-provides="fileinput">
@@ -13,14 +15,123 @@
                                     <a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput" >Remove</a>
                                 </div>
                             </div>
-                            <p ng-show="!valid" class="error">{{error}}</p>
+                            <p ng-if="!valid" class="error">{{error}}</p>
+                        </div>
+                        <div class="col-sm-offset-2 col-sm-2">
+                            <button type="button" class="btn" ng-disabled="!valid" ng-click="populate(); states[0] = 0; states[1] = 1;" ng-class={'btn-default':populateProgress===100,'btn-default':populateProgress!==100} ng-show="states[0] && !states[1] && !states[2]"><i class="fa fa-check success" ng-show="showProgress && populateProgress === 100"></i>Next</button>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <div class="col-sm-offset-2 col-sm-2">
-                            <button type="button" ng-disabled="uploadDisabled" class="btn" ng-click="populate()" ng-class={'btn-default':populateProgress===100,'btn-primary':populateProgress!==100}><i class="fa fa-check success" ng-show="showProgress && populateProgress === 100"></i>Upload</button>
+                    <div class="alert alert-thin alert-info" ng-show="states[1]">
+                        Step 2. Match the sheets
+                    </div>
+                    <div class="form-group" ng-show="states[1]">
+                        <div class="col-md-12">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th class="col-md-6">.xls File Sheets</th>
+                                    <th class="col-md-6">ACADE Default Types</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="showIconOnHover" ng-repeat = "sheet in processedSheets | orderBy:'dName':true" ng-class="{warning:!sheet.dName}">
+                                    <td class="col-md-6">{{sheet.sName}}</td>
+                                    <td class="col-md-6" ng-if="sheet.dName">
+                                        <i class="fa fa-check success"></i>
+                                        {{sheet.dName}}
+                                    </td>
+                                    <td class="col-md-6" ng-if="!sheet.dName">
+                                        <span class="dropdown">
+                                            <a class="dropdown-toggle btn btn-default btn-sm" ng-click="toggleCollapse()">
+                                            Choose a type <i class="fa fa-caret-down"></i>
+                                            </a>
+                                            <ul class="dropdown-menu">
+                                                <li>
+                                                  <a>Discard</a>
+                                                </li>
+                                                <li>
+                                                  <a>Fuses (FU)</a>
+                                                </li>
+                                            </ul>
+                                        </span>
+                                        <a class="btn onHover"><i class="fa fa-trash-o"></i></a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-6">FU</td>
+                                    <td class="col-md-6"><i class="fa fa-check success"></i> Fuses(FU)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="pull-right" ng-show="states[1] && !states[2]">
+                                    <a class="btn btn-default btn-separate" ng-click="states[1] = 0; states[0] = 1;">Back</a>
+                                    <a class="btn btn-default btn-separate" ng-click="states[1] = 0; states[2] = 1;">Next</a>
+                                </div>
+                            </div>
                         </div>
-                        <progressbar max="100" value="populateProgress" ng-show="showProgress" type="success"><span style="color:white; white-space:nowrap;">{{populateProgress}}%</span></progressbar>
+                        </div>
+                       <!--  <progressbar max="100" value="populateProgress" ng-show="showProgress" type="success"><span style="color:white; white-space:nowrap;">{{populateProgress}}%</span></progressbar> -->
+                    </div>
+                    <div class="alert alert-thin alert-info" ng-show="states[2]">
+                        Step 3. Match the columns
+                    </div>
+                    <div clas="form-group" ng-show="states[2]">
+                        <accordion close-others="oneAtATime">
+                            <accordion-group>
+                                <accordion-heading>
+                                    <div class="placeholder">Fuses (FU) <i class="btn-separate fa fa-check success"></i></div>
+                                </accordion-heading>
+                                <table class="table">
+                            <thead>
+                                <tr>
+                                    <th class="col-md-6">.xls File Sheets</th>
+                                    <th class="col-md-6">ACADE Default Types</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="warning showIconOnHover">
+                                    <td class="col-md-6">Index</td>
+                                    <td class="col-md-6">
+                                        <span class="dropdown">
+                                            <a class="dropdown-toggle btn btn-default btn-sm" ng-click="toggleCollapse()">
+                                            Choose a type <i class="fa fa-caret-down"></i>
+                                            </a>
+                                            <ul class="dropdown-menu">
+                                                <li>
+                                                  <a>Discard</a>
+                                                </li>
+                                                <li>
+                                                  <a>Fuses (FU)</a>
+                                                </li>
+                                            </ul>
+                                        </span>
+                                        <a class="btn onHover"><i class="fa fa-trash-o"></i></a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-6">FU</td>
+                                    <td class="col-md-6"><i class="fa fa-check success"></i> Fuses(FU)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                            </accordion-group>
+                            <accordion-group>
+                                <accordion-heading>
+                                    Circuit Breakers <i class=" btn-separate fa fa-question star"></i>
+                                </accordion-heading>
+                                This is just some content to illustrate fancy headings.
+                            </accordion-group>
+                        </accordion>
+                        <div class="row" style="margin-top:10px">
+                            <div class="col-md-12">
+                                <div class="pull-right">
+                                    <a class="btn btn-default btn-separate" ng-click="states[1]=1;states[2]=0">Back</a>
+                                    <a class="btn btn-primary btn-separate">Submit</a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </form>
             </div>

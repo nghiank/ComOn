@@ -191,3 +191,9 @@ footer p {
 {
     color:grey;
 }
+
+.placeholder
+{
+    width:inherit;
+    height:inherit;
+}
