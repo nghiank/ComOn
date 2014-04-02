@@ -1,6 +1,6 @@
 module.exports = {
     base_url: 'http://ace-online.autodesk.com:3000',
-    db: "mongodb://localhost/ACE",
+    db: "mongodb://akaash.gupta@autodesk.com:Iceman123@lennon.mongohq.com:10025/app23651433",
     app: {
         name: "Autodesk - ACE ComOn Production"
     },
