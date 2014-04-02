@@ -221,12 +221,37 @@ exports.getCatalogEntries = function(req, res) {
 		});
 	};
 	var find_function = function(final_find) {
-		CatalogSchem.find(final_find).sort(sortCriteria).select(fields).skip(lower).limit(upper-lower).hint(index_hint).lean().exec(function(err, entries) {
+		console.log(final_find);
+		var query = CatalogSchem.find(final_find).sort(sortCriteria).select(fields).skip(lower).limit(upper-lower);
+		if(req.body.filters)
+			query = query.hint(index_hint);
+		query.lean().exec(function(err, entries) {
 			if(err){
 				return error.sendGenericError(res, 400, 'Error Encountered');
 			}
 			return res.jsonp({data: entries, range: {lower: lower, upper: upper}});
 		});
+	};
+	var removeDuplicates = function(fields) {
+		for(var index in fields) {
+			var single = fields[index];
+			if(single === 'manufacturer')
+			{
+				if(req.body.manufacturer)
+				{
+					if(req.body.manufacturer.trim().toUpperCase() === req.body.search.string.trim().toUpperCase())
+					{
+						fields.splice(index, 1);
+						continue;
+					}
+				}
+			}
+			if(_.has(filters, single))
+			{
+				if(req.body.filters[single].trim().toUpperCase() === req.body.search.string.trim().toUpperCase())
+					fields.splice(index, 1);
+			}
+		}
 	};
 	if(req.body.filters)
 	{
@@ -235,7 +260,7 @@ exports.getCatalogEntries = function(req, res) {
 		var filters = {};
 		if(all_filters.catalog)
 		{
-			filters.catalog =  new RegExp('^'+all_filters.catalog.toUpperCase());
+			filters.catalog =  new RegExp(all_filters.catalog.toUpperCase());
 			index = {'catalog': 1};
 		}
 		if(all_filters.manufacturer)
@@ -252,7 +277,7 @@ exports.getCatalogEntries = function(req, res) {
 		}
 		if(all_filters.description)
 		{
-			filters['additionalInfo.description'] =  new RegExp(all_filters.description, 'i');
+			filters['additionalInfo.description'] =  new RegExp(all_filters.description);
 			if(!index)
 				index = {'additionalInfo.description': 1, 'type.code': 1};
 		}
@@ -262,33 +287,60 @@ exports.getCatalogEntries = function(req, res) {
 		filterCriteria = filters;
 	}
 	var default_search = null;
-	if(req.body.search)
+	if(req.body.search && req.body.search.string)
 	{
 		default_search = [];
-		var regex = new RegExp(req.body.search.trim(), 'i');
-		if(!req.body.manufacturer)
-			default_search.push({manufacturer: regex});
-		default_search.push({catalog: regex});
-		default_search.push({assemblyCode: regex});
-		CatalogSchem.findOne({'type.code': type}).exec(function(err, entry) {
-			if(err)
-				return error.sendGenericError(res, 400, 'Error Encountered');
-			if(!entry)
-				return res.jsonp({data: [], range: {lower: lower, upper: upper}, total: 0});
-			var search_fields = _.keys(_.pick(entry, 'additionalInfo').additionalInfo);
-			for (var i = search_fields.length -1 ; i >=0 ; i--) {
-				var newEntry = {};
-				newEntry['additionalInfo.'+search_fields[i]] = regex;
-				default_search.push(newEntry);
-			}
-			var final_find = filterCriteria;
-			if(default_search)
-				final_find.$or = default_search;
-			if(!req.body.total)
-				find_function(final_find);
-			else
-				count_function(final_find);
+		var regex;
+		var linkRegex = function(val) {
+			var obj = {};
+			obj[val] = regex;
+			return obj;
+		};
+		var fieldsToSearch = _.filter(fields.split(' '), function(val) {
+			var array_ignore = ['additionalInfo.recnum', 'additionalInfo.assemblyquantity', 'additionalInfo.assemblylist'];
+			if(array_ignore.indexOf(val) > -1)
+				return false;
+			return true;
 		});
+		removeDuplicates(fieldsToSearch);
+		var final_find = filterCriteria;
+		final_find.$and = [];
+		if(req.body.search.words && req.body.search.words.length !== 0)
+		{
+			for (var i = 0; i < req.body.search.words.length; i++) {
+				var word = req.body.search.words[i];
+				regex = new RegExp(word.trim().toUpperCase());
+				var newOrWordSet = _.map(fieldsToSearch, linkRegex);
+				final_find.$and.push({$or: newOrWordSet});
+			}
+		}
+		if(req.body.search.exacts && req.body.search.exacts.length !== 0)
+		{
+			for (var j = 0; j < req.body.search.exacts.length; j++) {
+				var one_exact = req.body.search.exacts[j];
+				regex = new RegExp(one_exact.trim().toUpperCase());
+				var newOrExactSet = _.map(fieldsToSearch, linkRegex);
+				final_find.$and.push({$or: newOrExactSet});
+			}
+		}
+		if(req.body.search.or && req.body.search.or.length !== 0)
+		{
+			for(var k = 0; k < req.body.search.or.length; k++)
+			{
+				var one_or = req.body.search.or[k];
+				var newOrSet = [];
+				for(var l = 0; l < one_or.length; l++)
+				{
+					regex = new RegExp(one_or[l].trim().toUpperCase());
+					newOrSet.push(_.map(fieldsToSearch, linkRegex));
+				}
+				final_find.$and.push({$or: newOrSet});
+			}
+		}
+		if(!req.body.total)
+			find_function(final_find);
+		else
+			count_function(final_find);
 		return;
 	}
 	if(req.body.total)
@@ -320,11 +372,7 @@ exports.editCatalogEntry = function(req,res){
 			return console.log(err);
 		if(!entry)
 			return console.log(err);
-		console.log('entry:',entry);
 		fetchedEntry = entry;
-		//if the type changes, all additional info must be reset.
-		console.log('fetched:',fetchedEntry);
-		console.log('new:',newEntry);
 		if(fetchedEntry.type.code !== newEntry.type.code)
 			fetchedEntry.additionalInfo = {};
 		_.extend(fetchedEntry,newEntry);
