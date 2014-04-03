@@ -81,6 +81,11 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 		for(var i in $scope.pendingSheets){
 			$scope.processedSheets.push($scope.pendingSheets[i]);
 		}
+		$scope.pendingSheets = [];
+		for(var j in $scope.processedSheets){
+			if($scope.processedSheets[j].unTrack)
+				$scope.processedSheets.splice(j,1);
+		}
 		$scope.matchFields($scope.wb);
 	};
 
@@ -161,7 +166,8 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 
 	$scope.$watch('pendingSheets', function(){
 		for(var i in $scope.pendingSheets)
-			if((! $scope.pendingSheets[i].dName) && (!$scope.pendingSheets[i].unTrack)){
+			if((!$scope.pendingSheets[i].dName) && (!$scope.pendingSheets[i].unTrack)){
+
 				$scope.nextDisabled = true;
 				return;
 			}
