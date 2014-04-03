@@ -3,7 +3,7 @@
         <div>
             <ul class="list-group">
                 <div class="list-group-item list-title">Schematic Favourites</div> 
-                <li class="list-group-item" ng-show="schematic.length == 0">No favourites yet.</li>          
+                <li class="list-group-item" ng-show="schematic.length == 0">No favourites added yet.</li>          
                 <li class="list-group-item imgLoader" ng-repeat="child in schematic | filter: unpublished" ng-mouseenter = "toggleOption(child)" ng-mouseleave = "toggleOption(child)">
                     <img ng-src="{{child.thumbnail}}" ng-show="child.thumbnail" style="width: 40px; height: 40px; margin-right:10px;">
                     <a href="#!/standards/{{child.parentNode}}">{{child.name}}</a>

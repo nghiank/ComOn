@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('ace.catalog')
-.controller('manageCatalogCtrl', ['$scope', 'Global', 'CatalogAPI', '_','$modal', function ($scope, Global, CatalogAPI, underscore, $modal) {
+.controller('manageCatalogCtrl', ['$scope', 'Global', 'CatalogAPI', '_' ,'$modal', function ($scope, Global, CatalogAPI, underscore, $modal) {
 	$scope.global = Global;
 	$scope.fields = [];
 	$scope._ = underscore;
