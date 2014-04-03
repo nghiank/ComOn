@@ -9,6 +9,9 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 	$scope.states = [1,0,0];
 	$scope.sheets = [];
 	$scope.processedSheets = [];
+	$scope.pendingSheets = [];
+	$scope.nextDisabled = true;
+	$scope.showAll = false;
 
 	$scope.authorized = function() {
 		if($scope.global.authenticated && ($scope.global.user.isAdmin || $scope.global.user.isManufacturer))
@@ -51,20 +54,37 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 		var processedSheet = null;
 		CatalogAPI.types.query(function(response){
 			for(var i in response){
-				$scope.types.push(response[i].code);
+				if(response[i].code)
+					$scope.types.push(response[i].code);
 			}
 			for (var j in $scope.sheets){
-				if($scope.types.indexOf($scope.sheets[j]) > -1)
+				if($scope.types.indexOf($scope.sheets[j]) > -1){
 					processedSheet = {'sName':$scope.sheets[j],'dName':$scope.sheets[j]};
-				else
+					$scope.processedSheets.push(processedSheet);
+				}
+				else{
 					processedSheet = {'sName':$scope.sheets[j]};
-				$scope.processedSheets.push(processedSheet);
-				console.log(processedSheet);
-				$scope.$apply();
+					$scope.pendingSheets.push(processedSheet);
+				}
 			}
 		});
 	};
 
+	$scope.toggleShowAll = function(){
+		$scope.showAll = !$scope.showAll;
+	};
+
+
+	$scope.$watch('pendingSheets', function(){
+		console.log('...');
+		for(var i in $scope.pendingSheets)
+			if(! $scope.pendingSheets[i].dName){
+				console.log($scope.pendingSheets[i]);
+				$scope.nextDisabled = true;
+				return;
+			}
+		$scope.nextDisabled = false;
+	},true);
 
 	$scope.startProcessing = function(wb) {
 		$scope.showProgress = true;
