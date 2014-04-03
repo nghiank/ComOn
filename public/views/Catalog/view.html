@@ -1,5 +1,5 @@
 <section ng-init="init()" ng-show="authorized()" ng-controller="catalogController">
-        <div class="well">
+        <div class="panel">
             <div class="row">
                 <form class="form-horizontal col-md-8 col-md-offset-2">
                     <div class="alert alert-thin alert-info"  ng-show="states[0]">
@@ -26,6 +26,10 @@
                     </div>
                     <div class="form-group" ng-show="states[1]">
                         <div class="col-md-12">
+                            <p>Out of {{sheets.length}} sheets in the .xls file, {{pendingSheets.length}} needs clarification.
+                                <button class="btn btn-info btn-sm btn-separate" ng-click="toggleShowAll()" ng-if="!showAll">Show all sheets</button>
+                                <button class="btn btn-info btn-sm btn-separate" ng-click="toggleShowAll()" ng-if="showAll">Hide matched sheets</button>
+                            </p>
                         <table class="table">
                             <thead>
                                 <tr>
@@ -34,32 +38,33 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr class="showIconOnHover" ng-repeat = "sheet in processedSheets | orderBy:'dName':true" ng-class="{warning:!sheet.dName}">
+                                <tr class="showBlockOnHover" ng-repeat = "sheet in pendingSheets" ng-class="{warning:!sheet.dName&&(!sheet.unTrack), muted:sheet.unTrack, active:sheet.unTrack}">
                                     <td class="col-md-6">{{sheet.sName}}</td>
-                                    <td class="col-md-6" ng-if="sheet.dName">
-                                        <i class="fa fa-check success"></i>
-                                        {{sheet.dName}}
-                                    </td>
-                                    <td class="col-md-6" ng-if="!sheet.dName">
-                                        <span class="dropdown">
-                                            <a class="dropdown-toggle btn btn-default btn-sm" ng-click="toggleCollapse()">
-                                            Choose a type <i class="fa fa-caret-down"></i>
-                                            </a>
-                                            <ul class="dropdown-menu">
-                                                <li>
-                                                  <a>Discard</a>
-                                                </li>
-                                                <li>
-                                                  <a>Fuses (FU)</a>
-                                                </li>
-                                            </ul>
-                                        </span>
-                                        <a class="btn onHover"><i class="fa fa-trash-o"></i></a>
+                                    <td class="col-md-6">
+                                        <div class="col-md-8">
+                                            <select class="form-control" ng-model="sheet.dName" ng-options="type for type in types"></select>
+                                        </div>
+                                        <div class="col-md-1">
+                                            <i class="fa fa-check success" ng-show="sheet.dName  && !sheet.unTrack"></i>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <a class="btn btn-default onHover" ng-click="stopTrackingSheet(sheet)"><i class="fa fa-trash-o"></i></a>
+                                        </div>                   
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td class="col-md-6">FU</td>
-                                    <td class="col-md-6"><i class="fa fa-check success"></i> Fuses(FU)</td>
+                                <tr ng-if="showAll" class="showBlockOnHover" ng-repeat = "sheet in processedSheets" ng-class="{warning:!sheet.dName&&(!sheet.unTrack), muted:sheet.unTrack, active:sheet.unTrack}">
+                                    <td class="col-md-6">{{sheet.sName}}</td>
+                                    <td class="col-md-6">
+                                        <div class="col-md-8">
+                                            <select class="form-control" ng-model="sheet.dName" ng-options="type for type in types"></select>
+                                        </div>
+                                        <div class="col-md-1">
+                                            <i class="fa fa-check success" ng-show="sheet.dName && !sheet.unTrack"></i>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <a class="btn btn-default onHover" ng-click="stopTrackingSheet(sheet)"><i class="fa fa-trash-o" ></i></a>
+                                        </div>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -67,7 +72,7 @@
                             <div class="col-md-12">
                                 <div class="pull-right" ng-show="states[1] && !states[2]">
                                     <a class="btn btn-default btn-separate" ng-click="states[1] = 0; states[0] = 1;">Back</a>
-                                    <a class="btn btn-default btn-separate" ng-click="states[1] = 0; states[2] = 1;">Next</a>
+                                    <a class="btn btn-default btn-separate" ng-click="states[1] = 0; states[2] = 1;mergePendingSheets()" ng-disabled="nextDisabled">Next</a>
                                 </div>
                             </div>
                         </div>
@@ -79,9 +84,9 @@
                     </div>
                     <div clas="form-group" ng-show="states[2]">
                         <accordion close-others="oneAtATime">
-                            <accordion-group>
+                            <accordion-group ng-repeat="sheet in processedSheets">
                                 <accordion-heading>
-                                    <div class="placeholder">Fuses (FU) <i class="btn-separate fa fa-check success"></i></div>
+                                    <div class="placeholder">{{sheet.dName}}<i class="btn-separate fa fa-check success"></i></div>
                                 </accordion-heading>
                                 <table class="table">
                             <thead>

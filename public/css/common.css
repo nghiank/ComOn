@@ -173,6 +173,11 @@ footer p {
     display:table-cell;
 }
 
+.showBlockOnHover:hover .onHover{
+    display:block;
+    width:40px;
+}
+
 .showBtnOnHoer input{
     border-radius: 4px !important;
 }
@@ -196,4 +201,9 @@ footer p {
 {
     width:inherit;
     height:inherit;
+}
+
+.muted
+{
+    color:grey;
 }

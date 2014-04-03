@@ -10,15 +10,17 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 	$scope.sheets = [];
 	$scope.processedSheets = [];
 	$scope.title_row = 2;
+	$scope.nextDisabled = true;
+	$scope.showAll = false;
+
 	$scope.authorized = function() {
 		if($scope.global.authenticated && ($scope.global.user.isAdmin || $scope.global.user.isManufacturer))
 			return true;
 		return false;
 	};
 
-	$scope.isCollapsed = true;
-	$scope.toggleCollapse = function(){
-		$scope.isCollapsed = !$scope.isCollapsed;
+	$scope.toggleShowAll = function(){
+		$scope.showAll = !$scope.showAll;
 	};
 
 	$scope.fileSelect = function($files) {
@@ -28,6 +30,9 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 		{
 			$scope.uploadDisabled = false;
 			$scope.file = $files[0];
+			$scope.sheets = [];
+			$scope.processedSheets = [];
+			$scope.pendingSheets = [];
 		}
 		$scope.success = check.suc_message;
 		$scope.valid = check.result;
@@ -39,6 +44,7 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 		var reader = new FileReader();
 		reader.onload = function(){
 			var wb = $scope.xls.read(reader.result, {type: 'binary'});
+			$scope.wb = wb;
 			$scope.getSheets(wb);
 			//$scope.startProcessing(wb);
 		};
@@ -46,24 +52,120 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 	};
 
 	$scope.getSheets = function(wb){
+		if($scope.processedSheets.length > 0)
+			return;
 		$scope.sheets = wb.SheetNames;
 		$scope.types = [];
 		var processedSheet = null;
 		CatalogAPI.types.query(function(response){
 			for(var i in response){
-				$scope.types.push(response[i].code);
+				if(response[i].code)
+					$scope.types.push(response[i].code);
 			}
 			for (var j in $scope.sheets){
-				if($scope.types.indexOf($scope.sheets[j]) > -1)
+				if($scope.types.indexOf($scope.sheets[j]) > -1){
 					processedSheet = {'sName':$scope.sheets[j],'dName':$scope.sheets[j]};
-				else
+					$scope.processedSheets.push(processedSheet);
+				}
+				else{
 					processedSheet = {'sName':$scope.sheets[j]};
-				$scope.processedSheets.push(processedSheet);
-				console.log(processedSheet);
+					$scope.pendingSheets.push(processedSheet);
+				}
 			}
 		});
 	};
 
+	$scope.mergePendingSheets = function(){
+		for(var i in $scope.pendingSheets){
+			$scope.processedSheets.push($scope.pendingSheets[i]);
+		}
+		$scope.matchFields($scope.wb);
+	};
+
+
+	$scope.matchFields = function(wb){
+		var count = -1;
+		function match_field(j, cols)
+		{
+			var std_fields = [];
+			CatalogAPI.fields.query({type:$scope.processedSheets[j].dName},function(response){
+				for(var k in response){
+					var std_field = _.values(response[k]).join('');
+					if(std_field.indexOf('additionalInfo') > -1)
+						std_field = std_field.substr(15);
+					std_fields.push(std_field);
+				}
+				k = 0;
+				$scope.processedSheets[j].fields = {};
+				for (k in cols){
+					if(std_fields.indexOf(cols[k].toLowerCase()) > -1){
+						$scope.processedSheets[j].fields[cols[k]] = cols[k];
+					}
+				}
+				console.log($scope.processedSheets[j]);
+			});
+		}
+		for(var i in wb.Sheets){
+			count++;
+			var sheet_flag= false;
+			for(var j in $scope.processedSheets){
+				if($scope.processedSheets[j].sName === wb.SheetNames[count] && !$scope.processedSheets[j].unTrack){
+					sheet_flag = true;
+					break;
+				}
+			}
+			if(count > 2) return;
+			if(sheet_flag){
+				var sheet = wb.Sheets[i];
+				var cols = [];
+				var column = 'A';
+				var col_flag = true;
+				var column_titles_row = $scope.title_row.toString();
+				while(col_flag){
+					if(!sheet[column+column_titles_row] || !sheet[column+column_titles_row].w)
+					{
+						col_flag = false;
+						break;
+					}
+					var column_title = sheet[column+column_titles_row].w;
+					if(cols.indexOf(column_title) < 0)
+						cols.push(column_title);
+					column = $scope.getNextColumnToRead(column.split(''));
+					if(!column)
+					{
+						col_flag = false;
+						break;
+					}
+				}
+				match_field(j, cols);
+			}
+		}
+	};
+
+	
+
+	$scope.stopTrackingSheet = function(sheet){
+		for(var i in $scope.pendingSheets){
+			if($scope.pendingSheets[i].sName === sheet.sName){
+				$scope.pendingSheets[i].unTrack = true;
+			}
+		}
+		for(var j in $scope.processedSheets){
+			if($scope.processedSheets[j].sName === sheet.sName){
+				$scope.processedSheets[j].unTrack = true;
+			}
+		}
+	};
+
+
+	$scope.$watch('pendingSheets', function(){
+		for(var i in $scope.pendingSheets)
+			if((! $scope.pendingSheets[i].dName) && (!$scope.pendingSheets[i].unTrack)){
+				$scope.nextDisabled = true;
+				return;
+			}
+		$scope.nextDisabled = false;
+	},true);
 
 	$scope.startProcessing = function(wb) {
 		$scope.showProgress = true;
@@ -123,6 +225,7 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 						if(!row_data[column_title.toLowerCase()])
 						{
 							var newCell = sheet[column+row.toString()]?sheet[column+row.toString()].w: '';
+							//A manufacturer can only upload items under his own name
 							if(column_title.toLowerCase() === 'manufacturer' && newCell !== '')
 							{
 								if(!checkAuthority(newCell))
