@@ -26,9 +26,9 @@
                     </div>
                     <div class="form-group" ng-show="states[1]">
                         <div class="col-md-12">
-                            <p>Out of {{sheets.length}} sheets in the .xls file, {{pendingSheets.length}} needs clarification.
-                                <button class="btn btn-info btn-sm btn-separate" ng-click="toggleShowAll()" ng-if="!showAll">Show all sheets</button>
-                                <button class="btn btn-info btn-sm btn-separate" ng-click="toggleShowAll()" ng-if="showAll">Hide matched sheets</button>
+                            <p>Out of <b>{{sheets.length}}</b> sheets in the .xls file, <b>{{pendingSheets.length}}</b> needs clarification.
+                                <button class="btn btn-info btn-sm btn-separate pull-right" style="margin-top: -5px" ng-click="toggleShowAll()" ng-if="!showAll">Show all sheets</button>
+                                <button class="btn btn-info btn-sm btn-separate pull-right" style="margin-top: -5px" ng-click="toggleShowAll()" ng-if="showAll">Hide matched sheets</button>
                             </p>
                         <table class="table">
                             <thead>
@@ -42,7 +42,7 @@
                                     <td class="col-md-6">{{sheet.sName}}</td>
                                     <td class="col-md-6">
                                         <div class="col-md-8">
-                                            <select class="form-control" ng-model="sheet.dName" ng-options="type for type in types"></select>
+                                            <select class="form-control" ng-model="sheet.dName" ng-options="type for type in typeCodes"></select>
                                         </div>
                                         <div class="col-md-1">
                                             <i class="fa fa-check success" ng-show="sheet.dName  && !sheet.unTrack"></i>
@@ -56,7 +56,7 @@
                                     <td class="col-md-6">{{sheet.sName}}</td>
                                     <td class="col-md-6">
                                         <div class="col-md-8">
-                                            <select class="form-control" ng-model="sheet.dName" ng-options="type for type in types"></select>
+                                            <select class="form-control" ng-model="sheet.dName" ng-options="type for type in typeCodes"></select>
                                         </div>
                                         <div class="col-md-1">
                                             <i class="fa fa-check success" ng-show="sheet.dName && !sheet.unTrack"></i>
@@ -72,7 +72,7 @@
                             <div class="col-md-12">
                                 <div class="pull-right" ng-show="states[1] && !states[2]">
                                     <a class="btn btn-default btn-separate" ng-click="states[1] = 0; states[0] = 1;">Back</a>
-                                    <a class="btn btn-default btn-separate" ng-click="states[1] = 0; states[2] = 1;mergePendingSheets()" ng-disabled="nextDisabled">Next</a>
+                                    <a class="btn btn-default btn-separate" ng-click="states[1] = 0; states[2] = 1; mergePendingSheets()" ng-disabled="nextDisabled">Next</a>
                                 </div>
                             </div>
                         </div>

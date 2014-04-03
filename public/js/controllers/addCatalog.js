@@ -56,15 +56,17 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 			return;
 		$scope.sheets = wb.SheetNames;
 		$scope.types = [];
+		$scope.typeCodes = [];
 		var processedSheet = null;
 		CatalogAPI.types.query(function(response){
+			$scope.types = response;
 			for(var i in response){
 				if(response[i].code)
-					$scope.types.push(response[i].code);
+					$scope.typeCodes.push(response[i].code);
 			}
 			for (var j in $scope.sheets){
-				if($scope.types.indexOf($scope.sheets[j]) > -1){
-					processedSheet = {'sName':$scope.sheets[j],'dName':$scope.sheets[j]};
+				if($scope.typeCodes.indexOf($scope.sheets[j]) > -1){
+					processedSheet = {'sName':$scope.sheets[j],'dName': $scope.sheets[j]};
 					$scope.processedSheets.push(processedSheet);
 				}
 				else{
