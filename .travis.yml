@@ -12,6 +12,5 @@ deploy:
     secure: bSYRnM4Y4JZKIpKTm66CXfe9ZtIpbRrFWYCUtO6c0k3r+zejnjoCiEoJNUBXG/ssAoKTwcd+QauX0UlQwI8Pg+gFXHEmy3cpuS8aAZsfHmS1N40Pn6S1xsp+WyIkxmPqr0kVuCDOis3yi0POtU5611aGP8ukBWbxxnGmCI7f2+E=
   app-id: fe1b9d65-6f9f-4a63-9054-660cd3901d2f
   on:
-    migrate: true
     repo: nghiank/ComOn
     branch: AWS_Deployment
