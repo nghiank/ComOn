@@ -25,42 +25,17 @@ angular.module('ace.schematic')
 			}
 			breadcrumbs.add(hiearchy);
 		});
-		/*$scope.getSiblings($scope.breadcrumbs.all());*/
 	};
 
 	$scope.toggleOption = function (child) {
 		return (child.showOption = !child.showOption);
 	};
 
-	/*$scope.getSiblings = function(breadcrumbs){
-		for (var index in breadcrumbs){
-			var name = breadcrumbs[index].title;
-			var _id = breadcrumbs[index].link.split('/');
-			_id = _id[_id.length - 1];
-			if(breadcrumbs[index].title !== 'Standards'){
-				SchematicsAPI.children.get({nodeId:_id}, function(result){
-					var menuArray = [];
-					for(var i in result.children){
-						if(result.children[i].isComposite === true){
-							var menuItem = {};
-							menuItem.title = result.children[i].name;
-							menuItem.link = '#!/standards/' + result.children[i]._id;
-							menuArray.push(menuItem);
-						}
-					}
-					$scope.bcMenu[name] = menuArray;
-					console.log(name, _id);
-					console.log('result:', $scope.bcMenu);
-				});
-			}
-		}
-	};*/
 	$scope.getSiblings = function(breadcrumb){
 		$scope.bcMenu = [];
 		var _id = breadcrumb.link.split('/');
 		_id = _id[_id.length - 1];
 		if(breadcrumb.title !== 'Standards'){
-			//list = _.map($scope.bcMenu, function(value) { return _.pick(value, ['title']).title; });
 			SchematicsAPI.children.get({nodeId:_id}, function(result){
 				for(var i in result.children){
 					if(result.children[i].isComposite === true){
@@ -75,7 +50,6 @@ angular.module('ace.schematic')
 			});
 		}
 		if(breadcrumb.title === 'Standards'){
-			//list = _.map($scope.bcMenu, function(value) { return _.pick(value, ['title']).title; });
 			SchematicsAPI.standardlist.query(function(stds){
 				for(var i in stds){
 					var menuItem = {};
@@ -84,7 +58,6 @@ angular.module('ace.schematic')
 					if(menuItem.title && $scope.nodeId !== stds[i]._id)
 						$scope.bcMenu.unshift(menuItem);
 				}
-				console.log($scope.bcMenu);
 			});
 		}
 	};

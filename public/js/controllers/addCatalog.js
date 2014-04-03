@@ -102,7 +102,6 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 						$scope.processedSheets[j].fields[cols[k]] = cols[k];
 					}
 				}
-				console.log($scope.processedSheets[j]);
 			});
 		}
 		for(var i in wb.Sheets){
