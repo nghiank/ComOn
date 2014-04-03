@@ -202,3 +202,8 @@ footer p {
     width:inherit;
     height:inherit;
 }
+
+.muted
+{
+    color:grey;
+}
