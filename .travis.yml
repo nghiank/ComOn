@@ -6,11 +6,12 @@ env:
 services:
 - mongodb
 deploy:
-  provider: heroku
-  api_key:
-    secure: RXGuUAyDToJ2YTnzA5prYXJ8jlRqBU2mnzhx8gFNPHa785Jj5zpU3Qx2WosIaiVGiMrANcCKwBAqPGZC2XMfvnmjFvcvaheUel3FuOt11Xz9LD1X8M9k4sL0NGa0U7nUFszH/6NUmhs3WpNHFfmuO9HehfSFzMtEz8OLMreteQA=
-  app: comon
+  provider: opsworks
+  access_key_id: AKIAIM2NCIV7UNEU3DXA
+  secret_access_key:
+    secure: bSYRnM4Y4JZKIpKTm66CXfe9ZtIpbRrFWYCUtO6c0k3r+zejnjoCiEoJNUBXG/ssAoKTwcd+QauX0UlQwI8Pg+gFXHEmy3cpuS8aAZsfHmS1N40Pn6S1xsp+WyIkxmPqr0kVuCDOis3yi0POtU5611aGP8ukBWbxxnGmCI7f2+E=
+  app-id: fe1b9d65-6f9f-4a63-9054-660cd3901d2f
   on:
+    migrate: true
     repo: nghiank/ComOn
-    branch: Deployment
-  strategy: git
+    branch: AWS_Deployment
