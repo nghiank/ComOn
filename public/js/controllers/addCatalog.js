@@ -201,6 +201,7 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 	};
 
 	$scope.$watch('processedSheets', function(){
+		console.log('asdasd');
 		if($scope.sheets.length !== 0)
 		{
 			for(var i in $scope.processedSheets)
@@ -209,6 +210,7 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 					return;
 				}
 			$scope.nextDisabled = false;
+			return;
 		}
 		$scope.nextDisabled = true;
 	},true);
