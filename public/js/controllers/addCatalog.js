@@ -25,7 +25,7 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 
 	$scope.isPending = function(sheet){
 		if(!$scope.showAll)
-			return (!sheet.dName);
+			return (!sheet.dName && !sheet.unTrack);
 		return true;
 	};
 
@@ -38,7 +38,6 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 			$scope.file = $files[0];
 			$scope.sheets = [];
 			$scope.processedSheets = [];
-			$scope.pendingSheets = [];
 		}
 		$scope.success = check.suc_message;
 		$scope.valid = check.result;
@@ -61,6 +60,13 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 		if($scope.processedSheets.length > 0)
 			return;
 		$scope.sheets = wb.SheetNames;
+		if($scope.sheets.length === 0)
+		{
+			$scope.success = null;
+			$scope.valid = false;
+			$scope.error = 'No sheets found in the workbook';
+			return;
+		}
 		$scope.types = [];
 		$scope.typeCodes = [];
 		var processedSheet = null;
@@ -96,7 +102,6 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 				k = 0;
 				$scope.processedSheets[j].fields = {};
 				for (k in cols){
-					console.log(cols[k]);
 					if(std_fields.indexOf(cols[k].toLowerCase()) > -1){
 						$scope.processedSheets[j].fields[cols[k]] = cols[k];
 						console.log('matched!',cols[k].toLowerCase(),std_fields[std_fields.indexOf(cols[k].toLowerCase())]);
@@ -147,27 +152,50 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 	
 
 	$scope.toggleTrackingSheet = function(sheet){
-		for(var i in $scope.pendingSheets){
-			if($scope.pendingSheets[i].sName === sheet.sName){
-				$scope.pendingSheets[i].unTrack = !$scope.pendingSheets[i].unTrack;
-			}
-		}
 		for(var j in $scope.processedSheets){
 			if($scope.processedSheets[j].sName === sheet.sName){
 				$scope.processedSheets[j].unTrack = !$scope.processedSheets[j].unTrack;
+				$scope.processedSheets[j].dName = null;
 			}
 		}
 	};
 
-
-	$scope.$watch('pendingSheets', function(){
-		for(var i in $scope.pendingSheets)
-			if((!$scope.pendingSheets[i].dName) && (!$scope.pendingSheets[i].unTrack)){
-
-				$scope.nextDisabled = true;
-				return;
+	$scope.showTypesModal = function(sheet) {
+		if(!$scope.global.user.isAdmin)
+			return;
+		var modalInstance = $modal.open({
+			templateUrl: 'views/Catalog/addCustomTypeModal.html',
+			controller: 'addCustomTypeModalCtrl',
+			resolve: {
+				data: function() {
+					return {
+						types: $scope.types,
+						sheets: $scope.sheets,
+						current: sheet
+					};
+				}
 			}
-		$scope.nextDisabled = false;
+		});
+		modalInstance.result.then(function(){
+			$scope.typeCodes = [];
+			for (var i = 0; i < $scope.types.length; i++) {
+				$scope.typeCodes.push($scope.types[i].code);
+			}
+		});
+		return;
+	};
+
+	$scope.$watch('processedSheets', function(){
+		if($scope.sheets.length !== 0)
+		{
+			for(var i in $scope.processedSheets)
+				if((!$scope.processedSheets[i].dName) && (!$scope.processedSheets[i].unTrack)){
+					$scope.nextDisabled = true;
+					return;
+				}
+			$scope.nextDisabled = false;
+		}
+		$scope.nextDisabled = true;
 	},true);
 
 	$scope.startProcessing = function(wb) {
@@ -272,6 +300,17 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 				$scope.populateProgress = 100;
 			}
 		});
+	};
+
+	$scope.countPending = function() {
+		var count = 0;
+		for(var i in $scope.processedSheets)
+		{
+			if((!$scope.processedSheets[i].dName) && (!$scope.processedSheets[i].unTrack)){
+				count++;
+			}
+		}
+		return count;
 	};
 
 	$scope.getNextColumnToRead = function(column)
