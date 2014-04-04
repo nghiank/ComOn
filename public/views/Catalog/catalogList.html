@@ -1,12 +1,12 @@
 <div class="container" ng-controller="catalogListCtrl" ng-init="init()" style="padding-top:30px;">
 	<nav class="col-md-4 navmenu navmenu-default animate-show" ng-show="showTypes" style="height: 85%; position: fixed; left: 0; z-index: 9999; overflow-y: auto;">
 		<ul class="nav navmenu-nav" ng-init="getTypes()" style="overflow-y: auto;">
-            <div class="navmenu-brand">Catalog Types</i></div> 
+            <div class="navmenu-brand">Catalog Types</i></div>
             <form class="navbar-form" role="search">
 				<input type="text" class="form-control" placeholder="Search Type..." ng-model="searchType">
 			</form>
 
-            <li ng-show="types.length == 0">No catalog available</li>          
+            <li ng-show="types.length == 0">No catalog available</li>
             <li class="ng-class:{active: (!!selected? type.code===selected.code: false)}" ng-repeat="type in types | orderBy: 'name' |filter: searchType" ng-mouseenter = "toggleOption(type)" ng-mouseleave = "toggleOption(type)" href="#!/catalog/{{type.name}}" ng-click="showTypeList(type)">
                 <a>{{type.name + '  ('+ type.code + ')'}}</a>
             </li>
@@ -32,6 +32,7 @@
 		    			<div class="col-sm-8 input-group">
 			      			<input type="text" class="form-control" placeholder="Search Text Here">
 			      			<span class="input-group-btn"><a class="btn btn-default"><i class="fa fa-search"> Search</i></a></span>
+	                        <button class="btn btn-default" style="margin-left:10px;" ng-show="showDownload" ng-click="downloadSearchResults()">Download</button>
 		   				</div>
 		   			</div>
 				</form>

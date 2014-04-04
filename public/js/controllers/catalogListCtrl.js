@@ -1,169 +1,274 @@
 'use strict';
 
-angular.module('ace.catalog')
-.controller('catalogListCtrl', ['$scope', 'Global', 'CatalogAPI','$routeParams', '_', function ($scope, Global, CatalogAPI, $routeParams, underscore) {
-	$scope.global = Global;
-	$scope.fields = [];
-	$scope._ = underscore;
-	$scope.pageItemLimit = 15;
-	$scope.searchMode = false;
-	$scope.lower = 0;
-	$scope.upper = $scope.lower + $scope.pageItemLimit;
-	$scope.sort = null;
-	$scope.authorized = function() {
-		if($scope.global.authenticated && ($scope.global.user.isAdmin || $scope.global.user.isManufacturer))
-			return true;
-		return false;
-	};
+angular.module('ace.catalog').controller('catalogListCtrl', ['$scope', 'Global', 'CatalogAPI', '$routeParams', '_',
+function($scope, Global, CatalogAPI, $routeParams, underscore) {
+    $scope.global = Global;
+    $scope.fields = [];
+    $scope._ = underscore;
+    $scope.pageItemLimit = 15;
+    $scope.searchMode = false;
+    $scope.lower = 0;
+    $scope.upper = $scope.lower + $scope.pageItemLimit;
+    $scope.sort = null;
+    $scope.showDownload = (window.exec === undefined)? false : true;
 
-	$scope.toggleOption = function(type){
-		$scope.target = type;
-	};
+    $scope.authorized = function() {
+        if ($scope.global.authenticated && ($scope.global.user.isAdmin || $scope.global.user.isManufacturer))
+            return true;
+        return false;
+    };
 
-	$scope.init = function() {
-		$scope.showTypes = true;
-		CatalogAPI.types.query(function(response) {
-			if(response)
-				$scope.types = response;
-		});
-		$scope.showList = false;
-	};
+    $scope.toggleOption = function(type) {
+        $scope.target = type;
+    };
 
-	$scope.showTypeList = function(type){
-		$scope.showList = true;
-		$scope.showTypes = false;
-		$scope.selected = $scope.target;
-		function parseCamelCase(input)
-		{
-			return input.charAt(0).toUpperCase() + input.substr(1).replace(/[A-Z0-9]/g, ' $&');
-		}
-		CatalogAPI.fields.query({type: type.code}, function(response) {
-			if(response)
-			{
-				for (var i = 0; i < response.length; i++) {
-					var field = $scope._.values(response[i]).join('');
-					var displayed_field = field;
-					if(displayed_field.indexOf('additionalInfo') > -1)
-					{
-						displayed_field = displayed_field.replace('additionalInfo.', '');
-						displayed_field = displayed_field.replace('_', ' ');
-						displayed_field = parseCamelCase(displayed_field);
-						$scope.fields.push({title: displayed_field, field: field, sort: null});
-					}
-				}
-			}
-		});
-		CatalogAPI.entries.query({type: type.code, lower: $scope.lower, upper: $scope.upper}, function(response) {
-			if(response)
-			{
-				$scope.items = $scope._.map(response.data, function(value) {return $scope._.omit(value, ['__v']);});
-				$scope.total = response.total;
-			}
-		});
-		$scope.fields = [];
-		$scope.cols = [{title: 'Catalog', field: 'catalog', sort: null},{title: 'Manufacturer', field: 'manufacturer', sort: null},{title: 'Assembly Code', field: 'assemblyCode', sort: null}];
-	};
+    $scope.init = function() {
+        $scope.showTypes = true;
+        CatalogAPI.types.query(function(response) {
+            if (response)
+                $scope.types = response;
+        });
+        $scope.showList = false;
+    };
+
+    $scope.getAllFields = function(type) {
+        if (type === undefined || !type) {
+            return null;
+        }
+
+        /*CatalogAPI.fields.query({
+            type : type
+        }, function(response) {
+            if (response) {
+                var retVal;
+                for (var i = 0; i < response.length; i++) {
+                    var field = $scope._.values(response[i]).join('');
+                    var displayed_field = field;
+                    if (displayed_field.indexOf('additionalInfo') > -1) {
+                        displayed_field = displayed_field.replace('additionalInfo.', '');
+                        displayed_field = displayed_field.replace('_', ' ');
+                        displayed_field = parseCamelCase(displayed_field);
+                        retVal.push({
+                            title : displayed_field,
+                            field : field,
+                            sort : null
+                        });
+                    }
+                }
+            }
+        });*/
+    };
+
+    $scope.showTypeList = function(type) {
+        $scope.showList = true;
+        $scope.showTypes = false;
+        $scope.selected = $scope.target;
+        function parseCamelCase(input) {
+            return input.charAt(0).toUpperCase() + input.substr(1).replace(/[A-Z0-9]/g, ' $&');
+        }
 
 
-	$scope.closeType = function(){
-		$scope.showTypes = false;
-	};
+        CatalogAPI.fields.query({
+            type : type.code
+        }, function(response) {
+            if (response) {
+                for (var i = 0; i < response.length; i++) {
+                    var field = $scope._.values(response[i]).join('');
+                    var displayed_field = field;
+                    if (displayed_field.indexOf('additionalInfo') > -1) {
+                        displayed_field = displayed_field.replace('additionalInfo.', '');
+                        displayed_field = displayed_field.replace('_', ' ');
+                        displayed_field = parseCamelCase(displayed_field);
+                        $scope.fields.push({
+                            title : displayed_field,
+                            field : field,
+                            sort : null
+                        });
+                    }
+                }
+            }
+        });
+        CatalogAPI.entries.query({
+            type : type.code,
+            lower : $scope.lower,
+            upper : $scope.upper
+        }, function(response) {
+            if (response) {
+                $scope.items = $scope._.map(response.data, function(value) {
+                    return $scope._.omit(value, ['__v']);
+                });
+                $scope.total = response.total;
+            }
+        });
+        $scope.fields = [];
+        $scope.cols = [{
+            title : 'Catalog',
+            field : 'catalog',
+            sort : null
+        }, {
+            title : 'Manufacturer',
+            field : 'manufacturer',
+            sort : null
+        }, {
+            title : 'Assembly Code',
+            field : 'assemblyCode',
+            sort : null
+        }];
+    };
 
-	$scope.showType = function(){
-		$scope.showTypes = true;
-	};
+    $scope.closeType = function() {
+        $scope.showTypes = false;
+    };
 
-	$scope.toggleField = function(field){
-		if($scope.cols.indexOf(field) === -1)
-		{
-			CatalogAPI.entries.query({type: $scope.selected.code, lower: $scope.lower, sortField: $scope.sort, upper: $scope.upper, fields: field.field}, function(response) {
-				if(response)
-				{
-					var data = response.data;
-					for (var i = 0; i < $scope.items.length; i++) {
-						var newField = $scope._.findWhere(data, {_id: $scope.items[i]._id});
-						if(newField && newField.additionalInfo)
-						{
-							$scope.items[i][field.field] = newField.additionalInfo[field.field.replace('additionalInfo.','')];
-						}
-						else
-							$scope.items[i][field.field] = '';
-					}
-					$scope.cols.push(field);
-				}
-			});
-		}
-		else
-		{
-			$scope.cols.splice($scope.cols.indexOf(field),1);
-		}
-	};
+    $scope.showType = function() {
+        $scope.showTypes = true;
+    };
 
-	$scope.getPage = function(page) {
-		var lower = (page? (page-1): 0) * $scope.pageItemLimit;
-		var upper = page * $scope.pageItemLimit;
-		var cols = $scope._.map($scope.cols, function(value) {return value.field;});
-		CatalogAPI.entries.query({type: $scope.selected.code, lower: lower, sortField: $scope.sort, upper: upper, fields: cols.join(' ')}, function(response) {
-			$scope.items = $scope._.map(response.data, function(value) {return $scope._.omit(value, ['additionalInfo', '__v']);});
-			if($scope.fields.length > 0)
-			{
-				for (var i = 0; i < $scope.fields.length; i++) {
-					var field = $scope.fields[i];
-					for (var j = 0; j < $scope.items.length; j++) {
-						var newField = $scope._.findWhere(response.data, {_id: $scope.items[j]._id});
-						if(newField && newField.additionalInfo)
-							$scope.items[j][field.field] = newField.additionalInfo[field.field.replace('additionalInfo.','')];
-						else
-							$scope.items[j][field.field] = '';
-					}
-				}
-			}
-			$scope.total = response.total;
-			$scope.lower = lower;
-			$scope.upper = upper;
-		});
-	};
+    $scope.toggleField = function(field) {
+        if ($scope.cols.indexOf(field) === -1) {
+            CatalogAPI.entries.query({
+                type : $scope.selected.code,
+                lower : $scope.lower,
+                sortField : $scope.sort,
+                upper : $scope.upper,
+                fields : field.field
+            }, function(response) {
+                if (response) {
+                    var data = response.data;
+                    for (var i = 0; i < $scope.items.length; i++) {
+                        var newField = $scope._.findWhere(data, {
+                            _id : $scope.items[i]._id
+                        });
+                        if (newField && newField.additionalInfo) {
+                            $scope.items[i][field.field] = newField.additionalInfo[field.field.replace('additionalInfo.', '')];
+                        } else
+                            $scope.items[i][field.field] = '';
+                    }
+                    $scope.cols.push(field);
+                }
+            });
+        } else {
+            $scope.cols.splice($scope.cols.indexOf(field), 1);
+        }
+    };
 
-	$scope.sortedValues = function(data) {
-		var cols = $scope._.map($scope.cols, function(value) {return value.field;});
-		var val_array = new Array(cols.length+1).join('-').split('');
-		for(var key in data)
-		{
-			var index = cols.indexOf(key);
-			if(index > -1)
-			{
-				if(data[key])
-				{
-					val_array[index] = data[key];
-				}
-			}
-		}
-		return val_array;
-	};
+    $scope.getPage = function(page, callback) {
+        var lower;
+        var upper;
+        var cols = [];
+        if (callback) {
+            lower = 0;
+            upper = 5000;
+            $scope.cols.forEach(function(entry){
+                cols.push(entry.field);
+            });
+            $scope.fields.forEach(function(entry){
+                cols.push(entry.field);
+            });
+        } else {
+            lower = ( page ? (page - 1) : 0) * $scope.pageItemLimit;
+            upper = page * $scope.pageItemLimit;
+            cols = $scope._.map($scope.cols, function(value) {
+                return value.field;
+            });
+        }
 
-	$scope.sortTable = function(col) {
-		var order = col.sort;
-		for (var i = 0; i < $scope.cols.length; i++) {
-			$scope.cols[i].sort = null;
-		}
-		col.sort = (order === 1)? -1: 1;
-		$scope.sort = col;
-		$scope.getPage($scope.currentPage? $scope.currentPage: 1);
-	};
+        CatalogAPI.entries.query({
+            type : $scope.selected.code,
+            lower : lower,
+            sortField : $scope.sort,
+            upper : upper,
+            fields : cols.join(' ')
+        }, function(response) {
+            var queryResult = $scope._.map(response.data, function(value) {
+                return $scope._.omit(value, ['additionalInfo', '__v']);
+            });
+            if ($scope.fields.length > 0) {
+                for (var i = 0; i < $scope.fields.length; i++) {
+                    var field = $scope.fields[i];
+                    for (var j = 0; j < queryResult.length; j++) {
+                        var newField = $scope._.findWhere(response.data, {
+                            _id : queryResult[j]._id
+                        });
+                        if (newField && newField.additionalInfo){
+                            if (callback){
+                                queryResult[j][field.field.replace('additionalInfo.', '')] = newField.additionalInfo[field.field.replace('additionalInfo.', '')];
+                            }
+                            else
+                                queryResult[j][field.field] = newField.additionalInfo[field.field.replace('additionalInfo.', '')];
+                        }
+                        else
+                            queryResult[j][field.field] = '';
+                    }
+                }
+            }
+            if (callback) {
+                callback($scope.selected.code, queryResult);
+            } else {
+                $scope.items = queryResult;
+                $scope.total = response.total;
+                $scope.lower = lower;
+                $scope.upper = upper;
+            }
+        });
+    };
 
-	$scope.toggleAll = function() {
-		if(($scope.fields.length+3) !== $scope.cols.length)
-		{
-			for (var i = 0; i < $scope.fields.length; i++) {
-				var field = $scope.fields[i];
-				if($scope.cols.indexOf(field) === -1)
-					$scope.toggleField(field);
-			}
-			return;
-		}
-		for (var j = 0; j < $scope.fields.length; j++) {
-			var remove_field = $scope.fields[j];
-			$scope.cols.splice($scope.cols.indexOf(remove_field),1);
-		}
-	};
+    $scope.sortedValues = function(data) {
+        var cols = $scope._.map($scope.cols, function(value) {
+            return value.field;
+        });
+        var val_array = new Array(cols.length + 1).join('-').split('');
+        for (var key in data) {
+            var index = cols.indexOf(key);
+            if (index > -1) {
+                if (data[key]) {
+                    val_array[index] = data[key];
+                }
+            }
+        }
+        return val_array;
+    };
+
+    $scope.sortTable = function(col) {
+        var order = col.sort;
+        for (var i = 0; i < $scope.cols.length; i++) {
+            $scope.cols[i].sort = null;
+        }
+        col.sort = (order === 1) ? -1 : 1;
+        $scope.sort = col;
+        $scope.getPage($scope.currentPage ? $scope.currentPage : 1);
+    };
+
+    $scope.toggleAll = function() {
+        if (($scope.fields.length + 3) !== $scope.cols.length) {
+            for (var i = 0; i < $scope.fields.length; i++) {
+                var field = $scope.fields[i];
+                if ($scope.cols.indexOf(field) === -1)
+                    $scope.toggleField(field);
+            }
+            return;
+        }
+        for (var j = 0; j < $scope.fields.length; j++) {
+            var remove_field = $scope.fields[j];
+            $scope.cols.splice($scope.cols.indexOf(remove_field), 1);
+        }
+    };
+
+    var resultDownloaded = function(type, queryResult) {
+        console.log(queryResult);
+        try{
+            if (window.exec !== undefined){
+                var response = window.exec(JSON.stringify({ functionName: 'MergeTable', invokeAsCommand: false, functionParams: {'type' : type, 'result' : queryResult}}));
+                console.log(response);
+            }
+        }
+        catch(e){
+            console.error(e);
+        }
+    };
+
+    $scope.downloadSearchResults = function() {
+        alert('downloading...');
+        $scope.getPage(0, resultDownloaded);
+    };
 }]);
