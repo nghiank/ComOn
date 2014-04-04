@@ -7,20 +7,20 @@ angular.module('ace.system').controller('IndexController', ['$scope', 'Global', 
     $scope.selected = null;
 	if($scope.global.authenticated)
 	{
-		$scope.nav_menu.push({'title': 'My Libraries','link': 'views/favourites.html'});
+		$scope.nav_menu.push({'title': 'My Libraries','link': 'views/favourites.html', fa: 'fa-star'});
 		if($scope.global.user.isManufacturer === true || Global.user.isAdmin === true)
 		{
-			$scope.nav_menu.push({'title': 'Manage the Catalog','link': 'views/Catalog/manageCatalog.html'});
-			$scope.selected = {'title': 'Manage the Catalog','link': 'views/Catalog/manageCatalog.html'};
+			$scope.nav_menu.push({'title': 'Manage the Catalog','link': 'views/Catalog/manageCatalog.html', fa: 'fa-shopping-cart'});
+			$scope.selected = {'title': 'Manage the Catalog','link': 'views/Catalog/manageCatalog.html', fa: 'fa-shopping-cart'};
 		}
 		if($scope.global.user.isAdmin === true)
 		{
-			$scope.nav_menu.push({'title': 'Manage Users','link': 'views/Users/list.html'});
+			$scope.nav_menu.push({'title': 'Manage Users','link': 'views/Users/list.html', fa: 'fa-user'});
 			$scope.selected = null;
 		}
 		if(!$scope.global.user.isAdmin && !$scope.global.user.isManufacturer)
 		{
-			$scope.selected = {'title': 'My Libraries','link': 'views/favourites.html'};
+			$scope.selected = {'title': 'My Libraries','link': 'views/favourites.html', fa: 'fa-star'};
 		}
 	}
 
@@ -28,20 +28,20 @@ angular.module('ace.system').controller('IndexController', ['$scope', 'Global', 
 		$scope.nav_menu = [];
 		if($scope.global.authenticated)
 		{
-			$scope.nav_menu.push({'title': 'My Libraries','link': 'views/favourites.html'});
+			$scope.nav_menu.push({'title': 'My Libraries','link': 'views/favourites.html', fa: 'fa-star'});
 			if($scope.global.user.isManufacturer === true || Global.user.isAdmin === true)
 			{
-				$scope.nav_menu.push({'title': 'Manage the Catalog','link': 'views/Catalog/manageCatalog.html'});
-				$scope.selected = {'title': 'Manage the Catalog','link': 'views/Catalog/manageCatalog.html'};
+				$scope.nav_menu.push({'title': 'Manage the Catalog','link': 'views/Catalog/manageCatalog.html', fa: 'fa-shopping-cart'});
+				$scope.selected = {'title': 'Manage the Catalog','link': 'views/Catalog/manageCatalog.html', fa: 'fa-shopping-cart'};
 			}
 			if($scope.global.user.isAdmin === true)
 			{
-				$scope.nav_menu.push({'title': 'Manage Users','link': 'views/Users/list.html'});
+				$scope.nav_menu.push({'title': 'Manage Users','link': 'views/Users/list.html', fa: 'fa-user'});
 				$scope.selected = null;
 			}
 			if(!$scope.global.user.isAdmin && !$scope.global.user.isManufacturer)
 			{
-				$scope.selected = {'title': 'My Libraries','link': 'views/favourites.html'};
+				$scope.selected = {'title': 'My Libraries','link': 'views/favourites.html', fa: 'fa-star'};
 			}
 		}
 	});

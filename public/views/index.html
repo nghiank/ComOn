@@ -3,7 +3,7 @@
 			<ul class="nav navmenu-nav" style="overflow-y: auto;">
 	            <div style="margin-bottom: 25px" class="navmenu-brand">Quick Links</i></div>       
 	            <li style="margin-left: 10px;" class="ng-class:{active: (!!selected? item.title===selected.title: false)}" ng-repeat="item in nav_menu" ng-click="changeActivePage(item)">
-	                <a>{{item.title}}</a>
+	                <a><i style="margin-right: 10px;" class="fa {{item.fa}}"></i>{{ item.title}}</a>
 	            </li>
 	        </ul>
 		</nav>
