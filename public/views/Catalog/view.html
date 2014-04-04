@@ -26,7 +26,7 @@
                     </div>
                     <div class="form-group" ng-show="states[1]">
                         <div class="col-md-12">
-                            <p ng-show="countPending() !== 0">Out of <b style="font-size: 16px">{{sheets.length}}</b> sheets in the .xls file, <b style="font-size: 16px">{{countPending()}}</b> {{countPending() === 1? 'needs': 'need'}} clarification.
+                            <p ng-show="countPending() !== 0">Out of <b style="font-size: 16px">{{sheets.length}}</b> sheets in the .xls file, <b style="font-size: 16px">{{countPending()}}</b> {{countPending() === 1? 'needs': 'need'}} your attention.
                             <button class="btn btn-info btn-sm btn-separate pull-right" style="margin-top: -5px" ng-click="toggleShowAll()" ng-if="!showAll">Show all sheets</button>
                             <button class="btn btn-info btn-sm btn-separate pull-right" style="margin-top: -5px" ng-click="toggleShowAll()" ng-if="showAll">Hide matched sheets</button>
                             </p>
