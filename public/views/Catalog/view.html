@@ -77,11 +77,11 @@
                         <p><a class="btn btn-default" ng-click="toggleShowAll()">Show All</a></p>
                         <table class="table table-stripped">
                             <tbody>
-                                <tr class="showIconOnHover" ng-repeat="sheet in processedSheets|filter:isSheetPendingByFields |orderBy:sheetSortedByPendingFields" ng-class="{warning:sheet.pendingFields>0}">
-                                    <td class="col-md-6">{{sheet.sName}} ({{sheet.dName}})</td>
-                                    <td class="col-md-6">
+                                <tr class="showIconOnHover" ng-repeat="sheet in processedSheets|filter:isSheetPendingByFields |orderBy:sheetSortedByPendingFields" ng-class="{warning:sheet.pendingFields>0}" ng-click="showMatchFieldsModal(sheet)">
+                                    <td class="col-md-4">{{sheet.sName}} ({{sheet.dName}})</td>
+                                    <td class="col-md-8">
                                         <span ng-show="sheet.pendingFields ===0"><i class="fa fa-check success"></i> All fields auto matched.</span>
-                                        <span ng-hide="sheet.pendingFields ===0"><i class="fa fa-question error"></i>{{sheet.pendingField}} fields needs clarification.</span>
+                                        <span ng-hide="sheet.pendingFields ===0"><i class="fa fa-question error"></i>{{sheet.pendingFields}} fields needs clarification.</span>
                                         <span>
                                             <a class="btn btn-default onHover">Show fields</a>
                                         </span>

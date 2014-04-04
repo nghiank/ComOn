@@ -36,7 +36,7 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 		3)Untrack does not affect the order
 		4)Within each, the order is by sName, aphabetical.
 		*/
-		var weight = sheet.dName ? 1 : 0;
+		var weight = sheet.pending ? 0 : 1;
 		return weight + sheet.sName;
 	};
 
@@ -85,7 +85,7 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 				if($scope.typeCodes.indexOf($scope.sheets[j]) > -1)
 					processedSheet = {'sName':$scope.sheets[j],'dName':$scope.sheets[j]};
 				else
-					processedSheet = {'sName':$scope.sheets[j]};
+					processedSheet = {'sName':$scope.sheets[j],'pending':true};
 				$scope.processedSheets.push(processedSheet);
 			}
 		});
@@ -171,12 +171,21 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 	$scope.isFieldPending = function(field){
 		return field[1] === '';
 	};
-
-	$scope.sortedFields = function(field){
-		var weight = field[1] === '' ? 0 : 1;
-		return weight + field[0];
-	};
 	
+	$scope.showMatchFieldsModal = function(sheet){
+		var modalInstance = $modal.open({
+			templateUrl: 'views/Catalog/matchFieldsModal.html',
+			controller: 'matchFieldsModalCtrl',
+			resolve:{
+				sheet: function() {
+					return (sheet);
+				}
+			}
+		});
+		modalInstance.result.then(function(){
+			console.log('alala');
+		});
+	};
 
 	$scope.stopTrackingSheet = function(sheet){
 		for(var i in $scope.pendingSheets){

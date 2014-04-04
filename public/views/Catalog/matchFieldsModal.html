@@ -1,0 +1,30 @@
+<section ng-init="init()" ng-hide="hide">
+    <!-- 2. ng-file-select | ng-file-select="options" -->
+    <div class="modal-header">Match the fields for field: 
+    	<div class="pull-right"><strong>{{sheet.sName}}</strong></div>
+    </div>
+    <div class="panel-body">
+	    <table>
+	    	<thead>
+	    		<tr>
+	    			<th>Fields from .xls</th>
+	    			<th>ACADE default Fields for {{sheet.dName}}</th>
+	    		</tr>
+	    	</thead>
+	    	<tbody>
+	    		<tr ng-repeat="field in sheet.fields | orderBy:sortedFields" ng-class="{warning:!field[1]}">
+	    			<td class="col-md-4">{{field[0]}}</td>
+	    			<td class="col-md-8">
+	    				<div class="col-md-8">
+	    					<select ng-model="field[1]" class="form-control" ng-class="{error:field[1]==='error'}"ng-options="sf for sf in std_fields" ng-change="checkUniqueMatch(field)"></select>
+	    				</div>
+	    				<div class="col-md-4">
+	    					<i class="fa fa-check success" ng-show="field[1] && field[1] !=='error'"></i>
+	    				</div>
+	    				<p class="error row" ng-show="field[1]==='error'">There is already a column matched to that field.</p>
+	    			</td>
+	    		</tr>
+	    	</tbody>
+	    </table>
+	</div>
+</section>
