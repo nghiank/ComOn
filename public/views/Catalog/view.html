@@ -63,7 +63,7 @@
                             <div class="col-md-12">
                                 <div class="pull-right" ng-show="states[1] && !states[2]">
                                     <a class="btn btn-default btn-separate" ng-click="states[1] = 0; states[0] = 1;">Back</a>
-                                    <a class="btn btn-default btn-separate" ng-click="states[1] = 0; states[2] = 1; mergePendingSheets()" ng-disabled="nextDisabled">Next</a>
+                                    <a class="btn btn-default btn-separate" ng-click="states[1] = 0; states[2] = 1; matchFields()" ng-disabled="nextDisabled">Next</a>
                                 </div>
                             </div>
                         </div>
@@ -74,8 +74,23 @@
                         Step 3. Match the columns
                     </div>
                     <div clas="form-group" ng-show="states[2]">
-                        <accordion close-others="oneAtATime">
-                            <accordion-group ng-repeat="sheet in processedSheets|filter:isNeededInMatchFieldView">
+                        <p><a class="btn btn-default" ng-click="toggleShowAll()">Show All</a></p>
+                        <table class="table table-stripped">
+                            <tbody>
+                                <tr class="showIconOnHover" ng-repeat="sheet in processedSheets|filter:isSheetPendingByFields |orderBy:sheetSortedByPendingFields" ng-class="{warning:sheet.pendingFields>0}">
+                                    <td class="col-md-6">{{sheet.sName}} ({{sheet.dName}})</td>
+                                    <td class="col-md-6">
+                                        <span ng-show="sheet.pendingFields ===0"><i class="fa fa-check success"></i> All fields auto matched.</span>
+                                        <span ng-hide="sheet.pendingFields ===0"><i class="fa fa-question error"></i>{{sheet.pendingField}} fields needs clarification.</span>
+                                        <span>
+                                            <a class="btn btn-default onHover">Show fields</a>
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <!-- <accordion close-others="oneAtATime">
+                            <accordion-group ng-repeat="sheet in processedSheets|filter:isSheetPendingByFields |orderBy:sheetSortedByPendingFields">
                                 <accordion-heading>
                                     <div class="placeholder">
                                         {{sheet.dName}}<i class="btn-separate fa fa-check success" ng-show="sheet.pendingFields === 0"></i></div>
@@ -88,17 +103,18 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr class="showIconOnHover"  ng-repeat="(f1, f2) in sheet.fields" ng-class="{warning:!f2}">
-                                    <td class="col-md-6">{{f1}}</td>
+                                <tr class="showIconOnHover"  ng-repeat="field in sheet.fields |filter: isFieldPending |orderBy: sortedFields" ng-class="{warning:field[1].length===0}">
+                                    <td class="col-md-6">{{field[0]}}</td>
                                     <td class="col-md-6">
-                                       {{f2}}
+                                       {{field[1]}}
+                                       <select ng-option=""></select>
                                         <a class="btn onHover"><i class="fa fa-trash-o"></i></a>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                             </accordion-group>
-                        </accordion>
+                        </accordion> -->
                         <div class="row" style="margin-top:10px">
                             <div class="col-md-12">
                                 <div class="pull-right">

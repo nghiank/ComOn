@@ -40,10 +40,6 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 		return weight + sheet.sName;
 	};
 
-	$scope.isNeededInMatchFieldView = function(sheet){
-		return (sheet.dName && (!sheet.unTrack));
-	};
-
 	$scope.fileSelect = function($files) {
 		$scope.showProgress  = false;
 		var check = $scope.formValidator.checkFileExtension($files[0]?$files[0].name:'', ['xls']);
@@ -109,17 +105,22 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 					std_fields.push(std_field);
 				}
 				k = 0;
-				$scope.processedSheets[j].fields = {};
+				$scope.processedSheets[j].fields = [];
 				for (k in cols){
+					var fieldMatchPair = [];
 					if(std_fields.indexOf(cols[k].toLowerCase()) > -1){
-						$scope.processedSheets[j].fields[cols[k]] = cols[k];
+						fieldMatchPair.push(cols[k]);
+						fieldMatchPair.push(std_fields[std_fields.indexOf(cols[k].toLowerCase())]);
 					}else{
-						$scope.processedSheets[j].fields[cols[k]] = null;
+						fieldMatchPair.push(cols[k]);
+						fieldMatchPair.push('');
 						$scope.processedSheets[j].pendingFields++;
 					}
+					$scope.processedSheets[j].fields.push(fieldMatchPair);
 				}
 			});
 		}
+
 		for(var i in wb.Sheets){
 			count++;
 			var sheet_flag= false;
@@ -127,7 +128,6 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 				if($scope.processedSheets[j].sName === wb.SheetNames[count] && $scope.processedSheets[j].dName && !$scope.processedSheets[j].unTrack){
 					sheet_flag = true;
 					$scope.processedSheets[j].pendingFields = 0;
-					console.log($scope.processedSheets[j].sName,$scope.processedSheets[j].dName);
 					break;
 				}
 			}
@@ -158,6 +158,24 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 		}
 	};
 
+	$scope.isSheetPendingByFields = function(sheet){
+		if($scope.showAll) return sheet.dName && (!sheet.unTrack);
+		return (sheet.pendingFields !== 0) && sheet.dName && (!sheet.unTrack);
+	};
+
+	$scope.sheetSortedByPendingFields = function(sheet){
+		var weight = sheet.pendingFields !== 0 ? 0 : 1;
+		return weight + sheet.sName;
+	};
+
+	$scope.isFieldPending = function(field){
+		return field[1] === '';
+	};
+
+	$scope.sortedFields = function(field){
+		var weight = field[1] === '' ? 0 : 1;
+		return weight + field[0];
+	};
 	
 
 	$scope.stopTrackingSheet = function(sheet){
