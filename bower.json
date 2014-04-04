@@ -18,11 +18,6 @@
     "angularjs-scroll-glue": "0.0.1",
     "bootstrap-select": "1.5.2",
     "js-xls": "0.6.9",
-    "js-xlsx": "0.5.10",
-    "angular-strap": "~2.0.0"
-  },
-  "resolutions": {
-    "bootstrap": "3.0.3",
-    "jquery": "2.1.0"
+    "js-xlsx": "0.5.10"
   }
 }
