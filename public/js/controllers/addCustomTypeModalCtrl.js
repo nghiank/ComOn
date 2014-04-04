@@ -4,7 +4,7 @@ angular.module('ace.catalog').controller('addCustomTypeModalCtrl', ['$scope', '$
 
 	$scope.initTypes = data.types? data.types : [];
 	$scope.initSheets = data.sheets? data.sheets : [];
-	$scope.newType = {code: data.current.sName, name: ''};
+	$scope.newType = {code: data.current.sName, name: data.firstName};
 	$scope.addDisabled = true;
 	$scope.validated = {name: null, code: null};
 	$scope.errored = {name: null, code: null};
@@ -76,6 +76,7 @@ angular.module('ace.catalog').controller('addCustomTypeModalCtrl', ['$scope', '$
 		$scope.joined = $scope.initSheets;
 		$scope.checkCode();
 		$scope.validated.code = true;
+		$scope.checkName();
 	};
 
 }]);

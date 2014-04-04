@@ -213,7 +213,8 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 					return {
 						types: $scope.types,
 						sheets: $scope.sheets,
-						current: sheet
+						current: sheet,
+						firstName: ($scope.wb.Sheets[sheet.sName]? ($scope.wb.Sheets[sheet.sName].A1? $scope.wb.Sheets[sheet.sName].A1.w: ''): '')
 					};
 				}
 			}
@@ -228,7 +229,6 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 	};
 
 	$scope.$watch('processedSheets', function(){
-		console.log('asdasd');
 		if($scope.sheets.length !== 0)
 		{
 			for(var i in $scope.processedSheets)
