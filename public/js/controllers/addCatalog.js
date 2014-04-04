@@ -20,6 +20,12 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 		$scope.showAll = !$scope.showAll;
 	};
 
+	$scope.isPending = function(sheet){
+		if(!$scope.showAll)
+			return (!sheet.dName);
+		return true;
+	};
+
 	$scope.fileSelect = function($files) {
 		$scope.showProgress  = false;
 		var check = $scope.formValidator.checkFileExtension($files[0]?$files[0].name:'', ['xls']);
@@ -60,32 +66,18 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 					$scope.types.push(response[i].code);
 			}
 			for (var j in $scope.sheets){
-				if($scope.types.indexOf($scope.sheets[j]) > -1){
+				if($scope.types.indexOf($scope.sheets[j]) > -1)
 					processedSheet = {'sName':$scope.sheets[j],'dName':$scope.sheets[j]};
-					$scope.processedSheets.push(processedSheet);
-				}
-				else{
+				else
 					processedSheet = {'sName':$scope.sheets[j]};
-					$scope.pendingSheets.push(processedSheet);
-				}
+				$scope.processedSheets.push(processedSheet);
+				console.log($scope.processedSheets);
 			}
 		});
 	};
 
-	$scope.mergePendingSheets = function(){
-		for(var i in $scope.pendingSheets){
-			$scope.processedSheets.push($scope.pendingSheets[i]);
-		}
-		//$scope.pendingSheets = [];
-/*		for(var j in $scope.processedSheets){
-			if($scope.processedSheets[j].unTrack)
-				$scope.processedSheets.splice(j,1);
-		}*/
-		$scope.matchFields($scope.wb);
-	};
-
-
-	$scope.matchFields = function(wb){
+	$scope.matchFields = function(){
+		var wb = $scope.wb;
 		var count = -1;
 		function match_field(j, cols)
 		{
@@ -100,8 +92,13 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 				k = 0;
 				$scope.processedSheets[j].fields = {};
 				for (k in cols){
+					console.log(cols[k]);
 					if(std_fields.indexOf(cols[k].toLowerCase()) > -1){
 						$scope.processedSheets[j].fields[cols[k]] = cols[k];
+						console.log('matched!',cols[k].toLowerCase(),std_fields[std_fields.indexOf(cols[k].toLowerCase())]);
+					}else{
+						$scope.processedSheets[j].fields[cols[k]] = null;
+						$scope.processedSheets[j].pendingFields++;
 					}
 				}
 				console.log($scope.processedSheets[j]);
@@ -113,10 +110,10 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 			for(var j in $scope.processedSheets){
 				if($scope.processedSheets[j].sName === wb.SheetNames[count] && !$scope.processedSheets[j].unTrack){
 					sheet_flag = true;
+					$scope.processedSheets[j].pendingFields = 0;
 					break;
 				}
 			}
-			if(count > 2) return;
 			if(sheet_flag){
 				var sheet = wb.Sheets[i];
 				var cols = [];

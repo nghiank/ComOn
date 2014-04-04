@@ -38,11 +38,11 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr class="showBlockOnHover" ng-repeat = "sheet in pendingSheets" ng-class="{warning:!sheet.dName&&(!sheet.unTrack), muted:sheet.unTrack, active:sheet.unTrack}">
+                                <!-- <tr class="showBlockOnHover" ng-repeat = "sheet in pendingSheets" ng-class="{warning:!sheet.dName&&(!sheet.unTrack), muted:sheet.unTrack, active:sheet.unTrack}">
                                     <td class="col-md-6">{{sheet.sName}}</td>
                                     <td class="col-md-6">
                                         <div class="col-md-8">
-                                            <select class="form-control" ng-model="sheet.dName" ng-options="type for type in types"></select>
+                                            <select class="form-control" ng-model="sheet.dName" ng-options="type for type in types" ng-disabled="sheet.unTrack"></select>
                                         </div>
                                         <div class="col-md-1">
                                             <i class="fa fa-check success" ng-show="sheet.dName  && !sheet.unTrack"></i>
@@ -51,12 +51,13 @@
                                             <a class="btn btn-default onHover" ng-click="stopTrackingSheet(sheet)"><i class="fa fa-trash-o"></i></a>
                                         </div>                   
                                     </td>
-                                </tr>
-                                <tr ng-if="showAll" class="showBlockOnHover" ng-repeat = "sheet in processedSheets" ng-class="{warning:!sheet.dName&&(!sheet.unTrack), muted:sheet.unTrack, active:sheet.unTrack}">
+                                </tr> -->
+                                <tr class="showBlockOnHover" ng-repeat = "sheet in processedSheets | filter:isPending | orderBy:'dName':true" ng-class="{warning:!sheet.dName&&(!sheet.unTrack), muted:sheet.unTrack, active:sheet.unTrack}">
                                     <td class="col-md-6">{{sheet.sName}}</td>
                                     <td class="col-md-6">
                                         <div class="col-md-8">
-                                            <select class="form-control" ng-model="sheet.dName" ng-options="type for type in types"></select>
+                                            <select class="form-control" ng-model="sheet.dName" ng-options="type for type in types" ng-if="!sheet.unTrack"></select>
+                                            <select class="form-control" ng-disabled="true" ng-if="sheet.unTrack"></select>
                                         </div>
                                         <div class="col-md-1">
                                             <i class="fa fa-check success" ng-show="sheet.dName && !sheet.unTrack"></i>
@@ -86,47 +87,26 @@
                         <accordion close-others="oneAtATime">
                             <accordion-group ng-repeat="sheet in processedSheets">
                                 <accordion-heading>
-                                    <div class="placeholder">{{sheet.dName}}<i class="btn-separate fa fa-check success"></i></div>
+                                    <div class="placeholder">
+                                        {{sheet.dName}}<i class="btn-separate fa fa-check success" ng-show="sheet.pendingFields === 0"></i></div>
                                 </accordion-heading>
                                 <table class="table">
                             <thead>
                                 <tr>
-                                    <th class="col-md-6">.xls File Sheets</th>
-                                    <th class="col-md-6">ACADE Default Types</th>
+                                    <th class="col-md-6">.xls File Fields</th>
+                                    <th class="col-md-6">ACADE Default Fields</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr class="warning showIconOnHover">
-                                    <td class="col-md-6">Index</td>
+                                <tr class="showIconOnHover"  ng-repeat="(f1, f2) in sheet.fields" ng-class="{warning:!f2}">
+                                    <td class="col-md-6">{{f1}}</td>
                                     <td class="col-md-6">
-                                        <span class="dropdown">
-                                            <a class="dropdown-toggle btn btn-default btn-sm" ng-click="toggleCollapse()">
-                                            Choose a type <i class="fa fa-caret-down"></i>
-                                            </a>
-                                            <ul class="dropdown-menu">
-                                                <li>
-                                                  <a>Discard</a>
-                                                </li>
-                                                <li>
-                                                  <a>Fuses (FU)</a>
-                                                </li>
-                                            </ul>
-                                        </span>
+                                       {{f2}}
                                         <a class="btn onHover"><i class="fa fa-trash-o"></i></a>
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td class="col-md-6">FU</td>
-                                    <td class="col-md-6"><i class="fa fa-check success"></i> Fuses(FU)</td>
-                                </tr>
                             </tbody>
                         </table>
-                            </accordion-group>
-                            <accordion-group>
-                                <accordion-heading>
-                                    Circuit Breakers <i class=" btn-separate fa fa-question star"></i>
-                                </accordion-heading>
-                                This is just some content to illustrate fancy headings.
                             </accordion-group>
                         </accordion>
                         <div class="row" style="margin-top:10px">
