@@ -42,11 +42,11 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr class="showBlockOnHover" style="height: 51px;" ng-repeat = "sheet in processedSheets | filter: isPending | orderBy:'dName':true" ng-class="{warning:!sheet.dName&&(!sheet.unTrack), muted:sheet.unTrack, active:sheet.unTrack}">
+                                <tr class="showBlockOnHover" style="height: 51px;" ng-repeat = "sheet in processedSheets | filter:isPending | orderBy:sheetSorted" ng-class="{warning:!sheet.dName&&(!sheet.unTrack), muted:sheet.unTrack, active:sheet.unTrack}">
                                     <td class="col-md-6">{{sheet.sName}}</td>
                                     <td class="col-md-6">
                                         <div class="col-md-8">
-                                            <select class="form-control" ng-model="sheet.dName" ng-options="type for type in typeCodes" ng-show="!sheet.unTrack"></select>
+                                            <select class="form-control" ng-model="sheet.dName" ng-options="type for type in typeCodes" ng-if="!sheet.unTrack"></select>
                                         </div>
                                         <div class="col-md-1">
                                             <i class="fa fa-check success" ng-show="sheet.dName && !sheet.unTrack"></i>
@@ -76,7 +76,7 @@
                     </div>
                     <div clas="form-group" ng-show="states[2]">
                         <accordion close-others="oneAtATime">
-                            <accordion-group ng-repeat="sheet in processedSheets">
+                            <accordion-group ng-repeat="sheet in processedSheets|filter:isNeededInMatchFieldView">
                                 <accordion-heading>
                                     <div class="placeholder">
                                         {{sheet.dName}}<i class="btn-separate fa fa-check success" ng-show="sheet.pendingFields === 0"></i></div>

@@ -29,6 +29,21 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 		return true;
 	};
 
+	$scope.sheetSorted = function(sheet){
+		/*The sheets are ordered in this order: 
+		1)Pending sheets are always on the top;
+		2)Matched sheets at the bottom (if shown);
+		3)Untrack does not affect the order
+		4)Within each, the order is by sName, aphabetical.
+		*/
+		var weight = sheet.dName ? 1 : 0;
+		return weight + sheet.sName;
+	};
+
+	$scope.isNeededInMatchFieldView = function(sheet){
+		return (sheet.dName && (!sheet.unTrack));
+	};
+
 	$scope.fileSelect = function($files) {
 		$scope.showProgress  = false;
 		var check = $scope.formValidator.checkFileExtension($files[0]?$files[0].name:'', ['xls']);
@@ -104,7 +119,6 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 				for (k in cols){
 					if(std_fields.indexOf(cols[k].toLowerCase()) > -1){
 						$scope.processedSheets[j].fields[cols[k]] = cols[k];
-						console.log('matched!',cols[k].toLowerCase(),std_fields[std_fields.indexOf(cols[k].toLowerCase())]);
 					}else{
 						$scope.processedSheets[j].fields[cols[k]] = null;
 						$scope.processedSheets[j].pendingFields++;
@@ -119,6 +133,7 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 				if($scope.processedSheets[j].sName === wb.SheetNames[count] && $scope.processedSheets[j].dName && !$scope.processedSheets[j].unTrack){
 					sheet_flag = true;
 					$scope.processedSheets[j].pendingFields = 0;
+					console.log($scope.processedSheets[j].sName,$scope.processedSheets[j].dName);
 					break;
 				}
 			}

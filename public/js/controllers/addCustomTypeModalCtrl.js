@@ -18,11 +18,16 @@ angular.module('ace.catalog').controller('addCustomTypeModalCtrl', ['$scope', '$
 	};
 
 	$scope.checkCode = function() {
+		$scope.errored.name = null;
+		$scope.validated.name = null;
 		$scope.errored.code = null;
 		$scope.validated.code = null;
+		if($scope.newType.code === '')
+			return;
 		var typeCodes = _.map($scope.initTypes, function(val) {return val.code;});
 		if(typeCodes.indexOf($scope.newType.code) > -1)
 		{
+			$scope.newType.name = '';
 			$scope.validated.code = null;
 			$scope.errored.code = 'A type with that Code already exists.';
 		}
