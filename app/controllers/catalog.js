@@ -221,7 +221,6 @@ exports.getCatalogEntries = function(req, res) {
 		});
 	};
 	var find_function = function(final_find) {
-		console.log(final_find);
 		var query = CatalogSchem.find(final_find).sort(sortCriteria).select(fields).skip(lower).limit(upper-lower);
 		if(req.body.filters)
 			query = query.hint(index_hint);

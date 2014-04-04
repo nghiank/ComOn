@@ -1,12 +1,15 @@
 'use strict';
 
-angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'formValidation', '$scope', 'Global', '$modal','_', function (CatalogAPI, formValidation, $scope, Global, $modal, _) {
+angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'formValidation', '$scope', 'Global', '$modal', '_', function (CatalogAPI, formValidation, $scope, Global, $modal, _) {
 	$scope.global = Global;
 	$scope.formValidator = formValidation;
 	$scope.uploadDisabled = true;
 	$scope.xls = window.XLS;
 	$scope.xlsx = window.XLSX;
 	$scope.states = [1,0,0];
+	$scope.sheets = [];
+	$scope.processedSheets = [];
+	$scope.title_row = 2;
 	$scope.nextDisabled = true;
 	$scope.showAll = false;
 
@@ -59,19 +62,20 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 			return;
 		$scope.sheets = wb.SheetNames;
 		$scope.types = [];
+		$scope.typeCodes = [];
 		var processedSheet = null;
 		CatalogAPI.types.query(function(response){
+			$scope.types = response;
 			for(var i in response){
 				if(response[i].code)
-					$scope.types.push(response[i].code);
+					$scope.typeCodes.push(response[i].code);
 			}
 			for (var j in $scope.sheets){
-				if($scope.types.indexOf($scope.sheets[j]) > -1)
+				if($scope.typeCodes.indexOf($scope.sheets[j]) > -1)
 					processedSheet = {'sName':$scope.sheets[j],'dName':$scope.sheets[j]};
 				else
 					processedSheet = {'sName':$scope.sheets[j]};
 				$scope.processedSheets.push(processedSheet);
-				console.log($scope.processedSheets);
 			}
 		});
 	};
@@ -101,14 +105,13 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 						$scope.processedSheets[j].pendingFields++;
 					}
 				}
-				console.log($scope.processedSheets[j]);
 			});
 		}
 		for(var i in wb.Sheets){
 			count++;
 			var sheet_flag= false;
 			for(var j in $scope.processedSheets){
-				if($scope.processedSheets[j].sName === wb.SheetNames[count] && !$scope.processedSheets[j].unTrack){
+				if($scope.processedSheets[j].sName === wb.SheetNames[count] && $scope.processedSheets[j].dName && !$scope.processedSheets[j].unTrack){
 					sheet_flag = true;
 					$scope.processedSheets[j].pendingFields = 0;
 					break;
@@ -119,14 +122,14 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 				var cols = [];
 				var column = 'A';
 				var col_flag = true;
+				var column_titles_row = $scope.title_row.toString();
 				while(col_flag){
-					//sheet[column+'2']is the second row of this column (beginning of real data)
-					if(!sheet[column+'2'] || !sheet[column+'2'].w)
+					if(!sheet[column+column_titles_row] || !sheet[column+column_titles_row].w)
 					{
 						col_flag = false;
 						break;
 					}
-					var column_title = sheet[column+'2'].w;
+					var column_title = sheet[column+column_titles_row].w;
 					if(cols.indexOf(column_title) < 0)
 						cols.push(column_title);
 					column = $scope.getNextColumnToRead(column.split(''));
@@ -138,7 +141,6 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 				}
 				match_field(j, cols);
 			}
-			//Match the fields
 		}
 	};
 
@@ -160,7 +162,8 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 
 	$scope.$watch('pendingSheets', function(){
 		for(var i in $scope.pendingSheets)
-			if((! $scope.pendingSheets[i].dName) && (!$scope.pendingSheets[i].unTrack)){
+			if((!$scope.pendingSheets[i].dName) && (!$scope.pendingSheets[i].unTrack)){
+
 				$scope.nextDisabled = true;
 				return;
 			}
@@ -177,6 +180,12 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 		function invalid_man() {
 			return 'The codename in your profile does not match the manufacturer field in the sheet '+key+'.';
 		}
+		function getMatchingColumn(key, fields) {
+			if(!fields)
+				return null;
+			var newTitle = _.has(fields, key)? fields.key: null;
+			return newTitle;
+		}
 		var json_obj = {};
 
 		var count = 0;
@@ -191,7 +200,7 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 		for (key in wb.Sheets) {
 			count ++;
 			var sheet, sheet_data, row_data, columnFlag, rowFlag, column, row;
-			if(wb.Sheets.hasOwnProperty(key))
+			if(wb.Sheets.hasOwnProperty(key) && _.has($scope.processedSheets, key))
 			{
 				sheet = wb.Sheets[key];
 				sheet_data = [];
@@ -199,7 +208,8 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 				columnFlag = true;
 				rowFlag = true;
 				column = 'A';
-				row = 3;
+				var column_titles_row = $scope.title_row.toString();
+				row = $scope.title_row + 1;
 				while(rowFlag)
 				{
 					if(!sheet['A'+row.toString()] || !sheet['A'+row.toString()].w)
@@ -209,13 +219,12 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 					}
 					while(columnFlag)
 					{
-						//sheet[column+'2']is the second row of this column (beginning of real data)
-						if(!sheet[column+'2'] || !sheet[column+'2'].w)
+						if(!sheet[column+column_titles_row] || !sheet[column+column_titles_row].w)
 						{
 							columnFlag = false;
 							break;
 						}
-						var column_title = sheet[column+'2'].w;
+						var column_title = sheet[column+column_titles_row].w;
 						if(!row_data[column_title.toLowerCase()])
 						{
 							var newCell = sheet[column+row.toString()]?sheet[column+row.toString()].w: '';
@@ -234,7 +243,9 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 									return;
 								}
 							}
-							row_data[column_title.toLowerCase()] = newCell;
+							var updated_column_title = getMatchingColumn(column_title.toLowerCase(), $scope.processedSheets.key.fields);
+							if(updated_column_title)
+								row_data[updated_column_title] = newCell;
 						}
 						column = $scope.getNextColumnToRead(column.split(''));
 						if(!column)
@@ -250,7 +261,7 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 						sheet_data.push(row_data);
 					row_data = {};
 				}
-				json_obj[key] = {title: sheet.A1? sheet.A1.w: '', data: sheet_data};
+				json_obj[$scope.processedSheets.key.db? $scope.processedSheets.key.db.code: key] = {title: ($scope.processedSheets.key.db? $scope.processedSheets.key.db.name: (sheet.A1? sheet.A1.w: '')), data: sheet_data};
 				sheet_data = [];
 			}
 			$scope.populateProgress = 20 +  Math.floor(count*100/$scope.totalSheetNo*0.6);
@@ -258,7 +269,6 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 		CatalogAPI.updateCatalog.save({data: json_obj}, function(response) {
 			if(response)
 			{
-				console.log('Catalog Updated');
 				$scope.populateProgress = 100;
 			}
 		});
