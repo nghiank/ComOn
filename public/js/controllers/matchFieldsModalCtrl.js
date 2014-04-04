@@ -21,8 +21,11 @@ angular.module('ace.catalog').controller('matchFieldsModalCtrl', ['$scope', '$mo
 
 	$scope.checkUniqueMatch = function(field){
 		for(var i = 0; i < sheet.fields.length; i ++)
-			if(field[1] === sheet.fields[i][1] && field[0] !== sheet.fields[i][0])
-				return field[1] = 'error';
+			if(field[1] === sheet.fields[i][1] && field[0] !== sheet.fields[i][0]){
+				field[1] = 'error';
+				return;
+			}
+
 	};
 
 
