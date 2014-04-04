@@ -150,15 +150,15 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 
 	
 
-	$scope.stopTrackingSheet = function(sheet){
+	$scope.toggleTrackingSheet = function(sheet){
 		for(var i in $scope.pendingSheets){
 			if($scope.pendingSheets[i].sName === sheet.sName){
-				$scope.pendingSheets[i].unTrack = true;
+				$scope.pendingSheets[i].unTrack = !$scope.pendingSheets[i].unTrack;
 			}
 		}
 		for(var j in $scope.processedSheets){
 			if($scope.processedSheets[j].sName === sheet.sName){
-				$scope.processedSheets[j].unTrack = true;
+				$scope.processedSheets[j].unTrack = !$scope.processedSheets[j].unTrack;
 			}
 		}
 	};

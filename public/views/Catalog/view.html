@@ -1,11 +1,11 @@
 <section ng-init="init()" ng-show="authorized()" ng-controller="catalogController">
         <div class="panel">
             <div class="row">
-                <form class="form-horizontal col-md-8 col-md-offset-2">
+                <form class="form-horizontal col-md-12">
                     <div class="alert alert-thin alert-info"  ng-show="states[0]">
                         Step 1. Select .xls File
                     </div>
-                    <div class="form-group" ng-show="states[0]">
+                    <div class="well form-group" ng-show="states[0]">
                         <label class="col-sm-2 control-label">.xls File</label>
                         <div class="col-sm-10">
                             <div class="fileinput fileinput-new" data-provides="fileinput">
@@ -24,14 +24,13 @@
                     <div class="alert alert-thin alert-info" ng-show="states[1]">
                         Step 2. Match the sheets
                     </div>
-                    <div class="form-group" ng-show="states[1]">
+                    <div class="well form-group" ng-show="states[1]">
                         <div class="col-md-12">
                             <p ng-show="sheets.length !== 0 && pendingSheets.length !== 0">Out of <b>{{sheets.length}}</b> sheets in the .xls file, <b>{{pendingSheets.length}}</b> needs clarification.
                             <button class="btn btn-info btn-sm btn-separate pull-right" style="margin-top: -5px" ng-click="toggleShowAll()" ng-if="!showAll">Show all sheets</button>
                             <button class="btn btn-info btn-sm btn-separate pull-right" style="margin-top: -5px" ng-click="toggleShowAll()" ng-if="showAll">Hide matched sheets</button>
                             </p>
-                            <p ng-show="sheets.length !== 0 && pendingSheets.length === 0">
-                            Everything is well. <i class="fa fa-check success"></i>
+                            <p ng-show="pendingSheets && sheets.length !== 0 && pendingSheets.length === 0 && processedSheets.length !== 0">Everything is well. <i class="fa fa-check success"></i>
                             <button class="btn btn-info btn-sm btn-separate pull-right" style="margin-top: -5px" ng-click="toggleShowAll()" ng-if="!showAll">Show all sheets</button>
                             <button class="btn btn-info btn-sm btn-separate pull-right" style="margin-top: -5px" ng-click="toggleShowAll()" ng-if="showAll">Hide matched sheets</button>
                             </p>
@@ -49,12 +48,15 @@
                                         <div class="col-md-8">
                                             <select class="form-control" ng-model="sheet.dName" ng-options="type for type in typeCodes"></select>
                                         </div>
-                                        <div class="col-md-1">
-                                            <i class="fa fa-check success" ng-show="sheet.dName  && !sheet.unTrack"></i>
+                                        <div ng-show="sheet.dName  && !sheet.unTrack" class="col-md-1">
+                                            <i class="fa fa-check success"></i>
                                         </div>
-                                        <div class="col-md-2">
-                                            <a class="btn btn-default onHover" ng-click="stopTrackingSheet(sheet)"><i class="fa fa-trash-o"></i></a>
-                                        </div>                   
+                                        <div class="col-md-1 onHover" ng-show="global.authenticated && global.user.isAdmin" tooltip="Add a custom type"  tooltip-trigger="mouseenter" tooltip-placement="top">
+                                            <button class="btn btn-default" ng-click="addCustom(sheet)"><i class="fa fa-edit"></i></button>
+                                        </div>
+                                        <div class="col-md-1 onHover btn-separate">
+                                            <button class="btn btn-default" ng-click="toggleTrackingSheet(sheet)"><i class="fa fa-trash-o"></i></button>
+                                        </div>                          
                                     </td>
                                 </tr>
                                 <tr ng-if="showAll" class="showBlockOnHover" ng-repeat = "sheet in processedSheets" ng-class="{warning:!sheet.dName&&(!sheet.unTrack), muted:sheet.unTrack, active:sheet.unTrack}">
@@ -66,9 +68,12 @@
                                         <div class="col-md-1">
                                             <i class="fa fa-check success" ng-show="sheet.dName && !sheet.unTrack"></i>
                                         </div>
-                                        <div class="col-md-2">
-                                            <a class="btn btn-default onHover" ng-click="stopTrackingSheet(sheet)"><i class="fa fa-trash-o" ></i></a>
+                                        <div class="col-md-1 onHover" ng-show="global.authenticated && global.user.isAdmin" tooltip="Add a custom type"  tooltip-trigger="mouseenter" tooltip-placement="top">
+                                            <button class="btn btn-default" ng-click="addCustom(sheet)"><i class="fa fa-edit"></i></button>
                                         </div>
+                                        <div class="col-md-1 onHover btn-separate">
+                                            <button class="btn btn-default" ng-click="toggleTrackingSheet(sheet)"><i class="fa fa-trash-o"></i></button>
+                                        </div>  
                                     </td>
                                 </tr>
                             </tbody>
@@ -82,12 +87,11 @@
                             </div>
                         </div>
                         </div>
-                       <!--  <progressbar max="100" value="populateProgress" ng-show="showProgress" type="success"><span style="color:white; white-space:nowrap;">{{populateProgress}}%</span></progressbar> -->
                     </div>
                     <div class="alert alert-thin alert-info" ng-show="states[2]">
                         Step 3. Match the columns
                     </div>
-                    <div clas="form-group" ng-show="states[2]">
+                    <div clas="well form-group" ng-show="states[2]">
                         <accordion close-others="oneAtATime">
                             <accordion-group ng-repeat="sheet in processedSheets">
                                 <accordion-heading>
