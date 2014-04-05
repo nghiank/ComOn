@@ -18,5 +18,4 @@ angular.module('ace.catalog').controller('configureTableModalCtrl', ['$scope', '
 	$scope.All = function(){
 		data.toggleAll();
 	};
-
 }]);

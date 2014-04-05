@@ -18,10 +18,12 @@
 	<accordion ng-show="selected">
 	<accordion-group is-open="searchBox.show" style="overflow:visible;">
 	<accordion-heading>
-		{{selected.name}}
-		<a style="position:absolute; left:50%;"><i class="fa fa-caret-down fa-lg" ng-show="!searchBox.show"></i></a>
-		<a style="position:absolute; left:50%;"><i class="fa fa-caret-up fa-lg" ng-hide="!searchBox.show"></i></a>
-		<a style="margin-top: -6px; margin-right: -10px" ng-click="$event.stopPropagation(); showConfigureModal()" class=" pull-right btn btn-default btn-sm"><i class="fa fa-gear"> Configure Table</i></a>
+		<div class="placeholder">
+			{{selected.name}}
+			<a style="position:absolute; left:50%;"><i class="fa fa-caret-down fa-lg" ng-show="!searchBox.show"></i></a>
+			<a style="position:absolute; left:50%;"><i class="fa fa-caret-up fa-lg" ng-hide="!searchBox.show"></i></a>
+			<a style="margin-top: -6px; margin-right: -10px" ng-click="$event.stopPropagation(); showConfigureModal()" class=" pull-right btn btn-default btn-sm"><i class="fa fa-gear"> Configure Table</i></a>
+		</div>
 	</accordion-heading>
 	<div ng-show="searchBox && selected">
 		<div class="row">

@@ -1,16 +1,13 @@
-<section data-ng-controller="IndexController">
-	<nav class="col-md-4 navmenu navmenu-default animate-show" ng-show="showSide && nav_menu.length !== 0" style="height: 85%; position: fixed; left: 0; z-index: 9999; overflow-y: auto;">
-		<ul class="nav navmenu-nav" style="overflow-y: auto;">
-            <div class="navmenu-brand">Quick Links</i></div>       
-            <li style="margin-left: 10px;" class="ng-class:{active: (!!selected? item.title===selected.title: false)}" ng-repeat="item in nav_menu" ng-click="changeActivePage(item)">
-                <a>{{item.title}}</a>
-            </li>
-        </ul>
-	</nav>
-	<span>
-		<a ng-if="global.authenticated && !showSide" ng-click="revealSide()"><i class="fa fa-home fa-4x" style="position:fixed; left:1%; top:50%;"></i></a>
-	</span>
-	<div ng-click="hideSide()" ng-if="!selected" class="page-header"><h1>Welcome to AutoCAD Electrical</h1></div>
-	<div ng-click="hideSide()" style="margin-top: 40px" ng-if="selected" data-ng-include src="selected.link">
-    </div>
-</section>
+<div data-ng-controller="IndexController">
+		<nav class="navmenu navmenu-default navmenu-fixed-left col-md-4" ng-show="global.authenticated" style="margin-top:50px; z-index:0" role="navigation">
+			<ul class="nav navmenu-nav" style="overflow-y: auto;">
+	            <div style="margin-bottom: 25px" class="navmenu-brand">Quick Links</i></div>       
+	            <li style="margin-left: 10px;" class="ng-class:{active: (!!selected? item.title===selected.title: false)}" ng-repeat="item in nav_menu" ng-click="changeActivePage(item)">
+	                <a><i style="margin-right: 10px;" class="fa {{item.fa}}"></i>{{ item.title}}</a>
+	            </li>
+	        </ul>
+		</nav>
+		<div ng-if="!selected"><h1>Welcome to AutoCAD Electrical</h1></div>
+		<div style="margin-top:50px; margin-left:250px;" ng-if="selected" data-ng-include src="selected.link">
+    	</div>
+</div>
