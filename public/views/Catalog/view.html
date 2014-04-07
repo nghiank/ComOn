@@ -55,8 +55,9 @@
                                             <i class="fa fa-caret-down btn-separate pull-right"></i>
                                             </a>
                                             <ul class="dropdown-menu">
-                                                <li ng-repeat="type in typeCodes">
-                                                    <a>{{type}}</a>
+                                                <li><input type="text" class="form-control" ng-model="searchText" ng-click="$event.stopPropagation();"></li>
+                                                <li ng-repeat="type in typeCodes | filter:searchText">
+                                                    <a ng-click="sheet.dName = type;">{{type}}</a>
                                                 </li>
                                                 <li ng-click="showTypesModal(sheet)" ng-show="global.authenticated && global.user.isAdmin && !sheet.unTrack && !sheet.dName">
                                                     <a><i class="fa fa-plus" style="margin-right:10px"></i>Add a new type</a>

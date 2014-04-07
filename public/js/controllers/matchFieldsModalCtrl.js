@@ -10,7 +10,10 @@ angular.module('ace.catalog').controller('matchFieldsModalCtrl', ['$scope', '$mo
 				angular.forEach(response,function(field){
 					var processedField = _.values(field).join('');
 					processedField = processedField.indexOf('additionalInfo.') > -1 ? processedField.substr(15) : processedField;
-					$scope.std_fields.push(processedField);
+					if($scope.std_fields.indexOf(processedField) < 0)
+						$scope.std_fields.push(processedField);
+					else
+						$scope.std_fields.push(processedField+'(2)');
 				});
 			});
 			$scope.newType = false;
