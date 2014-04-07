@@ -35,7 +35,10 @@ var UserSchema = new Schema({
         default: null
     },
     SchemFav: [{ type: Schema.ObjectId, ref: 'SchematicComponent' }],
-    catalogFilters: [{ type: Schema.Types.Mixed }]
+    catalogFilters: [{
+        type: Schema.Types.Mixed,
+        default: null
+    }]
 });
 
 mongoose.model('User', UserSchema);
