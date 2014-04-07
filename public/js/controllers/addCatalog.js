@@ -351,7 +351,7 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 			return null;
 		}
 		function getMatchingColumn(key, fields) {
-			if(fields.length === 0 || !key)
+			if(!fields || !key)
 				return null;
 			fields = _.object(fields);
 			var newTitle = _.has(fields, key)? fields[key]: null;
