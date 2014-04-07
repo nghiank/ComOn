@@ -9,17 +9,17 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 	$scope.states = [1,0,0];
 	$scope.sheets = [];
 	$scope.processedSheets = [];
-	$scope.title_row = 2;
 	$scope.nextDisabled = true;
 	$scope.showAll = false;
 	$scope.showAllFields = false;
 	$scope.newBeginning = true;
 	$scope.sheetTitle = 'A1';
+	$scope.title_row = 2;
 
 	$scope.showConfigureModal = function () {
 		var modalInstance = $modal.open({
-			templateUrl: 'views/Catalog/configureTemplateModal.html',
-			controller: 'configureTemplateModalCtrl',
+			templateUrl: 'views/Catalog/configureXlsModal.html',
+			controller: 'configureXlsModalCtrl',
 			resolve: {
 				data: function () {
 					return {
@@ -30,8 +30,11 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 			}
 		});
 		modalInstance.result.then(function(result){
-			if(result)
+			if(result){
 				$scope.newBeginning = true;
+				$scope.title_row = result.fields;
+				$scope.sheetTitle = result.title;
+			}
 		});
 	};
 
@@ -313,7 +316,6 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 			for(var i in $scope.processedSheets)
 				if($scope.processedSheets[i].pendingFields !== 0 && (!$scope.processedSheets[i].unTrack)){
 					$scope.submitDisabled = true;
-					console.log('true:',$scope.processedSheets[i].sName);
 					return;
 				}
 			$scope.submitDisabled = false;
