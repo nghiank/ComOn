@@ -12,17 +12,25 @@
 	    		</tr>
 	    	</thead>
 	    	<tbody>
-	    		<tr ng-repeat="field in sheet.fields | orderBy:sortedFields" ng-class="{warning:!field[1]}" style="height:51px">
-	    			<td class="col-md-6">{{field[0]}}</td>
-	    			<td class="col-md-6">
-	    				<div class="col-md-8">
+	    		<tr ng-repeat="field in sheet.fields | orderBy:sortedFields" ng-class="{warning:!field[1],muted:field[2]===true}" style="height:51px" class="showBlockOnHover"> 
+	    			<td class="col-md-3">{{field[0]}}</td>
+	    			<td class="col-md-9">
+	    				<div class="col-md-7" ng-show="field[2]!==true">
 	    					<select ng-model="field[1]" class="form-control" ng-class="{error:field[1]==='error'}"ng-options="sf for sf in std_fields" ng-change="checkUniqueMatch(field)"></select>
+	    					<span class="help-block error" ng-show="field[1]==='error'">One field cannot be matched to two columns.</span>
 	    				</div>
-	    				<div class="col-md-4">
+	    				<div class="col-md-1" ng-show="field[2]!==true">
 	    					<i class="fa fa-check success" ng-show="field[1] && field[1] !=='error'"></i>
 	    				</div>
-	    				<div class="row"><p class="error row" ng-show="field[1]==='error'">One field cannot be matched to two columns.</p></div>
+	    				<div class="col-md-2 pull-right">
+	    					<a class="btn btn-default onHover" ng-click="toggleTrackField(field[0],sheet)" ng-show="field[2]!==true"><i class="fa fa-trash-o"></i></a>
+	    					<a class="btn btn-default onHover" ng-show="field[2]===true" ng-click="toggleTrackField(field[0],sheet)"><i class="fa fa-reply"></i></a>
+	    				</div>
+	    				<div class="col-md-2" ng-show="field[2]!==true">
+	    					<a class="btn btn-default onHover"><i class="fa fa-edit"></i></a>
+	    				</div>	    				
 	    			</td>
+	    			
 	    		</tr>
 	    	</tbody>
 	    </table>

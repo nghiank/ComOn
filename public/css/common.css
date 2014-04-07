@@ -206,5 +206,6 @@ footer p {
 .muted
 {
     color:grey;
+    background-color: #f5f5f5;
     text-decoration:line-through;
 }

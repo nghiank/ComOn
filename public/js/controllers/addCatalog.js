@@ -95,6 +95,7 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 			$scope.states[0] = 0;
 			$scope.newBeginning = false;
 			$scope.parsingXLS = false;
+			$scope.$apply();
 		};
 		reader.readAsBinaryString($scope.file);
 	};
@@ -141,6 +142,7 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 				if(response[i].code)
 					$scope.typeCodes.push(response[i].code);
 			}
+			$scope.original_types = $scope.typeCodes;
 			for (var j in $scope.sheets){
 				if($scope.typeCodes.indexOf($scope.sheets[j]) > -1)
 					processedSheet = {'sName':$scope.sheets[j],'dName':$scope.sheets[j]};
@@ -157,28 +159,29 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 		function match_field(j, cols)
 		{
 			var std_fields = [];
-			CatalogAPI.fields.query({type:$scope.processedSheets[j].dName},function(response){
-				for(var k in response){
-					var std_field = _.values(response[k]).join('');
-					if(std_field.indexOf('additionalInfo') > -1)
-						std_field = std_field.substr(15);
-					std_fields.push(std_field);
-				}
-				k = 0;
-				$scope.processedSheets[j].fields = [];
-				for (k in cols){
-					var fieldMatchPair = [];
-					if(std_fields.indexOf(cols[k].toLowerCase()) > -1){
-						fieldMatchPair.push(cols[k]);
-						fieldMatchPair.push(std_fields[std_fields.indexOf(cols[k].toLowerCase())]);
-					}else{
-						fieldMatchPair.push(cols[k]);
-						fieldMatchPair.push('');
-						$scope.processedSheets[j].pendingFields++;
+			if($scope.original_types.indexOf($scope.processedSheets[j].dName) > -1)
+				CatalogAPI.fields.query({type:$scope.processedSheets[j].dName},function(response){
+					for(var k in response){
+						var std_field = _.values(response[k]).join('');
+						if(std_field.indexOf('additionalInfo') > -1)
+							std_field = std_field.substr(15);
+						std_fields.push(std_field);
 					}
-					$scope.processedSheets[j].fields.push(fieldMatchPair);
-				}
-			});
+					k = 0;
+					$scope.processedSheets[j].fields = [];
+					for (k in cols){
+						var fieldMatchPair = [];
+						if(std_fields.indexOf(cols[k].toLowerCase()) > -1){
+							fieldMatchPair.push(cols[k]);
+							fieldMatchPair.push(std_fields[std_fields.indexOf(cols[k].toLowerCase())]);
+						}else{
+							fieldMatchPair.push(cols[k]);
+							fieldMatchPair.push('');
+							$scope.processedSheets[j].pendingFields++;
+						}
+						$scope.processedSheets[j].fields.push(fieldMatchPair);
+					}
+				});
 		}
 
 		for(var i in wb.Sheets){
@@ -444,6 +447,7 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 			}
 			$scope.populateProgress = 20 +  Math.floor(count*100/$scope.totalSheetNo*0.6);
 		}
+		console.log('asdasd');
 		CatalogAPI.updateCatalog.save({data: json_obj}, function(response) {
 			if(response)
 			{
