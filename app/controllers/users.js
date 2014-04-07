@@ -6,8 +6,8 @@
 var mongoose = require('mongoose'),
     User = mongoose.model('User'),
     ComponentSchem = mongoose.model('SchematicComponent'),
-    error = require('../utils/error');
-
+    error = require('../utils/error'),
+    _ = require('underscore');
 /**
  * Auth callback
  */
@@ -182,6 +182,50 @@ exports.getFavourites = function(req, res) {
     });
 };
 
+exports.getFilters = function(req, res) {
+    if(!req.user)
+        return error.sendUnauthorizedError(res);
+    return res.jsonp(req.user.catalogFilters);
+};
+
+exports.addFilter = function(req, res) {
+    if(!req.user)
+        return error.sendUnauthorizedError(res);
+    if(!req.body.hasOwnProperty('name') || !req.body.hasOwnProperty('filter'))
+        return error.sendGenericError(res, 400, 'Error Encountered');
+    var name = req.body.name;
+    var list = _.map(req.user.catalogFilters, function(object) {return object.name.toLowerCase();});
+    if(list.indexOf(name.toLowerCase()) > -1)
+    {
+        return error.sendGenericError(res, 400, 'Error Encountered');
+    }
+    req.user.catalogFilters.push({name: name, filter: req.body.filter});
+    req.user.save(function(err) {
+        if(err)
+            return error.sendGenericError(res, 400, 'Error Encountered');
+        res.jsonp(req.user.catalogFilters);
+    });
+};
+
+exports.removeFilter = function(req,res) {
+    if(!req.user)
+        return error.sendUnauthorizedError(res);
+    if(!req.body.hasOwnProperty('name'))
+        return error.sendGenericError(res, 400, 'Error Encountered');
+    var name = req.body.name;
+    var list = _.map(req.user.catalogFilters, function(object) {return object.name.toLowerCase();});
+    if(list.indexOf(name.toLowerCase()) > -1)
+    {
+        delete req.user.catalogFilters[name];
+        req.user.save(function(err) {
+            if(err)
+                return error.sendGenericError(res, 400, 'Error Encountered');
+            res.jsonp(req.user.catalogFilters);
+        });
+        return;
+    }
+    res.jsonp(req.user.catalogFilters);
+};
 
 /**
  * Find user by Id

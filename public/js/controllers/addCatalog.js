@@ -368,7 +368,7 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 			return null;
 		}
 		function getMatchingColumn(key, fields) {
-			if(fields.length === 0 || !key)
+			if(!fields || !key)
 				return null;
 			fields = _.object(fields);
 			var newTitle = _.has(fields, key)? fields[key]: null;
@@ -443,7 +443,7 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 							}
 							var updated_column_title = getMatchingColumn(column_title, sheetToProcess.fields);
 							if(updated_column_title)
-								row_data[updated_column_title] = newCell;
+								row_data[updated_column_title.toLowerCase()] = newCell;
 						}
 						column = $scope.getNextColumnToRead(column.split(''));
 						if(!column)
@@ -464,7 +464,6 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 			}
 			$scope.populateProgress = 20 +  Math.floor(count*100/$scope.totalSheetNo*0.6);
 		}
-		console.log('asdasd');
 		CatalogAPI.updateCatalog.save({data: json_obj}, function(response) {
 			if(response)
 			{
