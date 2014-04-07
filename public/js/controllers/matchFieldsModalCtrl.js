@@ -1,18 +1,25 @@
 'use strict';
 
-angular.module('ace.catalog').controller('matchFieldsModalCtrl', ['$scope', '$modalInstance', 'sheet', 'CatalogAPI', '_',function($scope, $modalInstance, sheet, CatalogAPI, _){
+angular.module('ace.catalog').controller('matchFieldsModalCtrl', ['$scope', '$modalInstance', 'sheet', 'dbTypes','CatalogAPI', '_',function($scope, $modalInstance, sheet, dbTypes, CatalogAPI, _){
 	$scope.sheet = sheet;
 	$scope.doneEnabled = false;
 	$scope.init = function(){
 		$scope.std_fields = [];
-		CatalogAPI.fields.query({type:sheet.dName},function(response){
-			angular.forEach(response,function(field){
-				var processedField = _.values(field).join('');
-				processedField = processedField.indexOf('additionalInfo.') > -1 ? processedField.substr(15) : processedField;
-				$scope.std_fields.push(processedField);
+		if(dbTypes.indexOf(sheet.dName) > -1){
+			CatalogAPI.fields.query({type:sheet.dName},function(response){
+				angular.forEach(response,function(field){
+					var processedField = _.values(field).join('');
+					processedField = processedField.indexOf('additionalInfo.') > -1 ? processedField.substr(15) : processedField;
+					$scope.std_fields.push(processedField);
+				});
 			});
-		});
+			$scope.newType = false;
+			return;
+		}
+		$scope.newType = true;
 	};
+
+
 
 	$scope.sortedFields = function(field){
 		var weight = field[1] === '' ? 0 : 1;
@@ -46,11 +53,28 @@ angular.module('ace.catalog').controller('matchFieldsModalCtrl', ['$scope', '$mo
 				$scope.doneEnabled = false;
 				return;
 			}
+		var manFields= ['catalog','type','MANUFACTURER'];
+		$scope.flag = 0;
+		for(var j in manFields){
+			for(var k in $scope.sheet.fields){
+				if(manFields[j].toLowerCase() === $scope.sheet.fields[k][1].toLowerCase())
+					$scope.flag ++;
+			}
+				
+		}
+		if($scope.flag !== 3){
+			$scope.doneEnabled = false;
+			return;
+		}
 		$scope.doneEnabled = true;
 	},true);
 
 	$scope.apply = function(){
 		$scope.sheet.pendingFields = 0;
+		for(var i in $scope.sheet.fields){
+			if($scope.sheet.fields[i][2])
+				$scope.sheet.unTrackedFields[i] = true;
+		}
 		$modalInstance.close($scope.sheet);
 	};
 	$scope.cancel = function(){

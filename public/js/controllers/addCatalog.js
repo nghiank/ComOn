@@ -180,9 +180,22 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 							$scope.processedSheets[j].pendingFields++;
 						}
 						$scope.processedSheets[j].fields.push(fieldMatchPair);
+						$scope.processedSheets[j].unTrackedFields.push(false);
 					}
 				});
+			else{
+				$scope.processedSheets[j].fields = [];
+				for (var k in cols){
+					var fieldMatchPair = [];
+					fieldMatchPair.push(cols[k]);
+					fieldMatchPair.push(cols[k]);
+					$scope.processedSheets[j].pendingFields++;
+					$scope.processedSheets[j].fields.push(fieldMatchPair);
+					$scope.processedSheets[j].unTrackedFields.push(true);
+				}
+			}
 		}
+		
 
 		for(var i in wb.Sheets){
 			count++;
@@ -191,6 +204,7 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 				if($scope.processedSheets[j].sName === wb.SheetNames[count] && $scope.processedSheets[j].dName && !$scope.processedSheets[j].unTrack){
 					sheet_flag = true;
 					$scope.processedSheets[j].pendingFields = 0;
+					$scope.processedSheets[j].unTrackedFields = [];
 					break;
 				}
 			}
@@ -252,6 +266,9 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 			resolve:{
 				sheet: function() {
 					return (sheet);
+				},
+				dbTypes: function(){
+					return $scope.original_types;
 				}
 			}
 		});
