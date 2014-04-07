@@ -18,7 +18,7 @@
                             <p ng-if="!valid" class="error">{{error}}</p>
                         </div>
                         <div class="col-sm-offset-2 col-sm-2">
-                            <button type="button" class="btn" ng-disabled="!valid" ng-click="populate(); states[0] = 0; states[1] = 1;" ng-class={'btn-default':populateProgress===100,'btn-default':populateProgress!==100} ng-show="states[0] && !states[1] && !states[2]"><i class="fa fa-check success" ng-show="showProgress && populateProgress === 100"></i>Next</button>
+                            <button type="button" class="btn btn-default" ng-disabled="!valid" ng-click="populate(); states[0] = 0; states[1] = 1;" ng-show="states[0] && !states[1] && !states[2]">Next</button>
                         </div>
                     </div>
                     <div class="alert alert-thin alert-info" ng-show="states[1]">
@@ -84,11 +84,13 @@
                         <button class="btn btn-info btn-sm btn-separate pull-right" style="margin-top: -5px" ng-click="toggleShowAll(2)" ng-if="showAllFields">Hide matched sheets</button></p>
                         <table class="table table-stripped">
                             <tbody>
-                                <tr class="showIconOnHover" ng-repeat="sheet in processedSheets|filter:isSheetPendingByFields |orderBy:sheetSortedByPendingFields" ng-class="{warning:sheet.pendingFields>0}" ng-click="showMatchFieldsModal(sheet)">
-                                    <td class="col-md-4">{{sheet.sName}} ({{sheet.dName}})</td>
-                                    <td class="col-md-8">
+                                <tr class="showIconOnHover" ng-repeat="sheet in processedSheets|filter:isSheetPendingByFields |orderBy:sheetSortedByPendingFields" ng-class="{warning:sheet.pendingFields>0}" ng-click="showMatchFieldsModal(sheet)" style="height:40px">
+                                    <td class="col-md-3">{{sheet.sName}} ({{sheet.dName}})</td>
+                                    <td class="col-md-6">
                                         <span ng-show="sheet.pendingFields ===0"><i class="fa fa-check success" style="margin-right:10px"></i> All fields auto matched.</span>
                                         <span ng-hide="sheet.pendingFields ===0"><i class="fa fa-question error" style="margin-right:10px"></i>{{sheet.pendingFields}} fields needs clarification.</span>
+                                    </td>
+                                    <td class="col-md-3">
                                         <span>
                                             <a class="btn btn-default onHover">Show fields</a>
                                         </span>
@@ -101,7 +103,7 @@
                             <div class="col-md-12">
                                 <div class="pull-right">
                                     <a class="btn btn-default btn-separate" ng-click="states[1]=1;states[2]=0">Back</a>
-                                    <a class="btn btn-primary btn-separate">Submit</a>
+                                    <a class="btn btn-primary btn-separate" ng-disabled="submitDisabled">Submit</a>
                                 </div>
                             </div>
                         </div>
