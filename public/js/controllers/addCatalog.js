@@ -12,6 +12,7 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 	$scope.title_row = 2;
 	$scope.nextDisabled = true;
 	$scope.showAll = false;
+	$scope.showAllFields = false;
 
 	$scope.authorized = function() {
 		if($scope.global.authenticated && ($scope.global.user.isAdmin || $scope.global.user.isManufacturer))
@@ -19,13 +20,16 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 		return false;
 	};
 
-	$scope.toggleShowAll = function(){
-		$scope.showAll = !$scope.showAll;
+	$scope.toggleShowAll = function(number){
+		if(number === 1)
+			$scope.showAll = !$scope.showAll;
+		if(number === 2)
+			$scope.showAllFields = !$scope.showAllFields;
 	};
 
 	$scope.isPending = function(sheet){
 		if(!$scope.showAll)
-			return (!sheet.dName && !sheet.unTrack);
+			return (sheet.pending);
 		return true;
 	};
 
@@ -165,8 +169,18 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 	};
 
 	$scope.isSheetPendingByFields = function(sheet){
-		if($scope.showAll) return sheet.dName && (!sheet.unTrack);
+		if($scope.showAllFields) return sheet.dName && (!sheet.unTrack);
 		return (sheet.pendingFields !== 0) && sheet.dName && (!sheet.unTrack);
+	};
+
+	$scope.countPendingByFields = function(){
+		var count = 0;
+		for(var i in $scope.processedSheets){
+			var sheet = $scope.processedSheets[i];
+			if(sheet.pendingFields !== 0 && sheet.dName && (!sheet.unTrack))
+				count++;
+		}
+		return count;
 	};
 
 	$scope.sheetSortedByPendingFields = function(sheet){
