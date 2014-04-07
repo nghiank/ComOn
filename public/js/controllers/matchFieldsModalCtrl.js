@@ -2,6 +2,7 @@
 
 angular.module('ace.catalog').controller('matchFieldsModalCtrl', ['$scope', '$modalInstance', 'sheet', 'CatalogAPI', '_',function($scope, $modalInstance, sheet, CatalogAPI, _){
 	$scope.sheet = sheet;
+	$scope.doneEnabled = false;
 	$scope.init = function(){
 		$scope.std_fields = [];
 		CatalogAPI.fields.query({type:sheet.dName},function(response){
@@ -28,11 +29,20 @@ angular.module('ace.catalog').controller('matchFieldsModalCtrl', ['$scope', '$mo
 
 	};
 
+	$scope.$watch('sheet.fields',function(){
+		for(var i in $scope.sheet.fields)
+			if ($scope.sheet.fields[i][1] === 'error' || $scope.sheet.fields[i][1] === ''){
+				$scope.doneEnabled = false;
+				return;
+			}
+		$scope.doneEnabled = true;
+	},true);
 
 	$scope.apply = function(){
-		$modalInstance.close(true);
+		$scope.sheet.pendingFields = 0;
+		$modalInstance.close($scope.sheet);
 	};
 	$scope.cancel = function(){
-		$modalInstance.close(false);
+		$modalInstance.dismiss('user cancelled');
 	};
 }]);

@@ -55,7 +55,7 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 	};
 
 	$scope.sheetSorted = function(sheet){
-		/*The sheets are ordered in this order: 
+		/*The sheets are ordered in this order:
 		1)Pending sheets are always on the top;
 		2)Matched sheets at the bottom (if shown);
 		3)Untrack does not affect the order
@@ -66,7 +66,6 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 	};
 
 	$scope.fileSelect = function($files) {
-		$scope.showProgress  = false;
 		var check = $scope.formValidator.checkFileExtension($files[0]?$files[0].name:'', ['xls']);
 		if(check.result)
 		{
@@ -101,7 +100,28 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 		var wb = $scope.wb;
 		if($scope.processedSheets.length > 0)
 			return;
-		$scope.sheets = wb.SheetNames;
+		$scope.sheets = [];
+		for(var j in wb.Sheets)
+		{
+			var single = wb.Sheets[j];
+
+			var all_keys = _.keys(single);
+			for(var i = 0; i < all_keys.length; i++)
+			{
+				var cell = all_keys[i];
+				var matches = cell.match(/\d+$/);
+				if(matches)
+				{
+					var number = matches[0];
+					number = parseInt(number, 10);
+					if(number > $scope.title_row)
+					{
+						$scope.sheets.push(j);
+						break;
+					}
+				}
+			}
+		}
 		if($scope.sheets.length === 0)
 		{
 			$scope.success = null;
@@ -229,8 +249,12 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 				}
 			}
 		});
-		modalInstance.result.then(function(){
-			console.log('alala');
+		modalInstance.result.then(function(response){
+			console.log(response);
+			for(var i in $scope.processedSheets){
+				if($scope.processedSheets[i].sName === response.sName)
+					$scope.processedSheets[i] = response;
+			}
 		});
 	};
 
@@ -283,8 +307,24 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 		$scope.nextDisabled = true;
 	},true);
 
+	$scope.$watch('processedSheets', function(){
+		console.log('!!');
+		if($scope.sheets.length !== 0)
+		{
+			for(var i in $scope.processedSheets)
+				if($scope.processedSheets[i].pendingFields !== 0 && (!$scope.processedSheets[i].unTrack)){
+					$scope.submitDisabled = true;
+					console.log('true:',$scope.processedSheets[i].sName);
+					return;
+				}
+			$scope.submitDisabled = false;
+			return;
+		}
+		$scope.submitDisabled = true;
+	},true);
+
+
 	$scope.startProcessing = function(wb) {
-		$scope.showProgress = true;
 		var user = $scope.global.user;
 		function checkAuthority(manufacturerEntry)
 		{
@@ -302,7 +342,6 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 		var json_obj = {};
 
 		var count = 0;
-		$scope.populateProgress = 20;
 
 		for (var key in wb.Sheets){
 			count ++;

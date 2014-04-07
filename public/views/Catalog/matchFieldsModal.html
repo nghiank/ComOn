@@ -3,8 +3,8 @@
     <div class="modal-header">Match the fields for field: 
     	<div class="pull-right"><strong>{{sheet.sName}}</strong></div>
     </div>
-    <div class="panel-body">
-	    <table>
+    <div class="modal-body">
+	    <table class="table table-stripped">
 	    	<thead>
 	    		<tr>
 	    			<th>Fields from .xls</th>
@@ -12,19 +12,25 @@
 	    		</tr>
 	    	</thead>
 	    	<tbody>
-	    		<tr ng-repeat="field in sheet.fields | orderBy:sortedFields" ng-class="{warning:!field[1]}">
-	    			<td class="col-md-4">{{field[0]}}</td>
-	    			<td class="col-md-8">
+	    		<tr ng-repeat="field in sheet.fields | orderBy:sortedFields" ng-class="{warning:!field[1]}" style="height:51px">
+	    			<td class="col-md-6">{{field[0]}}</td>
+	    			<td class="col-md-6">
 	    				<div class="col-md-8">
 	    					<select ng-model="field[1]" class="form-control" ng-class="{error:field[1]==='error'}"ng-options="sf for sf in std_fields" ng-change="checkUniqueMatch(field)"></select>
 	    				</div>
 	    				<div class="col-md-4">
 	    					<i class="fa fa-check success" ng-show="field[1] && field[1] !=='error'"></i>
 	    				</div>
-	    				<p class="error row" ng-show="field[1]==='error'">There is already a column matched to that field.</p>
+	    				<div class="row"><p class="error row" ng-show="field[1]==='error'">One field cannot be matched to two columns.</p></div>
 	    			</td>
 	    		</tr>
 	    	</tbody>
 	    </table>
-	</div>
+	    <div class="row" style="margin-bottm:20px">
+			<div class="col-md-12">
+				<a class="btn btn-default btn-separate" ng-click="cancel()">Cancel</a>
+				<a class="btn btn-primary pull-right" ng-disabled = '!doneEnabled' ng-click="apply()">Done</a>
+			</div>
+		</div>
+	</div>	
 </section>
