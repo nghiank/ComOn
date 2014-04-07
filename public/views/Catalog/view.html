@@ -1,112 +1,114 @@
 <section ng-init="init()" ng-show="authorized()" ng-controller="catalogController">
-        <div class="panel">
-            <div class="row">
-                <form class="form-horizontal col-md-12">
-                    <div class="alert alert-thin alert-info"  ng-show="states[0]">
-                        Step 1. Select .xls File
-                    </div>
-                    <div class="form-group" ng-show="states[0]">
-                        <label class="col-sm-2 control-label">.xls File</label>
-                        <div class="col-sm-8">
-                            <div class="fileinput fileinput-new" data-provides="fileinput">
-                                <div class="input-group">
-                                    <div class="form-control" data-trigger="fileinput"><i class="fa fa-check success fileinput-exists" ng-show="!error && success"></i><i class="fa fa-times fileinput-exists error" ng-hide="!error && success"></i> <span class="fileinput-filename"></span></div>
-                                    <span class="input-group-addon btn btn-default btn-file"><span class="fileinput-new">Select file</span><span class="fileinput-exists">Change</span><input type="file" name="..." ng-file-select="fileSelect($files)"></span>
-                                    <a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput" >Remove</a>
-                                </div>
-                            </div>
-                            <p ng-if="!valid" class="error">{{error}}</p>
-                        </div>
-                        <div class="col-sm-offset-2 col-sm-2">
-                            <button type="button" class="btn" ng-disabled="!valid" ng-click="populate(); states[0] = 0; states[1] = 1;" ng-class={'btn-default':populateProgress===100,'btn-default':populateProgress!==100} ng-show="states[0] && !states[1] && !states[2]"><i class="fa fa-check success" ng-show="showProgress && populateProgress === 100"></i>Next</button>
-                        </div>
-                    </div>
-                    <div class="alert alert-thin alert-info" ng-show="states[1]">
-                        Step 2. Match the sheets to ACADE standard types.
-                    </div>
-                    <div class="form-group" ng-show="states[1]">
-                        <div class="col-md-12">
-                            <p ng-show="countPending() !== 0">Out of <b style="font-size: 16px">{{sheets.length}}</b> sheets in the .xls file, <b style="font-size: 16px">{{countPending()}}</b> {{countPending() === 1? 'needs': 'need'}} your attention.
-                            <button class="btn btn-info btn-sm btn-separate pull-right" style="margin-top: -5px" ng-click="toggleShowAll(1)" ng-if="!showAll">Show all sheets</button>
-                            <button class="btn btn-info btn-sm btn-separate pull-right" style="margin-top: -5px" ng-click="toggleShowAll(1)" ng-if="showAll">Hide matched sheets</button>
-                            </p>
-                            <p ng-show="processedSheets.length !== 0 && processedSheets.length === sheets.length && countPending() === 0">Everything is well. <i class="fa fa-check success"></i>
-                            <button class="btn btn-info btn-sm btn-separate pull-right" style="margin-top: -5px" ng-click="toggleShowAll(1)" ng-if="!showAll">Show all sheets</button>
-                            <button class="btn btn-info btn-sm btn-separate pull-right" style="margin-top: -5px" ng-click="toggleShowAll(1)" ng-if="showAll">Hide matched sheets</button>
-                            </p>
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th class="col-md-6">.xls File Sheets</th>
-                                    <th class="col-md-6">ACADE Default Types</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="showBlockOnHover" style="height: 51px;" ng-repeat = "sheet in processedSheets | filter:isPending | orderBy:sheetSorted" ng-class="{warning:!sheet.dName&&(!sheet.unTrack), muted:sheet.unTrack, active:sheet.unTrack}">
-                                    <td class="col-md-6">{{sheet.sName}}</td>
-                                    <td class="col-md-6">
-                                        <div class="col-md-8">
-                                            <select class="form-control" ng-model="sheet.dName" ng-options="type for type in typeCodes" ng-if="!sheet.unTrack"></select>
-                                        </div>
-                                        <div class="col-md-1">
-                                            <i class="fa fa-check success" ng-show="sheet.dName && !sheet.unTrack"></i>
-                                        </div>
-                                        <div class="col-md-1 onHover">
-                                            <button class="btn btn-default" ng-show="!sheet.unTrack"ng-click="toggleTrackingSheet(sheet)"><i class="fa fa-trash-o"></i></button>
-                                            <button class="btn btn-default" ng-show="sheet.unTrack" ng-click="toggleTrackingSheet(sheet)"><i class="fa fa-reply"></i></button>
-                                        </div> 
-                                        <div class="col-md-1 onHover btn-separate" ng-show="global.authenticated && global.user.isAdmin && !sheet.unTrack && !sheet.dName" tooltip="Add a custom type"  tooltip-trigger="mouseenter" tooltip-placement="right">
-                                            <button class="btn btn-default" ng-click="showTypesModal(sheet)"><i class="fa fa-edit"></i></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="pull-right" ng-show="states[1] && !states[2]">
-                                    <a class="btn btn-default btn-separate" ng-click="states[1] = 0; states[0] = 1;">Back</a>
-                                    <a class="btn btn-default btn-separate" ng-click="states[1] = 0; states[2] = 1; matchFields()" ng-disabled="nextDisabled">Next</a>
-                                </div>
-                            </div>
-                        </div>
-                        </div>
-                    </div>
-                    <div class="alert alert-thin alert-info" ng-show="states[2]">
-                        Step 3. Match the columns
-                    </div>
-                    <div clas="form-group" ng-show="states[2]">
-                        <p ng-show="countPendingByFields() !== 0">Out of <b style="font-size: 16px">{{sheets.length}}</b> sheets in the .xls file, <b style="font-size: 16px">{{countPendingByFields()}}</b> {{countPendingByFields() === 1? 'needs': 'need'}} your attention.
-                        <button class="btn btn-info btn-sm btn-separate pull-right" style="margin-top: -5px" ng-click="toggleShowAll(2)" ng-if="!showAllFields">Show all sheets</button>
-                        <button class="btn btn-info btn-sm btn-separate pull-right" style="margin-top: -5px" ng-click="toggleShowAll(2)" ng-if="showAllFields">Hide matched sheets</button></p>
-                        <p ng-show="countPendingByFields() === 0"><i class="fa fa-check success" style="margin-right:10px"></i>Everything is well.
-                        <button class="btn btn-info btn-sm btn-separate pull-right" style="margin-top: -5px" ng-click="toggleShowAll(2)" ng-if="!showAllFields">Show all sheets</button>
-                        <button class="btn btn-info btn-sm btn-separate pull-right" style="margin-top: -5px" ng-click="toggleShowAll(2)" ng-if="showAllFields">Hide matched sheets</button></p>
-                        <table class="table table-stripped">
-                            <tbody>
-                                <tr class="showIconOnHover" ng-repeat="sheet in processedSheets|filter:isSheetPendingByFields |orderBy:sheetSortedByPendingFields" ng-class="{warning:sheet.pendingFields>0}" ng-click="showMatchFieldsModal(sheet)">
-                                    <td class="col-md-4">{{sheet.sName}} ({{sheet.dName}})</td>
-                                    <td class="col-md-8">
-                                        <span ng-show="sheet.pendingFields ===0"><i class="fa fa-check success" style="margin-right:10px"></i> All fields auto matched.</span>
-                                        <span ng-hide="sheet.pendingFields ===0"><i class="fa fa-question error" style="margin-right:10px"></i>{{sheet.pendingFields}} fields needs clarification.</span>
-                                        <span>
-                                            <a class="btn btn-default onHover">Show fields</a>
-                                        </span>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                       
-                        <div class="row" style="margin-top:10px">
-                            <div class="col-md-12">
-                                <div class="pull-right">
-                                    <a class="btn btn-default btn-separate" ng-click="states[1]=1;states[2]=0">Back</a>
-                                    <a class="btn btn-primary btn-separate">Submit</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
+		<div class="panel">
+			<div class="row">
+				<form class="form-horizontal col-md-12">
+					<div class="alert alert-thin alert-info"  ng-show="states[0]">
+						Step 1. Select .xls File
+					</div>
+					<div class="form-group" ng-show="states[0]">
+						<label class="col-sm-2 control-label">.xls File</label>
+						<div class="col-sm-9">
+							<div class="fileinput fileinput-new" data-provides="fileinput">
+								<div class="input-group">
+									<div class="form-control" data-trigger="fileinput"><i class="fa fa-check success fileinput-exists" ng-show="!error && success"></i><i class="fa fa-times fileinput-exists error" ng-hide="!error && success"></i> <span class="fileinput-filename"></span></div>
+									<span class="input-group-addon btn btn-default btn-file"><span class="fileinput-new">Select file</span><span class="fileinput-exists">Change</span><input type="file" name="..." ng-file-select="fileSelect($files)"></span>
+									<a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput" >Remove</a>
+									<a ng-click="showConfigureModal()" class="input-group-addon btn btn-default fileinput-exists"><i class="fa fa-gear"> Template</i></a>
+								</div>
+							</div>
+							<p ng-if="!valid" class="error">{{error}}</p>
+						</div>
+						<div class="col-sm-offset-2 col-sm-9">
+							<button type="button" class="btn btn-default pull-right" ng-disabled="!valid" ng-click="populate()" ng-if="newBeginning">Begin<img style="margin-top: -2px; margin-left: 10px;" ng-if="parsingXLS" src="img/loaders/loader-small.gif" height="15" width="15"></button>
+							<button type="button" class="btn btn-default pull-right" ng-click="states[0] = 0; states[1] = 1;" ng-show="states[0] && !states[1] &&  !states[2] && !parsingXLS && valid && !newBeginning">Next</button>
+						</div>
+					</div>
+					<div class="alert alert-thin alert-info" ng-show="states[1]">
+						Step 2. Match the sheets to ACADE standard types.
+					</div>
+					<div class="form-group" ng-show="states[1]">
+						<div class="col-md-12">
+							<p ng-show="countPending() !== 0">Out of <b style="font-size: 16px">{{sheets.length}}</b> sheets in the .xls file, <b style="font-size: 16px">{{countPending()}}</b> {{countPending() === 1? 'needs': 'need'}} your attention.
+							<button class="btn btn-info btn-sm btn-separate pull-right" style="margin-top: -5px" ng-click="toggleShowAll(1)" ng-if="!showAll">Show all sheets</button>
+							<button class="btn btn-info btn-sm btn-separate pull-right" style="margin-top: -5px" ng-click="toggleShowAll(1)" ng-if="showAll">Hide matched sheets</button>
+							</p>
+							<p ng-show="processedSheets.length !== 0 && processedSheets.length === sheets.length && countPending() === 0">Everything is well. <i class="fa fa-check success"></i>
+							<button class="btn btn-info btn-sm btn-separate pull-right" style="margin-top: -5px" ng-click="toggleShowAll(1)" ng-if="!showAll">Show all sheets</button>
+							<button class="btn btn-info btn-sm btn-separate pull-right" style="margin-top: -5px" ng-click="toggleShowAll(1)" ng-if="showAll">Hide matched sheets</button>
+							</p>
+						<table class="table">
+							<thead>
+								<tr>
+									<th class="col-md-6">.xls File Sheets</th>
+									<th class="col-md-6">ACADE Default Types</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr class="showBlockOnHover" style="height: 51px;" ng-repeat = "sheet in processedSheets | filter:isPending | orderBy:sheetSorted" ng-class="{warning:!sheet.dName&&(!sheet.unTrack), muted:sheet.unTrack, active:sheet.unTrack}">
+									<td class="col-md-6">{{sheet.sName}}</td>
+									<td class="col-md-6">
+										<div class="col-md-8">
+											<select class="form-control" ng-model="sheet.dName" ng-options="type for type in typeCodes" ng-if="!sheet.unTrack"></select>
+										</div>
+										<div class="col-md-1">
+											<i class="fa fa-check success" ng-show="sheet.dName && !sheet.unTrack"></i>
+										</div>
+										<div class="col-md-1 onHover">
+											<button class="btn btn-default" ng-show="!sheet.unTrack"ng-click="toggleTrackingSheet(sheet)"><i class="fa fa-trash-o"></i></button>
+											<button class="btn btn-default" ng-show="sheet.unTrack" ng-click="toggleTrackingSheet(sheet)"><i class="fa fa-reply"></i></button>
+										</div> 
+										<div class="col-md-1 onHover btn-separate" ng-show="global.authenticated && global.user.isAdmin && !sheet.unTrack && !sheet.dName" tooltip="Add a custom type"  tooltip-trigger="mouseenter" tooltip-placement="right">
+											<button class="btn btn-default" ng-click="showTypesModal(sheet)"><i class="fa fa-edit"></i></button>
+										</div>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+						<div class="row">
+							<div class="col-md-12">
+								<div class="pull-right" ng-show="states[1] && !states[2]">
+									<a class="btn btn-default btn-separate" ng-click="states[1] = 0; states[0] = 1;">Back</a>
+									<a class="btn btn-default btn-separate" ng-click="states[1] = 0; states[2] = 1; matchFields()" ng-disabled="nextDisabled">Next</a>
+								</div>
+							</div>
+						</div>
+						</div>
+					</div>
+					<div class="alert alert-thin alert-info" ng-show="states[2]">
+						Step 3. Match the columns
+					</div>
+					<div clas="form-group" ng-show="states[2]">
+						<p ng-show="countPendingByFields() !== 0">Out of <b style="font-size: 16px">{{sheets.length}}</b> sheets in the .xls file, <b style="font-size: 16px">{{countPendingByFields()}}</b> {{countPendingByFields() === 1? 'needs': 'need'}} your attention.
+						<button class="btn btn-info btn-sm btn-separate pull-right" style="margin-top: -5px" ng-click="toggleShowAll(2)" ng-if="!showAllFields">Show all sheets</button>
+						<button class="btn btn-info btn-sm btn-separate pull-right" style="margin-top: -5px" ng-click="toggleShowAll(2)" ng-if="showAllFields">Hide matched sheets</button></p>
+						<p ng-show="countPendingByFields() === 0"><i class="fa fa-check success" style="margin-right:10px"></i>Everything is well.
+						<button class="btn btn-info btn-sm btn-separate pull-right" style="margin-top: -5px" ng-click="toggleShowAll(2)" ng-if="!showAllFields">Show all sheets</button>
+						<button class="btn btn-info btn-sm btn-separate pull-right" style="margin-top: -5px" ng-click="toggleShowAll(2)" ng-if="showAllFields">Hide matched sheets</button></p>
+						<table class="table table-stripped">
+							<tbody>
+								<tr class="showIconOnHover" ng-repeat="sheet in processedSheets|filter:isSheetPendingByFields |orderBy:sheetSortedByPendingFields" ng-class="{warning:sheet.pendingFields>0}" ng-click="showMatchFieldsModal(sheet)">
+									<td class="col-md-4">{{sheet.sName}} ({{sheet.dName}})</td>
+									<td class="col-md-8">
+										<span ng-show="sheet.pendingFields ===0"><i class="fa fa-check success" style="margin-right:10px"></i> All fields auto matched.</span>
+										<span ng-hide="sheet.pendingFields ===0"><i class="fa fa-question error" style="margin-right:10px"></i>{{sheet.pendingFields}} fields needs clarification.</span>
+										<span>
+											<a class="btn btn-default onHover">Show fields</a>
+										</span>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					   
+						<div class="row" style="margin-top:10px">
+							<div class="col-md-12">
+								<div class="pull-right">
+									<a class="btn btn-default btn-separate" ng-click="states[1]=1;states[2]=0">Back</a>
+									<a class="btn btn-primary btn-separate">Submit</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
 </section>

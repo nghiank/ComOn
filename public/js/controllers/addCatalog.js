@@ -13,6 +13,27 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 	$scope.nextDisabled = true;
 	$scope.showAll = false;
 	$scope.showAllFields = false;
+	$scope.newBeginning = true;
+	$scope.sheetTitle = 'A1';
+
+	$scope.showConfigureModal = function () {
+		var modalInstance = $modal.open({
+			templateUrl: 'views/Catalog/configureTemplateModal.html',
+			controller: 'configureTemplateModalCtrl',
+			resolve: {
+				data: function () {
+					return {
+						title: $scope.sheetTitle,
+						column_row: $scope.title_row
+					};
+				}
+			}
+		});
+		modalInstance.result.then(function(result){
+			if(result)
+				$scope.newBeginning = true;
+		});
+	};
 
 	$scope.authorized = function() {
 		if($scope.global.authenticated && ($scope.global.user.isAdmin || $scope.global.user.isManufacturer))
@@ -49,6 +70,7 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 		var check = $scope.formValidator.checkFileExtension($files[0]?$files[0].name:'', ['xls']);
 		if(check.result)
 		{
+			$scope.newBeginning = true;
 			$scope.uploadDisabled = false;
 			$scope.file = $files[0];
 			$scope.sheets = [];
@@ -61,17 +83,22 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 
 	$scope.populate = function() {
 		$scope.populateProgress = 0;
+		$scope.parsingXLS = true;
 		var reader = new FileReader();
 		reader.onload = function(){
 			var wb = $scope.xls.read(reader.result, {type: 'binary'});
 			$scope.wb = wb;
-			$scope.getSheets(wb);
-			//$scope.startProcessing(wb);
+			$scope.getSheets();
+			$scope.states[1] = 1;
+			$scope.states[0] = 0;
+			$scope.newBeginning = false;
+			$scope.parsingXLS = false;
 		};
 		reader.readAsBinaryString($scope.file);
 	};
 
-	$scope.getSheets = function(wb){
+	$scope.getSheets = function(){
+		var wb = $scope.wb;
 		if($scope.processedSheets.length > 0)
 			return;
 		$scope.sheets = wb.SheetNames;
@@ -228,7 +255,7 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 						types: $scope.types,
 						sheets: $scope.sheets,
 						current: sheet,
-						firstName: ($scope.wb.Sheets[sheet.sName]? ($scope.wb.Sheets[sheet.sName].A1? $scope.wb.Sheets[sheet.sName].A1.w: ''): '')
+						firstName: ($scope.wb.Sheets[sheet.sName]? ($scope.wb.Sheets[sheet.sName][$scope.sheetTitle]? $scope.wb.Sheets[sheet.sName][$scope.sheetTitle].w: ''): '')
 					};
 				}
 			}
@@ -347,7 +374,7 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 						sheet_data.push(row_data);
 					row_data = {};
 				}
-				json_obj[$scope.processedSheets.key.db? $scope.processedSheets.key.db.code: key] = {title: ($scope.processedSheets.key.db? $scope.processedSheets.key.db.name: (sheet.A1? sheet.A1.w: '')), data: sheet_data};
+				json_obj[$scope.processedSheets.key.db? $scope.processedSheets.key.db.code: key] = {title: ($scope.processedSheets.key.db? $scope.processedSheets.key.db.name: (sheet[[$scope.sheetTitle]]? sheet[$scope.sheetTitle].w: '')), data: sheet_data};
 				sheet_data = [];
 			}
 			$scope.populateProgress = 20 +  Math.floor(count*100/$scope.totalSheetNo*0.6);
