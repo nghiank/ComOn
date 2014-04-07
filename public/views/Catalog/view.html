@@ -37,7 +37,7 @@
                         <button class="btn btn-info btn-sm btn-separate " style="margin-top: -5px" ng-click="toggleShowAll(1)" ng-if="!showAll">Show all sheets</button>
                         <button class="btn btn-info btn-sm btn-separate " style="margin-top: -5px" ng-click="toggleShowAll(1)" ng-if="showAll">Hide matched sheets</button>
                         </p>
-                    	<table class="table" ng-hide="countPending() === 0 && !showAll">
+                    	<table class="table">
                         <thead>
                             <tr>
                                 <th class="col-md-6">.xls File Sheets</th>
@@ -45,7 +45,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr class="showBlockOnHover" style="height: 51px;" ng-repeat = "sheet in processedSheets | filter:isPending | orderBy:sheetSorted" ng-class="{warning:!sheet.dName&&(!sheet.unTrack), muted:sheet.unTrack, active:sheet.unTrack}">
+                            <tr class="showBlockOnHover" style="height: 51px;" ng-repeat = "sheet in processedSheets | filter:isPending | orderBy:sheetSorted" ng-class="{warning:!sheet.dName&&(!sheet.unTrack), muted:sheet.unTrack}">
                                 <td class="col-md-6">{{sheet.sName}}</td>
                                 <td class="col-md-6">
                                     <div class="col-md-8">
@@ -86,7 +86,7 @@
 	                    <p style="margin-left: 5px;" ng-show="countPendingByFields() === 0">Everything is well. <i class="fa fa-check success"></i>
 	                    <button class="btn btn-info btn-sm btn-separate" style="margin-top: -5px" ng-click="toggleShowAll(2)" ng-if="!showAllFields">Show all sheets</button>
 	                    <button class="btn btn-info btn-sm btn-separate" style="margin-top: -5px" ng-click="toggleShowAll(2)" ng-if="showAllFields">Hide matched sheets</button></p>
-	                    <table class="table table-stripped" ng-hide="countPendingByFields() === 0 && !showAllFields">
+	                    <table class="table table-stripped">
 	                        <tbody>
 	                            <tr class="showIconOnHover" ng-repeat="sheet in processedSheets|filter:isSheetPendingByFields |orderBy:sheetSortedByPendingFields" ng-class="{warning:sheet.pendingFields>0}" ng-click="showMatchFieldsModal(sheet)" style="height:40px">
 	                                <td class="col-md-3">{{sheet.sName}} ({{sheet.dName}})</td>
