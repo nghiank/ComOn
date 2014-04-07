@@ -48,9 +48,24 @@
                             <tr class="showBlockOnHover" style="height: 51px;" ng-repeat = "sheet in processedSheets | filter:isPending | orderBy:sheetSorted" ng-class="{warning:!sheet.dName&&(!sheet.unTrack), muted:sheet.unTrack}">
                                 <td class="col-md-6">{{sheet.sName}}</td>
                                 <td class="col-md-6">
-                                    <div class="col-md-8">
-                                        <select class="form-control" ng-model="sheet.dName" ng-options="type for type in typeCodes" ng-if="!sheet.unTrack"></select>
+                                    <div class="col-md-8" style="margin-left:-5px">
+                                        <div class="dropdown">
+                                            <a class="dropdown-toggle btn btn-default dropdown-btn">
+                                            {{sheet.dName ? sheet.dName : 'Choose a type'}}
+                                            <i class="fa fa-caret-down btn-separate pull-right"></i>
+                                            </a>
+                                            <ul class="dropdown-menu">
+                                                <li ng-repeat="type in typeCodes">
+                                                    <a>{{type}}</a>
+                                                </li>
+                                                <li ng-click="showTypesModal(sheet)" ng-show="global.authenticated && global.user.isAdmin && !sheet.unTrack && !sheet.dName">
+                                                    <a><i class="fa fa-plus" style="margin-right:10px"></i>Add a new type</a>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </div>
+                                        <!-- <select class="form-control" ng-model="sheet.dName" ng-options="type for type in typeCodes" ng-if="!sheet.unTrack"></select> -->
+
                                     <div class="col-md-1">
                                         <i class="fa fa-check success" ng-show="sheet.dName && !sheet.unTrack"></i>
                                     </div>
@@ -58,8 +73,6 @@
                                         <button class="btn btn-default" ng-show="!sheet.unTrack"ng-click="toggleTrackingSheet(sheet)"><i class="fa fa-trash-o"></i></button>
                                         <button class="btn btn-default" ng-show="sheet.unTrack" ng-click="toggleTrackingSheet(sheet)"><i class="fa fa-reply"></i></button>
                                     </div> 
-                                    <div class="col-md-1 onHover btn-separate" ng-show="global.authenticated && global.user.isAdmin && !sheet.unTrack && !sheet.dName" tooltip="Add a custom type"  tooltip-trigger="mouseenter" tooltip-placement="right">
-                                        <button class="btn btn-default" ng-click="showTypesModal(sheet)"><i class="fa fa-edit"></i></button>
                                     </div>
                                 </td>
                             </tr>
