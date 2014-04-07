@@ -325,8 +325,10 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 	},true);
 
 
-	$scope.startProcessing = function(wb) {
+	$scope.startProcessing = function() {
+		var wb = $scope.wb;
 		var user = $scope.global.user;
+
 		function checkAuthority(manufacturerEntry)
 		{
 			return user.isAdmin? true: (user.codeName.toLowerCase() === manufacturerEntry.toLowerCase());
@@ -334,26 +336,49 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 		function invalid_man() {
 			return 'The codename in your profile does not match the manufacturer field in the sheet '+key+'.';
 		}
+		function getSheetToBeProcessed(sheetName)
+		{
+			for(var i = 0; i< $scope.processedSheets.length; i++)
+			{
+				if($scope.processedSheets[i].sName === sheetName)
+				{
+					return $scope.processedSheets[i];
+				}
+			}
+			return null;
+		}
 		function getMatchingColumn(key, fields) {
-			if(!fields)
+			if(fields.length === 0 || !key)
 				return null;
-			var newTitle = _.has(fields, key)? fields.key: null;
+			fields = _.object(fields);
+			var newTitle = _.has(fields, key)? fields[key]: null;
 			return newTitle;
+		}
+		function getTypeName(typeCode) {
+			for (var i = 0; i < $scope.types.length; i++) {
+				if($scope.types[i].code.toLowerCase() === typeCode.toLowerCase())
+				{
+					return $scope.types[i].name;
+				}
+			}
+			return null;
 		}
 		var json_obj = {};
 
 		var count = 0;
 
-		for (var key in wb.Sheets){
-			count ++;
-		}
-		$scope.totalSheetNo = count;
-		count = 0;
-
-		for (key in wb.Sheets) {
+		$scope.totalSheetNo = $scope.processedSheets.length;
+		var sheetsToSend = _.map($scope.processedSheets, function(object) {
+			if(object.unTrack)
+				return null;
+			return object.sName? object.sName: null;
+		});
+		for (var j=0 ; j < sheetsToSend.length ; j++) {
+			var key = sheetsToSend[j];
+			var sheetToProcess = getSheetToBeProcessed(key);
 			count ++;
 			var sheet, sheet_data, row_data, columnFlag, rowFlag, column, row;
-			if(wb.Sheets.hasOwnProperty(key) && _.has($scope.processedSheets, key))
+			if(wb.Sheets.hasOwnProperty(key))
 			{
 				sheet = wb.Sheets[key];
 				sheet_data = [];
@@ -396,7 +421,7 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 									return;
 								}
 							}
-							var updated_column_title = getMatchingColumn(column_title.toLowerCase(), $scope.processedSheets.key.fields);
+							var updated_column_title = getMatchingColumn(column_title, sheetToProcess.fields);
 							if(updated_column_title)
 								row_data[updated_column_title] = newCell;
 						}
@@ -414,7 +439,7 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 						sheet_data.push(row_data);
 					row_data = {};
 				}
-				json_obj[$scope.processedSheets.key.db? $scope.processedSheets.key.db.code: key] = {title: ($scope.processedSheets.key.db? $scope.processedSheets.key.db.name: (sheet[[$scope.sheetTitle]]? sheet[$scope.sheetTitle].w: '')), data: sheet_data};
+				json_obj[sheetToProcess.dName? sheetToProcess.dName: key] = {title: (sheetToProcess.dName? getTypeName(sheetToProcess.dName): (sheet[[$scope.sheetTitle]]? sheet[$scope.sheetTitle].w: '')), data: sheet_data};
 				sheet_data = [];
 			}
 			$scope.populateProgress = 20 +  Math.floor(count*100/$scope.totalSheetNo*0.6);
