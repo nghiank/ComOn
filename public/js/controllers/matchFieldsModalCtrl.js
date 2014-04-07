@@ -38,7 +38,7 @@ angular.module('ace.catalog').controller('matchFieldsModalCtrl', ['$scope', '$mo
 					sheet.fields[i].push(true);
 			}
 		}
-	}
+	};
 
 	$scope.$watch('sheet.fields',function(){
 		for(var i in $scope.sheet.fields)
