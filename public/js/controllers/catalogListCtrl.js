@@ -50,6 +50,29 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 				}
 			});
 		};
+
+		$scope.showFilterModal = function () {
+			var modalInstance = $modal.open({
+				templateUrl: 'views/Catalog/filterModal.html',
+				controller: 'filterModalCtrl',
+				resolve: {
+					data: function () {
+						return {
+							filters: $scope.filters,
+							search: $scope.searchText
+						};
+					}
+				}
+			});
+			modalInstance.result.then(function(result){
+				if(result)
+				{
+					console.log(result);
+					//Call API
+				}
+			});
+		};
+
 		$scope.init = function () {
 			$scope.showTypes = true;
 			$scope.searchBox.show = true;
@@ -492,6 +515,16 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 		$scope.noSubmit = function (evt) {
 			if (evt.which === 13)
 				evt.preventDefault();
+		};
+
+		$scope.checkFilters = function() {
+			for (var i = 0; i < $scope.filters.length; i++) {
+				if($scope.filters[i].value)
+					return true;
+			}
+			if($scope.searchText.value)
+				return true;
+			return false;
 		};
 	}
 ]);
