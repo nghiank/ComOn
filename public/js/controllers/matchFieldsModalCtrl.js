@@ -29,6 +29,17 @@ angular.module('ace.catalog').controller('matchFieldsModalCtrl', ['$scope', '$mo
 
 	};
 
+	$scope.toggleTrackField = function(field,sheet){
+		for(var i in sheet.fields){
+			if(sheet.fields[i][0] === field){
+				if(sheet.fields[i][2] === true)
+					sheet.fields[i].splice(2);
+				else
+					sheet.fields[i].push(true);
+			}
+		}
+	}
+
 	$scope.$watch('sheet.fields',function(){
 		for(var i in $scope.sheet.fields)
 			if ($scope.sheet.fields[i][1] === 'error' || $scope.sheet.fields[i][1] === ''){
