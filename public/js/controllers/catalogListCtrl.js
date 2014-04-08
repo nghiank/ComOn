@@ -59,6 +59,7 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 					data: function () {
 						return {
 							filters: $scope.filters,
+							type: $scope.selected,
 							search: $scope.searchText
 						};
 					}

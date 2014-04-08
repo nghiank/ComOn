@@ -14,7 +14,7 @@
 	    	</thead>
 	    	<tbody>
 	    		<tr ng-repeat="field in sheet.fields | orderBy:sortedFields" ng-class="{warning:!field[1],muted:field[2]===true}" style="height:51px" class="showBlockOnHover"> 
-	    			<td class="col-md-3">{{field[0]}}{{field[2]}}</td>
+	    			<td class="col-md-3">{{field[0]}}</td>
 	    			<!-- For existing types -->
 	    			<td class="col-md-9" ng-hide="newType">
 	    				<div class="col-md-7" ng-show="field[2]!==true">

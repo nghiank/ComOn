@@ -120,7 +120,7 @@
 	                        <div class="col-md-12">
 	                            <div class="pull-right">
 	                                <a class="btn btn-default btn-separate" ng-click="states[1]=1;states[2]=0">Back</a>
-	                                <a class="btn btn-primary btn-separate" ng-click="startProcessing()" ng-disabled="submitDisabled">Submit</a>
+	                                <a class="btn btn-primary btn-separate" ng-click="startProcessing()" ng-disabled="submitDisabled"><img ng-show="sendingFlag" src="/img/loaders/loader-small.gif" style="margin-right:10px"><i ng-show="sendingSuccess" style="margin-right:10px; color: white"class="fa fa-check"></i>Submit</a>
 	                            </div>
 	                        </div>
 	                    </div>
