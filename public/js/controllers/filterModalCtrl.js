@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('ace.catalog').controller('filterModalCtrl', ['$scope', '$modalInstance', 'data', 'Global', '_', 'UsersAPI', function($scope, $modalInstance, data, Global, _, UsersAPI){
-	$scope.newFilter = {name: '', filter: {search: data.search, filters: data.filters}};
+	$scope.newFilter = {name: '', filter: {search: data.search, type: data.type, filters: data.filters}};
 	$scope.initsearch = data.search;
 	$scope.initfilters = data.filters;
 	$scope.saveDisabled = true;
