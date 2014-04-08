@@ -38,7 +38,7 @@
                         <button class="btn btn-info btn-sm btn-separate " style="margin-top: -5px" ng-click="toggleShowAll(1)" ng-if="showAll">Hide matched sheets</button>
                         </p>
                     	<table class="table">
-                        <thead>
+                        <thead ng-show="(processedSheets | filter:isPending).length">
                             <tr>
                                 <th class="col-md-6">.xls File Sheets</th>
                                 <th class="col-md-6">ACADE Default Types</th>
