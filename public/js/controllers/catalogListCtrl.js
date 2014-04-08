@@ -26,6 +26,24 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 		$scope.searchBox = {};
 		$scope.searchText = {};
 		$scope.typeAheadValues = [];
+		$scope.fields = [];
+		$scope.cols = [
+			{
+				title: 'Catalog',
+				field: 'catalog',
+				sort: null
+			},
+			{
+				title: 'Manufacturer',
+				field: 'manufacturer',
+				sort: null
+			},
+			{
+				title: 'Assembly Code',
+				field: 'assemblyCode',
+				sort: null
+			}
+		];
 		$scope.authorized = function () {
 			if ($scope.global.authenticated && ($scope.global.user.isAdmin || $scope.global.user.isManufacturer))
 				return true;
@@ -68,7 +86,6 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 				if(result)
 				{
 					console.log(result);
-					//Call API
 				}
 			});
 		};
@@ -76,11 +93,28 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 		$scope.init = function () {
 			$scope.showTypes = true;
 			$scope.searchBox.show = true;
+			$scope.showList = false;
 			CatalogAPI.types.query(function (response) {
 				if (response)
 					$scope.types = response;
 			});
-			$scope.showList = false;
+			if($scope.global.authenticated && $routeParams.filterName && $scope.global.user.catalogFilters.length !== 0)
+			{
+				console.log('asdasd');
+				for (var i = 0; i < $scope.global.user.catalogFilters.length; i++) {
+					if($scope.global.user.catalogFilters[i].name === $routeParams.filterName)
+					{
+						console.log($scope.global.user.catalogFilters[i]);
+						$scope.showTypes = false;
+						$scope.selected = $scope.global.user.catalogFilters[i].filter.type;
+						$scope.searchText = $scope.global.user.catalogFilters[i].filter.search;
+						$scope.filters = $scope.global.user.catalogFilters[i].filter.filters;
+						$scope.showList = true;
+						$scope.search();
+						break;
+					}
+				}
+			}
 		};
 		$scope.addFilter = function (f) {
 			for (var i in $scope.filters)
