@@ -53,10 +53,25 @@ module.exports = function(grunt) {
                     },
                     cwd: __dirname
                 }
+            },
+            production: {
+                options: {
+                    file: 'server.js',
+                    args: [],
+                    ignoredFiles: ['public/**'],
+                    watchedExtensions: ['js'],
+                    nodeArgs: [],
+                    delayTime: 1,
+                    env: {
+                        PORT: 80
+                    },
+                    cwd: __dirname
+                }
             }
         },
         concurrent: {
-            tasks: ['nodemon', 'watch'],
+            tasks: ['nodemon:dev', 'watch'],
+			prodtasks: ['nodemon:production', 'watch'],
             options: {
                 logConcurrentOutput: true
             }
@@ -71,6 +86,9 @@ module.exports = function(grunt) {
         env: {
             test: {
                 NODE_ENV: 'test'
+            },
+			prod: {
+                NODE_ENV: 'production'
             }
         },
         karma: {
@@ -94,8 +112,11 @@ module.exports = function(grunt) {
     //grunt.option('force', true);
 
     //Default task(s).
-    grunt.registerTask('default', ['jshint', 'concurrent']);
+    grunt.registerTask('default', ['jshint', 'concurrent:tasks']);
 
+	//deploy
+	grunt.registerTask('deploy', ['env:prod', 'jshint', 'concurrent:prodtasks']);
+	
     //Test task.
     grunt.registerTask('test', ['env:test', 'mochaTest', 'karma:unit']);
 

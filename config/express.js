@@ -41,7 +41,10 @@ module.exports = function(app, passport, db) {
     app.configure(function() {
         // The cookieParser should be above session
         app.use(express.cookieParser());
-
+		app.use(express.cookieSession({
+			secret: config.sessionSecret, 
+			cookie: {maxAge:  365 * 24 * 60 * 60 * 1000 },
+		}));
         // Request body parsing middleware should be above methodOverride
         app.use(express.urlencoded());
         app.use(express.json());
