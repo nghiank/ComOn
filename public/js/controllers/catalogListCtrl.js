@@ -213,11 +213,16 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 			$scope.searchBox.show = false;
 		};
 
-		$scope.showLinkModal = function(){
+		$scope.showLinkModal = function(item){
+			if(item)
+				var linkItem = item;
 			var modalInstance = $modal.open({
 				templateUrl: 'views/Catalog/catIconLinkModal.html',
 				controller: 'catIconLinkModalCtrl',
-				backdrop: 'static'
+				backdrop: 'static',
+				resolve:{
+					item:function(){return linkItem ? [linkItem]:$scope.selectedItems;}
+				}
 			});
 			modalInstance.result.then(function(){
 				console.log('alala');

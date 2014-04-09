@@ -97,8 +97,8 @@
 				</thead>
 				<tbody>
 					<td colspan="{{cols.length}}" style="text-align: center" ng-show="items.length === 0">No Entries available.</td>
-					<tr ng-repeat="item in items" ng-click="toggleSelectRow($index,item);$event.preventDefault();" ng-class="{highlighted:isHighlighted($index)}">
-						<td><a ng-click="showLinkModal();$event.stopPropagation();"><i class="fa fa-link"></i></a></td>
+					<tr ng-repeat="item in items" ng-click="toggleSelectRow($index);$event.preventDefault();" ng-class="{highlighted:isHighlighted($index)}">
+						<td><a ng-click="showLinkModal(item);$event.stopPropagation();"><i class="fa fa-link"></i></a></td>
 						<td ng-repeat="data in sortedValues(item) track by $index" transform-link="{{data}}">{{data}}</td>
 					</tr>
 				</tbody>
