@@ -1,0 +1,28 @@
+<div class="modal-header">
+	Link Catalog Item to Icon...
+</div>
+<div class="modal-body">
+	<form class="form-horizontal">
+		<div class="form-group">
+			<label class="control-label col-md-2">Icon:</label>
+			<div class="col-md-10">
+				<div class="input-group dropdown">
+					<input type="text" ng-model="text" class="form-control dropdown-toggle">
+					<span class="input-group-btn">
+						<button class=" btn btn-default"><i class="fa fa-caret-down"></i></button>
+					</span>
+					<ul class="dropdown-menu" style="width:400px; padding-left:10px;">
+						<li ng-repeat="s in stds|filter:text" ng-click="addJIC();$event.stopPropagation();"><a>{{s}}</a></li>
+						<li ng-repeat="s in subs" ng-show="show" ng-click="addJICPB();$event.stopPropagation();"><a>{{s}}</a></li>
+						<!-- <li ng-click="addJIC(); $event.stopPropagation(); " ng-class="{success:show}"><a>JIC</a></li>
+						<li><a ng-show="show">JIC:PB</a></li>
+						<li><a ng-show="show">JIC:Switch</a></li>
+						<li><a ng-show="show">JIC:Others</a></li>
+						<li><a ng-hide="show">IEEE</a></li>
+						<li><a ng-hide="show">Hydraulic</a></li> -->
+					</ul>
+				</div>
+			</div>
+		</div>
+	</form>
+</div>

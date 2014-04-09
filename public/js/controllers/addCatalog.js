@@ -81,8 +81,6 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 		$scope.success = check.suc_message;
 		$scope.valid = check.result;
 		$scope.error = check.err_message;
-		$scope.sendingFlag = false;
-		$scope.sendingSuccess = false;
 	};
 
 	$scope.populate = function() {
@@ -182,6 +180,7 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 							$scope.processedSheets[j].pendingFields++;
 						}
 						$scope.processedSheets[j].fields.push(fieldMatchPair);
+						$scope.processedSheets[j].unTrackedFields.push(false);
 					}
 				});
 			else{
@@ -192,6 +191,7 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 					fieldMatchPair.push(cols[k]);
 					$scope.processedSheets[j].pendingFields++;
 					$scope.processedSheets[j].fields.push(fieldMatchPair);
+					$scope.processedSheets[j].unTrackedFields.push(true);
 				}
 			}
 		}
@@ -260,14 +260,12 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 	};
 	
 	$scope.showMatchFieldsModal = function(sheet){
-		var newSheet = _.extend({},sheet);
 		var modalInstance = $modal.open({
 			templateUrl: 'views/Catalog/matchFieldsModal.html',
 			controller: 'matchFieldsModalCtrl',
-			backdrop: 'static',
 			resolve:{
 				sheet: function() {
-					return (newSheet);
+					return (sheet);
 				},
 				dbTypes: function(){
 					return $scope.original_types;
@@ -280,8 +278,6 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 				if($scope.processedSheets[i].sName === response.sName)
 					$scope.processedSheets[i] = response;
 			}
-		}, function() {
-			console.log(sheet);
 		});
 	};
 
@@ -371,13 +367,9 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 			}
 			return null;
 		}
-		function getMatchingColumn(key, fields, unTrackedFields) {
+		function getMatchingColumn(key, fields) {
 			if(!fields || !key)
 				return null;
-			if(unTrackedFields.indexOf(key) > -1)
-			{
-				return null;
-			}
 			fields = _.object(fields);
 			var newTitle = _.has(fields, key)? fields[key]: null;
 			return newTitle;
@@ -449,7 +441,7 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 									return;
 								}
 							}
-							var updated_column_title = getMatchingColumn(column_title, sheetToProcess.fields, sheetToProcess.unTrackedFields);
+							var updated_column_title = getMatchingColumn(column_title, sheetToProcess.fields);
 							if(updated_column_title)
 								row_data[updated_column_title.toLowerCase()] = newCell;
 						}
@@ -472,14 +464,10 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 			}
 			$scope.populateProgress = 20 +  Math.floor(count*100/$scope.totalSheetNo*0.6);
 		}
-		console.log(json_obj);
-		$scope.submitDisabled = true;
-		$scope.sendingFlag = true;
 		CatalogAPI.updateCatalog.save({data: json_obj}, function(response) {
 			if(response)
 			{
-				$scope.sendingFlag = false;
-				$scope.sendingSuccess = true;
+				$scope.populateProgress = 100;
 			}
 		});
 	};

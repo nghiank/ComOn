@@ -59,7 +59,6 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 					data: function () {
 						return {
 							filters: $scope.filters,
-							type: $scope.selected,
 							search: $scope.searchText
 						};
 					}
@@ -93,16 +92,31 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 			});
 			$scope.getTypeAheadValues(f);
 		};
+
 		$scope.removeFilter = function (f) {
 			if ($scope.filters.indexOf(f) !== -1)
 				$scope.filters.splice(f, 1);
 		};
+
 		$scope.showSearchBox = function () {
 			$scope.searchBox.show = true;
 		};
+
 		$scope.hideSearchBox = function () {
 			$scope.searchBox.show = false;
 		};
+
+		$scope.showLinkModal = function(){
+			var modalInstance = $modal.open({
+				templateUrl: 'views/Catalog/catIconLinkModal.html',
+				controller: 'catIconLinkModalCtrl',
+				backdrop: 'static'
+			});
+			modalInstance.result.then(function(){
+				console.log('alala');
+			});
+		};
+
 		$scope.getTypeAheadValues = function (field) {
 			if (field === 'Manufacturer') {
 				return $http.post('/api/getAllUniqueValues', {
