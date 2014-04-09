@@ -227,3 +227,19 @@ footer p {
     background-color: #f5f5f5;
     text-decoration:line-through;
 }
+
+.table-striped > tbody > tr:nth-child(odd).highlighted>td{
+    background-color: aliceblue !important;
+}
+
+.highlighted
+{
+    background-color: aliceblue !important;
+}
+
+.unselectable
+{
+    -moz-user-select:moz-none;
+    -webkit-user-select:none;
+    user-select:none;
+}
