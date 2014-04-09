@@ -1,7 +1,7 @@
 'use strict';
 
 var parseString = require('xml2js').parseString;
-var OxygenOauth = require('../../test/mocha/RestApi/oxygenOauth');
+var OxygenOauth = require('../../test/mocha/RestAPI/oxygenOauth');
 var config = require('../../config/config');
 
 //staging account for sharding cause there is no dev sharder
