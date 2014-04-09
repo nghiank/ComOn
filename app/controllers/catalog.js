@@ -153,7 +153,7 @@ exports.getAllUniqueValues = function(req, res) {
 		if(err)
 			return error.sendGenericError(res, 400, 'Error Encountered');
 		if(result.length === 0)
-			res.jsonp([]);
+			return res.jsonp([]);
 		res.jsonp(result);
 	});
 };
@@ -163,7 +163,7 @@ exports.getAllTypes = function(req, res) {
 		if(err)
 			return error.sendGenericError(res, 400, 'Error Encountered');
 		if(result.length === 0)
-			res.jsonp([]);
+			return res.jsonp([]);
 		res.jsonp(result);
 	});
 };
