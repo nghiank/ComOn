@@ -1,6 +1,6 @@
 module.exports = {
     base_url: 'http://comon2.herokuapp.com',
-    db: "mongodb://root:Iceman123@@oceanic.mongohq.com:10062/app23926808",
+    db: "mongodb://root:Iceman123@oceanic.mongohq.com:10062/app23926808",
     app: {
         name: "Autodesk - ACE ComOn Production"
     },
