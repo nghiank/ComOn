@@ -26,6 +26,10 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 		$scope.searchBox = {};
 		$scope.searchText = {};
 		$scope.typeAheadValues = [];
+		$scope.selectedRows = [];
+		$scope.selectedItems = [];
+		$scope.sth = {show:'aaa'};
+		$scope.multiple = false;
 		$scope.authorized = function () {
 			if ($scope.global.authenticated && ($scope.global.user.isAdmin || $scope.global.user.isManufacturer))
 				return true;
@@ -72,6 +76,102 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 				}
 			});
 		};
+
+		$scope.isHighlighted = function(index){
+			return $scope.selectedRows.indexOf(index) + 1;
+		};
+
+		$scope.$watch('selectedItems',function(){
+			console.log('-----------');
+			for(var i in $scope.selectedItems)
+				console.log($scope.selectedItems[i].catalog);
+		},true);
+
+		$scope.toggleSelectRow = function(index) {
+			//if shift key is not pressed, only one row is selected
+			//Otherwise, multiple rows are selected;
+			if(!$scope.multiple){
+				$scope.selectedRows = [];
+				$scope.selectedItems = [];
+				if($scope.selectedRows.indexOf(index) === 0)
+					return;
+				$scope.selectedRows[0] = index;
+				//$scope.selectedItems.push($scope.items[index]);
+				//console.log(selectedRows.length);
+				$scope.bindMenu();
+			}else{
+				if($scope.selectedRows.indexOf(index) > -1){
+					$scope.selectedRows.splice($scope.selectedRows.indexOf(index),1);
+					for(var k in $scope.selectedItems){
+						if($scope.selectedItems[k]._id === $scope.items[index]._id)
+							$scope.selectedItems.splice(k,1);
+					}
+					return;
+				}
+				if($scope.selectedRows.length === 0 || $scope.ctrl){
+					$scope.selectedRows.push(index);
+					$scope.selectedItems.push($scope.items[index]);
+					return;
+				}
+				var minDiff = 9999,
+				minIndex = 0;
+				for(var j = 0; j < $scope.selectedRows.length; j++){
+					if(Math.abs($scope.selectedRows[j] - index) < minDiff){
+						minIndex = $scope.selectedRows[j];
+						minDiff = Math.abs($scope.selectedRows[j] - index);
+					}
+				}
+				for(var i = 0; i <= Math.abs(index - minIndex);i++){
+					if($scope.selectedRows.indexOf(Math.min(index,minIndex)+i)<0){
+						$scope.selectedRows.push(Math.min(index,minIndex)+i);
+						$scope.selectedItems.push($scope.items[Math.min(index,minIndex)+i]);
+					}
+				}
+			}
+		};
+
+		var doc = angular.element(document);
+		var table = angular.element('table');
+		//var selectedRows = angular.element('tr.highlighted');
+		var contextmenu = angular.element('#contextMenu');
+		var contextmenuItem = angular.element('#contextMenu>ul>li');
+		contextmenu.hide();
+
+		table.bind('contextmenu',function(e){
+			e.preventDefault();
+			if($scope.selectedItems.length > 0)
+				angular.element('#contextMenu').css({left: e.pageX, top: e.pageY,position:'absolute'}).show();
+		});
+
+		doc.bind('click',function(){
+			contextmenu.hide();
+		});
+		contextmenuItem.bind('click',function(){
+			$scope.showLinkModal();
+		});
+
+		doc.on('keydown',function(e){
+			if(e.shiftKey){
+				$scope.multiple = true;
+				table.addClass('unselectable');
+				return;
+			}
+			if(e.keyCode === 17 || (e.metaKey && e.keyCode === 91)){
+				$scope.multiple = true;
+				$scope.ctrl = true;
+			}
+		});
+		doc.on('keyup',function(e){
+			if(e.keyCode === 16){
+				$scope.multiple = false;
+				table.removeClass('unselectable');
+				return;
+			}
+			if(e.keyCode === 17 || e.keyCode === 91){
+				$scope.ctrl = false;
+				$scope.multiple = false;
+			}
+		});
 
 		$scope.init = function () {
 			$scope.showTypes = true;
@@ -132,6 +232,7 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 				});
 			}
 		};
+
 		$scope.showTypeList = function (type) {
 			$scope.showList = true;
 			$scope.showTypes = false;
