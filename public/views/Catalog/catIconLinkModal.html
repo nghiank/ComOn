@@ -1,28 +1,39 @@
+<div ng-init="init()">
 <div class="modal-header">
-	Link {{item.length > 1 ? item.length+' items' : item[0].catalog}} to Icon...
+	Link {{item.length > 1 ? item.length+' items' : item[0].catalog}} to Icon...{{lastWord}}
 </div>
 <div class="modal-body">
+	{{genText}}
+	{{text}}
+	{{lastWord}}
 	<form class="form-horizontal">
 		<div class="form-group">
 			<label class="control-label col-md-2">Icon:</label>
-			<div class="col-md-10">
-				<div class="input-group dropdown">
-					<input type="text" ng-model="text" class="form-control dropdown-toggle">
-					<span class="input-group-btn">
-						<button class=" btn btn-default"><i class="fa fa-caret-down"></i></button>
-					</span>
-					<ul class="dropdown-menu" style="width:400px; padding-left:10px;">
-						<li ng-repeat="s in stds|filter:text" ng-click="addJIC();$event.stopPropagation();"><a>{{s}}</a></li>
-						<li ng-repeat="s in subs" ng-show="show" ng-click="addJICPB();$event.stopPropagation();"><a>{{s}}</a></li>
-						<!-- <li ng-click="addJIC(); $event.stopPropagation(); " ng-class="{success:show}"><a>JIC</a></li>
-						<li><a ng-show="show">JIC:PB</a></li>
-						<li><a ng-show="show">JIC:Switch</a></li>
-						<li><a ng-show="show">JIC:Others</a></li>
-						<li><a ng-hide="show">IEEE</a></li>
-						<li><a ng-hide="show">Hydraulic</a></li> -->
+			<div class="col-md-8">
+				<div class="dropdown">
+					<div class="input-group dropdown-toggle">
+						<input type="text" ng-model="text" class="form-control">
+						<span class="input-group-btn">
+							<button class="btn btn-default"><i class="fa fa-caret-down"></i></button>
+						</span>
+					</div>
+					<ul class="dropdown-menu" style="width:400px;">
+						<span ng-if="!stdSelected" style="padding-left:10px;">
+							<li style="margin-left: -5px;" ng-show="stds.length !== 0" class="highlighted"><b>Standards:</b> </li>
+							<li style="margin-left: 10px;" ng-show="stds.length !== 0" ng-click="selectStandard(s);$event.stopPropagation();" ng-repeat="s in stds|filter:text"><a>{{s.name}}</a></li>
+						</span>
+						<span ng-if="stdSelected" style="width: 600px; padding-left:10px">
+								<li ng-show="children.groups.length !== 0" >Groups: </li>
+								<li ng-show="children.groups.length !== 0" ng-click="select(child);$event.stopPropagation();" ng-repeat="child in children.groups|filter:lastWord" ><a>
+								<img ng-src='{{child.thumbnail}}' ng-show="child.thumbnail" style="width: 20px; height: 20px; margin-right:10px;">{{child.name}}</a></li>
+								<li ng-show="children.leaves.length !== 0">Components: </li>
+								<li  ng-show="children.leaves.length !== 0" ng-repeat="child in children.leaves|filter:text"><a>
+								<img ng-src='{{child.thumbnail}}' ng-show="child.thumbnail" style="width: 20px; height: 20px; margin-right:10px;">{{child.name}}</a></lspan>
+						</i>
 					</ul>
 				</div>
 			</div>
 		</div>
 	</form>
+</div>
 </div>
