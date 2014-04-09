@@ -12,6 +12,7 @@ angular.module('ace.schematic').controller('UploadController', ['ValidationServi
 	$scope.desc = '';
 	$scope.validator = ValidationService;
 	$scope.formValidator = formValidation;
+	$scope.validateText = 'Validate';
 
 	$scope.datFileSelect = function($files) {
 		$scope.checkDatFile($files);
@@ -117,6 +118,9 @@ angular.module('ace.schematic').controller('UploadController', ['ValidationServi
 			});
 			modalInstance.result.then(function(valid){
 				$scope.uploadDisabled = !valid;
+				if(valid){
+					$scope.validateText = 'Validated';
+				}
 			}, function() {
 				console.log('Dismissed');
 				$scope.validator.reset();

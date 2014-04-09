@@ -6,7 +6,9 @@
 var mongoose = require('mongoose'),
     User = mongoose.model('User'),
     ComponentSchem = mongoose.model('SchematicComponent'),
-    error = require('../utils/error');
+    SchematicVersions = mongoose.model('Schematic__versions'),
+    error = require('../utils/error'),
+    _ = require('underscore');
 
 /**
  * Auth callback
@@ -133,9 +135,11 @@ exports.addSchemFavourite = function(req, res) {
     var id = req.body._id;
     ComponentSchem.findOne({_id: id}, function(err, component) {
         if(err)
-            return error.sendGenericError(res, 400, 'Error Encountered');
+            return error.sendGenericError(res, 401, 'Error Encountered');
         if(!component)
-            return error.sendGenericError(res, 400, 'Error Encountered');
+            return error.sendGenericError(res, 402, 'Error Encountered');
+        if(component.published === 0)
+            return error.sendGenericError(res, 403, 'Error Encountered');
         var list = req.user.SchemFav;
         if(list.indexOf(id) < 0)
         {
@@ -143,7 +147,7 @@ exports.addSchemFavourite = function(req, res) {
             req.user.SchemFav = list;
             req.user.save(function(err) {
                 if(err)
-                    return error.sendGenericError(res, 400, 'Error Encountered');
+                    return error.sendGenericError(res, 404, 'Error Encountered');
                 res.jsonp(list);
             });
             return;
@@ -178,7 +182,34 @@ exports.getFavourites = function(req, res) {
     ComponentSchem.find({_id: {$in: req.user.SchemFav}, isComposite: false}).exec(function(err, components) {
         if(err)
             return error.sendGenericError(res, 400, 'Error Encountered');
-        res.jsonp({'schematic': components});
+        if(!components || components.length === 0)
+            return res.jsonp({'schematic': components});
+        var checked = 0;
+        var getVersion = function(i)
+        {
+            SchematicVersions.findOne({refId: components[i]._id}).exec(function(err, version) {
+                if(err)
+                    console.log(err);
+                else if(!version)
+                    console.log('No available version');
+                else
+                {
+                    var published = (components[i].published)? (components[i].published - 1): 0;
+                    var published_version = JSON.parse(JSON.stringify(version.versions[published]));
+                    var omit = ['refVersion', 'version', 'published', 'standard', 'parentNode', '_id', '__v'];
+                    published_version = _.omit(published_version, omit);
+                    _.extend(components[i], published_version);
+                }
+                if(++checked === components.length)
+                {
+                    res.jsonp({'schematic': components});
+                }
+            });
+            return;
+        };
+        for (var i = components.length - 1; i >= 0; i--) {
+            getVersion(i);
+        }
     });
 };
 

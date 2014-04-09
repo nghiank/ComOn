@@ -1,7 +1,7 @@
 <div class="container" ng-controller="catalogListCtrl" ng-init="init()" style="padding-top:30px;">
 	<nav class="col-md-4 navmenu navmenu-default animate-show" ng-show="showTypes" style="height: 85%; position: fixed; left: 0; z-index: 9999; overflow-y: auto;">
 		<ul class="nav navmenu-nav" ng-init="getTypes()" style="overflow-y: auto;">
-            <div class="navmenu-brand">Catalog Types</i></div> 
+            <div class="navmenu-brand">Catalog Types</i></div>
             <form class="navbar-form" role="search">
 				<input type="text" class="form-control" placeholder="Search Type..." ng-model="searchType">
 			</form>
@@ -73,6 +73,7 @@
 	   				<div class="col-sm-offset-2">
 	   					<div class="col-sm-8">
 	    					<a class="btn btn-primary" ng-click="search();hideSearchBox();"><i class="fa fa-search"></i> Search</a>
+	    					<button class="btn btn-default" style="margin-left:10px;" ng-show="showDownload" ng-click="downloadSearchResults()">Download</button>
 	    				</div>
 	    			</div>
 	   			</div>					
