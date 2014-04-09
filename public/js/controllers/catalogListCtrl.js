@@ -7,7 +7,8 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 	'_',
 	'$modal',
 	'$http',
-	function ($scope, Global, CatalogAPI, $routeParams, underscore, $modal, $http) {
+	'$timeout',
+	function ($scope, Global, CatalogAPI, $routeParams, underscore, $modal, $http, $timeout) {
 		$scope.global = Global;
 		$scope.fields = [];
 		$scope._ = underscore;
@@ -85,6 +86,11 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 			console.log('-----------');
 			for(var i in $scope.selectedItems)
 				console.log($scope.selectedItems[i].catalog);
+			$timeout(function(){
+				selectedRows = angular.element('.highlighted');
+				console.log(selectedRows.length);
+				$scope.bindMenu();
+			},10);
 		},true);
 
 		$scope.toggleSelectRow = function(index) {
@@ -96,9 +102,8 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 				if($scope.selectedRows.indexOf(index) === 0)
 					return;
 				$scope.selectedRows[0] = index;
-				//$scope.selectedItems.push($scope.items[index]);
+				$scope.selectedItems.push($scope.items[index]);
 				//console.log(selectedRows.length);
-				$scope.bindMenu();
 			}else{
 				if($scope.selectedRows.indexOf(index) > -1){
 					$scope.selectedRows.splice($scope.selectedRows.indexOf(index),1);
@@ -132,16 +137,18 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 
 		var doc = angular.element(document);
 		var table = angular.element('table');
-		//var selectedRows = angular.element('tr.highlighted');
+		var selectedRows = angular.element('tr.highlighted');
 		var contextmenu = angular.element('#contextMenu');
 		var contextmenuItem = angular.element('#contextMenu>ul>li');
 		contextmenu.hide();
 
-		table.bind('contextmenu',function(e){
-			e.preventDefault();
-			if($scope.selectedItems.length > 0)
-				angular.element('#contextMenu').css({left: e.pageX, top: e.pageY,position:'absolute'}).show();
-		});
+		$scope.bindMenu = function(){
+			selectedRows.bind('contextmenu',function(e){
+				e.preventDefault();
+				if($scope.selectedItems.length > 0)
+					angular.element('#contextMenu').css({left: e.pageX, top: e.pageY,position:'absolute'}).show();
+			});
+		};
 
 		doc.bind('click',function(){
 			contextmenu.hide();
