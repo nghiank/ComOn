@@ -199,6 +199,26 @@ exports.getNodeChildren = function(req, res) {
 		});
 };
 
+exports.getEntireStandard = function(req, res) {
+	if(!req.body.name)
+	{
+		return error.sendGenericError(res, 400, 'Error Encountered');
+	}
+	StandardSchem.findOne({name: req.body.name}).exec(function(err, standard) {
+		if(err)
+			return error.sendGenericError(res, 400, 'Error Encountered');
+		if(!standard)
+			return error.sendGenericError(res, 400, 'Error Encountered');
+		ComponentSchem.find({standard: standard._id}).exec(function(err, components) {
+			if(err)
+				return error.sendGenericError(res, 400, 'Error Encountered');
+			if(components.length === 0)
+				return error.sendGenericError(res, 400, 'Error Encountered');
+			res.jsonp(components);
+		});
+	});
+};
+
 exports.delete = function(req, res) {
 	if(!req.node)
 	{
