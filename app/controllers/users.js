@@ -216,7 +216,7 @@ exports.removeFilter = function(req,res) {
     var list = _.map(req.user.catalogFilters, function(object) {return object.name.toLowerCase();});
     if(list.indexOf(name.toLowerCase()) > -1)
     {
-        delete req.user.catalogFilters[name];
+        req.user.catalogFilters.splice(list.indexOf(name.toLowerCase()), 1);
         req.user.save(function(err) {
             if(err)
                 return error.sendGenericError(res, 400, 'Error Encountered');
@@ -224,7 +224,9 @@ exports.removeFilter = function(req,res) {
         });
         return;
     }
-    res.jsonp(req.user.catalogFilters);
+    else {
+        return error.sendGenericError(res, 400, 'Error Encountered');
+    }
 };
 
 /**

@@ -260,6 +260,86 @@ describe('<e2e API Test>', function() {
                 });
             });
         });
+
+        describe('For testing Add, Delete and getting catalog filters', function() {
+            var filter1, filter2;
+            before(function(done) {
+                filter1 = {name: 'A', filter: {search: 'abcd', type: 'asdasd', filters: ['sdfsd', 'asdasd']}};
+                filter2 = filter1;
+                this.timeout(config.timeout*3);
+                agent
+                .post('/xauth')
+                .send({oauth_token: acess_token, oauth_verifier: acess_token_secret})
+                .end(function(err,res) {
+                    (res.status).should.equal(302);
+                    done();
+                });
+            });
+            it('POST /api/addFilter with valid name and filter should return 200', function(done) {
+                agent.post('/api/addFilter')
+                .send(filter1)
+                .end(function(err, res) {
+                    (res.status).should.equal(200);
+                    done();
+                });
+            });
+
+            it('GET /api/getFilters should return updated filter list with one filter', function(done){
+                agent
+                .get('/api/getFilters', {json: true})
+                .end(function(err, res){
+                    (res.body.length).should.equal(1);
+                    (res.status).should.equal(200);
+                    done();
+                });
+            });
+
+            it('POST /api/addFilter with duplicate name should return 400', function(done) {
+                agent.post('/api/addFilter')
+                .send(filter2)
+                .end(function(err, res) {
+                    (res.status).should.equal(400);
+                    done();
+                });
+            });
+
+
+            it('POST /api/delFilter with valid name should return 200', function(done) {
+                agent.post('/api/delFilter')
+                .send({name: filter1.name})
+                .end(function(err, res) {
+                    (res.status).should.equal(200);
+                    done();
+                });
+            });
+
+            it('POST /api/delFilter with invalid name should return 400', function(done) {
+                agent.post('/api/delFilter')
+                .send({name: 'asdasdasd'})
+                .end(function(err, res) {
+                    (res.status).should.equal(400);
+                    done();
+                });
+            });
+
+            it('GET /api/getFilters should return updated filter list with no filters', function(done){
+                agent
+                .get('/api/getFilters', {json: true})
+                .end(function(err, res){
+                    (res.body.length).should.equal(0);
+                    (res.status).should.equal(200);
+                    done();
+                });
+            });
+
+            after(function(done) {
+                SchematicComponent.remove().exec(function() {
+                    SchematicStandard.remove().exec(function() {
+                        setTimeout(done, 500);
+                    });
+                });
+            });
+        });
     });
 
     describe('Schematics Controller', function() {

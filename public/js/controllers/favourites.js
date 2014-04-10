@@ -18,9 +18,6 @@ angular.module('ace')
 		return (child.showOption = !child.showOption);
 	};
 
-	$scope.seperate = function() {
-
-	};
 
 	$scope.delSchemFav = function(child){
 		if(child.isComposite)
