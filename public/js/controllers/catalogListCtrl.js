@@ -252,6 +252,9 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 			function parseCamelCase(input) {
 				return input.charAt(0).toUpperCase() + input.substr(1).replace(/[A-Z0-9]/g, ' $&');
 			}
+			$scope.searchText = {};
+			$scope.filters = [];
+			$scope.searchBox.show = true;
 			CatalogAPI.fields.query({ type: type.code }, function (response) {
 				if (response) {
 					for (var i = 0; i < response.length; i++) {
