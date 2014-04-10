@@ -129,7 +129,7 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 			}
 			$scope.searchText = {};
 			$scope.filters = [];
-			$scope.searchBox = true;
+			$scope.searchBox.show = true;
 			CatalogAPI.fields.query({ type: type.code }, function (response) {
 				if (response) {
 					for (var i = 0; i < response.length; i++) {
