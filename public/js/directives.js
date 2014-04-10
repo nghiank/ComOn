@@ -30,7 +30,7 @@ angular.module('ace').directive('resetForm',
 					else if(attr.transformLink.indexOf('WWW.') > -1)
 					{
 						var unmodified_link = attr.transformLink;
-						var modified_link = 'HTTP://' + unmodified_link.substring(unmodified_link.indexOf('www.'));
+						var modified_link = 'HTTP://' + unmodified_link.substring(unmodified_link.indexOf('WWW.'));
 						element.text('');
 						element.html('<a href="'+modified_link+'"><i class="fa fa-external-link"></i>');
 					}
