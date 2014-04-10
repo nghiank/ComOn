@@ -80,7 +80,6 @@ angular.module('ace.schematic').controller('editItemFormCtrl', ['$scope', '$time
 					if($scope.types[i].code === $scope.oldVal.code)
 						$scope.selectedType.type = $scope.types[i];
 				}
-				console.log($scope.selectedType.type.name);
 			}
 			$scope.hide = false;
 			return;
@@ -95,11 +94,10 @@ angular.module('ace.schematic').controller('editItemFormCtrl', ['$scope', '$time
 		newItem._id = $scope.item._id;
 		newItem.type = $scope.selectedType.type;
 		newItem.additionalInfo = _.object($scope.additionalInfo);
-		console.log('old:',$scope.item);
-		console.log('new:',newItem);
 		CatalogAPI.updateEntry.save({item:newItem},function(response){
-			console.log('saved:',response);
-			$modalInstance.close(true);
+			if(response) {
+				$modalInstance.close(true);
+			}
 		});
 	};
 
@@ -118,8 +116,10 @@ angular.module('ace.schematic').controller('editItemFormCtrl', ['$scope', '$time
 			if(decision){
 				/*Code for Delete*/
 				CatalogAPI.deleteEntry.save({_id:$scope.item._id}, function(response){
-					console.log(response);
-					$modalInstance.close(true);
+					if(response)
+					{
+						$modalInstance.close(true);
+					}
 				});
 			}
 			$scope.hide = false;

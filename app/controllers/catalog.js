@@ -212,6 +212,11 @@ exports.getCatalogEntries = function(req, res) {
 		var sort = req.body.sortField.sort;
 		sortCriteria[field] = sort;
 	}
+	if(req.body.manufacturer)
+	{
+		filterCriteria.manufacturer = req.body.manufacturer;
+		index_hint = {'manufacturer': 1};
+	}
 	var count_function = function(final_find) {
 		CatalogSchem.count(final_find).exec(function(err, count) {
 			if(err){
@@ -221,7 +226,6 @@ exports.getCatalogEntries = function(req, res) {
 		});
 	};
 	var find_function = function(final_find) {
-		console.log(index_hint);
 		CatalogSchem.find(final_find).sort(sortCriteria).select(fields).skip(lower).limit(upper-lower).hint(index_hint).lean().exec(function(err, entries) {
 			if(err){
 				console.log(err);
@@ -251,7 +255,7 @@ exports.getCatalogEntries = function(req, res) {
 			}
 		}
 	};
-	if(req.body.filters)
+	if(req.body.filters && _.keys(req.body.filters).length !== 0)
 	{
 		var all_filters = req.body.filters;
 		var index = null;

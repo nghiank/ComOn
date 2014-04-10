@@ -7,7 +7,8 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 	'_',
 	'$modal',
 	'$http',
-	function ($scope, Global, CatalogAPI, $routeParams, underscore, $modal, $http) {
+	'searchStringParser',
+	function ($scope, Global, CatalogAPI, $routeParams, underscore, $modal, $http, searchStringParser) {
 		$scope.global = Global;
 		$scope.fields = [];
 		$scope._ = underscore;
@@ -49,9 +50,11 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 				return true;
 			return false;
 		};
+
 		$scope.toggleOption = function (type) {
 			$scope.target = type;
 		};
+
 		$scope.showConfigureModal = function () {
 			$modal.open({
 				templateUrl: 'views/Catalog/configureTableModal.html',
@@ -116,6 +119,7 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 				}
 			}
 		};
+
 		$scope.addFilter = function (f) {
 			for (var i in $scope.filters)
 				if ($scope.filters[i].field === f)
@@ -126,16 +130,20 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 			});
 			$scope.getTypeAheadValues(f);
 		};
+
 		$scope.removeFilter = function (f) {
 			if ($scope.filters.indexOf(f) !== -1)
 				$scope.filters.splice(f, 1);
 		};
+
 		$scope.showSearchBox = function () {
 			$scope.searchBox.show = true;
 		};
+
 		$scope.hideSearchBox = function () {
 			$scope.searchBox.show = false;
 		};
+
 		$scope.getTypeAheadValues = function (field) {
 			if (field === 'Manufacturer') {
 				return $http.post('/api/getAllUniqueValues', {
@@ -151,6 +159,7 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 				});
 			}
 		};
+
 		$scope.showTypeList = function (type) {
 			$scope.showList = true;
 			$scope.showTypes = false;
@@ -161,6 +170,7 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 			$scope.searchText = {};
 			$scope.filters = [];
 			$scope.searchBox.show = true;
+			$scope.fields = [];
 			CatalogAPI.fields.query({ type: type.code }, function (response) {
 				if (response) {
 					for (var i = 0; i < response.length; i++) {
@@ -201,7 +211,6 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 						$scope.total = response.data.length;
 				}
 			});
-			$scope.fields = [];
 			$scope.cols = [
 				{
 					title: 'Catalog',
@@ -220,6 +229,7 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 				}
 			];
 		};
+
 		$scope.processFilters = function (filters) {
 			if (!filters)
 				return null;
@@ -230,12 +240,15 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 			}
 			return newObj;
 		};
+
 		$scope.closeType = function () {
 			$scope.showTypes = false;
 		};
+
 		$scope.showType = function () {
 			$scope.showTypes = true;
 		};
+
 		$scope.toggleField = function (field) {
 			if ($scope.cols.indexOf(field) === -1) {
 				CatalogAPI.entries.query({
@@ -263,6 +276,7 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 				$scope.cols.splice($scope.cols.indexOf(field), 1);
 			}
 		};
+
 		$scope.getPage = function (page) {
 			var lower = (page ? page - 1 : 0) * $scope.pageItemLimit;
 			var upper = (page ? page : 1) * $scope.pageItemLimit;
@@ -300,165 +314,11 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 				$scope.upper = upper;
 			});
 		};
+
 		$scope.prepareSearchString = function (copy) {
-			function escapeRegExp(un_string) {
-				return un_string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, '\\$1');
-			}
-			if (!copy)
-				return '';
-			var string = escapeRegExp(copy);
-			var exact = [];
-			var words = [];
-			var or = [];
-			var orExps = [];
-			var temp = [];
-			function gatherExacts() {
-				var reg = /".+?"/g;
-				var match;
-				do {
-					match = reg.exec(string);
-					if (match) {
-						exact.push(string.substring(match.index + 1, match.index + match[0].length - 1));
-						temp.push(string.substring(match.index, match.index + match[0].length));
-					}
-				} while (match);
-			}
-			function gatherOR() {
-				function getLeft(orExpStartIndx) {
-					var opLeft = string.substring(0, orExpStartIndx).trim();
-					var opLeftLen = opLeft.length;
-					if (opLeft[opLeftLen - 1] === '"')
-						// This is a quoted expression, potentially
-					{
-						opLeftLen -= 1;
-						// We are indexing...
-						while (--opLeftLen >= 0) {
-							if (opLeft[opLeftLen] === '"' && (opLeftLen === 0 || opLeft[opLeftLen - 1] === ' ')) {
-								opLeft = opLeft.substring(opLeftLen);
-								break;
-							}
-						}
-					}
-					else {
-						// Normal, non-exact operand
-						// Locate the previous character such that it starts the word -
-						// i.e., the one preceding it is a space
-						while (--opLeftLen >= -1) {
-							if (opLeftLen === -1 || opLeft[opLeftLen] === ' ') {
-								opLeft = opLeft.substring(opLeftLen + 1);
-								break;
-							}
-						}
-					}
-					return opLeft;
-				}
-				function getRight(orExpStartIndx) {
-					var opRight = string.substring(orExpStartIndx + 4).trim();
-					var opRightLen = 0;
-					if (opRight[0] === '"')
-						// Start of a quoted exact phrase
-					{
-						// Locate the next " character such that it starts the word -
-						// i.e., the one following it is a space (or none)
-						while (++opRightLen <= opRight.length) {
-							if (opRight[opRightLen] === '"' && (opRightLen === opRight.Length - 1 || opRight[opRightLen + 1] === ' ')) {
-								opRight = opRight.substring(0, opRightLen + 1);
-								break;
-							}
-						}
-					}
-					else {
-						// Normal, non-exact operand
-						// Locate the next character such that it ends the word -
-						// i.e., the one following it is a space (or none)
-						while (++opRightLen <= opRight.length) {
-							if (opRight.Length === opRightLen || opRight[opRightLen] === ' ') {
-								opRight = opRight.substring(0, opRightLen);
-								break;
-							}
-						}
-					}
-					return opRight;
-				}
-				var index = string.indexOf(' OR ');
-				while (index > -1) {
-					var opLeft = getLeft(index);
-					var opRight = getRight(index);
-					temp.push(opLeft);
-					temp.push(opRight);
-					or.push(opLeft.trim());
-					or.push(opRight.trim());
-					var offset = string.indexOf(opRight, index + 4);
-					index = string.indexOf(' OR ', offset);
-				}
-			}
-			function groupOR() {
-				for (var i = 0; i < or.length; i += 2) {
-					if (0 !== i && or[i - 1] === or[i]) {
-						orExps[orExps.length - 1].push(or[i + 1]);
-					} else {
-						var newSet = [];
-						newSet.push(or[i]);
-						newSet.push(or[i + 1]);
-						orExps.push(newSet);
-					}
-				}
-			}
-			function cleanSearchString() {
-				// Remove all OR operator strings
-				string = string.replace(/ OR /gi, '').trim();
-				// Sort such that longer strings are in front and replaced first,
-				// to avoid replacement of shorter substrings hosing things
-				temp = $scope._.sortBy(temp, function (val) {
-					return val ? val.length : 0;
-				});
-				// Remove all exact and OR operands identified
-				for (var i = 0; i < temp.length; i++) {
-					string = string.replace(new RegExp(temp[i], 'ig'), ' ');
-				}
-				temp = [];
-			}
-			function removeDuplicates() {
-				for (var exp in or) {
-					if (exact.indexOf(or[exp]) > -1)
-						exact.splice(exact.indexOf(or[exp]), 1);
-				}
-			}
-			function gatherRemainingWords() {
-				cleanSearchString();
-				words = [];
-				var s_words = string.split(' ');
-				for (var i = 0; i < s_words.length; i++) {
-					var tword = s_words[i].trim();
-					if (tword.length > 0) {
-						words.push(tword);
-					}
-				}
-			}
-			function filterExtraOrExps() {
-				for (var i = 0; i < orExps.length; i++) {
-					var exp = orExps[i];
-					for (var j = 0; j < words.length; j++) {
-						if (exp.indexOf(words[j]) > -1) {
-							orExps.splice(i, 1);
-							break;
-						}
-					}
-				}
-			}
-			gatherExacts();
-			gatherOR();
-			groupOR();
-			removeDuplicates();
-			gatherRemainingWords();
-			filterExtraOrExps();
-			return {
-				words: words,
-				exacts: exact,
-				or: orExps,
-				string: escapeRegExp(copy)
-			};
+			return searchStringParser.parse(copy);
 		};
+
 		$scope.search = function () {
 			$scope.currentPage = 1;
 			var lower = 0;
@@ -511,6 +371,7 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 					$scope.total = response.data.length;
 			});
 		};
+
 		$scope.sortedValues = function (data) {
 			var cols = $scope._.map($scope.cols, function (value) {
 					return value.field;
@@ -526,6 +387,7 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 			}
 			return val_array;
 		};
+
 		$scope.sortTable = function (col) {
 			var order = col.sort;
 			for (var i = 0; i < $scope.cols.length; i++) {
@@ -535,6 +397,7 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 			$scope.sort = col;
 			$scope.getPage($scope.currentPage ? $scope.currentPage : 1);
 		};
+
 		$scope.toggleAll = function () {
 			if ($scope.fields.length + 3 !== $scope.cols.length) {
 				for (var i = 0; i < $scope.fields.length; i++) {
@@ -549,6 +412,7 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 				$scope.cols.splice($scope.cols.indexOf(remove_field), 1);
 			}
 		};
+
 		$scope.noSubmit = function (evt) {
 			if (evt.which === 13)
 				evt.preventDefault();
