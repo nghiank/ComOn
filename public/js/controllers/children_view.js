@@ -7,6 +7,8 @@ angular.module('ace.schematic')
 	$scope._ = underscore;
 	$scope.Global = Global;
 	$scope.admin = false;
+	$scope.leaves = [];
+	$scope.subtypes = [];
 	if($scope.Global.authenticated && $scope.Global.user.isAdmin)
 		$scope.admin = true;
 	$scope.getChildren = function() {
@@ -25,42 +27,17 @@ angular.module('ace.schematic')
 			}
 			breadcrumbs.add(hiearchy);
 		});
-		/*$scope.getSiblings($scope.breadcrumbs.all());*/
 	};
 
 	$scope.toggleOption = function (child) {
 		return (child.showOption = !child.showOption);
 	};
 
-	/*$scope.getSiblings = function(breadcrumbs){
-		for (var index in breadcrumbs){
-			var name = breadcrumbs[index].title;
-			var _id = breadcrumbs[index].link.split('/');
-			_id = _id[_id.length - 1];
-			if(breadcrumbs[index].title !== 'Standards'){
-				SchematicsAPI.children.get({nodeId:_id}, function(result){
-					var menuArray = [];
-					for(var i in result.children){
-						if(result.children[i].isComposite === true){
-							var menuItem = {};
-							menuItem.title = result.children[i].name;
-							menuItem.link = '#!/standards/' + result.children[i]._id;
-							menuArray.push(menuItem);
-						}
-					}
-					$scope.bcMenu[name] = menuArray;
-					console.log(name, _id);
-					console.log('result:', $scope.bcMenu);
-				});
-			}
-		}
-	};*/
 	$scope.getSiblings = function(breadcrumb){
 		$scope.bcMenu = [];
 		var _id = breadcrumb.link.split('/');
 		_id = _id[_id.length - 1];
 		if(breadcrumb.title !== 'Standards'){
-			//list = _.map($scope.bcMenu, function(value) { return _.pick(value, ['title']).title; });
 			SchematicsAPI.children.get({nodeId:_id}, function(result){
 				for(var i in result.children){
 					if(result.children[i].isComposite === true){
@@ -75,7 +52,6 @@ angular.module('ace.schematic')
 			});
 		}
 		if(breadcrumb.title === 'Standards'){
-			//list = _.map($scope.bcMenu, function(value) { return _.pick(value, ['title']).title; });
 			SchematicsAPI.standardlist.query(function(stds){
 				for(var i in stds){
 					var menuItem = {};
@@ -84,7 +60,6 @@ angular.module('ace.schematic')
 					if(menuItem.title && $scope.nodeId !== stds[i]._id)
 						$scope.bcMenu.unshift(menuItem);
 				}
-				console.log($scope.bcMenu);
 			});
 		}
 	};
@@ -102,6 +77,40 @@ angular.module('ace.schematic')
 		if($scope.Global.authenticated)
 			$scope.addFavouriteKey();
 	};
+
+    $scope.setDownloadLink = function(link){
+        var download;
+        if (link === undefined || !link){
+            download = '#';
+        }
+        else{
+            download = link;
+        }
+        try{
+            if (window.exec === undefined){
+                return download;
+            }
+        }
+        catch(e){
+            console.error(e);
+            return download;
+        }
+        // return empty link if its in ACAD
+        console.log(link);
+        return '';
+    };
+
+    $scope.downloadLink = function (link) {
+        try{
+            if (window.exec !== undefined){
+                var response = window.exec(JSON.stringify({ functionName: 'DownloadInsertSymbol', invokeAsCommand: false, functionParams: {'link': link} }));
+                console.log(response);
+            }
+        }
+        catch(e){
+            console.error(e);
+        }
+    };
 
 	$scope.showEditForm  = function(child){
 		$scope.target = child;
@@ -175,6 +184,23 @@ angular.module('ace.schematic')
 		});
 	};
 
+	$scope.showVersionModal = function(child){
+		$scope.target = child;
+		var modalInstance = $modal.open({
+			templateUrl: 'views/Schematics/versionListModal.html',
+			controller: 'versionListCtrl',
+			backdrop: 'static',
+			resolve: {
+				target: function() {
+					return ($scope.target);
+				}
+			}
+		});
+		modalInstance.result.then(function(){
+			$scope.getChildren();
+		});
+	};
+
 	$scope.showComingSoon = function(){
 		$modal.open({
 			templateUrl: 'views/ComingModal.html',
@@ -196,6 +222,8 @@ angular.module('ace.schematic')
 	$scope.addFav = function(child){
 		if(child.isComposite)
 			return;
+		if(child.published === 0)
+			return;
 		UsersAPI.addSchemFav.save({_id: child._id}, function(response) {
 			if(response)
 			{
@@ -210,6 +238,8 @@ angular.module('ace.schematic')
 	$scope.delFav = function(child){
 		if(child.isComposite)
 			return;
+		if(child.published === 0)
+			return;
 		UsersAPI.delSchemFav.save({_id: child._id}, function(response) {
 			if(response)
 			{
@@ -222,8 +252,16 @@ angular.module('ace.schematic')
 		});
 	};
 
-	$scope.unpublished = function(child) {
-		return child.isPublished || $scope.admin;
+	$scope.published = function(child) {
+		return (child.published !== 0) || $scope.admin;
+	};
+
+	$scope.checkAllPublished = function() {
+		for (var i = $scope.leaves.length - 1; i >= 0; i--) {
+			if($scope.published($scope.leaves[i]))
+				return false;
+		}
+		return true;
 	};
 
 }]);

@@ -1,9 +1,9 @@
 <div  ng-show="Global.authenticated" data-ng-init="getFavourites()" ng-controller="Favourites">
     <div class="row">
-        <div>
+        <div class="col-md-6">
             <ul class="list-group">
                 <div class="list-group-item list-title">Schematic Favourites</div> 
-                <li class="list-group-item" ng-show="schematic.length == 0">No favourites yet.</li>          
+                <li class="list-group-item" ng-show="schematic.length == 0">No favourites added yet.</li>          
                 <li class="list-group-item imgLoader" ng-repeat="child in schematic | filter: unpublished" ng-mouseenter = "toggleOption(child)" ng-mouseleave = "toggleOption(child)">
                     <img ng-src="{{child.thumbnail}}" ng-show="child.thumbnail" style="width: 40px; height: 40px; margin-right:10px;">
                     <a href="#!/standards/{{child.parentNode}}">{{child.name}}</a>
@@ -13,6 +13,15 @@
                     <a href="{{child.dl? child.dl: '#'}}" class="btn pull-right btn-link" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}" ng-show="child.showOption" >
                         <i class="fa fa-download"></i>
                     </a>
+                </li>
+            </ul>
+        </div>
+        <div class="col-md-6">
+            <ul class="list-group">
+                <div class="list-group-item list-title">Catalog Libraries</div> 
+                <li class="list-group-item" ng-show="Global.user.catalogFilters.length == 0">No catalog libraries defined.</li>          
+                <li class="list-group-item imgLoader" ng-repeat="child in Global.user.catalogFilters">
+                    {{child.name}}
                 </li>
             </ul>
         </div>

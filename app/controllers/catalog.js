@@ -153,7 +153,7 @@ exports.getAllUniqueValues = function(req, res) {
 		if(err)
 			return error.sendGenericError(res, 400, 'Error Encountered');
 		if(result.length === 0)
-			res.jsonp([]);
+			return res.jsonp([]);
 		res.jsonp(result);
 	});
 };
@@ -163,7 +163,7 @@ exports.getAllTypes = function(req, res) {
 		if(err)
 			return error.sendGenericError(res, 400, 'Error Encountered');
 		if(result.length === 0)
-			res.jsonp([]);
+			return res.jsonp([]);
 		res.jsonp(result);
 	});
 };
@@ -221,13 +221,11 @@ exports.getCatalogEntries = function(req, res) {
 		});
 	};
 	var find_function = function(final_find) {
-		console.log(final_find);
-		var query = CatalogSchem.find(final_find).sort(sortCriteria).select(fields).skip(lower).limit(upper-lower);
-		if(req.body.filters)
-			query = query.hint(index_hint);
-		query.lean().exec(function(err, entries) {
+		console.log(index_hint);
+		CatalogSchem.find(final_find).sort(sortCriteria).select(fields).skip(lower).limit(upper-lower).hint(index_hint).lean().exec(function(err, entries) {
 			if(err){
-				return error.sendGenericError(res, 400, 'Error Encountered');
+				console.log(err);
+				return error.sendGenericError(res, 400, 'Error Encountered1');
 			}
 			return res.jsonp({data: entries, range: {lower: lower, upper: upper}});
 		});

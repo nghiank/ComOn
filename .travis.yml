@@ -1,7 +1,15 @@
 language: node_js
 node_js:
-  - "0.10"
+- '0.10'
 env:
-  - NODE_ENV=travis
+- NODE_ENV=travis
 services:
-  - mongodb
+- mongodb
+deploy:
+  provider: heroku
+  api_key:
+    secure: dnpktHFhDx3CrN1kWg53mdX4CLXEv/cswaCoMrb8WAC2xF8PATpC2ZZwsO9RXfC15GoI6LpoV4+GpanvQ9+s9CVu07SSMdrVCq6fwDvEhMiS18szzXD1BjAQ84+XsQlhp+p+DMrF428vM9ASs+V8vm+8tPmjYi1YhOI7nUol6FE=
+  app: comon2
+  on:
+    repo: nghiank/ComOn
+    branch: Deployment

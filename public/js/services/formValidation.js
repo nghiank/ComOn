@@ -39,7 +39,7 @@ angular.module('ace.system').factory('formValidation', ['SchematicsAPI', '$http'
 					var localName = name.toUpperCase();
 					for (var i = 0; i < comps.children.length; i++){
 						var dbName = comps.children[i].name.toUpperCase();
-						if(dbName.localeCompare(localName) === 0){
+						if(comps.children[i].published !== 0 && dbName.localeCompare(localName) === 0){
 							return cb({result: false, suc_message: null, err_message: 'This name is already used within the same group.'});
 						}
 					}
@@ -48,8 +48,8 @@ angular.module('ace.system').factory('formValidation', ['SchematicsAPI', '$http'
 			});
 		};
 
-		instance.checkUniqueSchematicId = function(id, standard, cb) {
-			SchematicsAPI.checkId.save({id: id, standardId: standard},function(response){
+		instance.checkUniqueSchematicId = function(id, standard, _id, cb) {
+			SchematicsAPI.checkId.save({id: id, standardId: standard, _id: _id},function(response){
 				if(response.unique === true){
 					return cb({result: true, suc_message: 'Valid ID.', err_message: null});
 				}

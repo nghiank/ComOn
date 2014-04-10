@@ -36,6 +36,29 @@ footer p {
     padding-bottom: 2px;
 }
 
+.dropdown-menu{
+
+}
+
+.dropdown-menu .a{
+    width:150px;
+    margin-left: 10px;
+}
+
+.dropdown-menu .li .{
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.dropdown-btn .i{
+    margin-top: 10px;
+}
+
+.dropdown-btn{
+    width:150px;
+    text-align:left;
+}
+
 
 .listing {
     height: 428px;
@@ -173,6 +196,11 @@ footer p {
     display:table-cell;
 }
 
+.showBlockOnHover:hover .onHover{
+    display:block;
+    width:40px;
+}
+
 .showBtnOnHoer input{
     border-radius: 4px !important;
 }
@@ -239,3 +267,4 @@ footer p {
     max-height: 150px;
     overflow-y:scroll;
 }
+

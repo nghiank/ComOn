@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 <section ng-init="init()" ng-show="authorized()" style="margin-bottom: 100px;" ng-controller="catalogController">
+=======
+<section ng-init="init()" ng-show="authorized()" ng-controller="catalogController">
+>>>>>>> 81fa57c4c60e44810fd680775926ff38bb9d2d67
 	<div class="">
 		<div class="row">
 			<form class="form-horizontal col-md-12">
@@ -38,7 +42,7 @@
                         <button class="btn btn-info btn-sm btn-separate " style="margin-top: -5px" ng-click="toggleShowAll(1)" ng-if="showAll">Hide matched sheets</button>
                         </p>
                     	<table class="table">
-                        <thead>
+                        <thead ng-show="(processedSheets | filter:isPending).length">
                             <tr>
                                 <th class="col-md-6">.xls File Sheets</th>
                                 <th class="col-md-6">ACADE Default Types</th>
@@ -85,16 +89,48 @@
                                 <a class="btn btn-default btn-separate" ng-click="states[1] = 0; states[0] = 1;">Back</a>
                                 <a class="btn btn-default btn-separate" ng-click="states[1] = 0; states[2] = 1; matchFields()" ng-disabled="nextDisabled">Next</a>
                             </div>
-                            <p ng-show="!valid" class="error">{{error}}</p>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <div class="col-sm-offset-2 col-sm-2">
-                            <button type="button" ng-disabled="uploadDisabled" class="btn" ng-click="populate()" ng-class={'btn-default':populateProgress===100,'btn-primary':populateProgress!==100}><i class="fa fa-check success" ng-show="showProgress && populateProgress === 100"></i>Upload</button>
-                        </div>
-                        <progressbar max="100" value="populateProgress" ng-show="showProgress" type="success"><span style="color:white; white-space:nowrap;">{{populateProgress}}%</span></progressbar>
                     </div>
-                </form>
-            </div>
+                </div>
+                <div class="alert alert-thin alert-info" ng-show="states[2]">
+                    Step 3. Match the columns
+                </div>
+                <div class="form-group" ng-show="states[2]">
+                    <div class="col-md-12">
+	                    <p ng-show="countPendingByFields() !== 0">Out of <b style="font-size: 16px">{{sheets.length}}</b> sheets in the .xls file, <b style="font-size: 16px">{{countPendingByFields()}}</b> {{countPendingByFields() === 1? 'needs': 'need'}} your attention.
+	                    <button class="btn btn-info btn-sm btn-separate " style="margin-top: -5px" ng-click="toggleShowAll(2)" ng-if="!showAllFields">Show all sheets</button>
+	                    <button class="btn btn-info btn-sm btn-separate" style="margin-top: -5px" ng-click="toggleShowAll(2)" ng-if="showAllFields">Hide matched sheets</button></p>
+	                    <p style="margin-left: 5px;" ng-show="countPendingByFields() === 0">Everything is well. <i class="fa fa-check success"></i>
+	                    <button class="btn btn-info btn-sm btn-separate" style="margin-top: -5px" ng-click="toggleShowAll(2)" ng-if="!showAllFields">Show all sheets</button>
+	                    <button class="btn btn-info btn-sm btn-separate" style="margin-top: -5px" ng-click="toggleShowAll(2)" ng-if="showAllFields">Hide matched sheets</button></p>
+	                    <table class="table table-stripped">
+	                        <tbody>
+	                            <tr class="showIconOnHover" ng-repeat="sheet in processedSheets|filter:isSheetPendingByFields |orderBy:sheetSortedByPendingFields" ng-class="{warning:sheet.pendingFields>0}" ng-click="showMatchFieldsModal(sheet)" style="height:40px">
+	                                <td class="col-md-3">{{sheet.sName}} ({{sheet.dName}})</td>
+	                                <td class="col-md-6">
+	                                    <span ng-show="sheet.pendingFields ===0"><i class="fa fa-check success" style="margin-right:10px"></i> All fields auto matched.</span>
+	                                    <span ng-hide="sheet.pendingFields ===0"><i class="fa fa-question error" style="margin-right:10px"></i>{{sheet.pendingFields}} fields needs clarification.</span>
+	                                </td>
+	                                <td class="col-md-3">
+	                                    <span>
+	                                        <a class="btn btn-default onHover">Show fields</a>
+	                                    </span>
+	                                </td>
+	                            </tr>
+	                        </tbody>
+	                    </table>
+	                    <div class="row" style="margin-top: 35px; padding-top:15px; border-top: 1px solid #efeffe">
+	                        <div class="col-md-12">
+	                            <div class="pull-right">
+	                                <a class="btn btn-default btn-separate" ng-click="states[1]=1;states[2]=0">Back</a>
+	                                <a class="btn btn-primary btn-separate" ng-click="startProcessing()" ng-disabled="submitDisabled"><img ng-show="sendingFlag" src="/img/loaders/loader-small.gif" style="margin-right:10px"><i ng-show="sendingSuccess" style="margin-right:10px; color: white"class="fa fa-check"></i>Submit</a>
+	                            </div>
+	                        </div>
+	                    </div>
+	                </div>
+                </div>
+            </form>
         </div>
+    </div>
 </section>
