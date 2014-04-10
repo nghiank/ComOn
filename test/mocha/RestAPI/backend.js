@@ -5,6 +5,7 @@ var OxygenOauth = require('./oxygenOauth'),
     User = mongoose.model('User'),
     SchematicComponent = mongoose.model('SchematicComponent'),
     SchematicStandard = mongoose.model('SchematicStandard'),
+    CatalogSchem = mongoose.model('Catalog'),
     agent = request.agent('http://localhost:3001'),
     config = require('../../../config/config');
 
@@ -724,7 +725,9 @@ describe('<e2e API Test>', function() {
         User.remove().exec(function(){
             SchematicComponent.remove().exec(function() {
                 SchematicStandard.remove().exec(function() {
-                    setTimeout(done, 500);
+                    CatalogSchem.remove().exec(function() {
+                        setTimeout(done, 500);
+                    });
                 });
             });
         });
