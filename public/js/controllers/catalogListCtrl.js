@@ -101,7 +101,6 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 			});
 			if($scope.global.authenticated && $routeParams.filterName && $scope.global.user.catalogFilters.length !== 0)
 			{
-				console.log('asdasd');
 				for (var i = 0; i < $scope.global.user.catalogFilters.length; i++) {
 					if($scope.global.user.catalogFilters[i].name === $routeParams.filterName)
 					{
@@ -159,6 +158,8 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 			function parseCamelCase(input) {
 				return input.charAt(0).toUpperCase() + input.substr(1).replace(/[A-Z0-9]/g, ' $&');
 			}
+			$scope.searchText = {};
+			$scope.filters = [];
 			CatalogAPI.fields.query({ type: type.code }, function (response) {
 				if (response) {
 					for (var i = 0; i < response.length; i++) {
