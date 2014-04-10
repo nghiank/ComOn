@@ -1,4 +1,4 @@
-<section ng-init="init()" ng-show="authorized()" ng-controller="catalogController">
+<section ng-init="init()" ng-show="authorized()" style="margin-bottom: 100px;" ng-controller="catalogController">
 	<div class="">
 		<div class="row">
 			<form class="form-horizontal col-md-12">
@@ -54,13 +54,13 @@
                                             {{sheet.dName ? sheet.dName : 'Choose a type'}}
                                             <i class="fa fa-caret-down btn-separate pull-right"></i>
                                             </a>
-                                            <ul class="dropdown-menu">
+                                            <ul class="dropdown-menu dropdown-menu-bottom">
                                                 <li><input type="text" class="form-control" ng-model="searchText" ng-click="$event.stopPropagation();"></li>
+                                                 <li ng-click="showTypesModal(sheet)" ng-show="global.authenticated && global.user.isAdmin && !sheet.unTrack && !sheet.dName">
+                                                    <a><i class="fa fa-plus" style="margin-right:10px"></i>Add a new type</a>
+                                                </li>
                                                 <li ng-repeat="type in typeCodes | filter:searchText">
                                                     <a ng-click="sheet.dName = type;">{{type}}</a>
-                                                </li>
-                                                <li ng-click="showTypesModal(sheet)" ng-show="global.authenticated && global.user.isAdmin && !sheet.unTrack && !sheet.dName">
-                                                    <a><i class="fa fa-plus" style="margin-right:10px"></i>Add a new type</a>
                                                 </li>
                                             </ul>
                                         </div>

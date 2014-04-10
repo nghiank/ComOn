@@ -232,3 +232,39 @@ footer p {
     background-color: #f5f5f5;
     text-decoration:line-through;
 }
+
+.table-striped > tbody > tr:nth-child(odd).highlighted>td{
+    background-color: aliceblue !important;
+}
+
+.highlighted
+{
+    background-color: aliceblue !important;
+}
+
+.unselectable
+{
+    -moz-user-select:moz-none;
+    -webkit-user-select:none;
+    user-select:none;
+}
+
+.link
+{
+    color:blue;
+}
+
+.semitransparent{
+    opacity: 0.5;
+}
+
+.separate-right
+{
+    margin-right: 10px;
+}
+
+.dropdown-menu-bottom{
+    max-height: 150px;
+    overflow-y:scroll;
+}
+>>>>>>> 6033af8... Fixed drop down UI error out of page.
