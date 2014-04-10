@@ -128,6 +128,8 @@ angular.module('ace.schematic').controller('UploadController', ['ValidationServi
 
 	$scope.uploadFiles = function() {
 		$scope.progress = 0;
+		$scope.uploadDisabled = true;
+		$scope.sendingFlag = true;
 		$scope.upload = $upload.upload({
 			url : 'api/upload',
 			method: $scope.httpMethod,
@@ -139,12 +141,13 @@ angular.module('ace.schematic').controller('UploadController', ['ValidationServi
 			file: [$scope.datFile , $scope.jsonFile],
 			fileFormDataName: ['datFile', 'jsonFile']
 		}).then(function(response) {
+			$scope.sendingFlag = false;
 			if(response)
 			{
 				if(response.status === 200)
 				{
+					$scope.sendingSuccess = true;
 					$scope.uploadResult = response.data;
-					console.log('Uploaded!');
 					$timeout($scope.getAll, 500);
 				}
 			}
