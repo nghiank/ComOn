@@ -51,10 +51,6 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 			return false;
 		};
 
-		$scope.toggleOption = function (type) {
-			$scope.target = type;
-		};
-
 		$scope.showConfigureModal = function () {
 			$modal.open({
 				templateUrl: 'views/Catalog/configureTableModal.html',
@@ -96,7 +92,7 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 
 		$scope.init = function () {
 			$scope.showTypes = true;
-			$scope.searchBox.show = true;
+			$scope.searchBox.show = false;
 			$scope.showList = false;
 			CatalogAPI.types.query(function (response) {
 				if (response)
@@ -162,8 +158,10 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 
 		$scope.showTypeList = function (type) {
 			$scope.showList = true;
+			$scope.searchBox.show = true;
 			$scope.showTypes = false;
-			$scope.selected = $scope.target;
+			$scope.target = type;
+			$scope.selected = type;
 			function parseCamelCase(input) {
 				return input.charAt(0).toUpperCase() + input.substr(1).replace(/[A-Z0-9]/g, ' $&');
 			}
@@ -171,6 +169,23 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 			$scope.filters = [];
 			$scope.searchBox.show = true;
 			$scope.fields = [];
+			$scope.cols = [
+				{
+					title: 'Catalog',
+					field: 'catalog',
+					sort: null
+				},
+				{
+					title: 'Manufacturer',
+					field: 'manufacturer',
+					sort: null
+				},
+				{
+					title: 'Assembly Code',
+					field: 'assemblyCode',
+					sort: null
+				}
+			];
 			CatalogAPI.fields.query({ type: type.code }, function (response) {
 				if (response) {
 					for (var i = 0; i < response.length; i++) {
@@ -189,45 +204,7 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 					}
 				}
 			});
-			CatalogAPI.entries.query({
-				type: type.code,
-				lower: $scope.lower,
-				upper: $scope.upper
-			}, function (response) {
-				if (response) {
-					$scope.items = $scope._.map(response.data, function (value) {
-						return $scope._.omit(value, ['__v']);
-					});
-					if (response.data.length === $scope.pageItemLimit) {
-						CatalogAPI.entries.query({
-							type: type.code,
-							total: true
-						}, function (response) {
-							if (response) {
-								$scope.total = response.count;
-							}
-						});
-					} else
-						$scope.total = response.data.length;
-				}
-			});
-			$scope.cols = [
-				{
-					title: 'Catalog',
-					field: 'catalog',
-					sort: null
-				},
-				{
-					title: 'Manufacturer',
-					field: 'manufacturer',
-					sort: null
-				},
-				{
-					title: 'Assembly Code',
-					field: 'assemblyCode',
-					sort: null
-				}
-			];
+			$scope.getPage(1);
 		};
 
 		$scope.processFilters = function (filters) {
@@ -298,6 +275,19 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 						'__v'
 					]);
 				});
+				if (page === 1 && response.data.length === $scope.pageItemLimit ) {
+					CatalogAPI.entries.query({
+						type: $scope.target.code,
+						total: true
+					}, function (response) {
+						if (response) {
+							$scope.total = response.count;
+						}
+					});
+				}else{
+					if(page === 1)
+						$scope.total = response.data.length;
+				}
 				if ($scope.fields.length > 0) {
 					for (var i = 0; i < $scope.fields.length; i++) {
 						var field = $scope.fields[i];
@@ -326,6 +316,7 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 			var cols = $scope._.map($scope.cols, function (value) {
 					return value.field;
 				});
+			$scope.getPage(1);
 			CatalogAPI.entries.query({
 				type: $scope.selected.code,
 				lower: lower,
