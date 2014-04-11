@@ -11,13 +11,15 @@ var convertToUpper = function(item) {
 	else if(_.isArray(item))
 	{
 		for (var j = 0; j < item.length; j++) {
-			item[j] = item[j].toUpperCase();
+			if(_.isString(item[j]))
+				item[j] = item[j].toUpperCase();
 		}
 	}
 	else if(_.isObject(item))
 	{
 		for(var i in item)
-			item[i] = item[i].toUpperCase();
+			if(_.isString(item[i]))
+				item[i] = item[i].toUpperCase();
 	}
 	return item;
 };
@@ -30,8 +32,8 @@ var createEntry = function(entry, catalog, typeName, typeCode) {
 		{
 			var additionalInfo = _.omit(entry, ['catalog', 'manufacturer']);
 			var newEntry = new CatalogSchem({
-				catalog: catalog.toUpperCase(),
-				manufacturer: entry.manufacturer.toUpperCase(),
+				catalog: catalog? catalog.toUpperCase(): null,
+				manufacturer: entry.manufacturer? entry.manufacturer.toUpperCase(): null,
 				type: {code: typeCode.toUpperCase(), name: typeName},
 				assemblyCode: entry.assemblycode? entry.assemblycode.toUpperCase(): null,
 				additionalInfo: convertToUpper(additionalInfo)
@@ -44,8 +46,8 @@ var createEntry = function(entry, catalog, typeName, typeCode) {
 		else{
 			var info = _.omit(entry, ['catalog', 'manufacturer']);
 			var replacingEntry = {
-				catalog: catalog.toUpperCase(),
-				manufacturer: entry.manufacturer.toUpperCase(),
+				catalog: catalog? catalog.toUpperCase(): null,
+				manufacturer: entry.manufacturer? entry.manufacturer.toUpperCase(): null,
 				type: {code: typeCode.toUpperCase(), name: typeName},
 				assemblyCode: entry.assemblycode? entry.assemblycode.toUpperCase(): null,
 				additionalInfo: convertToUpper(info)
@@ -119,7 +121,9 @@ exports.populateCatalog = function(req, res) {
 			return;
 		var typeCode = key.toString();
 		var typeName = value.title.toString();
-		for (var i = 0; i < value.data.length; i++) {
+		if(!value.entries)
+			return;
+		for (var i = 0; i < value.entries.length; i++) {
 /*			var column = 'CAA';
 			console.log(i);
 			for(var j=0 ;j< 200;j++)
@@ -133,10 +137,13 @@ exports.populateCatalog = function(req, res) {
 					column = nextColumn(column.split(''));
 				}
 			}*/
-			var entry = value.data[i];
-			var catalog = entry.catalog.replace(' ','');
-			if(checkAuthority(entry.manufacturer.trim())){
-				createEntry(entry, catalog, typeName, typeCode);
+			var entry = value.entries[i];
+			if(entry)
+			{
+				var catalog = entry.catalog? entry.catalog.replace(' ',''): null;
+				if(catalog && checkAuthority(entry.manufacturer.trim())){
+					createEntry(entry, catalog, typeName, typeCode);
+				}
 			}
 		}
 
@@ -279,7 +286,7 @@ exports.getCatalogEntries = function(req, res) {
 		}
 		if(all_filters.description)
 		{
-			filters['additionalInfo.description'] =  new RegExp(all_filters.description);
+			filters['additionalInfo.description'] =  new RegExp(all_filters.description.toUpperCase());
 			if(!index)
 				index = {'additionalInfo.description': 1, 'type.code': 1};
 		}
@@ -353,12 +360,12 @@ exports.getCatalogEntries = function(req, res) {
 exports.getCatalogEntryById = function(req,res){
 	if(!req.body._id)
 		return error.sendGenericError(res, 400, 'Error Encountered');
-	CatalogSchem.findOne({_id:req.body._id}).exec(function(err,entry){
+	CatalogSchem.findOne({_id: req.body._id}).lean().exec(function(err,entry){
 		if(err)
 			return error.sendGenericError(res, 400, 'Error Encountered');
 		if(!entry)
 			return error.sendGenericError(res, 400, 'Error Encountered');
-		res.jsonp(entry);
+		res.status(200).jsonp(entry);
 	});
 };
 
@@ -369,19 +376,24 @@ exports.editCatalogEntry = function(req,res){
 	newEntry = req.body.item;
 	if(!newEntry._id)
 		return error.sendGenericError(res, 400, 'Error Encountered');
-	CatalogSchem.findOne({_id:newEntry._id}).exec(function(err, entry){
+	CatalogSchem.findOne({_id:newEntry._id}).exec(function(err, fetchedEntry){
 		if(err)
-			return console.log(err);
-		if(!entry)
-			return console.log(err);
-		fetchedEntry = entry;
-		if(fetchedEntry.type.code !== newEntry.type.code)
+			return error.sendGenericError(res, 400, 'Error Encountered');
+		if(!fetchedEntry)
+			return error.sendGenericError(res, 400, 'Error Encountered');
+		if(newEntry.type && fetchedEntry.type.code !== newEntry.type.code)
 			fetchedEntry.additionalInfo = {};
 		_.extend(fetchedEntry,newEntry);
+		var typeName = fetchedEntry.type.name;
+		for(var key in _.omit(fetchedEntry, ['_id', '__v']))
+		{
+			fetchedEntry[key] = convertToUpper(fetchedEntry[key]);
+		}
+		fetchedEntry.type.name = typeName;
+		fetchedEntry.catalog = fetchedEntry.catalog.replace(' ', '');
 		fetchedEntry.save(function(err){
 			if(err)
-				return console.log(err);
-			console.log('saved');
+				return error.sendGenericError(res, 400, 'Error Encountered');
 			return res.jsonp(fetchedEntry);
 		});
 	});
@@ -390,7 +402,7 @@ exports.editCatalogEntry = function(req,res){
 exports.deleteCatalogEntry = function(req,res){
 	if(!req.body._id)
 		return error.sendGenericError(res, 400, 'Error Encountered');
-	CatalogSchem.findOne({_id:req.body._id}).exec(function(err,entry){
+	CatalogSchem.findOne({_id: req.body._id}).exec(function(err,entry){
 		if (err)
 			return error.sendGenericError(res, 400, 'Error Encountered');
 		if (!entry)
@@ -407,10 +419,9 @@ exports.checkUnique = function(req, res){
 	if(!req.body.catalog || !req.body.manufacturer || typeof req.body.assemblyCode === 'undefined' || !req.body.type || !req.body._id){
 		return error.sendGenericError(res, 400, 'Error Encountered');
 	}
-		
-	CatalogSchem.find({catalog:req.body.catalog, manufacturer:req.body.manufacturer, assemblycode:req.body.assemblyCode}).exec(function(err, entry){
+	CatalogSchem.find({catalog: req.body.catalog, manufacturer: req.body.manufacturer, assemblycode: req.body.assemblyCode}).exec(function(err, entry){
 		if(err)
-			return console.log(err);
+			return error.sendGenericError(res, 400, 'Error Encountered');
 		for(var i in entry){
 			if(entry[i]._id !== req.body._id && entry[i].type.code === req.body.type.code)
 				return res.jsonp({'unique':false});
