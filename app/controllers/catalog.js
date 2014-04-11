@@ -255,7 +255,7 @@ exports.getCatalogEntries = function(req, res) {
 					}
 				}
 			}
-			if(_.has(filters, single))
+			if(filters && _.has(filters, single))
 			{
 				if(req.body.filters[single].trim().toUpperCase() === req.body.search.string.trim().toUpperCase())
 					fields.splice(index, 1);
@@ -370,7 +370,7 @@ exports.getCatalogEntryById = function(req,res){
 };
 
 exports.editCatalogEntry = function(req,res){
-	var fetchedEntry, newEntry;
+	var newEntry;
 	if(!req.body.item)
 		return error.sendGenericError(res, 400, 'Error Encountered');
 	newEntry = req.body.item;
