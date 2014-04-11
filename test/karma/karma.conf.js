@@ -29,6 +29,8 @@ module.exports = function(config) {
             'public/lib/ng-file-upload/angular-file-upload.js',
             'public/lib/ng-file-upload/angular-file-upload-shim.js',
             'public/lib/angularjs-scroll-glue/src/scrollglue.js',
+            'public/lib/js-xls/xls.js',
+            'public/lib/js-xlsx/xlsx.js',
             'public/js/app.js',
             'public/js/config.js',
             'public/js/directives.js',
@@ -38,9 +40,11 @@ module.exports = function(config) {
             'public/js/services/underscore.js',
             'public/js/services/usersAPI.js',
             'public/js/services/SchematicsAPI.js',
+            'public/js/services/catalogAPI.js',
             'public/js/services/validateLinkMapping.js',
             'public/js/services/ParsingService.js',
             'public/js/services/formValidation.js',
+            'public/js/services/searchStringParser.js',
             'public/js/controllers/index.js',
             'public/js/controllers/header.js',
             'public/js/controllers/addStdFormCtrl.js',
@@ -50,8 +54,9 @@ module.exports = function(config) {
             'public/js/controllers/editGrpFormCtrl.js',
             'public/js/controllers/editStdFormCtrl.js',
             'public/js/controllers/addGrpFormCtrl.js',
+            'public/js/controllers/addCatalog.js',
             'public/js/init.js',
-            'test/karma/unit/**/*.js',
+            'test/karma/unit/**/*.js'
         ],
 
 

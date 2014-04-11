@@ -128,7 +128,11 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 				}
 			}
 		}
-		if($scope.sheets.length === 0)
+		$scope.matchSheets($scope.sheets);
+	};
+
+	$scope.matchSheets = function(sheets){
+		if(sheets.length === 0)
 		{
 			$scope.success = null;
 			$scope.valid = false;
@@ -145,11 +149,11 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 					$scope.typeCodes.push(response[i].code);
 			}
 			$scope.original_types = $scope.typeCodes;
-			for (var j in $scope.sheets){
-				if($scope.typeCodes.indexOf($scope.sheets[j]) > -1)
-					processedSheet = {'sName':$scope.sheets[j],'dName':$scope.sheets[j]};
+			for (var j in sheets){
+				if($scope.typeCodes.indexOf(sheets[j]) > -1)
+					processedSheet = {'sName':sheets[j],'dName':sheets[j]};
 				else
-					processedSheet = {'sName':$scope.sheets[j],'pending':true};
+					processedSheet = {'sName':sheets[j],'pending':true};
 				$scope.processedSheets.push(processedSheet);
 			}
 		});
@@ -158,45 +162,7 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 	$scope.matchFields = function(){
 		var wb = $scope.wb;
 		var count = -1;
-		function match_field(j, cols)
-		{
-			var std_fields = [];
-			if($scope.original_types.indexOf($scope.processedSheets[j].dName) > -1)
-				CatalogAPI.fields.query({type:$scope.processedSheets[j].dName},function(response){
-					for(var k in response){
-						var std_field = _.values(response[k]).join('');
-						if(std_field.indexOf('additionalInfo') > -1)
-							std_field = std_field.substr(15);
-						std_fields.push(std_field);
-					}
-					k = 0;
-					$scope.processedSheets[j].fields = [];
-					for (k in cols){
-						var fieldMatchPair = [];
-						if(std_fields.indexOf(cols[k].toLowerCase()) > -1){
-							fieldMatchPair.push(cols[k]);
-							fieldMatchPair.push(std_fields[std_fields.indexOf(cols[k].toLowerCase())]);
-						}else{
-							fieldMatchPair.push(cols[k]);
-							fieldMatchPair.push('');
-							$scope.processedSheets[j].pendingFields++;
-						}
-						$scope.processedSheets[j].fields.push(fieldMatchPair);
-					}
-				});
-			else{
-				$scope.processedSheets[j].fields = [];
-				for (var k in cols){
-					var fieldMatchPair = [];
-					fieldMatchPair.push(cols[k]);
-					fieldMatchPair.push(cols[k]);
-					$scope.processedSheets[j].pendingFields++;
-					$scope.processedSheets[j].fields.push(fieldMatchPair);
-				}
-			}
-		}
 		
-
 		for(var i in wb.Sheets){
 			count++;
 			var sheet_flag= false;
@@ -230,7 +196,50 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 						break;
 					}
 				}
-				match_field(j, cols);
+				$scope.match_field(j, cols);
+			}
+		}
+	};
+
+	$scope.match_field = function (j, cols)
+	{
+		var std_fields = [];
+		var compulsory_fields = ['catalog','manufacturer'];
+		var compulsory_fields_flag = 0;
+		if($scope.original_types.indexOf($scope.processedSheets[j].dName) > -1)
+			CatalogAPI.fields.query({type:$scope.processedSheets[j].dName},function(response){
+				for(var k in response){
+					var std_field = _.values(response[k]).join('');
+					if(std_field.indexOf('additionalInfo') > -1)
+						std_field = std_field.substr(15);
+					std_fields.push(std_field);
+				}
+				k = 0;
+				$scope.processedSheets[j].fields = [];
+				for (k in cols){
+					var fieldMatchPair = [];
+					if(std_fields.indexOf(cols[k].toLowerCase()) > -1){
+						fieldMatchPair.push(cols[k]);
+						fieldMatchPair.push(std_fields[std_fields.indexOf(cols[k].toLowerCase())]);
+						if(compulsory_fields.indexOf(cols[k].toLowerCase() > -1))
+							compulsory_fields_flag++;
+					}else{
+						fieldMatchPair.push(cols[k]);
+						fieldMatchPair.push('');
+						$scope.processedSheets[j].pendingFields++;
+					}
+					$scope.processedSheets[j].fields.push(fieldMatchPair);
+				}
+				$scope.processedSheets[j].pendingFields += compulsory_fields.length - compulsory_fields_flag;
+			});
+		else{
+			$scope.processedSheets[j].fields = [];
+			for (var k in cols){
+				var fieldMatchPair = [];
+				fieldMatchPair.push(cols[k]);
+				fieldMatchPair.push(cols[k]);
+				$scope.processedSheets[j].pendingFields++;
+				$scope.processedSheets[j].fields.push(fieldMatchPair);
 			}
 		}
 	};
@@ -321,7 +330,7 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 	};
 
 	$scope.$watch('processedSheets', function(){
-		if($scope.sheets.length !== 0)
+		if($scope.processedSheets.length !== 0)
 		{
 			for(var i in $scope.processedSheets)
 				if((!$scope.processedSheets[i].dName) && (!$scope.processedSheets[i].unTrack)){
@@ -335,7 +344,7 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 	},true);
 
 	$scope.$watch('processedSheets', function(){
-		if($scope.sheets.length !== 0)
+		if($scope.processedSheets.length !== 0)
 		{
 			for(var i in $scope.processedSheets)
 				if($scope.processedSheets[i].pendingFields !== 0 && (!$scope.processedSheets[i].unTrack)){
