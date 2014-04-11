@@ -72,6 +72,7 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 			var modalInstance = $modal.open({
 				templateUrl: 'views/Catalog/filterModal.html',
 				controller: 'filterModalCtrl',
+				backdrop: 'static',
 				resolve: {
 					data: function () {
 						return {

@@ -34,6 +34,7 @@ angular.module('ace.catalog').controller('addCustomTypeModalCtrl', ['$scope', '$
 		else
 		{
 			$scope.validated.code = true;
+			$scope.checkName();
 		}
 	};
 
