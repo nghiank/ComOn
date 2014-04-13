@@ -72,6 +72,7 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 			var modalInstance = $modal.open({
 				templateUrl: 'views/Catalog/filterModal.html',
 				controller: 'filterModalCtrl',
+				backdrop: 'static',
 				resolve: {
 					data: function () {
 						return {
@@ -204,7 +205,7 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 					}
 				}
 			});
-			$scope.getPage(1);
+			$scope.getPage(1, true);
 		};
 
 		$scope.processFilters = function (filters) {
@@ -254,7 +255,7 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 			}
 		};
 
-		$scope.getPage = function (page) {
+		$scope.getPage = function (page, totalFlag) {
 			var lower = (page ? page - 1 : 0) * $scope.pageItemLimit;
 			var upper = (page ? page : 1) * $scope.pageItemLimit;
 			var cols = $scope._.map($scope.cols, function (value) {
@@ -302,6 +303,23 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 				}
 				$scope.lower = lower;
 				$scope.upper = upper;
+				if(page === 1 && totalFlag)
+				{
+					if (response.data.length === $scope.pageItemLimit) {
+						CatalogAPI.entries.query({
+							type: $scope.selected.code,
+							search: $scope.prepareSearchString($scope.searchText.value),
+							total: true,
+							fields: cols.join(' '),
+							filters: $scope.processFilters($scope.filters)
+						}, function (response) {
+							if (response) {
+								$scope.total = response.count;
+							}
+						});
+					} else
+						$scope.total = response.data.length;
+				}
 			});
 		};
 
@@ -311,56 +329,7 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 
 		$scope.search = function () {
 			$scope.currentPage = 1;
-			var lower = 0;
-			var upper = $scope.pageItemLimit;
-			var cols = $scope._.map($scope.cols, function (value) {
-					return value.field;
-				});
-			$scope.getPage(1);
-			CatalogAPI.entries.query({
-				type: $scope.selected.code,
-				lower: lower,
-				sortField: $scope.sort,
-				upper: upper,
-				fields: cols.join(' '),
-				search: $scope.prepareSearchString($scope.searchText.value),
-				filters: $scope.processFilters($scope.filters)
-			}, function (response) {
-				$scope.items = $scope._.map(response.data, function (value) {
-					return $scope._.omit(value, [
-						'additionalInfo',
-						'__v'
-					]);
-				});
-				if ($scope.fields.length > 0) {
-					for (var i = 0; i < $scope.fields.length; i++) {
-						var field = $scope.fields[i];
-						for (var j = 0; j < $scope.items.length; j++) {
-							var newField = $scope._.findWhere(response.data, { _id: $scope.items[j]._id });
-							if (newField && newField.additionalInfo)
-								$scope.items[j][field.field] = newField.additionalInfo[field.field.replace('additionalInfo.', '')];
-							else
-								$scope.items[j][field.field] = '';
-						}
-					}
-				}
-				$scope.lower = lower;
-				$scope.upper = upper;
-				if (response.data.length === $scope.pageItemLimit) {
-					CatalogAPI.entries.query({
-						type: $scope.selected.code,
-						search: $scope.prepareSearchString($scope.searchText.value),
-						total: true,
-						fields: cols.join(' '),
-						filters: $scope.processFilters($scope.filters)
-					}, function (response) {
-						if (response) {
-							$scope.total = response.count;
-						}
-					});
-				} else
-					$scope.total = response.data.length;
-			});
+			$scope.getPage(1, true);
 		};
 
 		$scope.sortedValues = function (data) {

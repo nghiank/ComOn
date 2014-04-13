@@ -80,7 +80,6 @@
 			});
 
 			it('ensures sheets must have all compulsory fields to be marked as auto-matched',function(){
-				console.log('here');
 				$httpBackend.expect('POST', 'api/getTypeFields').respond(200,['catalog','manufacturer']);
 				scope.processedSheets = [{'sName':'FU','dName':'FU','pendingFields':0}];
 				var cols = ['catalog'];
