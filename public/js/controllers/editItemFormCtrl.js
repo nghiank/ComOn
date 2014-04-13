@@ -1,15 +1,16 @@
 'use strict';
 
-angular.module('ace.schematic').controller('editItemFormCtrl', ['$scope', '$timeout', '$modalInstance', 'CatalogAPI', '_', 'item','$modal', function($scope, $timeout, $modalInstance, CatalogAPI, _, item,$modal){
+angular.module('ace.schematic').controller('editItemFormCtrl', ['$scope', '$modalInstance', 'CatalogAPI', '_', 'item','$modal', function($scope, $modalInstance, CatalogAPI, _, item,$modal){
 	$scope.init = function(){
 		CatalogAPI.getEntryById.save({_id:item._id}, function(response){
 			$scope.item = response;
 			$scope.additionalInfo = _.pairs(response.additionalInfo);
 			$scope.hide = false;
 			$scope.selectedType = {};
+			$scope.getTypes();
+			$scope.doneDisabled = true;
 			$scope.unique = true;
 		});
-		$scope.getTypes();
 	};
 
 	$scope.getTypes = function(){
@@ -57,7 +58,7 @@ angular.module('ace.schematic').controller('editItemFormCtrl', ['$scope', '$time
 
 	$scope.confirmTypeChange = function(){
 		$scope.hide = true;
-		var modalInstance = $modal.open({
+		$scope.modalInstance = $modal.open({
 			templateUrl: 'views/confirmationModal.html',
 			controller:'confirmationModalCtrl',
 			backdrop: 'static',
@@ -70,7 +71,7 @@ angular.module('ace.schematic').controller('editItemFormCtrl', ['$scope', '$time
 				}
 			}
 		});
-		modalInstance.result.then(function(decision){
+		$scope.modalInstance.result.then(function(decision){
 			if(decision){
 				$scope.loadFieldsByType();
 				$scope.oldVal = $scope.selectedType.type;
@@ -127,11 +128,20 @@ angular.module('ace.schematic').controller('editItemFormCtrl', ['$scope', '$time
 		});
 	};
 
-	$scope.checkUnique = function(){
-		if($scope.item.catalog)
-			CatalogAPI.checkUnique.save({catalog:$scope.item.catalog, manufacturer: $scope.item.manufacturer, _id:$scope.item._id, type:$scope.selectedType.type, assemblyCode:$scope.item.assemblyCode}, function(response){
-				$scope.unique = response.unique;
-			});
+	$scope.checkUnique = function(compulsory){
+		if(compulsory){
+			if($scope.item.catalog!=='')
+				CatalogAPI.checkUnique.save({catalog:$scope.item.catalog, manufacturer: $scope.item.manufacturer, _id:$scope.item._id, type:$scope.selectedType.type, assemblyCode:$scope.item.assemblyCode}, function(response){
+					$scope.unique = response.unique;
+					$scope.doneDisabled = !$scope.unique;
+				});
+			else
+				$scope.doneDisabled = true;
+			return;
+		}
+			$scope.doneDisabled = !$scope.unique;
+
 	};
+
 
 }]);

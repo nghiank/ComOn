@@ -57,6 +57,7 @@ module.exports = function(config) {
             'public/js/controllers/addCatalog.js',
             'public/js/controllers/catalogListCtrl.js',
             'public/js/controllers/filterModalCtrl.js',
+            'public/js/controllers/editItemFormCtrl.js',
             'public/js/init.js',
             'test/karma/unit/**/*.js'
         ],
