@@ -59,6 +59,7 @@ module.exports = function(config) {
             'public/js/controllers/filterModalCtrl.js',
             'public/js/controllers/editItemFormCtrl.js',
             'public/js/controllers/addCustomTypeModalCtrl.js',
+            'public/js/controllers/matchFieldsModalCtrl.js',
             'public/js/init.js',
             'test/karma/unit/**/*.js'
         ],
