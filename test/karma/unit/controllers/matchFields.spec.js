@@ -43,7 +43,6 @@
 				scope.init();
 				scope.sheet.fields = [['manufacturer','manufacturer'],['type','type']];
 				$httpBackend.flush();
-				console.log('scope.doneEnabled:',scope.doneEnabled);
 				expect(scope.doneEnabled).toEqual(false);		
 			});
 

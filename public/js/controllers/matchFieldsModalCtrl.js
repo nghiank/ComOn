@@ -67,11 +67,9 @@ angular.module('ace.catalog').controller('matchFieldsModalCtrl', ['$scope', '$mo
 				
 		}
 		if($scope.flag !== 2){
-			console.log('flag',$scope.flag);
 			$scope.doneEnabled = false;
 			return;
 		}
-		console.log('flag:',$scope.flag);
 		$scope.doneEnabled = true;
 	},true);
 
