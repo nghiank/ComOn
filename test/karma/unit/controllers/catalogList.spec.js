@@ -29,7 +29,7 @@
 				$httpBackend.expect('GET','api/getTypes').respond(200,[{'name':'Fuses','code':'FU'}]);
 				scope.init();
 				expect(scope.showTypes).toBe(true);
-				expect(scope.searchBox.show).toBe(false);
+				expect(scope.searchBox.show).toBe(true);
 				expect(scope.showList).toBe(false);
 				$httpBackend.flush();
 			});
