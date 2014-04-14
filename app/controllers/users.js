@@ -108,15 +108,13 @@ exports.all = function(req, res) {
         skip = req.body.lowerLimit; 
 
     if(count === true){
-        console.log('in Counter');
         User.count({}).exec(function(err, count){
             if(err)
                 error.sendGenericError(res, 400, 'Error Encountered');
             res.jsonp({count:count});
         });
     }else{
-        User.find({}, {skip:skip}).limit(limit).exec(function(err,users){
-            console.log('in no count');
+        User.find({}, {skip:skip}).lean().limit(limit).exec(function(err,users){
             if(err)
                 error.sendGenericError(res, 400, 'Error Encountered');
             res.jsonp({users:users} || null);

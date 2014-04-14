@@ -93,7 +93,7 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 
 		$scope.init = function () {
 			$scope.showTypes = true;
-			$scope.searchBox.show = false;
+			$scope.searchBox.show = true;
 			$scope.showList = false;
 			CatalogAPI.types.query(function (response) {
 				if (response)
@@ -104,7 +104,6 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 				for (var i = 0; i < $scope.global.user.catalogFilters.length; i++) {
 					if($scope.global.user.catalogFilters[i].name === $routeParams.filterName)
 					{
-						console.log($scope.global.user.catalogFilters[i]);
 						$scope.showTypes = false;
 						$scope.selected = $scope.global.user.catalogFilters[i].filter.type;
 						$scope.searchText = $scope.global.user.catalogFilters[i].filter.search;
@@ -212,9 +211,15 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 			if (!filters)
 				return null;
 			var newObj = {};
+			var non_additional = ['Catalog', 'Manufacturer', 'Assembly Code'];
 			for (var i = 0; i < filters.length; i++) {
 				var filter = filters[i];
-				newObj[filter.field.toLowerCase()] = filter.value;
+				if(!filter.value)
+					continue;
+				if(non_additional.indexOf(filter.field) > -1)
+					newObj[filter.field[0].toLowerCase()+filter.field.substring(1).replace(' ', '')] = filter.value;
+				else
+					newObj['additionalInfo.'+filter.field.toLowerCase().replace(' ','')] = filter.value;
 			}
 			return newObj;
 		};

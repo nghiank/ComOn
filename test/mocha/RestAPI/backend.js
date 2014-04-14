@@ -796,7 +796,7 @@ describe('<e2e API Test>', function() {
 			it('POST api/getEntries with a description filter should return a subset', function(done) {
 				agent
 				.post('/api/getEntries')
-				.send({type: 'FU', filters: {description: 'first'}})
+				.send({type: 'FU', filters: {'additionalInfo.description': 'first'}})
 				.end(function(err, res) {
 					(res.status).should.equal(200);
 					(res.body.data.length).should.equal(1);
@@ -818,7 +818,7 @@ describe('<e2e API Test>', function() {
 			it('POST api/updateEntry should return with 200', function(done) {
 				agent
 				.post('/api/getEntries')
-				.send({type: 'FU', filters: {description: 'first'}})
+				.send({type: 'FU', filters: {'additionalInfo.description': 'first'}})
 				.end(function(err, res) {
 					(res.status).should.equal(200);
 					(res.body.data.length).should.equal(1);
@@ -843,7 +843,7 @@ describe('<e2e API Test>', function() {
 				function delay() {
 					agent
 					.post('/api/getEntries')
-					.send({type: 'FU', filters: {description: 'first updated'}})
+					.send({type: 'FU', filters: {'additionalInfo.description': 'first updated'}})
 					.end(function(err, res) {
 						(res.status).should.equal(200);
 						(res.body.data.length).should.equal(1);
@@ -873,7 +873,7 @@ describe('<e2e API Test>', function() {
 			it('POST api/checkCatUnique should return with 200', function(done) {
 				agent
 				.post('/api/getEntries')
-				.send({type: 'FU', filters: {description: 'second'}})
+				.send({type: 'FU', filters: {'additionalInfo.description': 'second'}})
 				.end(function(err, res) {
 					(res.status).should.equal(200);
 					(res.body.data.length).should.equal(1);

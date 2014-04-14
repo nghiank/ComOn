@@ -51,7 +51,6 @@ angular.module('ace.catalog').controller('matchFieldsModalCtrl', ['$scope', '$mo
 	};
 
 	$scope.$watch('sheet.fields',function(){
-		console.log('watched!');
 		for(var i in $scope.sheet.fields)
 			if ($scope.sheet.fields[i][1] === 'error' || $scope.sheet.fields[i][1] === ''){
 				$scope.doneEnabled = false;
