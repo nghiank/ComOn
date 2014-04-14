@@ -21,15 +21,15 @@ angular.module('ace.catalog').controller('addCustomTypeModalCtrl', ['$scope', '$
 		$scope.errored.name = null;
 		$scope.validated.name = null;
 		$scope.errored.code = null;
-		$scope.validated.code = null;
+		$scope.validated.code = false;
 		if($scope.newType.code === '')
 			return;
 		var typeCodes = _.map($scope.initTypes, function(val) {return val.code;});
 		if(typeCodes.indexOf($scope.newType.code) > -1)
 		{
 			$scope.newType.name = '';
-			$scope.validated.code = null;
-			$scope.errored.code = 'A type with that Code already exists.';
+			$scope.validated.code = false;
+			$scope.errored.code = 'A type with that code already exists.';
 		}
 		else
 		{
@@ -46,13 +46,13 @@ angular.module('ace.catalog').controller('addCustomTypeModalCtrl', ['$scope', '$
 			return;
 		if($scope.newType.name.length >30)
 		{
-			$scope.validated.name = null;
+			$scope.validated.name = false;
 			$scope.errored.name = 'The entered name is too long.';
 		}
 		else if(typeNames.indexOf($scope.newType.name) > -1)
 		{
-			$scope.validated.name = null;
-			$scope.errored.name = 'A type with that Name already exists.';
+			$scope.validated.name = false;
+			$scope.errored.name = 'A type with that name already exists.';
 		}
 		else
 		{
@@ -76,7 +76,6 @@ angular.module('ace.catalog').controller('addCustomTypeModalCtrl', ['$scope', '$
 	$scope.join = function() {
 		$scope.joined = $scope.initSheets;
 		$scope.checkCode();
-		$scope.validated.code = true;
 		$scope.checkName();
 	};
 
