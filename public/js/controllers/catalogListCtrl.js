@@ -93,7 +93,7 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 
 		$scope.init = function () {
 			$scope.showTypes = true;
-			$scope.searchBox.show = false;
+			$scope.searchBox.show = true;
 			$scope.showList = false;
 			CatalogAPI.types.query(function (response) {
 				if (response)
