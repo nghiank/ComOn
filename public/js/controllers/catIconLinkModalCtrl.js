@@ -7,10 +7,6 @@ angular.module('ace.catalog').controller('catIconLinkModalCtrl', ['$scope', '$ti
 		$modalInstance.close(false);
 	};
 
-	$scope.text = '';
-	$scope.genText = [];
-	$scope.recent = null;
-	$scope.placeholder = '';
 	$scope.linkDisabled = true;
 	$scope.levels = [];
 	$scope.selectedHiearchy = [];
@@ -21,16 +17,15 @@ angular.module('ace.catalog').controller('catIconLinkModalCtrl', ['$scope', '$ti
 			$scope.stds = standards;
 			$scope.levels.push({items: standards, levelNumber: 0});
 		});
-		$scope.item = [];
+		$scope.items = [];
 		for(var i in item)
-			$scope.item.push(item[i]);
-		$scope.stdSelected = null;
+			$scope.items.push(item[i]);
 	};
 
 	$scope.isSelected = function(level, item)
 	{
 		var selectedOption = $scope.selectedHiearchy[level];
-		if(item._id === selectedOption)
+		if(selectedOption && item._id === selectedOption._id)
 		{
 			return true;
 		}
@@ -39,19 +34,20 @@ angular.module('ace.catalog').controller('catIconLinkModalCtrl', ['$scope', '$ti
 
 	$scope.selectOption = function(level, item)
 	{
-		if($scope.selectedHiearchy[level] && $scope.selectedHiearchy[level] !== item._id)
+		if($scope.selectedHiearchy[level] && $scope.selectedHiearchy[level]._id !== item._id)
 		{
 			$scope.levels.splice(level+1, $scope.levels.length);
+			$scope.selectedHiearchy.splice(level+1, $scope.selectedHiearchy.length);
 		}
-		$scope.selectedHiearchy[level] = item._id;
+		$scope.selectedHiearchy[level] = {_id: item._id, isComposite: item.isComposite};
 		if(item.parentNode === null)
 		{
 			$scope.selectStandard(item);
 		}
-/*		else
+		else
 		{
-			$scope.select(item);
-		}*/
+			$scope.select(level, item);
+		}
 	};
 
 	$scope.selectStandard = function(option)
@@ -72,23 +68,27 @@ angular.module('ace.catalog').controller('catIconLinkModalCtrl', ['$scope', '$ti
 		});
 	};
 
-/*	$scope.select = function(option)
+	$scope.select = function(level, option)
 	{
-		for (var i = 0; i < $scope.options.groups.length; i++) {
-			if($scope.options.groups[i].parentNode === $scope.recent)
+		var immediateChildren = [];
+		for (var i = 0; i < $scope.selectedStd.length; i++) {
+			if($scope.selectedStd[i].parentNode === option._id)
 			{
-				$scope.children.groups.push($scope.options.groups[i]);
+				immediateChildren.push($scope.selectedStd[i]);
 			}
-		
 		}
-		for (i = 0; i < $scope.options.leaves.length; i++) {
-			if($scope.options.leaves[i].parentNode === $scope.recent)
+		if(immediateChildren.length !== 0)
+			$scope.levels[level+1] = {items: immediateChildren, levelNumber: level+1};
+	};
+
+	$scope.$watchCollection('selectedHiearchy', function() {
+		for (var i = 0; i < $scope.selectedHiearchy.length; i++) {
+			if(!$scope.selectedHiearchy[i].isComposite)
 			{
-				$scope.children.leaves.push($scope.options.leaves[i]);
+				$scope.linkDisabled = false;
+				return;
 			}
-		
 		}
-	};*/
-
-
+		$scope.linkDisabled = true;
+	});
 }]);

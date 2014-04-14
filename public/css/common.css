@@ -40,6 +40,10 @@ footer p {
 
 }
 
+.largerModal .modal-dialog {
+    width: 900px;
+}
+
 .dropdown-menu .a{
     width:150px;
     margin-left: 10px;
