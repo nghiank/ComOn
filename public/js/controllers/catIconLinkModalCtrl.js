@@ -72,7 +72,7 @@ angular.module('ace.catalog').controller('catIconLinkModalCtrl', ['$scope', '$ti
 		});
 	};
 
-	$scope.select = function(option)
+/*	$scope.select = function(option)
 	{
 		for (var i = 0; i < $scope.options.groups.length; i++) {
 			if($scope.options.groups[i].parentNode === $scope.recent)
@@ -88,7 +88,7 @@ angular.module('ace.catalog').controller('catIconLinkModalCtrl', ['$scope', '$ti
 			}
 		
 		}
-	};
+	};*/
 
 
 }]);
