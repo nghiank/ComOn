@@ -106,15 +106,33 @@ exports.all = function(req, res) {
         limit = req.body.limit;
     if(req.body.skip)
         skip = req.body.lowerLimit; 
-
+    var filterCriteria = {};
+    var hint = null;
+    if(req.body.showMan) {
+        filterCriteria.isManufacturer = true;
+        hint = {isManufacturer: 1};
+    }    
+    if(req.body.showUsers) {
+        filterCriteria.isAdmin = true;
+        hint = {isAdmin: 1};
+    }
+    if(req.body.search)
+    {
+        filterCriteria.name = new RegExp(req.body.search.trim(), 'i');
+        hint = {name: 1};
+    }
     if(count === true){
-        User.count({}).exec(function(err, count){
+        User.count(filterCriteria).exec(function(err, count){
             if(err)
                 error.sendGenericError(res, 400, 'Error Encountered');
             res.jsonp({count:count});
         });
-    }else{
-        User.find({}, {skip:skip}).lean().limit(limit).exec(function(err,users){
+    }
+    else{
+        var query = User.find(filterCriteria).skip(skip).sort('name').limit(limit).lean();
+        if(hint)
+            query = query.hint(hint);
+        query.exec(function(err,users){
             if(err)
                 error.sendGenericError(res, 400, 'Error Encountered');
             res.jsonp({users:users} || null);

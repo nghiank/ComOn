@@ -41,4 +41,7 @@ var UserSchema = new Schema({
     }]
 });
 
+UserSchema.index({isAdmin: 1});
+UserSchema.index({isManufacturer: 1});
+UserSchema.index({name: 1});
 mongoose.model('User', UserSchema);

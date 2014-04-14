@@ -3,11 +3,12 @@
 angular.module('ace.users').controller('UsersController', ['$scope', '$routeParams', '$location', 'Global', 'UsersAPI', '$modal', function ($scope, $routeParams, $location, Global, UsersAPI, $modal) {
 
         $scope.global = Global;
-        $scope.showMan = true;
-        $scope.showUser = true;
+        $scope.show = {};
+        $scope.show.Man = false;
+        $scope.show.User = false;
         $scope.page_limit = 15;
         $scope.current_page = 1;
-
+        $scope.query = {};
         $scope.update = function(id) {
             var users = $scope.users;
             var index = 0;
@@ -43,37 +44,29 @@ angular.module('ace.users').controller('UsersController', ['$scope', '$routePara
             });
         };
 
-        $scope.find = function() {
-            UsersAPI.userlist.getall({lowerLimit:($scope.current_page - 1)*$scope.page_limit, limit:$scope.page_limit, count:false},function(users) {
+        $scope.find = function(start) {
+            UsersAPI.userlist.getall({lowerLimit: ($scope.current_page - 1)*$scope.page_limit, limit: $scope.page_limit, count: false, showUsers: $scope.show.User, showMan: $scope.show.Man, search: $scope.query.name},function(users) {
                 $scope.users = users.users;
                 for (var i = 0; i < $scope.users.length; i++)
                     $scope.users[i].name += ($scope.users[i].codeName ===null) ? '': ' ('+$scope.users[i].codeName+')';
-                UsersAPI.userlist.getall({count:true},function(count){
-                    $scope.total = count.count;
-                });
+                if(!start)
+                    return;
+                if(users.users.length === $scope.page_limit)
+                {
+                    UsersAPI.userlist.getall({count: true, onlyUsers: $scope.show.User, onlyMan: $scope.show.Man, search: $scope.query.name},function(count){
+                        $scope.total = count.count;
+                    });
+                }
+                else
+                {
+                    $scope.total = users.users.length;
+                }
             });
         };
 
-        $scope.custom = function(user)
-        {
-            var input1 = $scope.showUser;
-            var input2 = $scope.showMan;
-            if(!input1 && user.isAdmin === true)
-            {
-                if(input2 && user.isManufacturer)
-                {
-                    return true;
-                }
-                return false;
-            }
-            if(!input2 && user.isManufacturer === true)
-            {
-                if(input1 && user.isAdmin)
-                {
-                    return true;
-                }
-                return false;
-            }
-            return true;
-        };
+        $scope.$watch('show', function() {
+            $scope.find();
+        }, true);
+
+
     }]);
