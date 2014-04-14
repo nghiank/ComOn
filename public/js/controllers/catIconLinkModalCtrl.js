@@ -11,9 +11,15 @@ angular.module('ace.catalog').controller('catIconLinkModalCtrl', ['$scope', '$ti
 	$scope.genText = [];
 	$scope.recent = null;
 	$scope.placeholder = '';
+	$scope.linkDisabled = true;
+	$scope.levels = [];
+	$scope.selectedHiearchy = [];
+	$scope.selectedStd = null;
+
 	$scope.init = function() {
 		SchematicsAPI.standardlist.query(function(standards) {
 			$scope.stds = standards;
+			$scope.levels.push({items: standards, levelNumber: 0});
 		});
 		$scope.item = [];
 		for(var i in item)
@@ -21,45 +27,53 @@ angular.module('ace.catalog').controller('catIconLinkModalCtrl', ['$scope', '$ti
 		$scope.stdSelected = null;
 	};
 
+	$scope.isSelected = function(level, item)
+	{
+		var selectedOption = $scope.selectedHiearchy[level];
+		if(item._id === selectedOption)
+		{
+			return true;
+		}
+		return false;
+	};
+
+	$scope.selectOption = function(level, item)
+	{
+		if($scope.selectedHiearchy[level] && $scope.selectedHiearchy[level] !== item._id)
+		{
+			$scope.levels.splice(level+1, $scope.levels.length);
+		}
+		$scope.selectedHiearchy[level] = item._id;
+		if(item.parentNode === null)
+		{
+			$scope.selectStandard(item);
+		}
+/*		else
+		{
+			$scope.select(item);
+		}*/
+	};
+
 	$scope.selectStandard = function(option)
 	{
-		$scope.text = ($scope.text.split(' ').splice($scope.text.split(' ').length-1,1).join(' ')+ '  ' + option.name.split(':')[0]).trim();
-		$scope.genText.push((option.name.split(':')[0]).trim());
-		$scope.stdSelected = option;
-		$scope.recent = option._id;
-		$scope.options = {groups:[], leaves: []};
-		$scope.children = {groups:[], leaves: []};
 		SchematicsAPI.getAllChildren.save({name: option.name}, function(response) {
 			if(response)
 			{
+				$scope.selectedStd = response;
+				var immediateChildren = [];
 				for (var i = 0; i < response.length; i++) {
-					if(response[i].isComposite)
+					if(response[i].parentNode === option._id)
 					{
-						$scope.options.groups.push(response[i]);
-						if(response[i].parentNode === $scope.recent)
-						{
-							$scope.children.groups.push(response[i]);
-						}
-					}
-					else
-					{
-						$scope.options.leaves.push(response[i]);
-						if(response[i].parentNode === $scope.recent)
-						{
-							$scope.children.leaves.push(response[i]);
-						}
+						immediateChildren.push(response[i]);
 					}
 				}
+				$scope.levels.push({items: immediateChildren, levelNumber: 1});
 			}
 		});
 	};
 
 	$scope.select = function(option)
 	{
-		$scope.text = ($scope.text.split(' ').splice($scope.text.split(' ').length-1,1).join(' ') + option.name.split(':')[1]).trim();
-		$scope.genText.push((option.name.split(':')[1]).trim());
-		$scope.recent = option._id;
-		$scope.children = {groups:[], leaves: []};
 		for (var i = 0; i < $scope.options.groups.length; i++) {
 			if($scope.options.groups[i].parentNode === $scope.recent)
 			{
@@ -76,10 +90,5 @@ angular.module('ace.catalog').controller('catIconLinkModalCtrl', ['$scope', '$ti
 		}
 	};
 
-	$scope.$watch('text',function(){
-		$scope.lastWord = ($scope.text.split(' ')[$scope.text.split(' ').length-1]).trim();
-		if($scope.genText.indexOf($scope.lastWord) > -1)
-			$scope.lastWord = '';
-	});
 
 }]);
