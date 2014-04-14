@@ -243,3 +243,23 @@ footer p {
     -webkit-user-select:none;
     user-select:none;
 }
+
+.link
+{
+    color:blue;
+}
+
+.semitransparent{
+    opacity: 0.5;
+}
+
+.separate-right
+{
+    margin-right: 10px;
+}
+
+.dropdown-menu-bottom{
+    max-height: 150px;
+    overflow-y: auto;
+}
+

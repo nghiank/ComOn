@@ -99,9 +99,45 @@ exports.updateCodeName = function(req, res) {
  * Send All Users
  */
 exports.all = function(req, res) {
-    User.find({}, function (err, users) {
-        res.jsonp(users || null);
-    });
+    var count = false, limit = 100, skip = 0;
+    if(req.body.count)
+        count = req.body.count;
+    if(req.body.limit)
+        limit = req.body.limit;
+    if(req.body.skip)
+        skip = req.body.lowerLimit; 
+    var filterCriteria = {};
+    var hint = null;
+    if(req.body.showMan) {
+        filterCriteria.isManufacturer = true;
+        hint = {isManufacturer: 1};
+    }    
+    if(req.body.showUsers) {
+        filterCriteria.isAdmin = true;
+        hint = {isAdmin: 1};
+    }
+    if(req.body.search)
+    {
+        filterCriteria.name = new RegExp(req.body.search.trim(), 'i');
+        hint = {name: 1};
+    }
+    if(count === true){
+        User.count(filterCriteria).exec(function(err, count){
+            if(err)
+                error.sendGenericError(res, 400, 'Error Encountered');
+            res.jsonp({count:count});
+        });
+    }
+    else{
+        var query = User.find(filterCriteria).skip(skip).sort('name').limit(limit).lean();
+        if(hint)
+            query = query.hint(hint);
+        query.exec(function(err,users){
+            if(err)
+                error.sendGenericError(res, 400, 'Error Encountered');
+            res.jsonp({users:users} || null);
+        });
+    }
 };
 
 
@@ -216,7 +252,7 @@ exports.removeFilter = function(req,res) {
     var list = _.map(req.user.catalogFilters, function(object) {return object.name.toLowerCase();});
     if(list.indexOf(name.toLowerCase()) > -1)
     {
-        delete req.user.catalogFilters[name];
+        req.user.catalogFilters.splice(list.indexOf(name.toLowerCase()), 1);
         req.user.save(function(err) {
             if(err)
                 return error.sendGenericError(res, 400, 'Error Encountered');
@@ -224,7 +260,9 @@ exports.removeFilter = function(req,res) {
         });
         return;
     }
-    res.jsonp(req.user.catalogFilters);
+    else {
+        return error.sendGenericError(res, 400, 'Error Encountered');
+    }
 };
 
 /**

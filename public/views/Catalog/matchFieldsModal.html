@@ -4,7 +4,7 @@
     	<div class="pull-right"><strong>{{sheet.sName}}</strong></div>
     </div>
     <div class="modal-body">
-    	<div class="alert alert-danger" ng-show="newType && flag !== 3">Catalog, Manufacturer and Type fields are compulsory.</div>
+    	<div class="alert alert-danger" ng-show="newType && flag !== 2">Catalog, Manufacturer and Type fields are compulsory.</div>
 	    <table class="table">
 	    	<thead>
 	    		<tr>
@@ -60,5 +60,5 @@
 				<a class="btn btn-primary pull-right" ng-disabled = '!doneEnabled' ng-click="apply()">Done</a>
 			</div>
 		</div>
-	</div>	
+	</div>
 </section>

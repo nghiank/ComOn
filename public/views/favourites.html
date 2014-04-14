@@ -21,7 +21,7 @@
                 <div class="list-group-item list-title">Catalog Libraries</div> 
                 <li class="list-group-item" ng-show="Global.user.catalogFilters.length == 0">No catalog libraries defined.</li>          
                 <li class="list-group-item imgLoader" ng-repeat="child in Global.user.catalogFilters">
-                    {{child.name}}
+                    <a href="#!/catalog/{{child.name}}">{{child.name}}</a>
                 </li>
             </ul>
         </div>

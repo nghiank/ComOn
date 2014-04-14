@@ -8,25 +8,25 @@
 	    	<div class="form-group">
 	            <label class= "col-md-4 control-label">Catalog:</label>
 	            <div class="col-md-8">
-	            	<input type="text" class= "form-control" ng-model="item.catalog" ng-blur="checkUnique()" required>
+	            	<input type="text" class= "form-control" ng-model="item.catalog" ng-blur="checkUnique(true)" required>
 	        	</div>
 	        </div>
 	        <div class="form-group">
 	            <label class= "col-md-4 control-label">Type: </label>
 	            <div class="col-md-8">
-	            	<select type="text" class= "form-control" ng-model="selectedType.type" ng-options="type.name+' ('+type.code+')' for type in types| orderBy:'name'" ng-change="confirmTypeChange(); checkUnique()"></select>
+	            	<select type="text" class= "form-control" ng-model="selectedType.type" ng-options="type.name+' ('+type.code+')' for type in types| orderBy:'name'" ng-change="confirmTypeChange(); checkUnique(true)"></select>
 	        	</div>
 	        </div>
 	        <div class="form-group">
 	            <label class= "col-md-4 control-label">Assembly Code: </label>
 	            <div class="col-md-8">
-	            	<input type="text" class= "form-control" ng-model="item.assemblyCode" ng-blue="checkUnique()">
+	            	<input type="text" class= "form-control" ng-model="item.assemblyCode" ng-blur="checkUnique(true)">
 	        	</div>
 	        </div>
 	        <div class="form-group" ng-repeat="field in additionalInfo">
 	            <label class= "col-md-4 control-label">{{field[0]}}</label>
 	            <div class="col-md-8">
-	            	<input type="text" class= "form-control"ng-model="field[1]">
+	            	<input type="text" class= "form-control" ng-model="field[1]" ng-blur="checkUnique(false)">
 	        	</div>
 	        </div>
 	        <hr>            
@@ -36,7 +36,7 @@
 	            </div>
 	            <div class="pull-right">
 	                <button type="button" class="btn btn-default" ng-click="cancel()">Cancel</button>
-	                <button type="button"class="btn btn-primary btn-separate" ng-click="update()" ng-disabled="form.$pristine || !unique ||!item.catalog">Update</button>
+	                <button type="button"class="btn btn-primary btn-separate" ng-click="update()" ng-disabled="doneDisabled">Update</button>
 	            </div>
 	        </div>
 	    </form>
