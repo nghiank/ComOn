@@ -18,9 +18,6 @@ angular.module('ace')
 		return (child.showOption = !child.showOption);
 	};
 
-	$scope.seperate = function() {
-
-	};
 
 	$scope.delSchemFav = function(child){
 		if(child.isComposite)
@@ -28,7 +25,6 @@ angular.module('ace')
 		UsersAPI.delSchemFav.save({_id: child._id}, function(response) {
 			if(response)
 			{
-				console.log('favourite deleted');
 				$scope.schematic.splice($scope.schematic.indexOf(child), 1);
 				$scope.Global.setFav(response);
 			}

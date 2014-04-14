@@ -17,6 +17,7 @@ module.exports = function(app, passport) {
     app.get('/signout', users.signout);
     app.get('/api/users/me', authorization.requiresLogin , users.me);
     app.get('/api/users', authorization.requiresLogin , hasAuthorization, users.all);
+    app.post('/api/users',authorization.requiresLogin , hasAuthorization, users.all);
 
     app.get('/api/makeAdmin/:name', authorization.requiresLogin , users.makeAdmin);
     app.param('name', users.findByName);
@@ -29,6 +30,10 @@ module.exports = function(app, passport) {
     app.post('/api/addSchemFav', authorization.requiresLogin, users.addSchemFavourite);
     app.post('/api/delSchemFav', authorization.requiresLogin, users.removeSchemFavourite);
     app.get('/api/getFav', authorization.requiresLogin, users.getFavourites);
+
+    app.post('/api/addFilter', authorization.requiresLogin, users.addFilter);
+    app.post('/api/delFilter', authorization.requiresLogin, users.removeFilter);
+    app.get('/api/getFilters', authorization.requiresLogin, users.getFilters);
 
     // Setting the oxygen oauth route
     app.get('/auth/oauth', passport.authenticate('oauth', {

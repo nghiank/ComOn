@@ -32,7 +32,8 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['ValidationServic
 
 	$scope.datFileSelect = function($files) {
 		$scope.checkDatFile($files);
-		$scope.parseDatForStdName();
+		if($scope.valid.dat)
+			$scope.parseDatForStdName();
 	};
 
 	$scope.checkDatFile = function($files){
@@ -66,7 +67,8 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['ValidationServic
 
 	$scope.jsonFileSelect = function($files) {
 		$scope.checkJsonFile($files);
-		$scope.parseJsonFile();
+		if($scope.valid.json)
+			$scope.parseJsonFile();
 	};
 
 	$scope.checkJsonFile = function($files){
@@ -188,9 +190,13 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['ValidationServic
 
 	$scope.delete = function() {
 		var modalInstance = $modal.open({
-			templateUrl: 'views/Schematics/DeleteModal.html',
-			controller:'DeleteModalCtrl',
+			templateUrl: 'views/confirmationModal.html',
+			controller:'confirmationModalCtrl',
 			backdrop: 'static',
+			resolve:{
+				title:function(){return 'Are you sure to delete?';},
+				msg:function(){return 'This cannot be undone.';}
+			}
 		});
 		modalInstance.result.then(function(result){
 			if(result){

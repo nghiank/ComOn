@@ -69,6 +69,7 @@ var componentSchema = new Schema({
     }
 });
 componentSchema.index({id: 1, name: -1, parentNode: 1}, {unique: true});
+componentSchema.index({parentNode: 1});
 componentSchema.plugin(version, { collection: 'Schematic__versions' });
 
 mongoose.model('SchematicComponent', componentSchema);

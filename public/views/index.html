@@ -1,3 +1,13 @@
-<section data-ng-controller="IndexController">
-	<div class="page-header"><h1>Welcome to AutoCAD Electrical</h1></div>
-</section>
+<div data-ng-controller="IndexController">
+		<nav class="navmenu navmenu-default navmenu-fixed-left col-md-4" ng-show="global.authenticated" style="margin-top:50px; z-index:0" role="navigation">
+			<ul class="nav navmenu-nav" style="overflow-y: auto;">
+	            <div style="margin-bottom: 25px" class="navmenu-brand">Quick Links</i></div>       
+	            <li style="margin-left: 10px;" class="ng-class:{active: (!!selected? item.title===selected.title: false)}" ng-repeat="item in nav_menu" ng-click="console.log('!');changeActivePage(item);">
+	                <a><i style="margin-right: 10px;" class="fa {{item.fa}}"></i>{{ item.title}}</a>
+	            </li>
+	        </ul>
+		</nav>
+		<div ng-if="!selected"><h1>Welcome to AutoCAD Electrical</h1></div>
+		<div style="margin-top:50px; margin-left:250px;" ng-if="selected" data-ng-include="selected.link">
+    	</div>
+</div>

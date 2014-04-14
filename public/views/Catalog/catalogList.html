@@ -1,43 +1,109 @@
-<div class="container" ng-controller="catalogListCtrl" style="min-height: 800px; padding-top:30px;">
-	<div class="well">
-	<div class="row">
-		<form class="form-horizontal col-md-8 col-md-offset-2">
-			<div class="form-group">
-    			<label class="col-sm-2 control-label">Search</label>
-    			<div class="col-sm-8 input-group">
-	      			<input type="text" class="form-control" placeholder="Search Text Here">
-	      			<span class="input-group-btn"><a class="btn btn-default"><i class="fa fa-search"> Search</i></a></span>
-   				</div>
-   			</div>
-		</form>
-	</div>
-	<div class="row">
-		<div class="col-md-8 col-md-offset-2">
-			<label class="col-sm-2 control-label">Show More</label>
-			<div class="col-sm-8 input-group">
-      			<button class="btn btn-default" style="margin-right:10px" ng-repeat="field in fields"  ng-click="toggleField(field)" ng-class={'clicked':cols.indexOf(field)+1}>{{field}}</button>
-			</div>
+<div class="container" ng-controller="catalogListCtrl" ng-init="init()" style="padding-top:30px;">
+	<nav class="col-md-4 navmenu navmenu-default animate-show" ng-show="showTypes" style="height: 85%; position: fixed; left: 0; z-index: 9999; overflow-y: auto;">
+		<ul class="nav navmenu-nav" ng-init="getTypes()" style="overflow-y: auto;">
+            <div class="navmenu-brand">Catalog Types</i></div> 
+            <form class="navbar-form" role="search">
+				<input type="text" class="form-control" placeholder="Search Type..." ng-model="searchType">
+			</form>
+
+            <li style="margin-top: 20px; margin-left: 15px;" ng-show="types.length == 0">No catalog available</li>          
+            <li style="margin-left: 10px;" class="ng-class:{active: (!!selected? type.code===selected.code: false)}" ng-repeat="type in types | orderBy: 'name' |filter: searchType" ng-mouseenter = "toggleOption(type)" ng-mouseleave = "toggleOption(type)" href="#!/catalog/{{type.name}}" ng-click="showTypeList(type)">
+                <a>{{type.name + '  ('+ type.code + ')'}}</a>
+            </li>
+        </ul>
+	</nav>
+	<span>
+		<a ng-click="showType()"><i class="fa fa-ellipsis-vertical fa-4x" style="position:fixed; left:1%; top:50%;"></i></a>
+	</span>
+	<accordion ng-show="selected">
+	<accordion-group is-open="searchBox.show" style="overflow:visible;">
+	<accordion-heading>
+		<div class="placeholder">
+			{{selected.name}}
+			<a style="position:absolute; left:50%;"><i class="fa fa-caret-down fa-lg" ng-show="!searchBox.show"></i></a>
+			<a style="position:absolute; left:50%;"><i class="fa fa-caret-up fa-lg" ng-hide="!searchBox.show"></i></a>
+			<a style="margin-top: -6px; margin-right: -10px" ng-click="$event.stopPropagation(); showConfigureModal()" class=" pull-right btn btn-default btn-sm btn-separate"><i class="fa fa-gear"> Configure Table</i></a>
+			<a style="margin-top: -6px;" ng-show="checkFilters() && global.authenticated" ng-click="$event.stopPropagation(); showFilterModal()" class=" pull-right btn btn-primary btn-sm"><i class="fa fa-save"> Save filter</i></a>
+		</div>
+	</accordion-heading>
+	<div ng-show="searchBox && selected">
+		<div class="row">
+			<form class="form-horizontal col-md-8 col-md-offset-2">
+				<div class="form-group">
+	    			<label class="col-sm-2 control-label">Search
+		            </label>
+	    			<div class="col-sm-8">
+		      			<input type="text" name = "searchHelpPopover"
+		      			 	popover = '"Exact Phrases" and OR expressions are supported: "RED LED", 30.5MM OR 20.5MM'
+		             		popover-title = "Search Help"
+		             		popover-placement = "bottom"
+		             		popover-trigger="mouseenter"class="form-control" ng-model="searchText.value" placeholder="Search Text Here">
+	   				</div>
+	   			</div>
+	   			<div class="form-group">
+	    			<label class="col-sm-2 control-label">Filters</label>
+	    			<div class="col-sm-8">
+	    				<div class="form-group" ng-repeat = 'filter in filters'>
+			      			<div class="col-sm-12">
+			      			<div class="input-group showBtnOnHover">
+			      				<span class="input-group-addon">{{filter.field}}</span>
+			      				<input type="text" ng-model="filter.value" ng-if="filter.field !== 'Manufacturer'" class="form-control" ng-keydown="noSubmit($event)">
+			      				<input type="text" ng-model="filter.value" class="form-control" ng-if="filter.field === 'Manufacturer'" typeahead="value for value in typeAheadValues[filter.field]| filter:$viewValue | limitTo:8" ng-keydown="noSubmit($event)">
+			      				<span class="input-group-btn onHover" ng-click="removeFilter(filter)">
+			      					<button class="btn btn-default" ><i class="fa fa-times"></i></button>
+			      				</span>
+			      			</inpujt>
+			      			</div>
+			      			</div>
+	   					</div>
+
+						<div class="row">
+							<div class="dropdown col-sm-2">
+								<button class="btn dropdown-toggle btn-default" type="button" data-toggle="dropdown"  ng-show="filters.length !== 4">
+								<i class="fa fa-filter"></i> Add Filter  
+								<span class="caret"></span>
+								</button>
+								<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+									<li role="presentation" ng-repeat="f in defaultFilters" ng-click="addFilter(f)"><a role="menuitem">{{f}}</a></li>
+								</ul>
+							</div>
+		      			</div>
+	   				</div>
+		   		</div>
+	   			<div class="form-group">
+	   				<div class="col-sm-offset-2">
+	   					<div class="col-sm-8">
+	    					<a class="btn btn-primary" ng-click="search();hideSearchBox();"><i class="fa fa-search"></i> Search</a>
+	    				</div>
+	    			</div>
+	   			</div>					
+			</form>
 		</div>
 	</div>
+	</accordion-group>
+	</accordion>
+	<div ng-show="showList" ng-click="closeType()">
+		<div class="col-md-12" style="overflow: auto; margin-top:20px">
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th ng-click="sortTable(col)" ng-repeat="col in cols" class="showIconOnHover">{{col.title}}
+							<a><i style="margin-left: 5px" class="fa fa-sort-alpha-asc" ng-show="col.sort !== null && col.sort === 1" ></i></a>
+							<a><i style="margin-left: 5px" class="fa fa-sort-alpha-desc" ng-show="col.sort !== null && col.sort === -1"></i></a>
+							<a><i class="fa fa-sort onHover" ng-show="col.sort == null"}></i></a>
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<td colspan="{{cols.length}}" style="text-align: center" ng-show="items.length === 0">No Entries available.</td>
+					<tr ng-repeat="item in items">
+						<td ng-repeat="data in sortedValues(item) track by $index" transform-link="{{data}}">{{data}}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div style="text-align: center; margin-top: 10px; background-color: #f6f6f6; border-radius: 10px; border: 1px solid #eeeeee" class="col-md-offset-3 col-md-6">
+			<pagination ng-show="showList && items.length !== 0" total-items="total" page="currentPage" max-size="7" items-per-page="pageItemLimit" class="pagination-sm" boundary-links="true" rotate="false" num-pages="numPages" ng-click="getPage(currentPage)"></pagination>
+		</div>
 	</div>
-
-
-	<div>
-		<table class="table table-striped">
-			<thead>
-				<tr>
-					<th ng-repeat="col in cols">{{col}}</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr ng-repeat="item in items">
-					<td ng-repeat="col in cols">
-						<span ng-repeat="(field,data) in item" ng-show="col == field">{{data}}</span>
-					</td>
-				</tr>
-			</tbody>
-
-		</table>
-	</div>
-
 </div>

@@ -5,7 +5,7 @@ angular.module('ace.system').factory('formValidation', ['SchematicsAPI', '$http'
 		var instance = {};
 		instance.checkFileExtension = function (file, extensions) {
 			if(!file || !extensions)
-				return {result: false, suc_message: null, err_message: 'Invalid file.'};
+				return {result: false, suc_message: null, err_message: null};
 			var stringExtension = extensions.join('|');
 			var pattern = new RegExp('^.*\\.('+stringExtension+')$');
 			if(pattern.test(file))

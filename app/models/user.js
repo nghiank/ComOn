@@ -34,7 +34,14 @@ var UserSchema = new Schema({
         type: String,
         default: null
     },
-    SchemFav: [{ type: Schema.ObjectId, ref: 'SchematicComponent' }]
+    SchemFav: [{ type: Schema.ObjectId, ref: 'SchematicComponent' }],
+    catalogFilters: [{
+        type: Schema.Types.Mixed,
+        default: null
+    }]
 });
 
+UserSchema.index({isAdmin: 1});
+UserSchema.index({isManufacturer: 1});
+UserSchema.index({name: 1});
 mongoose.model('User', UserSchema);

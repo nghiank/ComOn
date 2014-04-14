@@ -1,16 +1,12 @@
 'use strict';
 
 
-//Setting up route and client interceptor and breadcrumbs
+//Setting up route and client interceptor
 angular.module('ace').config(['$routeProvider',
     function($routeProvider) {
         $routeProvider.
         when('/', {
-            templateUrl: 'views/index.html',
-            label: 'Home'
-        }).
-        when('/users', {
-            templateUrl: 'views/Users/list.html'
+            templateUrl: 'views/index.html'
         }).
         when('/profile', {
             templateUrl: 'views/profile.html'
@@ -19,10 +15,10 @@ angular.module('ace').config(['$routeProvider',
             templateUrl: 'views/Schematics/all.html'
         }).
         when('/catalog', {
-            templateUrl: 'views/Catalog/view.html'
+            templateUrl: 'views/Catalog/catalogList.html'
         }).
-        when('/favourites', {
-            templateUrl: 'views/favourites.html'
+        when('/catalog/:filterName', {
+            templateUrl: 'views/Catalog/catalogList.html'
         }).
         when('/standards/:nodeId', {
             templateUrl: 'views/Schematics/child.html'
@@ -33,9 +29,9 @@ angular.module('ace').config(['$routeProvider',
     }
 ]).run(function(Global, $rootScope, $location) {
     // register listener to watch route changes
-    $rootScope.$on('$locationChangeStart', function() { //function(event, next, current)
+    $rootScope.$on('$locationChangeStart', function() {
+        var path = $location.$$path;//function(event, next, current)
         if (Global.authenticated === false) {
-            var path = $location.$$path;
         // no logged user, can still browse the schematics
             if (path === '/' || path.substring(0, 10) === '/standards' || path.substring(0, 8) === '/catalog') {
                 return;
@@ -65,11 +61,9 @@ angular.module('ace').config(['$httpProvider',
                 var status = response.status;
                 if(status === 401) {
                     window.location = '/';
-                    return;
                 }
                 else if(status === 400) {
                     window.alert(response.data.error);
-                    return;
                 }
                 return $q.reject(response); //similar to throw response;
             }

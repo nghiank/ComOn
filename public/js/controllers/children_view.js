@@ -1,8 +1,10 @@
 'use strict';
 
 angular.module('ace.schematic')
-.controller('Children', ['$scope', 'SchematicsAPI', '$routeParams', 'Global', 'breadcrumbs', '$modal', 'UsersAPI', function ($scope, SchematicsAPI, $routeParams, Global, breadcrumbs, $modal, UsersAPI) {
+.controller('Children', ['$scope', 'SchematicsAPI', '$routeParams', 'Global', 'breadcrumbs', '$modal', 'UsersAPI', '_', function ($scope, SchematicsAPI, $routeParams, Global, breadcrumbs, $modal, UsersAPI, underscore) {
 	$scope.breadcrumbs = breadcrumbs;
+	$scope.bcMenu = [];
+	$scope._ = underscore;
 	$scope.Global = Global;
 	$scope.admin = false;
 	if($scope.Global.authenticated && $scope.Global.user.isAdmin)
@@ -24,9 +26,42 @@ angular.module('ace.schematic')
 			breadcrumbs.add(hiearchy);
 		});
 	};
+
 	$scope.toggleOption = function (child) {
 		return (child.showOption = !child.showOption);
 	};
+
+	$scope.getSiblings = function(breadcrumb){
+		$scope.bcMenu = [];
+		var _id = breadcrumb.link.split('/');
+		_id = _id[_id.length - 1];
+		if(breadcrumb.title !== 'Standards'){
+			SchematicsAPI.children.get({nodeId:_id}, function(result){
+				for(var i in result.children){
+					if(result.children[i].isComposite === true){
+						var menuItem = {};
+						menuItem.title = result.children[i].name;
+						menuItem.link = '#!/standards/' + result.children[i]._id;
+						if($scope.nodeId !== result.children[i]._id)
+							$scope.bcMenu.unshift(menuItem);
+					}
+				}
+				return;
+			});
+		}
+		if(breadcrumb.title === 'Standards'){
+			SchematicsAPI.standardlist.query(function(stds){
+				for(var i in stds){
+					var menuItem = {};
+					menuItem.title = stds[i].name;
+					menuItem.link = '#!/standards/' + stds[i]._id;
+					if(menuItem.title && $scope.nodeId !== stds[i]._id)
+						$scope.bcMenu.unshift(menuItem);
+				}
+			});
+		}
+	};
+
 	$scope.seperate = function() {
 		$scope.leaves = [];
 		$scope.subtypes = [];

@@ -20,7 +20,7 @@
 		       		<td>{{v.dateModified | date:'short'}}</td>
 		       		<td ng-show="target.published === {{$index+1}}"><div class="success">Published</div></td>
 		       		<td ng-hide="target.published === {{$index+1}}" class="fixed-width">
-                        <span class="grey">Not Published</span>
+                        <span class="grey italic">Not Published</span>
                         <a ng-show="hoverTgt === ($index+1)" ng-click="publishComponent($index+1)"class="unpublished"><i class="fa fa-book"></i></a>
                     </td>
                     

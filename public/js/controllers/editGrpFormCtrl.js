@@ -103,9 +103,13 @@ angular.module('ace.schematic')
 	$scope.delete = function() {
 		$scope.hide = true;
 		var modalInstance = $modal.open({
-			templateUrl: 'views/Schematics/DeleteModal.html',
-			controller:'DeleteModalCtrl',
+			templateUrl: 'views/confirmationModal.html',
+			controller:'confirmationModalCtrl',
 			backdrop: 'static',
+			resolve:{
+				title:function(){return 'Are you sure to delete?';},
+				msg:function(){return 'This cannot be undone.';}
+			}
 		});
 		modalInstance.result.then(function(decision){
 			if(decision){

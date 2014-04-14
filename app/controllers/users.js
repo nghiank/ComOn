@@ -6,8 +6,8 @@
 var mongoose = require('mongoose'),
     User = mongoose.model('User'),
     ComponentSchem = mongoose.model('SchematicComponent'),
-    error = require('../utils/error');
-
+    error = require('../utils/error'),
+    _ = require('underscore');
 /**
  * Auth callback
  */
@@ -79,6 +79,7 @@ exports.updateCodeName = function(req, res) {
     {
         var updatedProfile = req.user;
         updatedProfile.codeName = req.params.codeName;
+        updatedProfile.isManufacturer = false;
         updatedProfile.save(function(err) {
             if(err)
             {
@@ -98,9 +99,45 @@ exports.updateCodeName = function(req, res) {
  * Send All Users
  */
 exports.all = function(req, res) {
-    User.find({}, function (err, users) {
-        res.jsonp(users || null);
-    });
+    var count = false, limit = 100, skip = 0;
+    if(req.body.count)
+        count = req.body.count;
+    if(req.body.limit)
+        limit = req.body.limit;
+    if(req.body.skip)
+        skip = req.body.lowerLimit; 
+    var filterCriteria = {};
+    var hint = null;
+    if(req.body.showMan) {
+        filterCriteria.isManufacturer = true;
+        hint = {isManufacturer: 1};
+    }    
+    if(req.body.showUsers) {
+        filterCriteria.isAdmin = true;
+        hint = {isAdmin: 1};
+    }
+    if(req.body.search)
+    {
+        filterCriteria.name = new RegExp(req.body.search.trim(), 'i');
+        hint = {name: 1};
+    }
+    if(count === true){
+        User.count(filterCriteria).exec(function(err, count){
+            if(err)
+                error.sendGenericError(res, 400, 'Error Encountered');
+            res.jsonp({count:count});
+        });
+    }
+    else{
+        var query = User.find(filterCriteria).skip(skip).sort('name').limit(limit).lean();
+        if(hint)
+            query = query.hint(hint);
+        query.exec(function(err,users){
+            if(err)
+                error.sendGenericError(res, 400, 'Error Encountered');
+            res.jsonp({users:users} || null);
+        });
+    }
 };
 
 
@@ -109,9 +146,9 @@ exports.all = function(req, res) {
  */
 exports.changeStatus = function(req,res) {
     var user = req.profile;
-
+    if(!user.codeName)
+        return error.sendGenericError(res, 400, 'Error Encountered');
     user.isManufacturer = !user.isManufacturer;
-
     user.save(function(err) {
         if (err) {
             return error.sendGenericError(res, 400, 'Error Encountered');
@@ -181,6 +218,52 @@ exports.getFavourites = function(req, res) {
     });
 };
 
+exports.getFilters = function(req, res) {
+    if(!req.user)
+        return error.sendUnauthorizedError(res);
+    return res.jsonp(req.user.catalogFilters);
+};
+
+exports.addFilter = function(req, res) {
+    if(!req.user)
+        return error.sendUnauthorizedError(res);
+    if(!req.body.hasOwnProperty('name') || !req.body.hasOwnProperty('filter'))
+        return error.sendGenericError(res, 400, 'Error Encountered');
+    var name = req.body.name;
+    var list = _.map(req.user.catalogFilters, function(object) {return object.name.toLowerCase();});
+    if(list.indexOf(name.toLowerCase()) > -1)
+    {
+        return error.sendGenericError(res, 400, 'Error Encountered');
+    }
+    req.user.catalogFilters.push({name: name, filter: req.body.filter});
+    req.user.save(function(err) {
+        if(err)
+            return error.sendGenericError(res, 400, 'Error Encountered');
+        res.jsonp(req.user.catalogFilters);
+    });
+};
+
+exports.removeFilter = function(req,res) {
+    if(!req.user)
+        return error.sendUnauthorizedError(res);
+    if(!req.body.hasOwnProperty('name'))
+        return error.sendGenericError(res, 400, 'Error Encountered');
+    var name = req.body.name;
+    var list = _.map(req.user.catalogFilters, function(object) {return object.name.toLowerCase();});
+    if(list.indexOf(name.toLowerCase()) > -1)
+    {
+        req.user.catalogFilters.splice(list.indexOf(name.toLowerCase()), 1);
+        req.user.save(function(err) {
+            if(err)
+                return error.sendGenericError(res, 400, 'Error Encountered');
+            res.jsonp(req.user.catalogFilters);
+        });
+        return;
+    }
+    else {
+        return error.sendGenericError(res, 400, 'Error Encountered');
+    }
+};
 
 /**
  * Find user by Id

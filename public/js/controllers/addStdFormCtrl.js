@@ -15,7 +15,8 @@ angular.module('ace.schematic').controller('UploadController', ['ValidationServi
 
 	$scope.datFileSelect = function($files) {
 		$scope.checkDatFile($files);
-		$scope.parseDatForStdName();
+		if($scope.valid.dat)
+			$scope.parseDatForStdName();
 	};
 
 	$scope.checkDatFile = function($files){
@@ -53,7 +54,8 @@ angular.module('ace.schematic').controller('UploadController', ['ValidationServi
 
 	$scope.jsonFileSelect = function($files) {
 		$scope.checkJsonFile($files);
-		$scope.parseJsonFile();
+		if($scope.valid.json)
+			$scope.parseJsonFile();
 	};
 
 	$scope.checkJsonFile = function($files){
@@ -126,6 +128,8 @@ angular.module('ace.schematic').controller('UploadController', ['ValidationServi
 
 	$scope.uploadFiles = function() {
 		$scope.progress = 0;
+		$scope.uploadDisabled = true;
+		$scope.sendingFlag = true;
 		$scope.upload = $upload.upload({
 			url : 'api/upload',
 			method: $scope.httpMethod,
@@ -137,12 +141,13 @@ angular.module('ace.schematic').controller('UploadController', ['ValidationServi
 			file: [$scope.datFile , $scope.jsonFile],
 			fileFormDataName: ['datFile', 'jsonFile']
 		}).then(function(response) {
+			$scope.sendingFlag = false;
 			if(response)
 			{
 				if(response.status === 200)
 				{
+					$scope.sendingSuccess = true;
 					$scope.uploadResult = response.data;
-					console.log('Uploaded!');
 					$timeout($scope.getAll, 500);
 				}
 			}
@@ -170,5 +175,4 @@ angular.module('ace.schematic').controller('UploadController', ['ValidationServi
 		};
 		reader.readAsText($scope.jsonFile);
 	};
-
 }]);

@@ -191,6 +191,7 @@ exports.getNodeChildren = function(req, res) {
 		.find({parentNode: id})
 		.populate('standard')
 		.populate('parentNode')
+		.lean()
 		.exec(function(err, components) {
 			if(err)
 				return error.sendGenericError(res, 400, 'Error Encountered');
@@ -300,6 +301,7 @@ exports.getParentHiearchy = function(req, res) {
 	(function genHiearchy(parentId) {
 		ComponentSchem
 		.findOne({_id: parentId})
+		.lean()
 		.exec(function(err, component) {
 			if(err)
 				return error.sendGenericError(res, 400, 'Error Encountered');
@@ -323,6 +325,7 @@ exports.getAllSchemStds = function(req, res) {
 			parentNode: null
 		})
 		.populate('standard')
+		.lean()
 		.exec(function(err, components) {
             if (err)
 				return error.sendGenericError(res, 400, 'Error Encountered');
@@ -336,6 +339,7 @@ exports.node = function(req, res, next, id) {
         .findOne({
             _id: id
         })
+        .lean()
 		.exec(function(err, component) {
             if (err)
 				return error.sendGenericError(res, 400, 'Error Encountered');
