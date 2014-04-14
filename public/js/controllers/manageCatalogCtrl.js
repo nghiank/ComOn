@@ -63,7 +63,7 @@ angular.module('ace.catalog').controller(
 		};
 
 		$scope.showFilterModal = function () {
-			var modalInstance = $modal.open({
+			$modal.open({
 				templateUrl: 'views/Catalog/filterModal.html',
 				controller: 'filterModalCtrl',
 				resolve: {
@@ -74,12 +74,6 @@ angular.module('ace.catalog').controller(
 							search: $scope.searchText
 						};
 					}
-				}
-			});
-			modalInstance.result.then(function(result){
-				if(result)
-				{
-					console.log(result);
 				}
 			});
 		};
@@ -146,9 +140,15 @@ angular.module('ace.catalog').controller(
 			if (!filters)
 				return null;
 			var newObj = {};
+			var non_additional = ['Catalog', 'Manufacturer', 'Assembly Code'];
 			for (var i = 0; i < filters.length; i++) {
 				var filter = filters[i];
-				newObj[filter.field.toLowerCase()] = filter.value;
+				if(!filter.value)
+					continue;
+				if(non_additional.indexOf(filter.field) > -1)
+					newObj[filter.field[0].toLowerCase()+filter.field.substring(1).replace(' ', '')] = filter.value;
+				else
+					newObj['additionalInfo.'+filter.field.toLowerCase().replace(' ','')] = filter.value;
 			}
 			return newObj;
 		};

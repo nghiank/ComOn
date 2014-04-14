@@ -72,50 +72,6 @@ exports.populateCatalog = function(req, res) {
 	{
 		return user.isAdmin? true: (user.codeName.toLowerCase() === manufacturerEntry.toLowerCase());
 	}
-/*	function nextColumn(column)
-	{
-		var length = column.join('').length;
-		function repeatChar(count, ch) {
-			if (count === 0) {
-				return '';
-			}
-			var count2 = count / 2;
-			var result = ch;
-			while (result.length <= count2) {
-				result += result;
-			}
-			var finalResult = result + result.substring(0, count - result.length);
-			return finalResult;
-		}
-		function getNextAlphabet(char) {
-			return String.fromCharCode(char.charCodeAt(0)+1);
-		}
-		var endString = repeatChar(length, 'Z');
-		if(column.join('') === endString)
-			return repeatChar(length+1, 'A');
-		if(column[length - 1] === 'Z')
-		{
-			var index = 1;
-			while(length >= index && column[length - index] === 'Z')
-			{
-				column[length-index] = 'A';
-				if(length > index && column[length-index-1] === 'Z')
-				{
-					index++;
-				}
-				else
-				{
-					column[length-index-1] = getNextAlphabet(column[length-index-1]);
-					break;
-				}
-			}
-		}
-		else
-		{
-			column[length-1] = getNextAlphabet(column[length-1])[0];
-		}
-		return column.join('');
-	}*/
 	_.each(data, function(value, key) {
 		if(!key || !value.title)
 			return;
@@ -124,19 +80,6 @@ exports.populateCatalog = function(req, res) {
 		if(!value.entries)
 			return;
 		for (var i = 0; i < value.entries.length; i++) {
-/*			var column = 'CAA';
-			console.log(i);
-			for(var j=0 ;j< 200;j++)
-			{
-				var entry = value.data[i];
-				var catalog = entry.catalog.replace(' ','');
-				catalog += column;
-				if(checkAuthority(entry.manufacturer.trim()))
-				{
-					createEntry(entry, catalog, typeName, typeCode);
-					column = nextColumn(column.split(''));
-				}
-			}*/
 			var entry = value.entries[i];
 			if(entry)
 			{
@@ -159,8 +102,6 @@ exports.getAllUniqueValues = function(req, res) {
 	CatalogSchem.distinct(req.body.field.toLowerCase(), {'type.code': req.body.type}, function(err, result) {
 		if(err)
 			return error.sendGenericError(res, 400, 'Error Encountered');
-		if(result.length === 0)
-			res.jsonp([]);
 		res.jsonp(result);
 	});
 };
@@ -169,8 +110,6 @@ exports.getAllTypes = function(req, res) {
 	CatalogSchem.distinct('type', {}, function(err, result) {
 		if(err)
 			return error.sendGenericError(res, 400, 'Error Encountered');
-		if(result.length === 0)
-			res.jsonp([]);
 		res.jsonp(result);
 	});
 };
@@ -197,20 +136,19 @@ exports.getCatalogEntries = function(req, res) {
 		return error.sendGenericError(res, 400, 'Error Encountered');
 	}
 	var type = req.body.type;
-	var MAX_LIMIT = 10000;
-	var default_upper = 5000;
+	var MAX_LIMIT = 1000;
 	var lower = req.body.lower? req.body.lower: 0;
-	var upper = req.body.upper? req.body.upper: lower+default_upper;
+	var upper = req.body.upper? req.body.upper: lower+MAX_LIMIT;
 	var fields = req.body.fields? req.body.fields: ' catalog manufacturer assemblyCode ';
 	var index_hint = {'type.code': 1};
 	if(upper < lower)
 	{
-		upper = upper + lower;
-		lower = upper - lower;
-		upper = upper - lower;
+		var temp = upper;
+		upper = lower;
+		lower = temp;
 	}
 	if(upper - lower > MAX_LIMIT)
-		upper = lower + default_upper;
+		upper = lower + MAX_LIMIT;
 	var filterCriteria = {'type.code': type};
 	var sortCriteria = {};
 	if(req.body.sortField)
@@ -267,34 +205,33 @@ exports.getCatalogEntries = function(req, res) {
 		var all_filters = req.body.filters;
 		var index = null;
 		var filters = {};
+		for(var key in all_filters)
+		{
+			if(all_filters[key])
+				filters[key] = new RegExp(all_filters[key].toUpperCase());
+		}
 		if(all_filters.catalog)
 		{
-			filters.catalog =  new RegExp(all_filters.catalog.toUpperCase());
 			index = {'catalog': 1};
 		}
-		if(all_filters.manufacturer)
+		else if(all_filters.manufacturer)
 		{
-			filters.manufacturer = new RegExp(all_filters.manufacturer.toUpperCase());
-			if(!index)
-				index = {'manufacturer': 1};
+			index = {'manufacturer': 1};
 		}
-		if(all_filters.assemblyCode)
+		else if(all_filters.assemblyCode)
 		{
-			filters.assemblyCode =  new RegExp(all_filters.assemblyCode.toUpperCase());
-			if(!index)
-				index = {'assemblyCode': 1};
+			index = {'assemblyCode': 1};
 		}
-		if(all_filters.description)
+		else if(all_filters['additionalInfo.description'])
 		{
-			filters['additionalInfo.description'] =  new RegExp(all_filters.description.toUpperCase());
-			if(!index)
-				index = {'additionalInfo.description': 1, 'type.code': 1};
+			index = {'additionalInfo.description': 1, 'type.code': 1};
 		}
 		if(index)
 			index_hint = index;
 		filters['type.code'] = type;
 		filterCriteria = filters;
 	}
+
 	var default_search = null;
 	if(req.body.search && req.body.search.string)
 	{

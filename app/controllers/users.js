@@ -99,7 +99,7 @@ exports.updateCodeName = function(req, res) {
  * Send All Users
  */
 exports.all = function(req, res) {
-    User.find({}, function (err, users) {
+    User.find().lean().exec(function (err, users) {
         res.jsonp(users || null);
     });
 };
