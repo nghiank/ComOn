@@ -105,7 +105,7 @@ describe('<e2e API Test>', function() {
 			.end(function(err, res){
 				//validate the keys in the response JSON matches, we dont care about the values
 				(res.status).should.equal(200);
-				(res.body[0]).should.have.properties('name','email','provider','lastLogin','_id','__v','codeName','isManufacturer','isAdmin','Id');
+				(res.body.users[0]).should.have.properties('name','email','provider','lastLogin','_id','__v','codeName','isManufacturer','isAdmin','Id');
 				done();
 			});
 		});
