@@ -5,6 +5,8 @@ angular.module('ace.users').controller('UsersController', ['$scope', '$routePara
         $scope.global = Global;
         $scope.showMan = true;
         $scope.showUser = true;
+        $scope.page_limit = 15;
+        $scope.current_page = 1;
 
         $scope.update = function(id) {
             var users = $scope.users;
@@ -42,10 +44,13 @@ angular.module('ace.users').controller('UsersController', ['$scope', '$routePara
         };
 
         $scope.find = function() {
-            UsersAPI.userlist.query(function(users) {
-                $scope.users = users;
+            UsersAPI.userlist.getall({lowerLimit:($scope.current_page - 1)*$scope.page_limit, limit:$scope.page_limit, count:false},function(users) {
+                $scope.users = users.users;
                 for (var i = 0; i < $scope.users.length; i++)
                     $scope.users[i].name += ($scope.users[i].codeName ===null) ? '': ' ('+$scope.users[i].codeName+')';
+                UsersAPI.userlist.getall({count:true},function(count){
+                    $scope.total = count.count;
+                });
             });
         };
 

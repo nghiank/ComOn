@@ -99,9 +99,29 @@ exports.updateCodeName = function(req, res) {
  * Send All Users
  */
 exports.all = function(req, res) {
-    User.find({}, function (err, users) {
-        res.jsonp(users || null);
-    });
+    var count = false, limit = 100, skip = 0;
+    if(req.body.count)
+        count = req.body.count;
+    if(req.body.limit)
+        limit = req.body.limit;
+    if(req.body.skip)
+        skip = req.body.lowerLimit; 
+
+    if(count === true){
+        console.log('in Counter');
+        User.count({}).exec(function(err, count){
+            if(err)
+                error.sendGenericError(res, 400, 'Error Encountered');
+            res.jsonp({count:count});
+        });
+    }else{
+        User.find({}, {skip:skip}).limit(limit).exec(function(err,users){
+            console.log('in no count');
+            if(err)
+                error.sendGenericError(res, 400, 'Error Encountered');
+            res.jsonp({users:users} || null);
+        });
+    }
 };
 
 
