@@ -11,7 +11,7 @@ angular.module('ace.catalog').controller('catIconLinkModalCtrl', ['$scope', '$ti
 	$scope.levels = [];
 	$scope.selectedHiearchy = [];
 	$scope.selectedStd = null;
-
+	$scope.selectedLevel = null;
 	$scope.init = function() {
 		SchematicsAPI.standardlist.query(function(standards) {
 			$scope.stds = standards;
@@ -34,19 +34,23 @@ angular.module('ace.catalog').controller('catIconLinkModalCtrl', ['$scope', '$ti
 
 	$scope.selectOption = function(level, item)
 	{
+		$scope.selectedLevel = {current: parseInt(level, 10), total: parseInt($scope.levels.length, 10)};
 		if($scope.selectedHiearchy[level] && $scope.selectedHiearchy[level]._id !== item._id)
 		{
 			$scope.levels.splice(level+1, $scope.levels.length);
 			$scope.selectedHiearchy.splice(level+1, $scope.selectedHiearchy.length);
 		}
-		$scope.selectedHiearchy[level] = {_id: item._id, isComposite: item.isComposite};
-		if(item.parentNode === null)
+		if(!$scope.selectedHiearchy[level] || ($scope.selectedHiearchy[level] && $scope.selectedHiearchy[level]._id !== item._id))
 		{
-			$scope.selectStandard(item);
-		}
-		else
-		{
-			$scope.select(level, item);
+			$scope.selectedHiearchy[level] = {_id: item._id, isComposite: item.isComposite};
+			if(item.parentNode === null)
+			{
+				$scope.selectStandard(item);
+			}
+			else
+			{
+				$scope.select(level, item);
+			}
 		}
 	};
 
@@ -77,7 +81,7 @@ angular.module('ace.catalog').controller('catIconLinkModalCtrl', ['$scope', '$ti
 				immediateChildren.push($scope.selectedStd[i]);
 			}
 		}
-		if(immediateChildren.length !== 0)
+		if(option.isComposite)
 			$scope.levels[level+1] = {items: immediateChildren, levelNumber: level+1};
 	};
 

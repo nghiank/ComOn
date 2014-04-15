@@ -4,24 +4,24 @@
 	    <div class="navbar-header col-sm-7">
 	      <a class="navbar-brand"><i style="font-size: 16px;">Linking {{items.length > 1 ? items.length+' items' : items[0].catalog}} to the Icon browser</i></a>
 	    </div>
-	    <div class="collapse navbar-collapse  col-sm-5 pull-right">
+	    <div class="collapse navbar-collapse col-sm-5 pull-right">
 	      <form class="navbar-form navbar-right" role="search">
 	        <div class="form-group">
-	          <input type="text" class="form-control" placeholder="Search...">
+	          <input type="text" style="font-size: 13px;" ng-model="query" class="form-control" placeholder="Filter...">
 	        </div>
 	      </form>
 	    </div>
 	  </div>
 	</nav>
-	<div style="height: 502px; background: #CCC; overflow-x: scroll;border: 1px solid #aaa; overflow-y: hidden;">
+	<div auto-scroll="{{selectedLevel}}" style="height: 502px; background: #CCC; overflow-x: scroll; border: 1px solid #aaa; overflow-y: hidden;">
 		<table style="background: white">
 			<tbody style="vertical-align: top;">
 			<tr>
 				<td ng-repeat="level in levels" style="min-width: 250px; max-width: 250px; padding: 0px;">
 					<div style="height: 485px; display: block; word-wrap: break-word; overflow-y: scroll;">
 						<ul class="list-group">
-						  <li class="list-group-item" ng-if="level.items.length === 0" style="border-radius: 0px; border: 0px;">Nothing to show.</li>
-						  <li class="list-group-item imgLoader" ng-class="{'list-title': isSelected(level.levelNumber, item)}" style="border-radius: 0px; border: 0px;" ng-repeat="item in level.items | orderBy: '!isComposite'" ng-click="selectOption(level.levelNumber, item)"><i class="fa fa-folder fa-2x" ng-if="item.isComposite" style="margin-right: 10px"></i><img ng-src="{{item.thumbnail}}" ng-if="!item.isComposite" style="margin-right: 10px" height="26" width="26"><span style="font-size:13px;">{{item.name}}</span></li>
+						  <li class="list-group-item" ng-if="level.items.length === 0" style="border-radius: 0px; border: 0px; font-size: 12px;">Nothing to show here.</li>
+						  <li class="list-group-item imgLoader" ng-class="{'list-title': isSelected(level.levelNumber, item)}" style="border-radius: 0px; border: 0px;" ng-repeat="item in level.items | filter: query | orderBy: '!isComposite'" ng-click="selectOption(level.levelNumber, item)"><i class="fa fa-folder" ng-if="item.isComposite" style="margin-right: 10px; vertical-align: middle;"></i><img ng-src="{{item.thumbnail}}" ng-if="!item.isComposite" style="margin-right: 10px" height="16" width="16"><span style="font-size:12px;">{{item.name}}</span></li>
 						</ul>
 					</div>
 				</td>
