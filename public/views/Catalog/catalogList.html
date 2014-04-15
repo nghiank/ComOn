@@ -1,4 +1,4 @@
-<div class="container" ng-controller="catalogListCtrl" ng-init="init()" style="padding-top:30px; max-height:100%-30px; overflow-y:hidden">
+<div class="container" ng-controller="catalogListCtrl" ng-init="init()" style="padding-top:30px; max-height:100%-30px; overflow-y:hidden" has-cuz-menu>
 	<nav class="col-md-4 navmenu navmenu-default animate-show" ng-show="showTypes" style="height: 85%; position: fixed; left: 0; z-index: 9999; overflow-y: auto;">
 		<ul class="nav navmenu-nav" ng-init="getTypes()" style="overflow-y: auto;">
             <div class="navmenu-brand">Catalog Types</i></div> 
@@ -89,7 +89,7 @@
 	    	<a class="btn btn-default btn-sm" style="margin-top: 6px;" ng-disabled="selectedItems.length===0"><i class="fa fa-download"> 3D Symbol</i></a>
    	 	</div>
    	 	<div class="col-md-4 pull-right">
-   	 		<p class="pull-right" style="margin-top:12px;">Showing {{(currentPage-1)*items.length + 1}} - {{currentPage*pageItemLimit}} of {{total}} results<p>
+   	 		<p class="pull-right" style="margin-top:12px;">Showing {{currentPage ? (currentPage-1)*pageItemLimit + 1: 1}} - {{currentPage ? (currentPage-1)*pageItemLimit + items.length : items.length}} of {{total}} results<p>
    	 	</div>
 	</div>
 	<div ng-show="showList" ng-click="closeType()">
@@ -106,7 +106,7 @@
 				</thead>
 				<tbody>
 					<td colspan="{{cols.length}}" style="text-align: center" ng-show="items.length === 0">No Entries available.</td>
-					<tr ng-repeat="item in items" ng-click="toggleSelectRow($index);$event.preventDefault();" ng-class="{highlighted:isHighlighted($index)}">
+					<tr ng-repeat="item in items" ng-click="toggleSelectRow($index);$event.preventDefault();" ng-class="{highlighted:isHighlighted($index)}" cuz-menu>
 						<td ng-repeat="data in sortedValues(item) track by $index" transform-link="{{data}}">{{data}}</td>
 					</tr>
 				</tbody>
@@ -117,8 +117,8 @@
 		</div>
 	</div>
 
-<div id="contextMenu" class="dropdown clearfix">
-    <ul class="dropdown-menu" aria-labelledby="dropdownMenu" style="display:block;position:static;margin-bottom:5px;">
+<div id="contextMenu" class="dropdown clearfix" tabindex="-1" context-menu>
+    <ul class="dropdown-menu" aria-labelledby="dropdownMenu" style="display:block;position:static;margin-bottom:5px;" cuz-menu-item>
         <li><a ng-click="showLinkModal()"><i class="fa fa-link"></i> Link <b>{{selectedItems.length > 1 ? selectedItems.length+' items' : selectedItems[0].catalog}}</b> to icons</a></li>
         <li><a><i class="fa fa-star-o"></i> Mark <b>{{selectedItems.length > 1 ? selectedItems.length+' items' : selectedItems[0].catalog}}</b> as favorite</a></li>
     </ul>

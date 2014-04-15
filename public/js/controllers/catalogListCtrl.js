@@ -100,17 +100,8 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 		};
 
 		$scope.$watch('selectedItems',function(){
-			console.log('-----------');
-			selectedRows.unbind('contextmenu');
 			if($scope.selectedItems.length > 0)
 				$scope.searchBox.show = false;
-			for(var i in $scope.selectedItems)
-				console.log($scope.selectedItems[i].catalog);
-			$timeout(function(){
-				selectedRows = angular.element('tr.highlighted');
-				console.log(selectedRows.length);
-				$scope.bindMenu();
-			},10);
 		},true);
 
 		$scope.toggleSelectRow = function(index) {
@@ -118,12 +109,10 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 			//Otherwise, multiple rows are selected;
 			if(!$scope.multiple){
 				if($scope.selectedRows.indexOf(index) > -1){
-					console.log('...');
 					$scope.selectedRows = [];
 					$scope.selectedItems = [];
 					return;
-				}
-				console.log('ah oh');					
+				}				
 				$scope.selectedRows = [];
 				$scope.selectedItems = [];
 				
@@ -160,54 +149,6 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 				}
 			}
 		};
-
-		var doc = angular.element(document);
-		var table = angular.element('table');
-		var selectedRows = angular.element('.highlighted');
-		var contextmenu = angular.element('#contextMenu');
-		var contextmenuItem = angular.element('#contextMenu>ul>li');
-		contextmenu.hide();
-
-		$scope.bindMenu = function(){
-			selectedRows.bind('contextmenu',function(e){
-				e.preventDefault();
-				if($scope.selectedItems.length > 0)
-					angular.element('#contextMenu').css({left: e.pageX, top: e.pageY,position:'absolute'}).show();
-			});
-			angular.element('tr').not('.highlighted').bind('contextmenu', function(){
-				contextmenu.hide();
-			});
-		};
-
-		doc.bind('click',function(){
-			contextmenu.hide();
-		});
-		contextmenuItem.bind('click',function(){
-			contextmenu.hide();
-		});
-
-		doc.on('keydown',function(e){
-			if(e.shiftKey){
-				$scope.multiple = true;
-				table.addClass('unselectable');
-				return;
-			}
-			if(e.keyCode === 17 || (e.metaKey && e.keyCode === 91)){
-				$scope.multiple = true;
-				$scope.ctrl = true;
-			}
-		});
-		doc.on('keyup',function(e){
-			if(e.keyCode === 16){
-				$scope.multiple = false;
-				table.removeClass('unselectable');
-				return;
-			}
-			if(e.keyCode === 17 || e.keyCode === 91){
-				$scope.ctrl = false;
-				$scope.multiple = false;
-			}
-		});
 
 		$scope.init = function () {
 			$scope.showTypes = true;
