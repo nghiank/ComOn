@@ -40,14 +40,17 @@ angular.module('ace.catalog').controller('catIconLinkModalCtrl', ['$scope', '$ti
 			$scope.levels.splice(level+1, $scope.levels.length);
 			$scope.selectedHiearchy.splice(level+1, $scope.selectedHiearchy.length);
 		}
-		$scope.selectedHiearchy[level] = {_id: item._id, isComposite: item.isComposite};
-		if(item.parentNode === null)
+		if(!$scope.selectedHiearchy[level] || ($scope.selectedHiearchy[level] && $scope.selectedHiearchy[level]._id !== item._id))
 		{
-			$scope.selectStandard(item);
-		}
-		else
-		{
-			$scope.select(level, item);
+			$scope.selectedHiearchy[level] = {_id: item._id, isComposite: item.isComposite};
+			if(item.parentNode === null)
+			{
+				$scope.selectStandard(item);
+			}
+			else
+			{
+				$scope.select(level, item);
+			}
 		}
 	};
 
