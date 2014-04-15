@@ -41,4 +41,24 @@ angular.module('ace').directive('resetForm',
 				});
 			}
 		};
-	}]);
+	}]).directive('autoScroll', function () {
+		return {
+			restrict: 'A',
+			scope: {
+				autoScroll: '@'
+			},
+			link: function postLink(scope, element, attrs) {
+				scope.$watch('autoScroll', function () {
+					if(attrs.autoScroll) {
+						var attribute = JSON.parse(attrs.autoScroll);
+						var current = attribute.current;
+						var total = attribute.total;
+						var ratio = current/total;
+						var scrollTo = element.prop('scrollWidth')*ratio;
+						element.animate({scrollLeft: scrollTo}, 300);
+						}
+					}
+				);
+			}
+		};
+	});
