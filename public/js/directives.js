@@ -112,7 +112,9 @@ angular.module('ace').directive('resetForm',
 			restrict:'A',
 			link: function(scope,elements){
 				elements.hide();
-	}]).directive('autoScroll', function () {
+			}
+		};
+	}).directive('autoScroll', function () {
 		return {
 			restrict: 'A',
 			scope: {
