@@ -265,6 +265,7 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 				templateUrl: 'views/Catalog/catIconLinkModal.html',
 				controller: 'catIconLinkModalCtrl',
 				backdrop: 'static',
+				windowClass: 'largerModal',
 				resolve:{
 					item:function(){return linkItem ? [linkItem]:$scope.selectedItems;}
 				}

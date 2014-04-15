@@ -1,39 +1,36 @@
 <div ng-init="init()">
-<div class="modal-header">
-	Link {{item.length > 1 ? item.length+' items' : item[0].catalog}} to Icon...{{lastWord}}
-</div>
-<div class="modal-body">
-	{{genText}}
-	{{text}}
-	{{lastWord}}
-	<form class="form-horizontal">
-		<div class="form-group">
-			<label class="control-label col-md-2">Icon:</label>
-			<div class="col-md-8">
-				<div class="dropdown">
-					<div class="input-group dropdown-toggle">
-						<input type="text" ng-model="text" class="form-control">
-						<span class="input-group-btn">
-							<button class="btn btn-default"><i class="fa fa-caret-down"></i></button>
-						</span>
+	<nav class="navbar navbar-default" style="margin-bottom: 0px">
+	  <div class="container-fluid">
+	    <div class="navbar-header col-sm-7">
+	      <a class="navbar-brand"><i style="font-size: 16px;">Linking {{items.length > 1 ? items.length+' items' : items[0].catalog}} to the Icon browser</i></a>
+	    </div>
+	    <div class="collapse navbar-collapse  col-sm-5 pull-right">
+	      <form class="navbar-form navbar-right" role="search">
+	        <div class="form-group">
+	          <input type="text" class="form-control" placeholder="Search...">
+	        </div>
+	      </form>
+	    </div>
+	  </div>
+	</nav>
+	<div style="height: 502px; background: #CCC; overflow-x: scroll;border: 1px solid #aaa; overflow-y: hidden;">
+		<table style="background: white">
+			<tbody style="vertical-align: top;">
+			<tr>
+				<td ng-repeat="level in levels" style="min-width: 250px; max-width: 250px; padding: 0px;">
+					<div style="height: 485px; display: block; word-wrap: break-word; overflow-y: scroll;">
+						<ul class="list-group">
+						  <li class="list-group-item" ng-if="level.items.length === 0" style="border-radius: 0px; border: 0px;">Nothing to show.</li>
+						  <li class="list-group-item imgLoader" ng-class="{'list-title': isSelected(level.levelNumber, item)}" style="border-radius: 0px; border: 0px;" ng-repeat="item in level.items | orderBy: '!isComposite'" ng-click="selectOption(level.levelNumber, item)"><i class="fa fa-folder fa-2x" ng-if="item.isComposite" style="margin-right: 10px"></i><img ng-src="{{item.thumbnail}}" ng-if="!item.isComposite" style="margin-right: 10px" height="26" width="26"><span style="font-size:13px;">{{item.name}}</span></li>
+						</ul>
 					</div>
-					<ul class="dropdown-menu" style="width:400px;">
-						<span ng-if="!stdSelected" style="padding-left:10px;">
-							<li style="margin-left: -5px;" ng-show="stds.length !== 0" class="highlighted"><b>Standards:</b> </li>
-							<li style="margin-left: 10px;" ng-show="stds.length !== 0" ng-click="selectStandard(s);$event.stopPropagation();" ng-repeat="s in stds|filter:text"><a>{{s.name}}</a></li>
-						</span>
-						<span ng-if="stdSelected" style="width: 600px; padding-left:10px">
-								<li ng-show="children.groups.length !== 0" >Groups: </li>
-								<li ng-show="children.groups.length !== 0" ng-click="select(child);$event.stopPropagation();" ng-repeat="child in children.groups|filter:lastWord" ><a>
-								<img ng-src='{{child.thumbnail}}' ng-show="child.thumbnail" style="width: 20px; height: 20px; margin-right:10px;">{{child.name}}</a></li>
-								<li ng-show="children.leaves.length !== 0">Components: </li>
-								<li  ng-show="children.leaves.length !== 0" ng-repeat="child in children.leaves|filter:text"><a>
-								<img ng-src='{{child.thumbnail}}' ng-show="child.thumbnail" style="width: 20px; height: 20px; margin-right:10px;">{{child.name}}</a></lspan>
-						</i>
-					</ul>
-				</div>
-			</div>
-		</div>
-	</form>
-</div>
+				</td>
+			</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="modal-footer" style="margin-top: 0px">
+		<button class="btn btn-primary btn-separate pull-right" ng-click="link()" ng-disabled ="linkDisabled"><i class="fa fa-link" style="margin-right: 10px"></i>Link</button>
+		<button class="btn btn-default pull-left" ng-click="cancel()">Cancel</button>
+	</div>
 </div>
