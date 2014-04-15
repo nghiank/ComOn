@@ -101,10 +101,13 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 
 		$scope.$watch('selectedItems',function(){
 			console.log('-----------');
+			selectedRows.unbind('contextmenu');
+			if($scope.selectedItems.length > 0)
+				$scope.searchBox.show = false;
 			for(var i in $scope.selectedItems)
 				console.log($scope.selectedItems[i].catalog);
 			$timeout(function(){
-				selectedRows = angular.element('.highlighted');
+				selectedRows = angular.element('tr.highlighted');
 				console.log(selectedRows.length);
 				$scope.bindMenu();
 			},10);
@@ -114,10 +117,16 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 			//if shift key is not pressed, only one row is selected
 			//Otherwise, multiple rows are selected;
 			if(!$scope.multiple){
+				if($scope.selectedRows.indexOf(index) > -1){
+					console.log('...');
+					$scope.selectedRows = [];
+					$scope.selectedItems = [];
+					return;
+				}
+				console.log('ah oh');					
 				$scope.selectedRows = [];
 				$scope.selectedItems = [];
-				if($scope.selectedRows.indexOf(index) === 0)
-					return;
+				
 				$scope.selectedRows[0] = index;
 				$scope.selectedItems.push($scope.items[index]);
 				//console.log(selectedRows.length);
@@ -154,7 +163,7 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 
 		var doc = angular.element(document);
 		var table = angular.element('table');
-		var selectedRows = angular.element('tr.highlighted');
+		var selectedRows = angular.element('.highlighted');
 		var contextmenu = angular.element('#contextMenu');
 		var contextmenuItem = angular.element('#contextMenu>ul>li');
 		contextmenu.hide();
@@ -165,13 +174,16 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 				if($scope.selectedItems.length > 0)
 					angular.element('#contextMenu').css({left: e.pageX, top: e.pageY,position:'absolute'}).show();
 			});
+			angular.element('tr').not('.highlighted').bind('contextmenu', function(){
+				contextmenu.hide();
+			});
 		};
 
 		doc.bind('click',function(){
 			contextmenu.hide();
 		});
 		contextmenuItem.bind('click',function(){
-			$scope.showLinkModal();
+			contextmenu.hide();
 		});
 
 		doc.on('keydown',function(e){
@@ -280,6 +292,8 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 			$scope.showList = true;
 			$scope.searchBox.show = true;
 			$scope.showTypes = false;
+			$scope.selectedRows = [];
+			$scope.selectedItems = [];
 			$scope.target = type;
 			$scope.selected = type;
 			function parseCamelCase(input) {
