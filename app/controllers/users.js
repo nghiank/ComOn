@@ -6,6 +6,7 @@
 var mongoose = require('mongoose'),
     User = mongoose.model('User'),
     ComponentSchem = mongoose.model('SchematicComponent'),
+    //CatSchem = mongoose.model('Catalog'),
     error = require('../utils/error'),
     _ = require('underscore');
 /**
@@ -207,6 +208,20 @@ exports.removeSchemFavourite = function(req,res) {
     }
     res.jsonp(list);
 };
+
+/*exports.addCatFavorite = function(req,res){
+    if(!req.user)
+        return error.sendUnauthorizedError(res);
+    if(!req.body.items)
+        return error.sendGenericError(res, 400, 'Error Encountered');
+    for(var i in req.body.items){
+        CatSchem.findOne({_id:req.body.items[i]._id}).exec(function(err, item){
+            if(err)
+                return error.sendGenericError(res, 400, 'Error Encountered');
+            console.log(req.user);
+        });
+    }
+}*/
 
 exports.getFavourites = function(req, res) {
     if(!req.user)

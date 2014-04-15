@@ -249,7 +249,8 @@ footer p {
     color:blue;
 }
 
-.semitransparent{
+.semitransparent
+{
     opacity: 0.5;
 }
 
@@ -258,8 +259,24 @@ footer p {
     margin-right: 10px;
 }
 
-.dropdown-menu-bottom{
+.dropdown-menu-bottom
+{
     max-height: 150px;
     overflow-y: auto;
 }
+
+.sticky{
+    position:fixed;
+    width:inherit;
+    border:thick dotted red;
+    z-index: 9999;
+}
+
+.underSticky{
+    margin-top: 
+}
+
+/*div{
+    border: thin dotted red;
+}*/
 
