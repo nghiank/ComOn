@@ -214,8 +214,22 @@ exports.getEntireStandard = function(req, res) {
 				return error.sendGenericError(res, 400, 'Error Encountered');
 			if(components.length === 0)
 				return error.sendGenericError(res, 400, 'Error Encountered');
+			console.log(components.length);
 			res.jsonp(components);
 		});
+	});
+};
+
+exports.getNodeByName = function(req,res){
+	if(!req.body.name){
+		res.jsonp([]);
+		return;
+	}
+	var search = new RegExp('^.*'+req.body.name+'.*$', 'i');
+	ComponentSchem.find({'name':search,'isComposite':false}).lean().limit(10).exec(function(err,result){
+		if(err)
+			return console.log(err);
+		res.jsonp(result);
 	});
 };
 
