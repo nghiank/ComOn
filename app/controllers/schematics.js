@@ -386,6 +386,16 @@ exports.node = function(req, res, next, id) {
         });
 };
 
+exports.getLinks = function(req, res) {
+	if(!req.body.items)
+		return error.sendGenericError(res, 400, 'Error Encountered');
+	ComponentSchem.find({_id: {$in: req.body.items}}).lean().select('thumbnail dl').exec(function(err, components) {
+		if(err)
+			return error.sendGenericError(res, 400, 'Error Encountered');
+		res.jsonp(components);
+	});
+};
+
 exports.getNode = function(req,res){
 	if (!req.node)
 		return error.sendGenericError(res, 400, 'Error Encountered');
@@ -394,15 +404,15 @@ exports.getNode = function(req,res){
 
 exports.createNode = function(req,res){
 	if(!req.body.node)
-		return error.sendGenericError(res, 400, 'No node sent to server');
+		return error.sendGenericError(res, 400, 'Error Encountered');
 	var node = req.body.node;
 	if(!node.parentNode)
-		return error.sendGenericError(res, 400, 'No node sent to server');
+		return error.sendGenericError(res, 400, 'Error Encountered');
 	ComponentSchem.findOne({_id: node.parentNode}, function(err, component) {
 		if(err)
-			return error.sendGenericError(res, 400, 'No node sent to server');
+			return error.sendGenericError(res, 400, 'Error Encountered');
 		if(!component)
-			return error.sendGenericError(res, 400, 'No node sent to server');
+			return error.sendGenericError(res, 400, 'Error Encountered');
 		var child_component = new ComponentSchem({
 				name: node.name,
 				parentNode: node.parentNode,

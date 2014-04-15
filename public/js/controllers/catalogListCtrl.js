@@ -9,11 +9,13 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 	'$http',
 	'$timeout',
 	'searchStringParser',
-	function ($scope, Global, CatalogAPI, $routeParams, underscore, $modal, $http, $timeout, searchStringParser) {
+	'SchematicsAPI',
+	function ($scope, Global, CatalogAPI, $routeParams, underscore, $modal, $http, $timeout, searchStringParser, SchematicsAPI) {
 		$scope.global = Global;
 		$scope.fields = [];
 		$scope._ = underscore;
 		$scope.pageItemLimit = 15;
+		$scope.items = [];
 		$scope.searchMode = false;
 		$scope.lower = 0;
 		$scope.upper = $scope.lower + $scope.pageItemLimit;
@@ -33,6 +35,8 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 		$scope.sth = {show:'aaa'};
 		$scope.multiple = false;
 		$scope.fields = [];
+		$scope.linkedSchematicEntries = {};
+		$scope.tooltipHTMLCollection = {};
 		$scope.cols = [
 			{
 				title: 'Catalog',
@@ -54,6 +58,38 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 			if ($scope.global.authenticated && ($scope.global.user.isAdmin || $scope.global.user.isManufacturer))
 				return true;
 			return false;
+		};
+
+		$scope.getLinkedSchematicEntries = function(catalogId) {
+			if($scope.global.authenticated && $scope.global.user.associations && $scope.global.user.associations.length > 0)
+			{
+				var start_string = '<div class="imgLoader">';
+				var end_string = '</div>';
+				var associations = Global.user.associations;
+				for (var i = 0; i < associations.length; i++) {
+					if(associations[i].catalogId === catalogId && $scope._.has($scope.linkedSchematicEntries, associations[i].schematicId))
+					{
+						$scope.tooltipHTMLCollection[catalogId] = start_string + '<img src="'+$scope.linkedSchematicEntries[associations[i].schematicId].thumbnail+'">'+end_string;
+					}
+				}
+			}
+		};
+
+		$scope.checkLink = function(data) {
+			if(Global.authenticated)
+			{
+				var associations = Global.user.associations;
+				var catalogIds = $scope._.map(associations, function(obj) {return obj.catalogId;});
+				if(catalogIds.indexOf(data._id) > -1)
+				{
+					return true;
+				}
+				return false;
+			}
+			else
+			{
+				return false;
+			}
 		};
 
 		$scope.showConfigureModal = function () {
@@ -149,6 +185,20 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 				}
 			}
 		};
+
+		$scope.$watchCollection('global.associations', function() {
+			if($scope.global.authenticated && $scope.global.user.associations && $scope.global.user.associations.length > 0)
+			{
+				SchematicsAPI.getLinks.query({items: $scope._.map($scope.global.user.associations, function(obj) {return obj.schematicId;})}, function(response) {
+					if(response)
+					{
+						for (var i = 0; i < response.length; i++) {
+							$scope.linkedSchematicEntries[response[i]._id] = {dl: response[i].dl, thumbnail: response[i].thumbnail};
+						}
+					}
+				});
+			}
+		});
 
 		$scope.init = function () {
 			$scope.showTypes = true;
