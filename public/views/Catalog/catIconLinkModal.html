@@ -1,27 +1,28 @@
 <div ng-init="init()">
 	<nav class="navbar navbar-default" style="margin-bottom: 0px">
 	  <div class="container-fluid">
-	    <div class="navbar-header col-sm-7">
-	      <a class="navbar-brand"><i style="font-size: 16px;">Linking {{items.length > 1 ? items.length+' items' : items[0].catalog}} to the Icon browser</i></a>
+	    <div class="navbar-header col-md-6">
+	      <a class="navbar-brand"><i style="font-size: 16px;">Linking {{items.length > 1 ? items.length+' items' : items[0].catalog}} to Schematic Icon</i></a>
 	    </div>
-	    <div class="collapse navbar-collapse col-sm-5 pull-right">
-	      <form class="navbar-form navbar-right" role="search">
-	        <div class="form-group">
-	          <input type="text" style="font-size: 13px;" ng-model="query" class="form-control" placeholder="Filter...">
+	    <div class="col-md-6 pull-right">
+	      <form class="navbar-form navbar-right pull-right" role="search">
+	        <div class="form-group left-inner-addon" style="width:200px">
+	        	<i class="fa fa-search grey"></i>
+	        	<input type="text" style="font-size: 13px;" ng-model="query" class="form-control" placeholder="Filter...">
 	        </div>
 	      </form>
 	    </div>
 	  </div>
 	</nav>
-	<div auto-scroll="{{selectedLevel}}" style="height: 502px; background: #CCC; overflow-x: scroll; border: 1px solid #aaa; overflow-y: hidden;">
+	<div auto-scroll="{{selectedLevel}}" style="height: 450px; background: #CCC; overflow-x: scroll; border: 1px solid #aaa; overflow-y: hidden;">
 		<table style="background: white">
 			<tbody style="vertical-align: top;">
 			<tr>
 				<td ng-repeat="level in levels" style="min-width: 250px; max-width: 250px; padding: 0px;">
-					<div style="height: 485px; display: block; word-wrap: break-word; overflow-y: scroll;">
+					<div style="height: 450px; display: block; word-wrap: break-word; overflow-y: scroll;">
 						<ul class="list-group">
 						  <li class="list-group-item" ng-if="level.items.length === 0" style="border-radius: 0px; border: 0px; font-size: 12px;">Nothing to show here.</li>
-						  <li class="list-group-item imgLoader" ng-class="{'list-title': isSelected(level.levelNumber, item)}" style="border-radius: 0px; border: 0px;" ng-repeat="item in level.items | filter: query | orderBy: '!isComposite'" ng-click="selectOption(level.levelNumber, item)"><i class="fa fa-folder" ng-if="item.isComposite" style="margin-right: 10px; vertical-align: middle;"></i><img ng-src="{{item.thumbnail}}" ng-if="!item.isComposite" style="margin-right: 10px" height="16" width="16"><span style="font-size:12px;">{{item.name}}</span></li>
+						  <li class="list-group-item imgLoader" ng-class="{'blueBackground': isSelected(level.levelNumber, item) && level.levelNumber === selectedLevel.current,'greyBackground':level.levelNumber !== selectedLevel.current && isSelected(level.levelNumber,item)}" style="border-radius: 0px; border: 0px;" ng-repeat="item in level.items | filter: query | orderBy: '!isComposite'" ng-click="selectOption(level.levelNumber, item)"><i class="fa fa-folder-o" ng-if="item.isComposite" style="margin-right: 10px; vertical-align: middle;"></i><img ng-src="{{item.thumbnail}}" ng-if="!item.isComposite" style="margin-right: 10px" height="16" width="16"><span style="font-size:12px;">{{item.name}}</span></li>
 						</ul>
 					</div>
 				</td>

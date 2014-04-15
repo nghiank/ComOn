@@ -41,7 +41,9 @@ footer p {
 }
 
 .largerModal .modal-dialog {
-    width: 900px;
+    width: 60%;
+    max-height:600px;
+    height:60%;
 }
 
 .dropdown-menu .a{
@@ -108,6 +110,16 @@ footer p {
 .grey
 {
     color: #c7c7c7;
+}
+
+.blueBackground
+{
+    background-color: #428bca;
+}
+
+.greyBackground
+{
+    background-color: #c7c7c7;
 }
 
 .yellow
@@ -280,7 +292,15 @@ footer p {
     margin-top: 
 }
 
-/*div{
-    border: thin dotted red;
-}*/
+.left-inner-addon {
+    position: relative;
+}
+.left-inner-addon input {
+    padding-left: 30px;    
+}
+.left-inner-addon i {
+    position: absolute;
+    padding: 10px 12px;
+    pointer-events: none;
+}
 
