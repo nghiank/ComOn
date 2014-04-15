@@ -119,9 +119,12 @@
 
 <div id="contextMenu" class="dropdown clearfix" tabindex="-1" context-menu>
     <ul class="dropdown-menu" aria-labelledby="dropdownMenu" style="display:block;position:static;margin-bottom:5px;" cuz-menu-item>
-        <li><a ng-click="showLinkModal()"><i class="fa fa-link"></i> Link <b>{{selectedItems.length > 1 ? selectedItems.length+' items' : selectedItems[0].catalog}}</b> to icons</a></li>
-        <li><a><i class="fa fa-star-o"></i> Mark <b>{{selectedItems.length > 1 ? selectedItems.length+' items' : selectedItems[0].catalog}}</b> as favorite</a></li>
-
+        <li>
+        	<a ng-click="showLinkModal()"><i class="fa fa-link"></i> Link <b>{{selectedItems.length > 1 ? selectedItems.length+' items' : selectedItems[0].catalog}}</b> to icons</a>
+        </li>
+        <li>
+        	<a><i class="fa fa-star-o"></i> Mark <b>{{selectedItems.length > 1 ? selectedItems.length+' items' : selectedItems[0].catalog}}</b> as favorite</a>
+        </li>
     </ul>
 </div>
 

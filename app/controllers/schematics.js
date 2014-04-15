@@ -153,6 +153,22 @@ var deleteChildren = function(id) {
 					user.save();
 				}
 			});
+			Users.find({'associations.schematicId': deleted_id}, function(err, users) {
+				if(err)
+					return console.log(err);
+				if(!users)
+					return;
+				for (var i = 0; i < users.length; i++) {
+					var user = users[i];
+					for (var j = 0; j < user.associations.length; j++) {
+						if(user.associations[j].schematicId === deleted_id)
+						{
+							user.associations.splice(j, 1);
+						}
+					}
+					user.save();
+				}
+			});
 			component.remove();
 		});
 };

@@ -35,6 +35,10 @@ module.exports = function(app, passport) {
     app.post('/api/delFilter', authorization.requiresLogin, users.removeFilter);
     app.get('/api/getFilters', authorization.requiresLogin, users.getFilters);
 
+    app.post('/api/addAssociation', authorization.requiresLogin, users.addAssociation);
+    app.post('/api/delAssociation', authorization.requiresLogin, users.removeAssociation);
+    app.get('/api/getAssociations', authorization.requiresLogin, users.getAssociations);
+
     // Setting the oxygen oauth route
     app.get('/auth/oauth', passport.authenticate('oauth', {
         failureRedirect: '/'

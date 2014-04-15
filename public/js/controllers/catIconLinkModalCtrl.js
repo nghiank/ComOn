@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ace.catalog').controller('catIconLinkModalCtrl', ['$scope', '$timeout', '$modalInstance', 'SchematicsAPI','item', function($scope, $timeout, $modalInstance, SchematicsAPI,item){
+angular.module('ace.catalog').controller('catIconLinkModalCtrl', ['Global', '$scope', '$timeout', '$modalInstance', 'SchematicsAPI', 'UsersAPI', 'item', '_', function(Global, $scope, $timeout, $modalInstance, SchematicsAPI, UsersAPI, item, _){
 
 
 	$scope.cancel = function(){
@@ -12,6 +12,19 @@ angular.module('ace.catalog').controller('catIconLinkModalCtrl', ['$scope', '$ti
 	$scope.selectedHiearchy = [];
 	$scope.selectedStd = null;
 	$scope.selectedLevel = null;
+
+	$scope.link = function() {
+		if(!$scope.linkDisabled)
+		{
+			UsersAPI.addAssociation.save({items: _.map($scope.items, function(obj) {return obj._id;}), _id: $scope.selectedHiearchy[$scope.selectedHiearchy.length - 1]._id}, function(response) {
+				if(response) {
+					Global.user.associations = response;
+					$modalInstance.close(true);
+				}
+			});
+		}
+	};
+
 	$scope.init = function() {
 		SchematicsAPI.standardlist.query(function(standards) {
 			$scope.stds = standards;
