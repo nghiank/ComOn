@@ -87,7 +87,7 @@ angular.module('ace.schematic')
             download = link;
         }
         try{
-            if (exec === undefined){
+            if (window.exec === undefined){
                 return download;
             }
         }
@@ -101,8 +101,9 @@ angular.module('ace.schematic')
 
     $scope.downloadLink = function (link) {
         try{
-            if (exec !== undefined){
-                var response = exec(JSON.stringify({ functionName: 'DownloadInsertSymbol', invokeAsCommand: false, functionParams: {'link': link} }));
+            if (window.exec !== undefined){
+                var response = window.exec(JSON.stringify({ functionName: 'DownloadInsertSymbol', invokeAsCommand: false, functionParams: {'link': link} }));
+                console.log(response);
             }
         }
         catch(e){

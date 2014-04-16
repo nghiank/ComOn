@@ -45,6 +45,7 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 				sort: null
 			}
 		];
+        $scope.showDownload = (window.exec === undefined)? false : true;
 		$scope.authorized = function () {
 			if ($scope.global.authenticated && ($scope.global.user.isAdmin || $scope.global.user.isManufacturer))
 				return true;
@@ -260,12 +261,27 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 			}
 		};
 
-		$scope.getPage = function (page, totalFlag) {
-			var lower = (page ? page - 1 : 0) * $scope.pageItemLimit;
-			var upper = (page ? page : 1) * $scope.pageItemLimit;
-			var cols = $scope._.map($scope.cols, function (value) {
-					return value.field;
-				});
+		$scope.getPage = function (page, totalFlag, callback) {
+            var lower;
+            var upper;
+            var cols = [];
+            if (callback) {
+                lower = 0;
+                upper = 5000;
+                $scope.cols.forEach(function(entry){
+                    cols.push(entry.field);
+                });
+                $scope.fields.forEach(function(entry){
+                    cols.push(entry.field);
+                });
+            } else {
+                lower = (page ? page - 1 : 0) * $scope.pageItemLimit;
+                upper = (page ? page : 1) * $scope.pageItemLimit;
+                cols = $scope._.map($scope.cols, function (value) {
+                    return value.field;
+                });
+            }
+
 			CatalogAPI.entries.query({
 				type: $scope.selected.code,
 				lower: lower,
@@ -275,7 +291,7 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 				search: $scope.prepareSearchString($scope.searchText.value),
 				filters: $scope.processFilters($scope.filters)
 			}, function (response) {
-				$scope.items = $scope._.map(response.data, function (value) {
+				var queryResults = $scope._.map(response.data, function (value) {
 					return $scope._.omit(value, [
 						'additionalInfo',
 						'__v'
@@ -297,34 +313,41 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 				if ($scope.fields.length > 0) {
 					for (var i = 0; i < $scope.fields.length; i++) {
 						var field = $scope.fields[i];
-						for (var j = 0; j < $scope.items.length; j++) {
-							var newField = $scope._.findWhere(response.data, { _id: $scope.items[j]._id });
+						for (var j = 0; j < queryResults.length; j++) {
+							var newField = $scope._.findWhere(response.data, { _id: queryResults.items[j]._id });
 							if (newField && newField.additionalInfo)
-								$scope.items[j][field.field] = newField.additionalInfo[field.field.replace('additionalInfo.', '')];
+								queryResults[j][field.field] = newField.additionalInfo[field.field.replace('additionalInfo.', '')];
 							else
-								$scope.items[j][field.field] = '';
+								queryResults[j][field.field] = '';
 						}
 					}
 				}
-				$scope.lower = lower;
-				$scope.upper = upper;
-				if(page === 1 && totalFlag)
-				{
-					if (response.data.length === $scope.pageItemLimit) {
-						CatalogAPI.entries.query({
-							type: $scope.selected.code,
-							search: $scope.prepareSearchString($scope.searchText.value),
-							total: true,
-							fields: cols.join(' '),
-							filters: $scope.processFilters($scope.filters)
-						}, function (response) {
-							if (response) {
-								$scope.total = response.count;
-							}
-						});
-					} else
-						$scope.total = response.data.length;
-				}
+
+                if (callback) {
+                    callback($scope.selected.code, queryResults);
+                } else {
+                    $scope.items = queryResults;
+                    $scope.total = response.total;
+                    $scope.lower = lower;
+                    $scope.upper = upper;
+                    if(page === 1 && totalFlag)
+                    {
+                        if (response.data.length === $scope.pageItemLimit) {
+                            CatalogAPI.entries.query({
+                                type: $scope.selected.code,
+                                search: $scope.prepareSearchString($scope.searchText.value),
+                                total: true,
+                                fields: cols.join(' '),
+                                filters: $scope.processFilters($scope.filters)
+                            }, function (response) {
+                                if (response) {
+                                    $scope.total = response.count;
+                                }
+                            });
+                        } else
+                            $scope.total = response.data.length;
+                    }
+                }
 			});
 		};
 
@@ -392,5 +415,23 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 				return true;
 			return false;
 		};
+
+        var resultDownloaded = function(type, queryResult) {
+            console.log(queryResult);
+            try{
+                if (window.exec !== undefined){
+                    var response = window.exec(JSON.stringify({ functionName: 'MergeTable', invokeAsCommand: false, functionParams: {'type' : type, 'result' : queryResult}}));
+                    console.log(response);
+                }
+            }
+            catch(e){
+                console.error(e);
+            }
+        };
+
+        $scope.downloadSearchResults = function() {
+            alert('downloading...');
+            $scope.getPage(0, false, resultDownloaded);
+        };
 	}
 ]);

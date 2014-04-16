@@ -1,14 +1,14 @@
 'use strict';
 
 var parseString = require('xml2js').parseString;
-var OxygenOauth = require('../../test/mocha/RestApi/oxygenOauth');
+var OxygenOauth = require('../../test/mocha/RestAPI/oxygenOauth');
 var config = require('../../config/config');
 
 //staging account for sharding cause there is no dev sharder
 var oxygenOAuth = new OxygenOauth(config.oauth.oxygenUrl, config.oauth.consumerKeyNitrogen, config.oauth.consumerSecretNitrogen);
 oxygenOAuth.login('qi_men@hotmail.com','asdfasdf1', function(err, accessToken, accessSecret){
     if (err){
-        console.log.error(err);
+        console.error(err);
         return;
     }
     if (undefined === accessToken || undefined === accessSecret){
@@ -33,19 +33,19 @@ exports.sendFilesForSharding = function(files, callback){
 
     oxygenOAuth.request({method:'POST', headers:{'urlList':urlList, 'shardingVersion' : 269}}, sharderURL, function(e, r, body){
         if (e) {
-            console.log.error(e);
+            console.error(e);
             return;
         }
         if (!body) {
-            console.log.error('body is not found ');
-            console.log.error('Again........');
+            console.error('body is not found ');
+            console.error('Again........');
             this.sendFilesForSharding(files, callback);
             return;
         }
         parseString(body, function(err, res){
             if (err){
-                console.log.error(err);
-                console.log.error(body);
+                console.error(err);
+                console.error(body);
                 return;
             }
             //console.log(inspect(res, true, null));
