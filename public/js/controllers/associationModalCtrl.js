@@ -25,6 +25,8 @@ angular.module('ace.catalog').controller('associationModalCtrl', ['$scope', '$mo
 
 
 	$scope.toggleOption = function (child) {
+		if(typeof child.showOption === 'undefined')
+			child.showOption = false;
 		return (child.showOption = !child.showOption);
 	};
 

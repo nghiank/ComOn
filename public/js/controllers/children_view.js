@@ -28,6 +28,8 @@ angular.module('ace.schematic')
 	};
 
 	$scope.toggleOption = function (child) {
+		if(typeof child.showOption === 'undefined')
+			child.showOption = false;
 		return (child.showOption = !child.showOption);
 	};
 

@@ -4,6 +4,7 @@ angular.module('ace')
 .controller('Favourites', ['$scope', 'Global', 'UsersAPI', '$modal', function ($scope, Global, UsersAPI, $modal) {
 	$scope.Global = Global;
 	$scope.schematic = [];
+
 	$scope.getFavourites = function() {
 		UsersAPI.getFav.query(function(favourites) {
 			$scope.schematic = favourites.schematic;
@@ -15,6 +16,8 @@ angular.module('ace')
 		});
 	};
 	$scope.toggleOption = function (child) {
+		if(typeof child.showOption === 'undefined')
+			child.showOption = false;
 		return (child.showOption = !child.showOption);
 	};
 
