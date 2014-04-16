@@ -114,7 +114,7 @@ footer p {
 
 .blueBackground
 {
-    background-color: #428bca;
+    background-color: #428bca !important;
 }
 
 .greyBackground

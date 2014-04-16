@@ -18,13 +18,35 @@ angular.module('ace.catalog').controller('catIconLinkModalCtrl', ['Global', '$sc
 	$scope.link = function() {
 		if(!$scope.linkDisabled)
 		{
-			UsersAPI.addAssociation.save({items: _.map($scope.items, function(obj) {return obj._id;}), _id: $scope.selectedHiearchy[$scope.selectedHiearchy.length - 1]._id}, function(response) {
-				if(response) {
-					Global.user.associations = response;
-					$modalInstance.close(true);
-				}
-			});
+			if($scope.selectedHiearchy.length > 0)
+				UsersAPI.addAssociation.save({items: _.map($scope.items, function(obj) {return obj._id;}), _id: $scope.selectedHiearchy[$scope.selectedHiearchy.length - 1]._id}, function(response) {
+					if(response) {
+						Global.user.associations = response;
+						$modalInstance.close(true);
+					}
+				});
+			else
+				UsersAPI.addAssociation.save({items: _.map($scope.items, function(obj) {return obj._id;}), _id: $scope.selectedItem._id}, function(response){
+					if(response){
+						Global.user.associations = response;
+						$modalInstance.close(true);
+					}
+				});
 		}
+	};
+
+	$scope.setTarget = function(item){
+		$scope.target = item;
+	};
+
+	$scope.removeTarget = function(){
+		$scope.target = null;
+	};
+
+	$scope.getParentName = function(item){
+		SchematicsAPI.node.get({nodeId:item.parentNode},function(response){
+			$scope.itemParentName = response.name;
+		});
 	};
 
 	$scope.init = function() {
@@ -56,6 +78,12 @@ angular.module('ace.catalog').controller('catIconLinkModalCtrl', ['Global', '$sc
 			return true;
 		}
 		return false;
+	};
+
+	$scope.selectFromSearch = function(item){
+		$scope.selectedItem = item;
+		console.log(item._id);
+		console.log($scope.selectedItem._id);
 	};
 
 	$scope.selectOption = function(level, item)
@@ -116,10 +144,6 @@ angular.module('ace.catalog').controller('catIconLinkModalCtrl', ['Global', '$sc
 		});
 	};
 
-/*	$scope.selectFromSearch = function(option){
-
-	};*/
-
 	$scope.select = function(level, option)
 	{
 		var immediateChildren = [];
@@ -142,5 +166,10 @@ angular.module('ace.catalog').controller('catIconLinkModalCtrl', ['Global', '$sc
 			}
 		}
 		$scope.linkDisabled = true;
+	});
+
+	$scope.$watch('selectedItem',function(){
+		if($scope.selectedItem!== null)
+			$scope.linkDisabled = false;
 	});
 }]);

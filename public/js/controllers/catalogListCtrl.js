@@ -517,5 +517,9 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 				return true;
 			return false;
 		};
+
+		$scope.checkLink = function(){
+			return true;
+		};
 	}
 ]);
