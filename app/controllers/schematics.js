@@ -58,8 +58,8 @@ var shardPublishedComponent = function(id, version){
                 versionedModel.save(function (err, product, numberAffected){
                     if (err)
                         console.error(err);
-                    //console.log('The number of updated documents was %d', numberAffected);
-                    //console.log('The product was ', product);
+                    console.log('The number of updated documents was %d', numberAffected);
+                    console.log('The product was ', product);
                 });
             }
         });//shard
