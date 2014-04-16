@@ -317,7 +317,6 @@ exports.removeAssociation = function(req,res) {
         return error.sendGenericError(res, 400, 'Error Encountered');
     var item = JSON.stringify(req.body.item);
     var _id = JSON.stringify(req.body._id);
-    console.log(item, _id);
     var list = req.user.associations;
     var callback = function(err) {
         if(err)
