@@ -1,0 +1,20 @@
+<div ng-init="populateEntries()">
+	<div class="modal-header">
+		Manage Associations for {{item.catalog}}
+	</div>
+    <div class="modal-body" style="padding-bottom: 0px;">
+        <ul class="list-group" style=" overflow-y: auto; max-height: 400px">        
+            <li class="list-group-item imgLoader" ng-repeat="child in schematicEntries" ng-mouseenter = "toggleOption(child)" ng-mouseleave = "toggleOption(child)">
+                <img ng-src='{{child.thumbnail}}' ng-show="child.thumbnail" style="width: 40px; height: 40px; margin-right:10px;">
+                {{child.name}}
+                <a class="btn pull-right btn-link" ng-click="deleteAssociation(child)" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}" ng-show="child.showOption">
+                    <i class="fa fa-times error"></i>
+                </a>
+            </li>
+        </ul>
+   	</div>
+   	<div class="modal-footer">
+		    <button class="btn btn-primary btn-separate pull-right" ng-click="done()">Done</button>
+            <button class="btn btn-default btn-separate pull-left" ng-click="cancel()">Cancel</button>
+    </div>
+</div>

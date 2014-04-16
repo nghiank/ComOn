@@ -28,6 +28,8 @@ angular.module('ace.schematic')
 	};
 
 	$scope.toggleOption = function (child) {
+		if(typeof child.showOption === 'undefined')
+			child.showOption = false;
 		return (child.showOption = !child.showOption);
 	};
 
@@ -172,7 +174,6 @@ angular.module('ace.schematic')
 		UsersAPI.addSchemFav.save({_id: child._id}, function(response) {
 			if(response)
 			{
-				console.log('favourite added');
 				child.isFavourite = true;
 				if($scope.Global.authenticated)
 					$scope.Global.setFav(response);
@@ -186,7 +187,6 @@ angular.module('ace.schematic')
 		UsersAPI.delSchemFav.save({_id: child._id}, function(response) {
 			if(response)
 			{
-				console.log('favourite deleted');
 				child.isFavourite = false;
 				if($scope.Global.authenticated)
 					$scope.Global.setFav(response);

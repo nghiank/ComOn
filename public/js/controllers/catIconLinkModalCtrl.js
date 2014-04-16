@@ -14,6 +14,7 @@ angular.module('ace.catalog').controller('catIconLinkModalCtrl', ['Global', '$sc
 	$scope.selectedStd = null;
 	$scope.selectedStdName = null;
 	$scope.selectedLevel = null;
+	$scope.selectedItem = null;
 
 	$scope.link = function() {
 		if(!$scope.linkDisabled)
@@ -49,6 +50,10 @@ angular.module('ace.catalog').controller('catIconLinkModalCtrl', ['Global', '$sc
 		});
 	};
 
+	$scope.getListOfItems = function() {
+		return _.map($scope.items, function(obj){return obj.catalog;}).join(', ');
+	};
+
 	$scope.init = function() {
 		SchematicsAPI.standardlist.query(function(standards) {
 			$scope.stds = standards;
@@ -82,8 +87,6 @@ angular.module('ace.catalog').controller('catIconLinkModalCtrl', ['Global', '$sc
 
 	$scope.selectFromSearch = function(item){
 		$scope.selectedItem = item;
-		console.log(item._id);
-		console.log($scope.selectedItem._id);
 	};
 
 	$scope.selectOption = function(level, item)
