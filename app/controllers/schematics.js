@@ -153,6 +153,22 @@ var deleteChildren = function(id) {
 					user.save();
 				}
 			});
+			Users.find({'associations.schematicId': deleted_id}, function(err, users) {
+				if(err)
+					return console.log(err);
+				if(!users)
+					return;
+				for (var i = 0; i < users.length; i++) {
+					var user = users[i];
+					for (var j = 0; j < user.associations.length; j++) {
+						if(user.associations[j].schematicId === deleted_id)
+						{
+							user.associations.splice(j, 1);
+						}
+					}
+					user.save();
+				}
+			});
 			component.remove();
 		});
 };
@@ -384,6 +400,16 @@ exports.node = function(req, res, next, id) {
         });
 };
 
+exports.getLinks = function(req, res) {
+	if(!req.body.items)
+		return error.sendGenericError(res, 400, 'Error Encountered');
+	ComponentSchem.find({_id: {$in: req.body.items}}).lean().select('thumbnail dl').exec(function(err, components) {
+		if(err)
+			return error.sendGenericError(res, 400, 'Error Encountered');
+		res.jsonp(components);
+	});
+};
+
 exports.getNode = function(req,res){
 	if (!req.node)
 		return error.sendGenericError(res, 400, 'Error Encountered');
@@ -392,15 +418,15 @@ exports.getNode = function(req,res){
 
 exports.createNode = function(req,res){
 	if(!req.body.node)
-		return error.sendGenericError(res, 400, 'No node sent to server');
+		return error.sendGenericError(res, 400, 'Error Encountered');
 	var node = req.body.node;
 	if(!node.parentNode)
-		return error.sendGenericError(res, 400, 'No node sent to server');
+		return error.sendGenericError(res, 400, 'Error Encountered');
 	ComponentSchem.findOne({_id: node.parentNode}, function(err, component) {
 		if(err)
-			return error.sendGenericError(res, 400, 'No node sent to server');
+			return error.sendGenericError(res, 400, 'Error Encountered');
 		if(!component)
-			return error.sendGenericError(res, 400, 'No node sent to server');
+			return error.sendGenericError(res, 400, 'Error Encountered');
 		var child_component = new ComponentSchem({
 				name: node.name,
 				parentNode: node.parentNode,

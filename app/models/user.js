@@ -38,7 +38,8 @@ var UserSchema = new Schema({
     catalogFilters: [{
         type: Schema.Types.Mixed,
         default: null
-    }]
+    }],
+    associations: [{catalogId: {type: Schema.ObjectId, default: null, ref: 'Catalog'}, schematicId: {type: Schema.ObjectId, default: null,  ref: 'SchematicComponent' }}]
 });
 
 UserSchema.index({isAdmin: 1});

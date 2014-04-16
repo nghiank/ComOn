@@ -17,7 +17,7 @@ module.exports = function(app) {
     app.post('/api/isUniqueId',authorization.requiresLogin, hasAuthorization, schem.isUniqueId);
     app.post('/api/createNode',authorization.requiresLogin, hasAuthorization, schem.createNode);
     app.post('/api/getEntireStandard', schem.getEntireStandard);
-    app.post('/api/getNodeByName',schem.getNodeByName);
+    app.post('/api/getLinks', schem.getLinks);
     
     app.get('/api/getChildren/:nodeId', schem.getNodeChildren);
     app.get('/api/getParentHiearchy/:nodeId', schem.getParentHiearchy);

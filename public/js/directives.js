@@ -93,10 +93,12 @@ angular.module('ace').directive('resetForm',
 				var contextmenu = angular.element(document.querySelector('#contextMenu'));
 				scope.$watch('selectedItems',function(){
 					if(!elements.hasClass('highlighted')){
+						elements.unbind('contextmenu');
 						elements.bind('contextmenu', function(){
 							contextmenu.hide();
 						});
 					}else{
+						elements.unbind('contextmenu');
 						elements.bind('contextmenu',function(e){
 							e.preventDefault();
 						if(scope.selectedItems.length > 0)

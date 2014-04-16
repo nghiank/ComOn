@@ -6,7 +6,7 @@
 var mongoose = require('mongoose'),
     User = mongoose.model('User'),
     ComponentSchem = mongoose.model('SchematicComponent'),
-    //CatSchem = mongoose.model('Catalog'),
+    CatSchem = mongoose.model('Catalog'),
     error = require('../utils/error'),
     _ = require('underscore');
 /**
@@ -209,24 +209,10 @@ exports.removeSchemFavourite = function(req,res) {
     res.jsonp(list);
 };
 
-/*exports.addCatFavorite = function(req,res){
-    if(!req.user)
-        return error.sendUnauthorizedError(res);
-    if(!req.body.items)
-        return error.sendGenericError(res, 400, 'Error Encountered');
-    for(var i in req.body.items){
-        CatSchem.findOne({_id:req.body.items[i]._id}).exec(function(err, item){
-            if(err)
-                return error.sendGenericError(res, 400, 'Error Encountered');
-            console.log(req.user);
-        });
-    }
-}*/
-
 exports.getFavourites = function(req, res) {
     if(!req.user)
         return error.sendUnauthorizedError(res);
-    ComponentSchem.find({_id: {$in: req.user.SchemFav}, isComposite: false}).exec(function(err, components) {
+    ComponentSchem.find({_id: {$in: req.user.SchemFav}, isComposite: false}).lean().exec(function(err, components) {
         if(err)
             return error.sendGenericError(res, 400, 'Error Encountered');
         res.jsonp({'schematic': components});
@@ -272,6 +258,73 @@ exports.removeFilter = function(req,res) {
             if(err)
                 return error.sendGenericError(res, 400, 'Error Encountered');
             res.jsonp(req.user.catalogFilters);
+        });
+        return;
+    }
+    else {
+        return error.sendGenericError(res, 400, 'Error Encountered');
+    }
+};
+
+
+exports.getAssociations = function(req, res) {
+    if(!req.user)
+        return error.sendUnauthorizedError(res);
+    return res.jsonp(req.user.associations);
+};
+
+exports.addAssociation = function(req, res) {
+    if(!req.user)
+        return error.sendUnauthorizedError(res);
+    if(!req.body.hasOwnProperty('items') || !req.body.hasOwnProperty('_id'))
+        return error.sendGenericError(res, 400, 'Error Encountered');
+    var items = req.body.items;
+    if(items.length === 0)
+        return error.sendGenericError(res, 400, 'Error Encountered');
+    var _id = req.body._id;
+    ComponentSchem.findOne({_id: _id}).lean().exec(function(err, component) {
+        if(err)
+            return error.sendGenericError(res, 400, 'Error Encountered');
+        if(!component)
+            return error.sendGenericError(res, 400, 'Error Encountered');
+        CatSchem.find({_id: {$in: items}}).lean().exec(function(err, entries) {
+            if(err)
+                return error.sendGenericError(res, 400, 'Error Encountered');
+            var associations = req.user.associations;
+            for (var i = 0; i < entries.length; i++) {
+                var entry = entries[i];
+                var newObj = {catalogId: entry._id, schematicId: _id};
+                if(!associations || (associations && associations.indexOf(newObj)) < 0)
+                {
+                    associations.push(newObj);
+                }
+            }
+            req.user.associations = associations;
+            req.user.save(function(err) {
+                if(err)
+                    return error.sendGenericError(res, 400, 'Error Encountered');
+                else
+                    res.jsonp(req.user.associations);
+            });
+        });
+    });
+};
+
+exports.removeAssociation = function(req,res) {
+    if(!req.user)
+        return error.sendUnauthorizedError(res);
+    if(!req.body.hasOwnProperty('item') || !req.body.hasOwnProperty('_id'))
+        return error.sendGenericError(res, 400, 'Error Encountered');
+    var item = req.body.item;
+    var _id = req.body._id;
+    var list = req.user.associations;
+    if(list.indexOf({catalogId: item,  schematicId: _id}) > -1)
+    {
+        req.user.Associations.splice({catalogId: item,  schematicId: _id}, 1);
+        req.user.save(function(err) {
+            if(err)
+                return error.sendGenericError(res, 400, 'Error Encountered');
+            res.jsonp(req.user.Associations);
         });
         return;
     }

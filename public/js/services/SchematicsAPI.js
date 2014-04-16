@@ -10,23 +10,8 @@ angular.module('ace.schematic').factory('SchematicsAPI', ['$resource','$http', f
 		delete: $resource('api/delete/:nodeId', {nodeId: '@_id'}),
 		editComponent: $resource('api/editComponent',null),
 		editStd: $resource('api/editStd',null),
-		checkId:$resource('api/isUniqueId',null),
-		getAllChildren:$resource('api/getEntireStandard',null, {save: {method: 'POST', isArray: true}}),
-		nodeByName:function(query, std){
-			console.log(query);
-			return $http.post('api/getNodeByName', 
-			{
-				name: query,
-				standard:std
-			}
-			).then(function(res){
-				var result = [];
-				console.log(res);
-				angular.forEach(res.data, function(entry){
-					result.push(entry);
-				});
-				return result;
-			});
-		}
+		checkId: $resource('api/isUniqueId',null),
+		getAllChildren: $resource('api/getEntireStandard',null, {save: {method: 'POST', isArray: true}}),
+		getLinks: $resource('api/getLinks',null, {query: {method: 'POST', isArray: true}})
 	};
 }]);

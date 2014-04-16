@@ -2,6 +2,7 @@
 
 var mongoose = require('mongoose');
 var CatalogSchem = mongoose.model('Catalog');
+var Users = mongoose.model('User');
 var error = require('../utils/error');
 var _ = require('underscore');
 
@@ -344,6 +345,22 @@ exports.deleteCatalogEntry = function(req,res){
 			return error.sendGenericError(res, 400, 'Error Encountered');
 		if (!entry)
 			return error.sendGenericError(res, 400, 'Error Encountered');
+		Users.find({'associations.catalogId': entry._id}, function(err, users) {
+			if(err)
+				return console.log(err);
+			if(!users)
+				return;
+			for (var i = 0; i < users.length; i++) {
+				var user = users[i];
+				for (var j = 0; j < user.associations.length; j++) {
+					if(user.associations[j].catalogId === entry._id)
+					{
+						user.associations.splice(j, 1);
+					}
+				}
+				user.save();
+			}
+		});
 		entry.remove(function(err){
 			if(err)
 				return error.sendGenericError(res, 400, 'Error Encountered');
