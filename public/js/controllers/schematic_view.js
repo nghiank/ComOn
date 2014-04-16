@@ -9,7 +9,7 @@ angular.module('ace.schematic')
 		$scope.admin = true;
 	$scope.form = null;
 	$scope.forms = [{'name':'addForm','URL':'views/Schematics/addStdForm.html'},{'name':'editStdForm','URL':'views/Schematics/editStdForm.html'}];
-	
+
 	$scope.showAddForm = function () {
 		$scope.form = $scope.forms[0];
 	};
@@ -52,7 +52,7 @@ angular.module('ace.schematic')
 	$scope.downloadStandard = function(){
 		$scope.showComingSoon();
 	};
-	
+
 	$scope.showComingSoon = function(){
 		$modal.open({
 			templateUrl: 'views/ComingModal.html',

@@ -72,6 +72,7 @@ footer p {
 .local
 {
     background-color:#F9F9F9;
+    color:#D5D5D5;
 }
 
 .btn-separate
@@ -94,12 +95,17 @@ footer p {
     color:red;
 }
 
+.grey
+{
+    color: #d7d7d7;
+}
+
 .info
 {
     color: black;
 }
 
-.validation-box 
+.validation-box
 {
     padding-left: 0px;
     line-height: 0.5em;
@@ -205,7 +211,7 @@ footer p {
     border-radius: 4px !important;
 }
 
-.showIconOnHover:hover .onHover 
+.showIconOnHover:hover .onHover
 {
     display:inline;
 }
@@ -266,4 +272,30 @@ footer p {
 .dropdown-menu-bottom{
     max-height: 150px;
     overflow-y: auto;
+}
+
+.unpublished {
+    font-weight: bold;
+    font-family: "Trebuchet MS", Helvetica, sans-serif;
+    color: grey;
+    padding-left: 15px;
+}
+
+.fixed-width{
+    width:30%;
+}
+
+.thumbnail{
+    width: 40px;
+    height: 40px;
+    margin-right:10px;
+}
+
+.light-badge{
+    background-color: #C5C5C5;
+}
+
+.badge-unpublished{
+    color:#FAFAFA;
+    background-color:#D5D5D5;
 }

@@ -9,9 +9,9 @@
     <div class="row">
         <div class="col-md-5">
             <ul class="list-group">
-                <div class="list-group-item list-title">Standards<a class="pull-right list-title-btn" ng-show="admin" ng-click="showAddForm()"><i class="fa fa-plus fa-2x"></i></a></div> 
-                <li class="list-group-item" ng-show="unpublished(stds).length === 0">No standards availalbe now.</li>
-                <li class="list-group-item" ng-repeat="std in unpublished(stds)" ng-mouseenter = "toggleOption(std)" ng-mouseleave = "toggleOption(std)">
+                <div class="list-group-item list-title">Standards<a class="pull-right list-title-btn" ng-show="admin" ng-click="showAddForm()"><i class="fa fa-plus fa-2x"></i></a></div>
+                <li class="list-group-item" ng-show="stds.length == 0">No standards availalbe now.</li>
+                <li class="list-group-item" ng-repeat="std in stds" ng-mouseenter = "toggleOption(std)" ng-mouseleave = "toggleOption(std)">
                     <a href="#!/standards/{{std._id}}">{{std.name}}</a>
                     <a class="btn pull-right btn-link btn-xs" ng-click="showEditForm(std)" ng-show="std.showOption && admin">
                         <i class="fa fa-pencil"></i>

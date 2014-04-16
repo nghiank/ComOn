@@ -7,6 +7,8 @@ angular.module('ace.schematic')
 	$scope._ = underscore;
 	$scope.Global = Global;
 	$scope.admin = false;
+	$scope.leaves = [];
+	$scope.subtypes = [];
 	if($scope.Global.authenticated && $scope.Global.user.isAdmin)
 		$scope.admin = true;
 	$scope.getChildren = function() {
@@ -148,6 +150,23 @@ angular.module('ace.schematic')
 		});
 	};
 
+	$scope.showVersionModal = function(child){
+		$scope.target = child;
+		var modalInstance = $modal.open({
+			templateUrl: 'views/Schematics/versionListModal.html',
+			controller: 'versionListCtrl',
+			backdrop: 'static',
+			resolve: {
+				target: function() {
+					return ($scope.target);
+				}
+			}
+		});
+		modalInstance.result.then(function(){
+			$scope.getChildren();
+		});
+	};
+
 	$scope.showComingSoon = function(){
 		$modal.open({
 			templateUrl: 'views/ComingModal.html',
@@ -169,6 +188,8 @@ angular.module('ace.schematic')
 	$scope.addFav = function(child){
 		if(child.isComposite)
 			return;
+		if(child.published === 0)
+			return;
 		UsersAPI.addSchemFav.save({_id: child._id}, function(response) {
 			if(response)
 			{
@@ -183,6 +204,8 @@ angular.module('ace.schematic')
 	$scope.delFav = function(child){
 		if(child.isComposite)
 			return;
+		if(child.published === 0)
+			return;
 		UsersAPI.delSchemFav.save({_id: child._id}, function(response) {
 			if(response)
 			{
@@ -195,8 +218,16 @@ angular.module('ace.schematic')
 		});
 	};
 
-	$scope.unpublished = function(child) {
-		return child.isPublished || $scope.admin;
+	$scope.published = function(child) {
+		return (child.published !== 0) || $scope.admin;
+	};
+
+	$scope.checkAllPublished = function() {
+		for (var i = $scope.leaves.length - 1; i >= 0; i--) {
+			if($scope.published($scope.leaves[i]))
+				return false;
+		}
+		return true;
 	};
 
 }]);

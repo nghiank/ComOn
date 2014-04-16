@@ -16,7 +16,7 @@
                         <span class="input-group-addon btn btn-default btn-file"><span class="fileinput-new">Select file</span><span class="fileinput-exists">Change</span><input type="file" name="..." ng-file-select="datFileSelect($files)"></span>
                         <a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput" ng-click="resetDAT()">Remove</a>
                     </div>
-                </div>                                   
+                </div>
                     <p data-ng-show="error.dat" class="error">{{error.dat}}</p>
             </div>
         </div>
@@ -32,7 +32,7 @@
                         <span class="input-group-addon btn btn-default btn-file"><span class="fileinput-new">Select file</span><span class="fileinput-exists">Change</span><input type="file" name="..." ng-file-select="jsonFileSelect($files)"></span>
                         <a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput" ng-click="resetJSON()">Remove</a>
                     </div>
-                </div>    
+                </div>
                     <p data-ng-show="error.json" class="error">{{error.json}}</p>
                 </div>
             </div>
@@ -46,14 +46,14 @@
                 <p><i class="fa fa-check success" ng-show="!error.name && success.name"></i><i class="fa fa-times fileinput-exists error" ng-hide="!error.name && success.name"></i> {{stdName}}</p>
                     <p data-ng-show="error.name" class="error">{{error.name}}</p>
             </div>
-        </div>               
+        </div>
         <div class="form-group" ng-show="stdName && jsonFile && datFile">
             <label class= "col-md-3 control-label">Description: </label>
             <div class = "col-md-9">
                 <textarea class="form-control" rows="3" ng-model="desc"></textarea>
             </div>
-        </div>  
-        <hr ng-show="stdName && jsonFile && datFile">             
+        </div>
+        <hr ng-show="stdName && jsonFile && datFile">
         <div class="form-group pull-right" style="margin-right:5px">
             <button type="button" ng-click="validate()" class="btn btn-default" ng-disabled="!(valid.dat && valid.json && valid.name) || sendingSuccess">Validate</button>
             <a type="button" ng-disabled="uploadDisabled" class="btn btn-primary btn-separate" ng-click="uploadFiles()"><img ng-show="sendingFlag" src="/img/loaders/loader-small.gif" style="margin-right:10px; margin-top: -2px"><i ng-show="sendingSuccess" style="margin-right:10px; color: white"class="fa fa-check"></i>Create</a>
