@@ -518,8 +518,5 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 			return false;
 		};
 
-		$scope.checkLink = function(){
-			return true;
-		};
 	}
 ]);

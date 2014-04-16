@@ -146,7 +146,9 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 				if(response[i].code)
 					$scope.typeCodes.push(response[i].code);
 			}
-			$scope.original_types = $scope.typeCodes;
+			$scope.original_types = [];
+			for(var k in $scope.typeCodes)
+				$scope.original_types.push($scope.typeCodes[k]);
 			for (var j in sheets){
 				if($scope.typeCodes.indexOf(sheets[j]) > -1)
 					processedSheet = {'sName':sheets[j],'dName':sheets[j]};
@@ -154,6 +156,29 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 					processedSheet = {'sName':sheets[j],'pending':true};
 				$scope.processedSheets.push(processedSheet);
 			}
+		});
+	};
+
+	$scope.showOverrideMatchSheetModal = function(){
+		var modalInstance = $modal.open({
+			templateUrl: 'views/Catalog/overrideMatchingSheetModal.html',
+			controller: 'overrideMatchingSheetModalCtrl',
+			resolve:{
+				sheets: function(){
+					return $scope.processedSheets;
+				},
+				wb: function(){
+					return ($scope.wb);
+				}
+			}
+		});
+		modalInstance.result.then(function(data){
+			for(var i in data.types)
+				if(data.types[i].code){
+					$scope.typeCodes.push(data.types[i].code);
+					$scope.types.push(data.types[i]);
+				}
+			$scope.processedSheets = data.sheets;
 		});
 	};
 
@@ -203,7 +228,8 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 		var std_fields = [];
 		var compulsory_fields = ['catalog','manufacturer'];
 		var compulsory_fields_flag = 0;
-		if($scope.original_types.indexOf($scope.processedSheets[j].dName) > -1)
+		if($scope.original_types.indexOf($scope.processedSheets[j].dName) > -1){
+			console.log('old type');
 			CatalogAPI.fields.query({type:$scope.processedSheets[j].dName},function(response){
 				for(var k in response){
 					var std_field = _.values(response[k]).join('');
@@ -218,8 +244,10 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 					if(std_fields.indexOf(cols[k].toLowerCase()) > -1){
 						fieldMatchPair.push(cols[k]);
 						fieldMatchPair.push(std_fields[std_fields.indexOf(cols[k].toLowerCase())]);
-						if(compulsory_fields.indexOf(cols[k].toLowerCase() > -1))
+						if(compulsory_fields.indexOf(cols[k].toLowerCase()) > -1){
 							compulsory_fields_flag++;
+						}
+
 					}else{
 						fieldMatchPair.push(cols[k]);
 						fieldMatchPair.push('');
@@ -227,8 +255,9 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 					}
 					$scope.processedSheets[j].fields.push(fieldMatchPair);
 				}
-				$scope.processedSheets[j].pendingFields += compulsory_fields.length - compulsory_fields_flag;
+				$scope.processedSheets[j].pendingFields += (compulsory_fields.length - compulsory_fields_flag);
 			});
+		}
 		else{
 			$scope.processedSheets[j].fields = [];
 			for (var k in cols){
