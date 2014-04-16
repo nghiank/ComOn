@@ -105,10 +105,10 @@ angular.module('ace.catalog').controller('catIconLinkModalCtrl', ['Global', '$sc
 						if(!response[i].isComposite)
 							$scope.typeAheadValues.push(response[i]);
 				var immediateChildren = [];
-				for (var i = 0; i < response.length; i++) {
-					if(response[i].parentNode === option._id)
+				for (var j = 0; j < response.length; j++) {
+					if(response[j].parentNode === option._id)
 					{
-						immediateChildren.push(response[i]);
+						immediateChildren.push(response[j]);
 					}
 				}
 				$scope.levels.push({items: immediateChildren, levelNumber: 1});
