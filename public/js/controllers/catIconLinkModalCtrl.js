@@ -73,18 +73,24 @@ angular.module('ace.catalog').controller('catIconLinkModalCtrl', ['$scope', '$ti
 		SchematicsAPI.getAllChildren.save({name: option.name}, function(response) {
 			if(response)
 			{
-				$scope.typeAheadValues= response;
-				console.log(response.length);
+				for(var i in response)
+						if(!response[i].isComposite)
+							$scope.typeAheadValues.push(response[i]);
 			}
 		});
-	}
+	};
 
 	$scope.selectStandard = function(option)
 	{
+		$scope.selectedStdName = option.name;
 		SchematicsAPI.getAllChildren.save({name: option.name}, function(response) {
 			if(response)
 			{
 				$scope.selectedStd = response;
+				$scope.typeAheadValues = [];
+				for(var i in response)
+						if(!response[i].isComposite)
+							$scope.typeAheadValues.push(response[i]);
 				var immediateChildren = [];
 				for (var i = 0; i < response.length; i++) {
 					if(response[i].parentNode === option._id)
@@ -97,9 +103,9 @@ angular.module('ace.catalog').controller('catIconLinkModalCtrl', ['$scope', '$ti
 		});
 	};
 
-	$scope.selectFromSearch = function(option){
-		
-	};
+/*	$scope.selectFromSearch = function(option){
+
+	};*/
 
 	$scope.select = function(level, option)
 	{
