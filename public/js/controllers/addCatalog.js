@@ -231,7 +231,6 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 		var compulsory_fields = ['catalog','manufacturer'];
 		var compulsory_fields_flag = 0;
 		if($scope.original_types.indexOf($scope.processedSheets[j].dName) > -1){
-			console.log('old type');
 			CatalogAPI.fields.query({type:$scope.processedSheets[j].dName},function(response){
 				for(var k in response){
 					var std_field = _.values(response[k]).join('');
