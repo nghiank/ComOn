@@ -58,8 +58,8 @@ var shardPublishedComponent = function(id, version){
                 versionedModel.save(function (err, product, numberAffected){
                     if (err)
                         console.error(err);
-                    console.log('The number of updated documents was %d', numberAffected);
-                    console.log('The product was ', product);
+                    //console.log('The number of updated documents was %d', numberAffected);
+                    //console.log('The product was ', product);
                 });
             }
         });//shard
@@ -551,7 +551,7 @@ exports.publishComponent = function(req, res){
         component.save(function(err) {
             if(err)
                 return error.sendGenericError(res, 400, 'Error Encountered');
-            res.send(200);
+            return res.send(200);
         });
 	});
 };

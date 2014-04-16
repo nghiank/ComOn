@@ -198,12 +198,24 @@ describe('<e2e API Test>', function() {
 													if(!child.isComposite)
 													{
 														component_id = child._id;
-														done();
-														return;
-													}
+														break;
+												    }
 												}
-												done();
+                                                if (component_id !== '')
+                                                {
+                                                    console.log('sharding ' + component_id);
+                                                    agent.post('/api/publishComponent/')
+                                                    .send({_id: component_id, number:1})
+                                                    .end(function(err, res) {
+                                                        console.log('sharding error ' + err);
+                                                        console.log('sharding res ' + res.status);
+                                                        (res.status).should.equal(200);
+                                                        return;
+                                                    });
+                                                }
+                                                done();
 											});
+
 										});
 									});
 								}
@@ -214,6 +226,7 @@ describe('<e2e API Test>', function() {
 				});
 			});
 			it('POST /api/addSchemFav with valid id should return 200', function(done) {
+                console.log('adding id as favourite' + component_id);
 				(component_id).should.not.equal('');
 				agent.post('/api/addSchemFav')
 				.send({_id: component_id})

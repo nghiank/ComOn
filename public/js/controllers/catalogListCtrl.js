@@ -327,7 +327,6 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
                     callback($scope.selected.code, queryResults);
                 } else {
                     $scope.items = queryResults;
-                    $scope.total = response.total;
                     $scope.lower = lower;
                     $scope.upper = upper;
                     if(page === 1 && totalFlag)
