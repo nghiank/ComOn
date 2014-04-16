@@ -20,9 +20,6 @@ angular.module('ace').directive('resetForm',
 		return {
 			restrict: 'A',
 			link: function(scope, element, attr) {
-				element.bind('click',function(e){
-					e.stopPropagation();
-				});
 				scope.$watch('cols.length', function () {
 					if(attr.transformLink.indexOf('HTTP://') === 0)
 					{
