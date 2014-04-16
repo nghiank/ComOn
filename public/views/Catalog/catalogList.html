@@ -7,7 +7,7 @@
 			</form>
 
             <li style="margin-top: 20px; margin-left: 15px;" ng-show="types.length == 0">No catalog available</li>          
-            <li style="margin-left: 10px;" class="ng-class:{active: (!!selected? type.code===selected.code: false)}" ng-repeat="type in types | orderBy: 'name' |filter: searchType" ng-mouseenter = "toggleOption(type)" ng-mouseleave = "toggleOption(type)" href="#!/catalog/{{type.name}}" ng-click="showTypeList(type)">
+            <li style="margin-left: 10px;" class="ng-class:{active: (!!selected? type.code===selected.code: false)}" ng-repeat="type in types | orderBy: 'name' |filter: searchType" ng-mouseenter = "toggleOption(type, true)" ng-mouseleave = "toggleOption(type, false)" href="#!/catalog/{{type.name}}" ng-click="showTypeList(type)">
                 <a>{{type.name + '  ('+ type.code + ')'}}</a>
             </li>
         </ul>

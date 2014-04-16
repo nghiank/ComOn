@@ -282,6 +282,14 @@ exports.addAssociation = function(req, res) {
     if(items.length === 0)
         return error.sendGenericError(res, 400, 'Error Encountered');
     var _id = req.body._id;
+    var entry;
+    var checker = function(obj) {
+        if(entry && JSON.stringify(obj.catalogId) === JSON.stringify(entry._id) && JSON.stringify(obj.schematicId) === JSON.stringify(_id))
+        {
+            return true;
+        }
+        return false;
+    };
     ComponentSchem.findOne({_id: _id}).lean().exec(function(err, component) {
         if(err)
             return error.sendGenericError(res, 400, 'Error Encountered');
@@ -292,11 +300,10 @@ exports.addAssociation = function(req, res) {
                 return error.sendGenericError(res, 400, 'Error Encountered');
             var associations = req.user.associations;
             for (var i = 0; i < entries.length; i++) {
-                var entry = entries[i];
-                var newObj = {catalogId: entry._id, schematicId: _id};
-                if(!associations || (associations && associations.indexOf(newObj)) < 0)
+                entry = entries[i];
+                if(!associations || (associations && _.filter(associations, checker).length === 0))
                 {
-                    associations.push(newObj);
+                    associations.push({catalogId: entry._id, schematicId: _id});
                 }
             }
             req.user.associations = associations;

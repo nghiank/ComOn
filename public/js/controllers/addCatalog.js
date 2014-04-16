@@ -81,6 +81,8 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 		$scope.success = check.suc_message;
 		$scope.valid = check.result;
 		$scope.error = check.err_message;
+		$scope.sendingFlag = false;
+		$scope.sendingSuccess = false;
 	};
 
 	$scope.populate = function() {
@@ -497,12 +499,14 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 				json_obj[sheetToProcess.dName? sheetToProcess.dName: key] = {title: (sheetToProcess.dName? getTypeName(sheetToProcess.dName): (sheet[[$scope.sheetTitle]]? sheet[$scope.sheetTitle].w: '')), entries: sheet_data};
 				sheet_data = [];
 			}
-			$scope.populateProgress = 20 +  Math.floor(count*100/$scope.totalSheetNo*0.6);
 		}
+		$scope.submitDisabled = true;
+		$scope.sendingFlag = true;
 		CatalogAPI.updateCatalog.save({data: json_obj}, function(response) {
 			if(response)
 			{
-				$scope.populateProgress = 100;
+				$scope.sendingFlag = false;
+				$scope.sendingSuccess = true;
 			}
 		});
 	};

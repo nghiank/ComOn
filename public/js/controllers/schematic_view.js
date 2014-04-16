@@ -32,11 +32,11 @@ angular.module('ace.schematic')
 	};
 	$scope.editForm = false;
 
-	$scope.toggleOption = function (std) {
+	$scope.toggleOption = function (std, set) {
 		$scope.target = std;
 		if(typeof std.showOption === 'undefined')
 			std.showOption = false;
-		return (std.showOption = !std.showOption);
+		return (std.showOption = set);
 	};
 
 	$scope.unpublished = function(array) {

@@ -24,10 +24,10 @@ angular.module('ace.catalog').controller('associationModalCtrl', ['$scope', '$mo
 	};
 
 
-	$scope.toggleOption = function (child) {
+	$scope.toggleOption = function (child, set) {
 		if(typeof child.showOption === 'undefined')
 			child.showOption = false;
-		return (child.showOption = !child.showOption);
+		return (child.showOption = set);
 	};
 
 	$scope.deleteAssociation = function(child) {

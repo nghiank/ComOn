@@ -27,10 +27,10 @@ angular.module('ace.schematic')
 		});
 	};
 
-	$scope.toggleOption = function (child) {
+	$scope.toggleOption = function (child, set) {
 		if(typeof child.showOption === 'undefined')
 			child.showOption = false;
-		return (child.showOption = !child.showOption);
+		return (child.showOption = set);
 	};
 
 	$scope.getSiblings = function(breadcrumb){

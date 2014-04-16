@@ -38,7 +38,7 @@
                         <button class="btn btn-info btn-sm btn-separate " style="margin-top: -5px" ng-click="toggleShowAll(1)" ng-if="!showAll">Show all sheets</button>
                         <button class="btn btn-info btn-sm btn-separate " style="margin-top: -5px" ng-click="toggleShowAll(1)" ng-if="showAll">Hide matched sheets</button>
                         </p>
-                    	<table class="table">
+                    	<table class="table" ng-show="countPending() !== 0 || showAll">
                         <thead>
                             <tr>
                                 <th class="col-md-6">.xls File Sheets</th>
@@ -66,8 +66,6 @@
                                             </ul>
                                         </div>
                                     </div>
-                                        <!-- <select class="form-control" ng-model="sheet.dName" ng-options="type for type in typeCodes" ng-if="!sheet.unTrack"></select> -->
-
                                     <div class="col-md-1">
                                         <i class="fa fa-check success" ng-show="sheet.dName && !sheet.unTrack"></i>
                                     </div>
@@ -121,7 +119,7 @@
 	                        <div class="col-md-12">
 	                            <div class="pull-right">
 	                                <a class="btn btn-default btn-separate" ng-click="states[1]=1;states[2]=0">Back</a>
-	                                <a class="btn btn-primary btn-separate" ng-click="startProcessing()" ng-disabled="submitDisabled">Submit</a>
+	                                <a class="btn btn-primary btn-separate" ng-click="startProcessing()" ng-disabled="submitDisabled"><img ng-show="sendingFlag" src="/img/loaders/loader-small.gif" style="margin-right:10px"><i ng-show="sendingSuccess" style="margin-right:10px; color: white"class="fa fa-check"></i>Submit</a>
 	                            </div>
 	                        </div>
 	                    </div>
