@@ -385,6 +385,8 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 			var cols = $scope._.map($scope.cols, function (value) {
 					return value.field;
 				});
+			$scope.selectedRows = [];
+			$scope.selectedItems = [];
 			CatalogAPI.entries.query({
 				type: $scope.selected.code,
 				lower: lower,

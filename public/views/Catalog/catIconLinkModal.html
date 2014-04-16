@@ -2,7 +2,7 @@
 	<nav class="navbar navbar-default" style="margin-bottom: 0px">
 	  <div class="container-fluid">
 	    <div class="navbar-header col-md-6">
-	      <a class="navbar-brand"><i style="font-size: 16px;">Linking {{items.length > 1 ? items.length+' items' : items[0].catalog}} to Schematic Icons</i></a>
+	      <a class="navbar-brand"><i style="font-size: 16px;"><span>Linking </span><span ng-show="items.length > 1" tooltip-placement="bottom" tooltip="{{getListOfItems()}}"><u>{{items.length}}</u> </span><span ng-show="items.length > 1">items </span><span ng-show="items.length === 1">{{items[0].catalog}}</span><span> to Schematic Icons</span></i></a>
 	    </div>
 	    <div class="col-md-6 pull-right">
 	    	<div class="input-group" style="margin-top:9px">
