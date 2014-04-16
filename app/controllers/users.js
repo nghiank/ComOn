@@ -315,22 +315,24 @@ exports.removeAssociation = function(req,res) {
         return error.sendUnauthorizedError(res);
     if(!req.body.hasOwnProperty('item') || !req.body.hasOwnProperty('_id'))
         return error.sendGenericError(res, 400, 'Error Encountered');
-    var item = req.body.item;
-    var _id = req.body._id;
+    var item = JSON.stringify(req.body.item);
+    var _id = JSON.stringify(req.body._id);
+    console.log(item, _id);
     var list = req.user.associations;
-    if(list.indexOf({catalogId: item,  schematicId: _id}) > -1)
-    {
-        req.user.Associations.splice({catalogId: item,  schematicId: _id}, 1);
-        req.user.save(function(err) {
-            if(err)
-                return error.sendGenericError(res, 400, 'Error Encountered');
-            res.jsonp(req.user.Associations);
-        });
-        return;
+    var callback = function(err) {
+        if(err)
+            return error.sendGenericError(res, 400, 'Error Encountered');
+        res.jsonp(req.user.associations);
+    };
+    for (var i = 0; i < list.length; i++) {
+        if(JSON.stringify(list[i].catalogId) === item && JSON.stringify(list[i].schematicId)=== _id)
+        {
+            req.user.associations.splice(i, 1);
+            req.user.save(callback);
+            return;
+        }
     }
-    else {
-        return error.sendGenericError(res, 400, 'Error Encountered');
-    }
+    return error.sendGenericError(res, 400, 'Error Encountered');
 };
 
 /**

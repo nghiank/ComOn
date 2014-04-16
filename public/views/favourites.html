@@ -20,8 +20,11 @@
             <ul class="list-group">
                 <div class="list-group-item list-title">Catalog Libraries</div> 
                 <li class="list-group-item" ng-show="Global.user.catalogFilters.length == 0">No catalog libraries defined.</li>          
-                <li class="list-group-item imgLoader" ng-repeat="child in Global.user.catalogFilters">
+                <li class="list-group-item" ng-repeat="child in Global.user.catalogFilters" ng-mouseenter = "toggleOption(child)" ng-mouseleave = "toggleOption(child)">
                     <a href="#!/catalog/{{child.name}}">{{child.name}}</a>
+                    <a ng-click="deleteFilter(child)" class="pull-right btn-link" ng-show="child.showOption" >
+                        <i class="fa fa-times error"></i>
+                    </a>
                 </li>
             </ul>
         </div>

@@ -403,7 +403,7 @@ exports.node = function(req, res, next, id) {
 exports.getLinks = function(req, res) {
 	if(!req.body.items)
 		return error.sendGenericError(res, 400, 'Error Encountered');
-	ComponentSchem.find({_id: {$in: req.body.items}}).lean().select('thumbnail dl').exec(function(err, components) {
+	ComponentSchem.find({_id: {$in: req.body.items}}).lean().populate('standard').exec(function(err, components) {
 		if(err)
 			return error.sendGenericError(res, 400, 'Error Encountered');
 		res.jsonp(components);

@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('ace')
-.controller('Favourites', ['$scope', 'Global', 'UsersAPI', function ($scope, Global, UsersAPI) {
+.controller('Favourites', ['$scope', 'Global', 'UsersAPI', '$modal', function ($scope, Global, UsersAPI, $modal) {
 	$scope.Global = Global;
 	$scope.schematic = [];
 	$scope.getFavourites = function() {
@@ -28,12 +28,34 @@ angular.module('ace')
 				$scope.schematic.splice($scope.schematic.indexOf(child), 1);
 				$scope.Global.setFav(response);
 			}
-
 		});
 	};
 
 	$scope.unpublished = function(child) {
 		return child.isPublished || $scope.admin;
+	};
+
+	$scope.deleteFilter = function(child) {
+		var modalInstance = $modal.open({
+			templateUrl: 'views/confirmationModal.html',
+			controller:'confirmationModalCtrl',
+			backdrop: 'static',
+			resolve:{
+				title: function(){return 'Are you sure you want to delete?';},
+				msg: function(){return 'This cannot be undone.';}
+			}
+		});
+		modalInstance.result.then(function(decision){
+			if(decision){
+				UsersAPI.delFilter.save({name: child.name}, function(response) {
+					if(response)
+					{
+						Global.user.catalogFilters = response;
+					}
+				});
+			}
+		});
+
 	};
 
 }]);
