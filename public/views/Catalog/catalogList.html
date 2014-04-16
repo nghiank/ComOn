@@ -84,8 +84,8 @@
 	</accordion>
 	<div class="row" ng-show="showList && !searchBox.show && items.length > 0">
 		<div class="col-md-8">
-			<a class="btn btn-default btn-sm" style="margin-top: 6px;" ng-click="showLinkModal()" ng-disabled="selectedItems.length===0"><i class="fa fa-link"></i></a>
-	    	<a class="btn btn-default btn-sm" style="margin-top: 6px;" ng-disabled="selectedItems.length===0"><i class="fa fa-star-o"></i></a>
+			<a class="btn btn-default btn-sm" style="margin-top: 6px;" ng-show="global.authenticated" ng-click="showLinkModal()" ng-disabled="selectedItems.length===0"><i class="fa fa-link"></i></a>
+	    	<a class="btn btn-default btn-sm" style="margin-top: 6px;" ng-show="global.authenticated" ng-disabled="selectedItems.length===0"><i class="fa fa-star-o"></i></a>
 	    	<a class="btn btn-default btn-sm" style="margin-top: 6px;" ng-disabled="selectedItems.length===0"><i style="margin-right: 10px;" class="fa fa-download"></i>3D Symbol</a>
    	 	</div>
    	 	<div class="col-md-4 pull-right">
