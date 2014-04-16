@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('ace.catalog').controller('filterModalCtrl', ['$scope', '$modalInstance', 'data', 'Global', '_', 'UsersAPI', function($scope, $modalInstance, data, Global, _, UsersAPI){
-	$scope.newFilter = {name: '', filter: {search: data.search, filters: data.filters}};
+	$scope.newFilter = {name: '', filter: {search: data.search, type: data.type, filters: data.filters}};
 	$scope.initsearch = data.search;
 	$scope.initfilters = data.filters;
 	$scope.saveDisabled = true;
@@ -14,7 +14,7 @@ angular.module('ace.catalog').controller('filterModalCtrl', ['$scope', '$modalIn
 		$scope.saveDisabled = true;
 		if($scope.newFilter.name === '')
 			return;
-		if(!$scope.newFilter.filter.search && !$scope.newFilter.filter.type && !$scope.newFilter.filter.filters)
+		if(!$scope.newFilter.filter.search || !$scope.newFilter.filter.type || !$scope.newFilter.filter.filters)
 			return;
 		var list = _.map($scope.global.user.catalogFilters, function(object) {if(object) return object.name.toLowerCase();});
 		if(list.indexOf($scope.newFilter.name.toLowerCase()) > -1)
