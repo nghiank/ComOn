@@ -56,7 +56,7 @@ angular.module('ace.catalog').controller('matchFieldsModalCtrl', ['$scope', '$mo
 				$scope.doneEnabled = false;
 				return;
 			}
-		var manFields= ['catalog','type','MANUFACTURER'];
+		var manFields= ['catalog','MANUFACTURER'];
 		$scope.flag = 0;
 		for(var j in manFields){
 			for(var k in $scope.sheet.fields){
@@ -65,7 +65,7 @@ angular.module('ace.catalog').controller('matchFieldsModalCtrl', ['$scope', '$mo
 			}
 				
 		}
-		if($scope.flag !== 3){
+		if($scope.flag < 2){
 			$scope.doneEnabled = false;
 			return;
 		}

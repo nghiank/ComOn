@@ -316,6 +316,20 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 		});
 	};
 
+	$scope.overrideMatchingFields = function(){
+		var compulsory_fields = ['catalog','manufacturer'];
+		for(var i in $scope.processedSheets){
+			var flag = 0;
+			if($scope.original_types.indexOf($scope.processedSheets[i].dName) < 0){
+				$scope.processedSheets[i].pendingFields = 0;
+				for(var j in $scope.processedSheets[i].fields)
+					if(compulsory_fields.indexOf($scope.processedSheets[i].fields[j][0].toLowerCase()) > -1)
+						flag ++;
+				$scope.processedSheets[i].pendingFields += compulsory_fields.length - flag;
+			}
+		}
+	};
+
 	$scope.toggleTrackingSheet = function(sheet){
 		for(var j in $scope.processedSheets){
 			if($scope.processedSheets[j].sName === sheet.sName){
