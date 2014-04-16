@@ -26,6 +26,7 @@ angular.module('ace').directive('resetForm',
 						var link = attr.transformLink;
 						element.text('');
 						element.html('<a href="'+link+'"><i class="fa fa-external-link"></i>');
+						element.bind('click', function(e) {e.stopPropagation();});
 					}
 					else if(attr.transformLink.indexOf('WWW.') > -1)
 					{
@@ -33,6 +34,7 @@ angular.module('ace').directive('resetForm',
 						var modified_link = 'HTTP://' + unmodified_link.substring(unmodified_link.indexOf('WWW.'));
 						element.text('');
 						element.html('<a href="'+modified_link+'"><i class="fa fa-external-link"></i>');
+						element.bind('click', function(e) {e.stopPropagation();});
 					}
 					else
 					{
