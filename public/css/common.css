@@ -185,6 +185,10 @@ footer p {
     font-family: "Trebuchet MS", Helvetica, sans-serif;
 }
 
+.modal-footer {
+    margin-top: 0px;
+}
+
 .star{
     color: #FFD700;
 }
