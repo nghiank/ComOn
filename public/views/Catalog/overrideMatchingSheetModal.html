@@ -13,14 +13,14 @@
 		<tbody>
 			<tr ng-repeat="sheet in sheets" ng-if="sheet.pending">
 				<td>{{sheet.sName}}</td>
-				<td class="showIconOnHover">
+				<td class="showIconOnHover" fix-width="2">
 					<span ng-if="!showEditCode[$index]">{{newTypes[$index].code}} <a ng-click="showEditCode[$index]=true" class="onHover">Edit</a></span>
 					<span ng-if="showEditCode[$index]">
 							<input class="form-control" style="padding-top: 0px; padding-bottom: 0px; height: inherit; width: inherit;" ng-model="newTypes[$index].code" ng-blur="checkCodes($index)" ng-keydown="autoSubmitCode($event,$index)" ng-class="{'has-error':error[$index]}">
 							<div ng-show="errorCode[$index]" class="help-block error">'{{newTypes[$index].code}}' already exists in database.</div>
 					</span>
 				</td>
-				<td class="showIconOnHover">
+				<td class="showIconOnHover" fix-width="2">
 					<span ng-if="!showEditName[$index]">{{newTypes[$index].name}} <a ng-click="showEditName[$index]=true" class="onHover">Edit</a></span>
 					<span ng-if="showEditName[$index]">
 							<input class="form-control" style="padding-top: 0px; padding-bottom: 0px; height: inherit; width: inherit;" ng-model="newTypes[$index].name" ng-blur="checkNames($index)" ng-keydown="autoSubmitName($event,$index)" ng-class="{'has-error':error[$index]}">
