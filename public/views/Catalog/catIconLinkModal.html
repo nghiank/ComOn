@@ -4,7 +4,7 @@
 	    <div class="navbar-header col-md-6">
 	      <a class="navbar-brand"><i style="font-size: 16px;"><span>Linking </span><span ng-show="items.length > 1" tooltip-placement="bottom" tooltip="{{getListOfItems()}}"><u>{{items.length}}</u> </span><span ng-show="items.length > 1">items </span><span ng-show="items.length === 1">{{items[0].catalog}}</span><span> to Schematic Icons</span></i></a>
 	    </div>
-	    <div class="col-md-6 pull-right">
+	    <div class="col-md-6 pull-right" ng-show="stds.length !== 0">
 	    	<div class="input-group" style="margin-top:9px">
 				<div class="input-group-btn left-inner-addon">
 					<button class="btn btn-default dropdown-toggle" data-toggle="dropdown">{{selectedStdName ? selectedStdName.split(':')[0]: stds[0].name.split(':')[0]}}<span class="caret" style="margin-left:10px"></span></button>
