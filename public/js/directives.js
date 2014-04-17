@@ -138,4 +138,26 @@ angular.module('ace').directive('resetForm',
 				);
 			}
 		};
+	}).directive('detectHeight',function(){
+		return{
+			restrict:'A',
+			link: function(scope,element){
+					element.bind('click',function(e){
+						if(element.parent().children().hasClass('dropdown-menu')){
+							var menu = element.parent().children('.dropdown-menu');
+							if(menu.height() > 300)
+								menu.css({'height':'300px','overflow-y':'scroll'});
+							if(e.pageY+menu.height() > document.body.clientHeight){
+									console.log('pageHeight:',document.body.clientHeight,'cursor:',e.pageY);
+									if(e.pageY-menu.height() - 30 < 0){
+										menu.css({'height':document.body.clientHeight - e.pageY});
+										return;
+									}
+									element.parent().removeClass('dropdown');
+									element.parent().addClass('dropup');
+							}
+						}
+					});
+			}
+		};
 	});
