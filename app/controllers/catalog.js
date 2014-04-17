@@ -296,15 +296,26 @@ exports.getCatalogEntries = function(req, res) {
 };
 
 exports.getCatalogEntryById = function(req,res){
-	if(!req.body._id)
+	if(!req.body._id && !req.body.items)
 		return error.sendGenericError(res, 400, 'Error Encountered');
-	CatalogSchem.findOne({_id: req.body._id}).lean().exec(function(err,entry){
-		if(err)
-			return error.sendGenericError(res, 400, 'Error Encountered');
-		if(!entry)
-			return error.sendGenericError(res, 400, 'Error Encountered');
-		res.status(200).jsonp(entry);
-	});
+	if(req.body._id)
+	{
+		CatalogSchem.findOne({_id: req.body._id}).lean().exec(function(err,entry){
+			if(err)
+				return error.sendGenericError(res, 400, 'Error Encountered');
+			if(!entry)
+				return error.sendGenericError(res, 400, 'Error Encountered');
+			res.jsonp(entry);
+		});
+	}
+	else if(req.body.items)
+	{
+		CatalogSchem.find({_id: {$in: req.body.items}}).lean().exec(function(err,entries){
+			if(err)
+				return error.sendGenericError(res, 400, 'Error Encountered');
+			res.jsonp(entries);
+		});	
+	}
 };
 
 exports.editCatalogEntry = function(req,res){

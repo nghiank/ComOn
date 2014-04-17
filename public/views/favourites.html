@@ -1,30 +1,34 @@
 <div ng-show="Global.authenticated" data-ng-init="getFavourites()" ng-controller="Favourites">
     <div class="row">
         <div class="col-md-6">
+            <div class="list-group-item list-title">Schematic Favourites</div> 
             <ul class="list-group">
-                <div class="list-group-item list-title">Schematic Favourites</div> 
                 <li class="list-group-item" ng-show="schematic.length == 0">No favourites added yet.</li>          
                 <li class="list-group-item imgLoader" ng-repeat="child in schematic | filter: unpublished" ng-mouseenter = "toggleOption(child, true)" ng-mouseleave = "toggleOption(child, false)">
                     <img ng-src="{{child.thumbnail}}" ng-show="child.thumbnail" style="width: 40px; height: 40px; margin-right:10px;">
                     <a href="#!/standards/{{child.parentNode}}">{{child.name}}</a>
-                    <a class="btn pull-right btn-link" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}" ng-click="delSchemFav(child)" ng-show="!child.isComposite">
-                        <i class="fa fa-star star"></i>
-                    </a>
-                    <a href="{{child.dl? child.dl: '#'}}" class="btn pull-right btn-link" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}" ng-show="child.showOption" >
-                        <i class="fa fa-download"></i>
-                    </a>
+                    <span style="position: absolute; right: 0px; height: 100%; top: 0px; padding-top: 12px; background-color: aliceblue;">
+                        <a class="btn pull-right btn-link" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}" ng-click="delSchemFav(child)" ng-show="!child.isComposite && child.showOption">
+                            <i class="fa fa-star star"></i>
+                        </a>
+                        <a href="{{child.dl? child.dl: '#'}}" class="btn pull-right btn-link" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}" ng-show="child.showOption" >
+                            <i class="fa fa-download"></i>
+                        </a>
+                    </span>
                 </li>
             </ul>
         </div>
         <div class="col-md-6">
+            <div class="list-group-item list-title">Catalog Libraries</div> 
             <ul class="list-group">
-                <div class="list-group-item list-title">Catalog Libraries</div> 
                 <li class="list-group-item" ng-show="Global.user.catalogFilters.length == 0">No catalog libraries defined.</li>          
                 <li class="list-group-item" ng-repeat="child in Global.user.catalogFilters" ng-mouseenter = "toggleOption(child, true)" ng-mouseleave = "toggleOption(child, false)">
                     <a href="#!/catalog/{{child.name}}">{{child.name}}</a>
-                    <a ng-click="deleteFilter(child)" class="pull-right btn-link" ng-show="child.showOption" >
-                        <i class="fa fa-times error"></i>
-                    </a>
+                    <span style="position: absolute; right: 0px; height: 100%; top: 0px; padding-top: 12px; background-color: aliceblue;">
+                        <a ng-click="deleteFilter(child)" style="padding-left: 10px; padding-right: 10px;" class="pull-right btn-link" ng-show="child.showOption" >
+                            <i class="fa fa-times error"></i>
+                        </a>
+                    </span>
                 </li>
             </ul>
         </div>

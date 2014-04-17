@@ -22,8 +22,8 @@
 			{{selected.name}}
 			<a style="position:absolute; left:50%;"><i class="fa fa-caret-down fa-lg" ng-show="!searchBox.show"></i></a>
 			<a style="position:absolute; left:50%;"><i class="fa fa-caret-up fa-lg" ng-hide="!searchBox.show"></i></a>
-			<a style="margin-top: -6px; margin-right: -10px" ng-click="$event.stopPropagation(); showConfigureModal()" class=" pull-right btn btn-default btn-sm"><i class="fa fa-gear"> Configure Table</i></a>
-			<a style="margin-top: -6px;" ng-show="checkFilters() && global.authenticated" ng-click="$event.stopPropagation(); showFilterModal()" class=" pull-right btn btn-primary btn-sm separate-right"><i class="fa fa-save"> Save current search</i></a>
+			<a style="margin-top: -6px; margin-right: -10px" ng-click="$event.stopPropagation(); showConfigureModal()" class=" pull-right btn btn-default btn-sm"><i class="fa fa-gear"  style="margin-right: 10px;"> </i>Configure Table</a>
+			<a style="margin-top: -6px;" ng-show="checkFilters() && global.authenticated" ng-click="$event.stopPropagation(); showFilterModal()" class=" pull-right btn btn-primary btn-sm separate-right"><i class="fa fa-save" style="margin-right: 10px;"></i>Save current search</a>
 		</div>
 	</accordion-heading>
 	<div ng-show="searchBox && selected">

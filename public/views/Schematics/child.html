@@ -23,12 +23,14 @@
                     <li class="list-group-item imgLoader" ng-repeat="child in subtypes | filter: unpublished" ng-mouseenter = "toggleOption(child, true)" ng-mouseleave = "toggleOption(child, false)">
                         <img ng-src="{{child.thumbnail}}" ng-show="child.thumbnail" style="width: 40px; height: 40px; margin-right:10px;">
                         <a href="#!/standards/{{child._id}}">{{child.name}}</a>
-                        <a class="btn pull-right btn-link" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}"  ng-show="child.showOption && admin" ng-click="showSubtypeEditForm(child)">
-                            <i class="fa fa-pencil"></i>
-                        </a>
-                        <a class="btn pull-right btn-link" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}" ng-show="child.showOption && !child.isPublished && admin">
-                            <i class="fa fa-cloud-upload"></i>
-                        </a>
+                        <span style="position: absolute; right: 0px; height: 100%; top: 0px; padding-top: 12px; background-color: aliceblue;">
+                            <a class="btn pull-right btn-link" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}"  ng-show="child.showOption && admin" ng-click="showSubtypeEditForm(child)">
+                                <i class="fa fa-pencil"></i>
+                            </a>
+                            <a class="btn pull-right btn-link" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}" ng-show="child.showOption && !child.isPublished && admin">
+                                <i class="fa fa-cloud-upload"></i>
+                            </a>
+                        </span>
                     </li>
             </ul>
         </div>
@@ -39,21 +41,23 @@
                 <li class="list-group-item imgLoader" ng-repeat="child in leaves | filter: unpublished" ng-mouseenter = "toggleOption(child, true)" ng-mouseleave = "toggleOption(child, false)">
                     <img ng-src='{{child.thumbnail}}' ng-show="child.thumbnail" style="width: 40px; height: 40px; margin-right:10px;">
                     {{child.name}}
-                    <a class="btn pull-right btn-link" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}" ng-click="addFav(child)" ng-show="child.showOption &&  !child.isFavourite && !child.isComposite && Global.authenticated">
-                        <i class="fa fa-star-o"></i>
-                    </a>
-                    <a class="btn pull-right btn-link" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}" ng-click="delFav(child)" ng-show="child.isFavourite && !child.isComposite && Global.authenticated">
-                        <i class="fa fa-star star"></i>
-                    </a>
-                    <a class="btn pull-right btn-link" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}" ng-click="showEditForm(child)" ng-show="child.showOption && admin">
-                        <i class="fa fa-pencil"></i>
-                    </a>
-                    <a class="btn pull-right btn-link" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}" ng-show="child.showOption && !child.isPublished && admin">
-                        <i class="fa fa-cloud-upload"></i>
-                    </a>
-                    <a href="{{child.dl? child.dl: '#'}}" class="btn pull-right btn-link" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}" ng-show="child.showOption" >
-                        <i class="fa fa-download"></i>
-                    </a>
+                    <span style="position: absolute; right: 0px; height: 100%; top: 0px; padding-top: 12px; background-color: aliceblue;">
+                        <a class="btn pull-right btn-link" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}" ng-click="addFav(child)" ng-show="child.showOption &&  !child.isFavourite && !child.isComposite && Global.authenticated">
+                            <i class="fa fa-star-o"></i>
+                        </a>
+                        <a class="btn pull-right btn-link" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}" ng-click="delFav(child)" ng-show="child.isFavourite && !child.isComposite && Global.authenticated">
+                            <i class="fa fa-star star"></i>
+                        </a>
+                        <a class="btn pull-right btn-link" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}" ng-click="showEditForm(child)" ng-show="child.showOption && admin">
+                            <i class="fa fa-pencil"></i>
+                        </a>
+                        <a class="btn pull-right btn-link" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}" ng-show="child.showOption && !child.isPublished && admin">
+                            <i class="fa fa-cloud-upload"></i>
+                        </a>
+                        <a href="{{child.dl? child.dl: '#'}}" class="btn pull-right btn-link" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}" ng-show="child.showOption" >
+                            <i class="fa fa-download"></i>
+                        </a>
+                    </span>
                 </li>
             </ul>
         </div>

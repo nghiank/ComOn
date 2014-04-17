@@ -13,12 +13,14 @@
                 <li class="list-group-item" ng-show="unpublished(stds).length === 0">No standards availalbe now.</li>
                 <li class="list-group-item" ng-repeat="std in unpublished(stds)" ng-mouseenter = "toggleOption(std, true)" ng-mouseleave = "toggleOption(std, false)">
                     <a href="#!/standards/{{std._id}}">{{std.name}}</a>
-                    <a class="btn pull-right btn-link btn-xs" ng-click="showEditForm(std)" ng-show="std.showOption && admin">
-                        <i class="fa fa-pencil"></i>
-                    </a>
-                    <a ng-click="downloadStandard()" class="btn pull-right btn-link btn-xs" ng-show="std.showOption" >
-                        <i class="fa fa-download"></i>
-                    </a>
+                    <span style="position: absolute; right: 0px; height: 100%; top: 0px; padding-top: 12px; background-color: aliceblue;">
+                        <a style="margin-right: 10px;" class="btn pull-right btn-link btn-xs" ng-click="showEditForm(std)" ng-show="std.showOption && admin">
+                            <i class="fa fa-pencil"></i>
+                        </a>
+                        <a style="margin-right: 10px; margin-left: 10px;" ng-click="downloadStandard()" class="btn pull-right btn-link btn-xs" ng-show="std.showOption" >
+                            <i class="fa fa-download"></i>
+                        </a>
+                    </span>
                 </li>
             </ul>
         </div>
