@@ -69,19 +69,16 @@ exports.populateCatalog = function(req, res) {
 	}
 	var data = req.body.data;
 	var user = req.user;
+	var one_time_limit = 10000;
+	var one_time_delay_ms = 10000;
 	function checkAuthority(manufacturerEntry)
 	{
 		return user.isAdmin? true: (user.codeName.toLowerCase() === manufacturerEntry.toLowerCase());
 	}
-	_.each(data, function(value, key) {
-		if(!key || !value.title)
-			return;
-		var typeCode = key.toString();
-		var typeName = value.title.toString();
-		if(!value.entries)
-			return;
-		for (var i = 0; i < value.entries.length; i++) {
-			var entry = value.entries[i];
+
+	function iterate(spliced_entries, typeCode, typeName) {
+		for (var i = 0; i < spliced_entries.length; i++) {
+			var entry = spliced_entries[i];
 			if(entry)
 			{
 				var catalog = entry.catalog? entry.catalog.replace(' ',''): null;
@@ -90,7 +87,24 @@ exports.populateCatalog = function(req, res) {
 				}
 			}
 		}
+	}
 
+	function timeout_iteration(j, spliced_entries, typeCode, typeName) {
+		setTimeout(function() {iterate(spliced_entries, typeCode, typeName);}, one_time_delay_ms*j);
+	}
+
+	_.each(data, function(value, key) {
+		if(!key || !value.title)
+			return;
+		var typeCode = key.toString();
+		var typeName = value.title.toString();
+		if(!value.entries)
+			return;
+		var iterations = Math.ceil(value.entries.length/one_time_limit);
+		for (var j = 0; j < iterations; j++) {
+			var spliced_entries = value.entries.splice(0, one_time_limit);
+			timeout_iteration(j, spliced_entries, typeCode, typeName);
+		}
 	});
 	res.send(200);
 };
@@ -175,7 +189,7 @@ exports.getCatalogEntries = function(req, res) {
 		CatalogSchem.find(final_find).sort(sortCriteria).select(fields).skip(lower).limit(upper-lower).hint(index_hint).lean().exec(function(err, entries) {
 			if(err){
 				console.log(err);
-				return error.sendGenericError(res, 400, 'Error Encountered1');
+				return error.sendGenericError(res, 400, 'Error Encountered');
 			}
 			return res.jsonp({data: entries, range: {lower: lower, upper: upper}});
 		});
