@@ -78,6 +78,8 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 			$scope.sheets = [];
 			$scope.processedSheets = [];
 		}
+		$scope.showAll = false;
+		$scope.showAllFields = false;
 		$scope.success = check.suc_message;
 		$scope.valid = check.result;
 		$scope.error = check.err_message;

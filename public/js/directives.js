@@ -147,17 +147,33 @@ angular.module('ace').directive('resetForm',
 							var menu = element.parent().children('.dropdown-menu');
 							if(menu.height() > 300)
 								menu.css({'height':'300px','overflow-y':'scroll'});
-							if(e.pageY+menu.height() > document.body.clientHeight){
-									console.log('pageHeight:',document.body.clientHeight,'cursor:',e.pageY);
-									if(e.pageY-menu.height() - 30 < 0){
-										menu.css({'height':document.body.clientHeight - e.pageY});
-										return;
-									}
+							if(e.pageY + menu.height() > (window.pageYOffset + window.innerHeight)){
 									element.parent().removeClass('dropdown');
 									element.parent().addClass('dropup');
 							}
 						}
 					});
+			}
+		};
+	}).directive('childScroll', function() {
+		return{
+			restrict: 'A',
+			link: function(scope, element) {
+				element.bind('mousewheel DOMMouseScroll', function(e) {
+				    var scrollTo = null;
+
+				    if (e.type === 'mousewheel') {
+				        scrollTo = (e.originalEvent.wheelDelta * -1);
+				    }
+				    else if (e.type === 'DOMMouseScroll') {
+				        scrollTo = 40 * e.originalEvent.detail;
+				    }
+
+				    if (scrollTo) {
+				        e.preventDefault();
+				        element.scrollTop(scrollTo + element.scrollTop());
+				    }
+				});
 			}
 		};
 	});
