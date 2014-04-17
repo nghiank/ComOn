@@ -58,17 +58,19 @@ angular.module('ace.catalog').controller('catIconLinkModalCtrl', ['Global', '$sc
 		SchematicsAPI.standardlist.query(function(standards) {
 			$scope.stds = standards;
 			$scope.typeAheadValues = [];
-			$scope.selectedStdName = $scope.stds[0].name;
 			$scope.levels.push({items: standards, levelNumber: 0});
-			SchematicsAPI.getAllChildren.save({name: $scope.selectedStdName}, function(response) {
-				if(response)
-				{
-					for(var i in response)
-						if(!response[i].isComposite)
-							$scope.typeAheadValues.push(response[i]);
-				}
-
-			});
+			if(standards.length > 0)
+			{
+				$scope.selectedStdName = $scope.stds[0].name;
+				SchematicsAPI.getAllChildren.save({name: $scope.selectedStdName}, function(response) {
+					if(response)
+					{
+						for(var i in response)
+							if(!response[i].isComposite)
+								$scope.typeAheadValues.push(response[i]);
+					}
+				});
+			}
 		});
 		$scope.items = [];
 		for(var i in item)
