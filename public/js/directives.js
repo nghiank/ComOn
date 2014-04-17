@@ -160,4 +160,15 @@ angular.module('ace').directive('resetForm',
 					});
 			}
 		};
+	}).directive('fixWidth',function(){
+		return{
+			restrict:'A',
+			link:function(scope,element,attr){
+				scope.$watch('cols',function(){
+					var col_width = Math.floor(12/attr.fixWidth);
+					if(col_width < 2) col_width = 2;
+					element.addClass('col-md-'+col_width);
+				},true);
+			}
+		};
 	});
