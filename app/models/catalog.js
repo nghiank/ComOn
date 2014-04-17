@@ -5,7 +5,6 @@
  */
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
-    mongoose.set('debug', true);
 //---------------------------------------------//
 
 var catalogSchema = new Schema({
