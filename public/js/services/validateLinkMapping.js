@@ -62,7 +62,7 @@ angular.module('ace.schematic').factory('ValidationService', ['$http', '$timeout
 	}
 
 	var checkLinks = function(id, link, number, cb) {
-		$http.get(link).success(function(){
+		$http.head(link).success(function(){
 			if(number === trial_number)
 			{
 				count --;
