@@ -310,7 +310,7 @@ exports.getCatalogEntries = function(req, res) {
 };
 
 exports.getCatalogEntryById = function(req,res){
-	if(!req.body._id && !req.body.items)
+	if(!req.body._id && !req.body.item_ids)
 		return error.sendGenericError(res, 400, 'Error Encountered');
 	if(req.body._id)
 	{
@@ -322,9 +322,9 @@ exports.getCatalogEntryById = function(req,res){
 			res.jsonp(entry);
 		});
 	}
-	else if(req.body.items)
+	else if(req.body.item_ids)
 	{
-		CatalogSchem.find({_id: {$in: req.body.items}}).lean().exec(function(err,entries){
+		CatalogSchem.find({_id: {$in: req.body.item_ids}}).lean().exec(function(err,entries){
 			if(err)
 				return error.sendGenericError(res, 400, 'Error Encountered');
 			res.jsonp(entries);

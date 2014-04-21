@@ -90,7 +90,7 @@ var populateSchematic = function(res, root, fields) {
 		}
 		var standardId = standard._id;
 		populateComponents([root], null, standardId);
-		res.send(200);
+		res.status(200).send();
 	});
 };
 
@@ -400,7 +400,7 @@ exports.node = function(req, res, next, id) {
         });
 };
 
-exports.getLinks = function(req, res) {
+exports.getMultiple = function(req, res) {
 	if(!req.body.items)
 		return error.sendGenericError(res, 400, 'Error Encountered');
 	ComponentSchem.find({_id: {$in: req.body.items}}).lean().populate('standard').exec(function(err, components) {
