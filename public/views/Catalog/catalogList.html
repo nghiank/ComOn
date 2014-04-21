@@ -117,7 +117,7 @@
 		</div>
 	</div>
 
-<div id="contextMenu" class="dropdown clearfix" tabindex="-1" context-menu>
+<div ng-if="global.authenticated" id="contextMenu" class="dropdown clearfix" tabindex="-1" context-menu>
     <ul class="dropdown-menu" aria-labelledby="dropdownMenu" style="display:block;position:static;margin-bottom:5px;" cuz-menu-item>
         <li>
         	<a ng-click="showLinkModal()"><i class="fa fa-link"></i> Link <b>{{selectedItems.length > 1 ? selectedItems.length+' items' : selectedItems[0].catalog}}</b> to icons</a>

@@ -378,7 +378,7 @@ exports.deleteCatalogEntry = function(req,res){
 			for (var i = 0; i < users.length; i++) {
 				var user = users[i];
 				for (var j = 0; j < user.associations.length; j++) {
-					if(user.associations[j].catalogId === entry._id)
+					if(JSON.stringify(user.associations[j].catalogId) === JSON.stringify(entry._id))
 					{
 						user.associations.splice(j, 1);
 					}

@@ -10,7 +10,8 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 	'$timeout',
 	'searchStringParser',
 	'SchematicsAPI',
-	function ($scope, Global, CatalogAPI, $routeParams, underscore, $modal, $http, $timeout, searchStringParser, SchematicsAPI) {
+	'UsersAPI',
+	function ($scope, Global, CatalogAPI, $routeParams, underscore, $modal, $http, $timeout, searchStringParser, SchematicsAPI, UsersAPI) {
 		$scope.global = Global;
 		$scope.fields = [];
 		$scope._ = underscore;
@@ -202,6 +203,12 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 				if (response)
 					$scope.types = response;
 			});
+			if(Global.authenticated)
+			{
+				UsersAPI.getAssociations.query(function(response) {
+					Global.user.associations = response;
+				});
+			}
 			if($scope.global.authenticated && $routeParams.filterName && $scope.global.user.catalogFilters.length !== 0)
 			{
 				for (var i = 0; i < $scope.global.user.catalogFilters.length; i++) {
