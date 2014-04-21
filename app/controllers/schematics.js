@@ -108,7 +108,7 @@ var parseFiles = function(res, fields, files) {
 	populateSchematic(res, root, fields);
 };
 
-var deleteChildren = function(id) {
+var deleteChildren = function(id, callback) {
 	ComponentSchem
 		.findOne({_id: id})
 		.exec(function(err, component) {
@@ -128,6 +128,26 @@ var deleteChildren = function(id) {
 						standard.remove();
 					});
 			}
+			var found = [];
+			var total = 0;
+			var processed = 0;
+			function isComposite(child) {
+				if(child.isComposite) {
+					deleteChildren(child._id, function(err, data) {
+						found = found.concat(data);
+						if(++processed === total) {
+							callback(null, found);
+						}
+					});
+				}
+				else {
+					found.push(child._id);
+					child.remove();
+					if(++processed === total) {
+						callback(null, found);
+					}
+				}
+			}
 			if(component.isComposite)
 			{
 				ComponentSchem
@@ -136,52 +156,34 @@ var deleteChildren = function(id) {
 						if (err) {
 							return console.log(err);
 						}
+						total = children.length;
+						if(total === 0)
+						{
+							callback(null, found);
+						}
 						for (var i = children.length - 1; i >= 0; i--) {
-							deleteChildren(children[i]._id);
+							isComposite(children[i]);
+/*							deleteChildren(children[i]._id);*/
 						}
 					});
+				component.remove();
 			}
-			var deleted_id = component._id;
-			Users.find({fav: deleted_id}, function(err, users) {
-				if(err)
-					return console.log(err);
-				if(!users)
-					return;
-				for (var i = 0; i < users.length; i++) {
-					var user = users[i];
-					user.fav.remove(deleted_id);
-					user.save();
-				}
-			});
-			Users.find({'associations.schematicId': deleted_id}, function(err, users) {
-				if(err)
-					return console.log(err);
-				if(!users)
-					return;
-				for (var i = 0; i < users.length; i++) {
-					var user = users[i];
-					for (var j = 0; j < user.associations.length; j++) {
-						if(user.associations[j].schematicId === deleted_id)
-						{
-							user.associations.splice(j, 1);
-						}
-					}
-					user.save();
-				}
-			});
-			component.remove();
+			else {
+				component.remove();
+				callback(null, [component._id]);
+			}
 		});
 };
 
 exports.receiveFiles = function(req, res) {
 	var form = new formidable.IncomingForm();
-    return form.parse(req, function(err, fields, files) {
+	return form.parse(req, function(err, fields, files) {
 		if(err)
 			return error.sendGenericError(res, 400, 'Error Encountered');
 		if(!files.jsonFile || !files.datFile)
 			return error.sendGenericError(res, 400, 'Error Encountered');
 		return parseFiles(res, fields, files);
-    });
+	});
 };
 
 exports.isUniqueId = function(req,res) {
@@ -230,7 +232,6 @@ exports.getEntireStandard = function(req, res) {
 				return error.sendGenericError(res, 400, 'Error Encountered');
 			if(components.length === 0)
 				return error.sendGenericError(res, 400, 'Error Encountered');
-			console.log(components.length);
 			res.jsonp(components);
 		});
 	});
@@ -249,12 +250,35 @@ exports.getNodeByName = function(req,res){
 	});
 };
 
+var deleteFavsAssociation = function(err, data) {
+	Users.find({$or: [{fav: {$in: data}}, {'associations.schematicId': {$in: data}}]}, function(err, users) {
+		if(err)
+			return console.log(err);
+		if(!users)
+			return;
+		for (var i = 0; i < users.length; i++) {
+			var user = users[i];
+			for (var j = 0; j < data.length; j++) {
+				user.SchemFav.remove(data[j]);
+				for (var k = 0; k < user.associations.length; k++) {
+					if(JSON.stringify(user.associations[k].schematicId) === JSON.stringify(data[j]))
+					{
+						user.associations.splice(k, 1);
+						k--;
+					}
+				}
+			}
+			user.save();
+		}
+	});
+};
+
 exports.delete = function(req, res) {
 	if(!req.node)
 	{
 		return error.sendGenericError(res, 400, 'Error Encountered');
 	}
-	deleteChildren(req.node._id);
+	deleteChildren(req.node._id, deleteFavsAssociation);
 	res.send(200);
 };
 
@@ -377,7 +401,7 @@ exports.getAllSchemStds = function(req, res) {
 		.populate('standard')
 		.lean()
 		.exec(function(err, components) {
-            if (err)
+			if (err)
 				return error.sendGenericError(res, 400, 'Error Encountered');
 			return res.jsonp(components);
 		});
@@ -385,19 +409,19 @@ exports.getAllSchemStds = function(req, res) {
 
 
 exports.node = function(req, res, next, id) {
-    ComponentSchem
-        .findOne({
-            _id: id
-        })
-        .lean()
+	ComponentSchem
+		.findOne({
+			_id: id
+		})
+		.lean()
 		.exec(function(err, component) {
-            if (err)
+			if (err)
 				return error.sendGenericError(res, 400, 'Error Encountered');
-            if (!component)
+			if (!component)
 				return error.sendGenericError(res, 400, 'Error Encountered');
-            req.node = component;
-            next();
-        });
+			req.node = component;
+			next();
+		});
 };
 
 exports.getMultiple = function(req, res) {
