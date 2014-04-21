@@ -5,14 +5,8 @@
             <ul class="list-group">
                 <li class="list-group-item" ng-show="schematic.length == 0">No favourites added yet.</li>          
                 <li class="list-group-item imgLoader" ng-repeat="child in schematic | filter: unpublished" ng-mouseenter = "toggleOption(child, true)" ng-mouseleave = "toggleOption(child, false)">
-                    <div class="row">
-                        <div class="col-md-2">
-                        <img ng-src="{{child.thumbnail}}" ng-show="child.thumbnail" style="width: 40px; height: 40px; margin-right:10px;">
-                        </div>
-                        <div class="col-md-10">
-                            <a href="#!/standards/{{child.parentNode}}">{{child.name}}</a>
-                        </div>
-                    </div>
+                    <img ng-src="{{child.thumbnail}}" ng-show="child.thumbnail" style="width: 40px; height: 40px; margin-right:10px;">
+                    <a href="#!/standards/{{child.parentNode}}">{{child.name}}</a>
                     <span style="position: absolute; right: 0px; height: 100%; top: 0px; padding-top: 12px; background-color: aliceblue;">
                         <a class="btn pull-right btn-link" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}" ng-click="delSchemFav(child)" ng-show="!child.isComposite && child.showOption">
                             <i class="fa fa-star star"></i>
