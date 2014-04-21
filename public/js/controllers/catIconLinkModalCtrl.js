@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ace.catalog').controller('catIconLinkModalCtrl', ['Global', '$scope', '$timeout', '$modalInstance', 'SchematicsAPI', 'UsersAPI', 'item', '_', function(Global, $scope, $timeout, $modalInstance, SchematicsAPI, UsersAPI, item, _){
+angular.module('ace.catalog').controller('catIconLinkModalCtrl', ['Global', '$scope', '$modalInstance', 'SchematicsAPI', 'UsersAPI', 'item', '_', function(Global, $scope, $modalInstance, SchematicsAPI, UsersAPI, item, _){
 
 
 	$scope.cancel = function(){
@@ -66,12 +66,14 @@ angular.module('ace.catalog').controller('catIconLinkModalCtrl', ['Global', '$sc
 					if(response)
 					{
 						for(var i in response)
-							if(!response[i].isComposite)
-								$scope.typeAheadValues.push(response[i]);
+							if(!response[i].isComposite){
+								$scope.typeAheadValues.push(response[i]);							
+							}
+
 					}
 				});
 			}
-		});
+		}); 
 		$scope.items = [];
 		for(var i in item)
 			$scope.items.push(item[i]);
@@ -135,8 +137,9 @@ angular.module('ace.catalog').controller('catIconLinkModalCtrl', ['Global', '$sc
 				$scope.selectedStd = response;
 				$scope.typeAheadValues = [];
 				for(var i in response)
-						if(!response[i].isComposite)
-							$scope.typeAheadValues.push(response[i]);
+						if(!response[i].isComposite){
+							$scope.typeAheadValues.push(response[i]);							
+						}
 				var immediateChildren = [];
 				for (var j = 0; j < response.length; j++) {
 					if(response[j].parentNode === option._id)
@@ -151,6 +154,7 @@ angular.module('ace.catalog').controller('catIconLinkModalCtrl', ['Global', '$sc
 
 	$scope.select = function(level, option)
 	{
+
 		var immediateChildren = [];
 		for (var i = 0; i < $scope.selectedStd.length; i++) {
 			if($scope.selectedStd[i].parentNode === option._id)
@@ -158,11 +162,13 @@ angular.module('ace.catalog').controller('catIconLinkModalCtrl', ['Global', '$sc
 				immediateChildren.push($scope.selectedStd[i]);
 			}
 		}
-		if(option.isComposite)
+		if(option.isComposite){
 			$scope.levels[level+1] = {items: immediateChildren, levelNumber: level+1};
+		}
+			
 	};
 
-	$scope.$watchCollection('selectedHiearchy', function() {
+	$scope.$watch('selectedHiearchy', function() {
 		for (var i = 0; i < $scope.selectedHiearchy.length; i++) {
 			if(!$scope.selectedHiearchy[i].isComposite)
 			{
@@ -171,7 +177,7 @@ angular.module('ace.catalog').controller('catIconLinkModalCtrl', ['Global', '$sc
 			}
 		}
 		$scope.linkDisabled = true;
-	});
+	},true);
 
 	$scope.$watch('selectedItem',function(){
 		if($scope.selectedItem!== null)
