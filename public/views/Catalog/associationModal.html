@@ -5,8 +5,8 @@
     <div class="modal-body" style="padding-bottom: 0px;">
         <div class="row" ng-show="schematicEntries.length > 0">
             <div class="col-md-12">
-            {{schematicEntries.length}} link{{schematicEntries.length === 1 ? '':'s'}} made on {{item.catalog}}:
-            <a class="btn btn-default btn-xs btn-separate pull-right" ng-click="openAddLinkModal()"><i class="fa fa-plus"></i></a>
+            <b>{{schematicEntries.length}}</b> link{{schematicEntries.length === 1 ? '':'s'}} made on catalog number <b>{{item.catalog}}</b>:
+            <a class="btn btn-default btn-xs btn-separate pull-right" ng-click="openAddLinkModal()"><i class="fa fa-plus" style="color: cadetblue"></i></a>
             </div>
         </div>
         <div class="row" style="padding-top:15px">
@@ -18,10 +18,12 @@
                     <li class="list-group-item imgLoader" ng-repeat="child in schematicEntries track by $index" ng-mouseenter = "toggleOption(child, true)" ng-mouseleave = "toggleOption(child, false)">
                         <img ng-src='{{child.thumbnail}}' ng-show="child.thumbnail" style="width: 40px; height: 40px; margin-right:10px;">
                         {{child.name}} 
-                        <span class="grey" style=""> - {{child.standard.name}}</span>
-                        <a class="btn pull-right btn-link" ng-click="deleteAssociation(child)" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}" ng-show="child.showOption">
-                            <i class="fa fa-times error"></i>
-                        </a>
+                        <span style="font-size: 13px; color: cadetblue;"> ( {{child.standard.name}} )</span>
+                        <span style="position: absolute; right: 0px; height: 100%; top: 0px; padding-top: 12px; background-color: aliceblue;">
+                            <a class="btn pull-right btn-link" ng-click="deleteAssociation(child)" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}" ng-show="child.showOption">
+                                <i class="fa fa-times error"></i>
+                            </a>
+                        </span>
                     </li>
                 </ul>
             </div>
