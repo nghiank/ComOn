@@ -50,6 +50,17 @@ angular.module('ace.catalog').controller('catIconLinkModalCtrl', ['Global', '$sc
 		});
 	};
 
+	$scope.alreadyLinked = function(item) {
+		if($scope.items.length === 1 && !item.isComposite)
+		{
+			for (var i = 0; i < Global.user.associations.length; i++) {
+				if (Global.user.associations[i].catalogId === $scope.items[0]._id && Global.user.associations[i].schematicId === item._id)
+					return true;
+			}
+		}
+		return false;
+	};
+
 	$scope.getListOfItems = function() {
 		return _.map($scope.items, function(obj){return obj.catalog;}).join(', ');
 	};
