@@ -1,12 +1,12 @@
 'use strict';
 
-angular.module('ace.catalog').controller('associationModalCtrl', ['$scope', '$modalInstance','data', 'UsersAPI', 'Global', '$modal', function($scope, $modalInstance, data, UsersAPI, Global, $modal) {
+angular.module('ace.catalog').controller('associationModalCtrl', ['$scope', '$modalInstance','data', 'UsersAPI', 'Global', '$modal', '$timeout', function($scope, $modalInstance, data, UsersAPI, Global, $modal, $timeout) {
 
 	$scope.item = data.item;
-	$scope.schematicEntries = [];
 	$scope.hide = false;
 
 	$scope.populateEntries = function() {
+		$scope.schematicEntries = [];
 		if(Global.authenticated)
 		{
 			for (var i = 0; i < Global.user.associations.length; i++) {
@@ -37,7 +37,7 @@ angular.module('ace.catalog').controller('associationModalCtrl', ['$scope', '$mo
 			templateUrl: 'views/confirmationModal.html',
 			controller: 'confirmationModalCtrl',
 			resolve: {
-				title: function(){return 'Are you sure you want to delete this association?';},
+				title: function(){return 'Are you sure you want to delete this Link?';},
 				msg: function(){return '';}
 			}
 		});
@@ -51,20 +51,17 @@ angular.module('ace.catalog').controller('associationModalCtrl', ['$scope', '$mo
 						{
 							Global.user.associations = response;
 							$scope.schematicEntries.splice($scope.schematicEntries.indexOf(child), 1);
-							/*if($scope.schematicEntries.length === 0)
-							{
-								$modalInstance.close(true);
-							}*/
 						}
 					}
 				});
 			}
+		},function(){
+			$scope.hide = false;
 		});
 	};
 
 	$scope.openAddLinkModal = function(){
 		$scope.hide = true;
-		console.log('item in association modal', $scope.item);
 		var modalInstance = $modal.open({
 			templateUrl: 'views/Catalog/catIconLinkModal.html',
 			controller: 'catIconLinkModalCtrl',
@@ -79,8 +76,13 @@ angular.module('ace.catalog').controller('associationModalCtrl', ['$scope', '$mo
 			}
 		});
 		modalInstance.result.then(function(){
-			$scope.hide = false;
-			$scope.populateEntries();
+			$timeout(function(){
+				$scope.hide = false;
+				$scope.populateEntries();
+			},50);
+
+		},function(){
+			$scope.hide =false;
 		});
 	};
 
@@ -88,7 +90,4 @@ angular.module('ace.catalog').controller('associationModalCtrl', ['$scope', '$mo
 		$modalInstance.close(true);
 	};
 
-	$scope.cancel = function(){
-		$modalInstance.close(false);
-	};
 }]);

@@ -14,7 +14,6 @@ angular.module('ace.catalog').controller('catIconLinkModalCtrl', ['Global', '$sc
 	$scope.selectedStd = null;
 	$scope.selectedStdName = null;
 	$scope.selectedLevel = null;
-	console.log('item in catLink modal', item);
 	$scope.selectedItem = null;
 
 	$scope.link = function() {
