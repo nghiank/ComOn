@@ -64,7 +64,7 @@ var createComponent = function(child, parent, std) {
 		dl: child.isComponent? findDl(child.component): null,
 		acad360l: null,
 		isComposite: !child.isComponent,
-		published: 1,
+		published: 0,
 		version: 1,
 		dateModified: new Date()
 	});
@@ -223,8 +223,12 @@ exports.getNodeChildren = function(req, res) {
 		return error.sendGenericError(res, 400, 'Error Encountered');
 	}
 	var id = req.node._id;
+	var default_retrieval = {parentNode: id};
+	var adminCheck = req.user? (req.user.isAdmin? true: false): false;
+	if(!adminCheck)
+		default_retrieval.published = {$ne: 0};
 	ComponentSchem
-		.find({parentNode: id})
+		.find(default_retrieval)
 		.populate('standard')
 		.populate('parentNode')
 		.exec(function(err, components) {
@@ -387,15 +391,21 @@ exports.getParentHiearchy = function(req, res) {
 
 
 exports.getAllSchemStds = function(req, res) {
+	var adminCheck = req.user? (req.user.isAdmin? true: false): false;
 	ComponentSchem
 		.find({
-			parentNode: null
+			parentNode: null,
 		})
 		.populate('standard')
 		.exec(function(err, components) {
             if (err)
 				return error.sendGenericError(res, 400, 'Error Encountered');
-			return res.jsonp(components);
+			return res.jsonp(_.filter(components, function(value) {
+				if(value.published === 0 && !adminCheck)
+					return false;
+				else
+					return true;
+			}));
 		});
 };
 
@@ -470,6 +480,22 @@ exports.getVersions = function(req, res) {
 				return error.sendGenericError(res, 400, 'Error Encountered');
 			return res.jsonp(version);
 		});
+	});
+};
+
+exports.publishStandard = function(req, res) {
+	if(!req.body.hasOwnProperty('std_id'))
+	{
+		return error.sendGenericError(res, 400, 'Invalid Parameters');
+	}
+	ComponentSchem.find({standard: req.body.std_id}).exec(function(err, components) {
+		if(err)
+			return error.sendGenericError(res, 400, 'Error Encountered');
+		for (var i = 0; i < components.length; i++) {
+			components[i].published = 1;
+			components[i].save();
+		}
+		res.send(200);
 	});
 };
 

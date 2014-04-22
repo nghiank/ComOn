@@ -167,6 +167,7 @@ describe('<e2e API Test>', function() {
 
         describe('For testing Add, Delete Schem Fav and geting favourite list', function() {
             var component_id = '';
+            var standard = '';
             before(function(done) {
                 this.timeout(config.timeout*3);
                 SchematicComponent.remove().exec(function() {
@@ -181,11 +182,11 @@ describe('<e2e API Test>', function() {
                             .attach('jsonFile', './test/mocha/RestAPI/mapping.json')
                             .end(function(err, res) {
                                 res.should.have.status(200);
-
                                 function getComponentId() {
                                     agent.get('/api/getSchemStds')
                                     .end(function(err, res) {
                                         (res.status).should.equal(200);
+                                        standard = res.body[0].standard._id;
                                         agent.get('/api/getChildren/'+res.body[0]._id)
                                         .end(function(err, res) {
                                             (res.status).should.equal(200);
@@ -212,6 +213,16 @@ describe('<e2e API Test>', function() {
                     });
                 });
             });
+
+            it('POST /api/publishStandard with valid standard id should publish the entire standard and return 200', function(done) {
+                agent.post('/api/publishStandard')
+                .send({std_id: standard})
+                .end(function(err, res) {
+                    (res.status).should.equal(200);
+                    done();
+                });
+            });
+	
             it('POST /api/addSchemFav with valid id should return 200', function(done) {
                 (component_id).should.not.equal('');
                 agent.post('/api/addSchemFav')
@@ -298,6 +309,7 @@ describe('<e2e API Test>', function() {
                 });
             });
 
+
             it('POST /api/upload with only one file should return 400', function(done) {
                 this.timeout(config.timeout);
                 agent.post('/api/upload')
@@ -320,50 +332,49 @@ describe('<e2e API Test>', function() {
 
             it('GET /api/getSchemStds should return 200 with the list of schematics', function(done) {
                 this.timeout(config.timeout);
-                xauth.get('http://localhost:3001/api/getSchemStds', function(err, res, b){
-                    var result = JSON.parse(res)[0];
-                    (result.name).should.equal('JIC: Schematic Symbols');
-                    (b.statusCode).should.equal(200);
-                    id = result._id;
-                    standard_id = result.standard._id;
-                    node = result;
+                agent.get('/api/getSchemStds').end(function(err, res){
+                    (res.body[0].name).should.equal('JIC: Schematic Symbols');
+                    (res.status).should.equal(200);
+                    id = res.body[0]._id;
+                    standard_id = res.body[0].standard._id;
+                    node = res.body[0];
                     done();
                 });
             });
 
             it('GET /api/getChildren/:nodeId with invalid componentId should return 400', function(done) {
                 this.timeout(config.timeout);
-                xauth.get('http://localhost:3001/api/getChildren/asdjfhisweuhf', function(err, res, b){
-                    (b.statusCode).should.equal(400);
+                agent.get('/api/getChildren/asdjfhisweuhf').end(function(err, res){
+                    (res.status).should.equal(400);
                     done();
                 });
             });
 
             it('GET /api/getChildren/:nodeId with valid Id should return the children with status 200', function(done) {
                 this.timeout(config.timeout);
-                xauth.get('http://localhost:3001/api/getChildren/'+id, function(err, res, b){
-                    var result = JSON.parse(res);
+                agent.get('/api/getChildren/'+id).end(function(err, res){
+                    var result = res.body;
                     (result.children.length).should.equal(17);
-                    (b.statusCode).should.equal(200);
+                    (res.status).should.equal(200);
                     done();
                 });
             });
 
             it('GET /api/getParentHiearchy/:nodeId with invalid componentId should return 400', function(done) {
                 this.timeout(config.timeout);
-                xauth.get('http://localhost:3001/api/getParentHiearchy/asdjfhisweuhf', function(err, res, b){
-                    (b.statusCode).should.equal(400);
+                agent.get('/api/getParentHiearchy/asdjfhisweuhf').end(function(err, res){
+                    (res.status).should.equal(400);
                     done();
                 });
             });
 
             it('GET /api/getParentHiearchy/:nodeId with valid Id should return the parent hiearchy of the node with status 200', function(done) {
                 this.timeout(config.timeout);
-                xauth.get('http://localhost:3001/api/getParentHiearchy/'+id, function(err, res, b){
-                    var result = JSON.parse(res);
+                agent.get('/api/getParentHiearchy/'+id).end(function(err, res){
+                    var result = res.body;
                     (result.parentHiearchy.length).should.equal(1);
                     (result.parentHiearchy[0].title).should.equal('JIC: Schematic Symbols');
-                    (b.statusCode).should.equal(200);
+                    (res.status).should.equal(200);
                     done();
                 });
             });
@@ -507,6 +518,7 @@ describe('<e2e API Test>', function() {
         });
         describe('After delete - testing authorization for various API', function() {
             var test_node = {name: 'test',id: '123saasd',standard: 'asdasdas'};
+            var standard;
             before(function(done) {
                 this.timeout(config.timeout);
                 agent.post('/api/upload')
@@ -514,6 +526,23 @@ describe('<e2e API Test>', function() {
                 .attach('jsonFile', './test/mocha/RestAPI/mapping.json')
                 .end(function(err, res) {
                     res.should.have.status(200);
+                    function delay() {
+	 					agent.get('/api/getSchemStds')
+	                    .end(function(err, res) {
+	                        (res.status).should.equal(200);
+	                        standard = res.body[0].standard._id;
+	                    	done();
+	                    });
+	                }
+	                setTimeout(delay, 200);
+                });
+            });
+
+            it('POST /api/publishStandard with valid standard id should publish the entire standard and return 200', function(done) {
+                agent.post('/api/publishStandard')
+                .send({std_id: standard})
+                .end(function(err, res) {
+                    (res.status).should.equal(200);
                     done();
                 });
             });
