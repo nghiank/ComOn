@@ -10,7 +10,8 @@
     		<thead>
 	    		<tr>
 	    			<th>Version #</th>
-            <th>Date Created</th>
+                    <th>Date Created</th>
+                    <th>Changes</th>
 	    			<th>State</th>
 	    		</tr>
     		</thead>
@@ -18,6 +19,7 @@
 		       	<tr ng-repeat="v in versionInfo.versions" ng-mouseenter="chooseHoverTarget($index+1)" ng-mouseleave="chooseHoverTarget(-1)">
                     <td>{{$index+1}}</td>
 		       		<td>{{v.dateModified | date:'short'}}</td>
+                    <td class="grey">{{compareVersions($index)}}</td>
 		       		<td ng-show="target.published === {{$index+1}}"><div class="success">Published</div></td>
 		       		<td ng-hide="target.published === {{$index+1}}" class="fixed-width">
                         <span class="grey">Not Published</span>
@@ -32,7 +34,6 @@
 			<div class="col-md-12">
             <button class="btn btn-default pull-right" ng-click="cancel()">Done</button>
             <button class="btn btn-danger" ng-click="publishComponent(0)">Unpublish</button>
-            <button class="btn btn-info btn-separate" ng-click="launchCompareModal()">Compare Versions</button>
 			</div>
 		</div>
     </div>
