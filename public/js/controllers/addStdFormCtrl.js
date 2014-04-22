@@ -3,7 +3,7 @@
 angular.module('ace.schematic').controller('UploadController', ['ValidationService', 'formValidation', '$timeout', '$scope', '$location', '$upload', 'ParsingService', 'Global', '$modal', function (ValidationService, formValidation, $timeout, $scope, $location, $upload, ParseDat, Global, $modal) {
 	$scope.global = Global;
 	$scope.Parser = new ParseDat();
-	$scope.uploadDisabled = false;
+	$scope.uploadDisabled = true;
 	$scope.validateDisabled = true;
 	$scope.httpMethod = 'POST';
 	$scope.error = [];
