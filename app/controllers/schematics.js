@@ -641,7 +641,7 @@ exports.publishComponent = function(req, res){
 			return res.send(200);
 		component.published = number;
         if (number !== 0){
-            shardPublishedComponent(id);
+            shardPublishedComponent(id, number);
         }
         component.save(function(err) {
             if(err)
