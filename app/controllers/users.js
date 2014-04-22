@@ -166,7 +166,7 @@ exports.addSchemFavourite = function(req, res) {
     if(!req.user)
         return error.sendUnauthorizedError(res);
     if(!req.body.hasOwnProperty('_id'))
-        return error.sendGenericError(res, 400, 'Error Encountered');
+        return error.sendGenericError(res, 400, 'Invalid Parameters');
     var id = req.body._id;
     ComponentSchem.findOne({_id: id}, function(err, component) {
         if(err)
@@ -193,7 +193,7 @@ exports.removeSchemFavourite = function(req,res) {
     if(!req.user)
         return error.sendUnauthorizedError(res);
     if(!req.body.hasOwnProperty('_id'))
-        return error.sendGenericError(res, 400, 'Error Encountered');
+        return error.sendGenericError(res, 400, 'Invalid Parameters');
     var id = req.body._id;
     var list = req.user.SchemFav;
     if(list.indexOf(id) > -1)
@@ -229,7 +229,7 @@ exports.addFilter = function(req, res) {
     if(!req.user)
         return error.sendUnauthorizedError(res);
     if(!req.body.hasOwnProperty('name') || !req.body.hasOwnProperty('filter'))
-        return error.sendGenericError(res, 400, 'Error Encountered');
+        return error.sendGenericError(res, 400, 'Invalid Parameters');
     var name = req.body.name;
     var list = _.map(req.user.catalogFilters, function(object) {return object.name.toLowerCase();});
     if(list.indexOf(name.toLowerCase()) > -1)
@@ -248,7 +248,7 @@ exports.removeFilter = function(req,res) {
     if(!req.user)
         return error.sendUnauthorizedError(res);
     if(!req.body.hasOwnProperty('name'))
-        return error.sendGenericError(res, 400, 'Error Encountered');
+        return error.sendGenericError(res, 400, 'Invalid Parameters');
     var name = req.body.name;
     var list = _.map(req.user.catalogFilters, function(object) {return object.name.toLowerCase();});
     if(list.indexOf(name.toLowerCase()) > -1)
@@ -277,7 +277,7 @@ exports.addAssociation = function(req, res) {
     if(!req.user)
         return error.sendUnauthorizedError(res);
     if(!req.body.hasOwnProperty('items') || !req.body.hasOwnProperty('_id'))
-        return error.sendGenericError(res, 400, 'Error Encountered');
+        return error.sendGenericError(res, 400, 'Invalid Parameters');
     var items = req.body.items;
     if(items.length === 0)
         return error.sendGenericError(res, 400, 'Error Encountered');
@@ -321,7 +321,7 @@ exports.removeAssociation = function(req,res) {
     if(!req.user)
         return error.sendUnauthorizedError(res);
     if(!req.body.hasOwnProperty('item') || !req.body.hasOwnProperty('_id'))
-        return error.sendGenericError(res, 400, 'Error Encountered');
+        return error.sendGenericError(res, 400, 'Invalid Parameters');
     var item = JSON.stringify(req.body.item);
     var _id = JSON.stringify(req.body._id);
     var list = req.user.associations;

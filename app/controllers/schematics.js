@@ -96,7 +96,7 @@ var populateSchematic = function(res, root, fields) {
 
 var parseFiles = function(res, fields, files) {
 	if(!files)
-		return error.sendGenericError(res, 400, 'Error Encountered');
+		return error.sendGenericError(res, 400, 'Invalid Parameters');
 	var jsonBuffer = fs.readFileSync(files.jsonFile.path, 'utf8');
 	var datBuffer = fs.readFileSync(files.datFile.path, 'utf8');
 	g_mapping = JSON.parse(jsonBuffer);
@@ -106,6 +106,20 @@ var parseFiles = function(res, fields, files) {
 		return error.sendGenericError(res, 400, 'Error Encountered');
 	var root = Inst.rootNode;
 	populateSchematic(res, root, fields);
+};
+
+var removeStandardByName = function(name)
+{
+	StandardSchem
+		.findOne({name: name})
+		.exec(function(err, standard) {
+			if(err)
+				return console.log(err);
+			if(!standard)
+				return console.log('Standard Not found');
+			standard.remove();
+			return;
+		});
 };
 
 var deleteChildren = function(id, callback, res) {
@@ -118,15 +132,7 @@ var deleteChildren = function(id, callback, res) {
 				return callback('Component Not found', null, res);
 			if(!component.parentNode)
 			{
-				StandardSchem
-					.findOne({name: component.name})
-					.exec(function(err, standard) {
-						if(err)
-							return console.log(err);
-						if(!standard)
-							return console.log('Standard Not found');
-						standard.remove();
-					});
+				removeStandardByName(component.name);
 			}
 			var found = [];
 			var total = 0;
@@ -192,7 +198,7 @@ exports.receiveFiles = function(req, res) {
 exports.isUniqueId = function(req,res) {
 	if(!req.body.standardId || !req.body.id)
 	{
-		return error.sendGenericError(res, 400, 'Error Encountered');
+		return error.sendGenericError(res, 400, 'Invalid Parameters');
 	}
 	var s_id = req.body.standardId, id = req.body.id;
 	ComponentSchem.findOne({standard: s_id, id: id}).exec(function(err, component) {
@@ -205,7 +211,7 @@ exports.isUniqueId = function(req,res) {
 exports.getNodeChildren = function(req, res) {
 	if(!req.node)
 	{
-		return error.sendGenericError(res, 400, 'Error Encountered');
+		return error.sendGenericError(res, 400, 'Invalid Parameters');
 	}
 	var id = req.node._id;
 	ComponentSchem
@@ -223,7 +229,7 @@ exports.getNodeChildren = function(req, res) {
 exports.getEntireStandard = function(req, res) {
 	if(!req.body.name)
 	{
-		return error.sendGenericError(res, 400, 'Error Encountered');
+		return error.sendGenericError(res, 400, 'Invalid Parameters');
 	}
 	StandardSchem.findOne({name: req.body.name}).exec(function(err, standard) {
 		if(err)
@@ -242,11 +248,10 @@ exports.getEntireStandard = function(req, res) {
 
 exports.getNodeByName = function(req,res){
 	if(!req.body.name){
-		res.jsonp([]);
-		return;
+		return error.sendGenericError(res, 400, 'Invalid Parameters');
 	}
-	var search = new RegExp('^.*'+req.body.name+'.*$', 'i');
-	ComponentSchem.find({'name':search,'isComposite':false}).lean().limit(10).exec(function(err,result){
+	var search = new RegExp('^.*'+escape_regex(req.body.name)+'.*$', 'i');
+	ComponentSchem.find({'name': search,'isComposite': false}).lean().limit(10).exec(function(err,result){
 		if(err)
 			return console.log(err);
 		res.jsonp(result);
@@ -291,7 +296,7 @@ exports.delete = function(req, res) {
 exports.editStd = function(req,res){
 	if(!req.body.standardId)
 	{
-		return error.sendGenericError(res, 400, 'Error Encountered');
+		return error.sendGenericError(res, 400, 'Invalid Parameters');
 	}
 	var standard = {};
 	if (req.body.hasOwnProperty('stdName'))
@@ -332,7 +337,7 @@ exports.editStd = function(req,res){
 exports.editComponent = function(req, res){
 	if(!req.body.node || !req.body.node._id)
 	{
-		return error.sendGenericError(res, 400, 'Error Encountered');
+		return error.sendGenericError(res, 400, 'Invalid Parameters');
 	}
 	var component = req.body.node;
 	ComponentSchem
@@ -432,7 +437,7 @@ exports.node = function(req, res, next, id) {
 
 exports.getMultiple = function(req, res) {
 	if(!req.body.items)
-		return error.sendGenericError(res, 400, 'Error Encountered');
+		return error.sendGenericError(res, 400, 'Invalid Parameters');
 	ComponentSchem.find({_id: {$in: req.body.items}}).lean().populate('standard').exec(function(err, components) {
 		if(err)
 			return error.sendGenericError(res, 400, 'Error Encountered');
@@ -448,10 +453,10 @@ exports.getNode = function(req,res){
 
 exports.createNode = function(req,res){
 	if(!req.body.node)
-		return error.sendGenericError(res, 400, 'Error Encountered');
+		return error.sendGenericError(res, 400, 'Invalid Parameters');
 	var node = req.body.node;
 	if(!node.parentNode)
-		return error.sendGenericError(res, 400, 'Error Encountered');
+		return error.sendGenericError(res, 400, 'Invalid Parameters');
 	ComponentSchem.findOne({_id: node.parentNode}, function(err, component) {
 		if(err)
 			return error.sendGenericError(res, 400, 'Error Encountered');
