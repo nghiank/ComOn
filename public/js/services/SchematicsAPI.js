@@ -14,6 +14,7 @@ angular.module('ace.schematic').factory('SchematicsAPI', ['$resource', function(
 		publish:$resource('api/publishComponent',null),
 		checkId: $resource('api/isUniqueId',null),
 		getAllChildren: $resource('api/getEntireStandard',null, {save: {method: 'POST', isArray: true}}),
-		getLinks: $resource('api/getMultiple',null, {query: {method: 'POST', isArray: true}})
+		getLinks: $resource('api/getMultiple',null, {query: {method: 'POST', isArray: true}}),
+		publishStd: $resource('api/publishStandard',null)
 	};
 }]);
