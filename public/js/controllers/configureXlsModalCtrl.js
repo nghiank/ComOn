@@ -35,7 +35,6 @@ angular.module('ace.catalog').controller('configureXlsModalCtrl', ['$scope', '$m
 	$scope.$watch('valid',function(){
 		if($scope.valid.title !== false && $scope.valid.fields !== false){
 			$scope.doneDisabled = false;
-			console.log('done!');
 			return;
 		}
 		$scope.doneDisabled = true;

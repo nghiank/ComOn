@@ -1,15 +1,16 @@
 'use strict';
 
-angular.module('ace.schematic').controller('editItemFormCtrl', ['$scope', '$timeout', '$modalInstance', 'CatalogAPI', '_', 'item','$modal', function($scope, $timeout, $modalInstance, CatalogAPI, _, item,$modal){
+angular.module('ace.schematic').controller('editItemFormCtrl', ['$scope', '$modalInstance', 'CatalogAPI', '_', 'item','$modal', function($scope, $modalInstance, CatalogAPI, _, item,$modal){
 	$scope.init = function(){
 		CatalogAPI.getEntryById.save({_id:item._id}, function(response){
 			$scope.item = response;
 			$scope.additionalInfo = _.pairs(response.additionalInfo);
 			$scope.hide = false;
 			$scope.selectedType = {};
+			$scope.getTypes();
+			$scope.doneDisabled = true;
 			$scope.unique = true;
 		});
-		$scope.getTypes();
 	};
 
 	$scope.getTypes = function(){
@@ -57,7 +58,7 @@ angular.module('ace.schematic').controller('editItemFormCtrl', ['$scope', '$time
 
 	$scope.confirmTypeChange = function(){
 		$scope.hide = true;
-		var modalInstance = $modal.open({
+		$scope.modalInstance = $modal.open({
 			templateUrl: 'views/confirmationModal.html',
 			controller:'confirmationModalCtrl',
 			backdrop: 'static',
@@ -70,7 +71,7 @@ angular.module('ace.schematic').controller('editItemFormCtrl', ['$scope', '$time
 				}
 			}
 		});
-		modalInstance.result.then(function(decision){
+		$scope.modalInstance.result.then(function(decision){
 			if(decision){
 				$scope.loadFieldsByType();
 				$scope.oldVal = $scope.selectedType.type;
@@ -80,7 +81,6 @@ angular.module('ace.schematic').controller('editItemFormCtrl', ['$scope', '$time
 					if($scope.types[i].code === $scope.oldVal.code)
 						$scope.selectedType.type = $scope.types[i];
 				}
-				console.log($scope.selectedType.type.name);
 			}
 			$scope.hide = false;
 			return;
@@ -95,11 +95,10 @@ angular.module('ace.schematic').controller('editItemFormCtrl', ['$scope', '$time
 		newItem._id = $scope.item._id;
 		newItem.type = $scope.selectedType.type;
 		newItem.additionalInfo = _.object($scope.additionalInfo);
-		console.log('old:',$scope.item);
-		console.log('new:',newItem);
 		CatalogAPI.updateEntry.save({item:newItem},function(response){
-			console.log('saved:',response);
-			$modalInstance.close(true);
+			if(response) {
+				$modalInstance.close(true);
+			}
 		});
 	};
 
@@ -110,16 +109,17 @@ angular.module('ace.schematic').controller('editItemFormCtrl', ['$scope', '$time
 			controller:'confirmationModalCtrl',
 			backdrop: 'static',
 			resolve:{
-				title:function(){return 'Are you sure to delete?';},
+				title:function(){return 'Are you sure you want to delete?';},
 				msg:function(){return 'This cannot be undone';}
 			}
 		});
 		modalInstance.result.then(function(decision){
 			if(decision){
-				/*Code for Delete*/
 				CatalogAPI.deleteEntry.save({_id:$scope.item._id}, function(response){
-					console.log(response);
-					$modalInstance.close(true);
+					if(response)
+					{
+						$modalInstance.close(true);
+					}
 				});
 			}
 			$scope.hide = false;
@@ -127,11 +127,20 @@ angular.module('ace.schematic').controller('editItemFormCtrl', ['$scope', '$time
 		});
 	};
 
-	$scope.checkUnique = function(){
-		if($scope.item.catalog)
-			CatalogAPI.checkUnique.save({catalog:$scope.item.catalog, manufacturer: $scope.item.manufacturer, _id:$scope.item._id, type:$scope.selectedType.type, assemblyCode:$scope.item.assemblyCode}, function(response){
-				$scope.unique = response.unique;
-			});
+	$scope.checkUnique = function(compulsory){
+		if(compulsory){
+			if($scope.item.catalog!=='')
+				CatalogAPI.checkUnique.save({catalog:$scope.item.catalog, manufacturer: $scope.item.manufacturer, _id:$scope.item._id, type:$scope.selectedType.type, assemblyCode:$scope.item.assemblyCode}, function(response){
+					$scope.unique = response.unique;
+					$scope.doneDisabled = !$scope.unique;
+				});
+			else
+				$scope.doneDisabled = true;
+			return;
+		}
+			$scope.doneDisabled = !$scope.unique;
+
 	};
+
 
 }]);

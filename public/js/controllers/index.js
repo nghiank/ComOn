@@ -10,13 +10,13 @@ angular.module('ace.system').controller('IndexController', ['$scope', 'Global', 
 		$scope.nav_menu.push({'title': 'My Libraries','link': 'views/favourites.html', fa: 'fa-star'});
 		if($scope.global.user.isManufacturer === true || Global.user.isAdmin === true)
 		{
-			$scope.nav_menu.push({'title': 'Manage the Catalog','link': 'views/Catalog/manageCatalog.html', fa: 'fa-shopping-cart'});
-			$scope.selected = {'title': 'Manage the Catalog','link': 'views/Catalog/manageCatalog.html', fa: 'fa-shopping-cart'};
+			$scope.nav_menu.push({'title': 'Manage My Catalog','link': 'views/Catalog/manageCatalog.html', fa: 'fa-shopping-cart'});
+			$scope.selected = {'title': 'Manage My Catalog','link': 'views/Catalog/manageCatalog.html', fa: 'fa-shopping-cart'};
 		}
 		if($scope.global.user.isAdmin === true)
 		{
 			$scope.nav_menu.push({'title': 'Manage Users','link': 'views/Users/list.html', fa: 'fa-user'});
-			$scope.selected = null;
+			$scope.selected = {'title': 'My Libraries','link': 'views/favourites.html', fa: 'fa-star'};
 		}
 		if(!$scope.global.user.isAdmin && !$scope.global.user.isManufacturer)
 		{
@@ -37,7 +37,7 @@ angular.module('ace.system').controller('IndexController', ['$scope', 'Global', 
 			if($scope.global.user.isAdmin === true)
 			{
 				$scope.nav_menu.push({'title': 'Manage Users','link': 'views/Users/list.html', fa: 'fa-user'});
-				$scope.selected = null;
+				$scope.selected = {'title': 'My Libraries','link': 'views/favourites.html', fa: 'fa-star'};
 			}
 			if(!$scope.global.user.isAdmin && !$scope.global.user.isManufacturer)
 			{
@@ -47,17 +47,6 @@ angular.module('ace.system').controller('IndexController', ['$scope', 'Global', 
 	});
 
 	$scope.changeActivePage = function(item) {
-		$scope.showSide = false;
 		$scope.selected = item;
-	};
-
-	$scope.hideSide = function()
-	{
-		$scope.showSide = false;
-	};
-
-	$scope.revealSide = function()
-	{
-		$scope.showSide = true;
 	};
 }]);

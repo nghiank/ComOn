@@ -17,6 +17,9 @@ angular.module('ace').config(['$routeProvider',
         when('/catalog', {
             templateUrl: 'views/Catalog/catalogList.html'
         }).
+        when('/catalog/:filterName', {
+            templateUrl: 'views/Catalog/catalogList.html'
+        }).
         when('/standards/:nodeId', {
             templateUrl: 'views/Schematics/child.html'
         }).

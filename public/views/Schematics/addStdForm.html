@@ -55,8 +55,8 @@
         </div>  
         <hr ng-show="stdName && jsonFile && datFile">             
         <div class="form-group pull-right" style="margin-right:5px">
-            <button type="button" ng-click="validate()" class="btn btn-default" ng-disabled="!(valid.dat && valid.json && valid.name)">{{validateText}}</button>
-            <button type="button" ng-disabled="uploadDisabled" class="btn btn-primary btn-separate" ng-click="uploadFiles()">Create</button>
+            <button type="button" ng-click="validate()" class="btn btn-default" ng-disabled="!(valid.dat && valid.json && valid.name) || sendingSuccess">Validate</button>
+            <a type="button" ng-disabled="uploadDisabled" class="btn btn-primary btn-separate" ng-click="uploadFiles()"><img ng-show="sendingFlag" src="/img/loaders/loader-small.gif" style="margin-right:10px; margin-top: -2px"><i ng-show="sendingSuccess" style="margin-right:10px; color: white"class="fa fa-check"></i>Create</a>
         </div>
     </form>
 </div>

@@ -78,6 +78,8 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 			$scope.sheets = [];
 			$scope.processedSheets = [];
 		}
+		$scope.showAll = false;
+		$scope.showAllFields = false;
 		$scope.success = check.suc_message;
 		$scope.valid = check.result;
 		$scope.error = check.err_message;
@@ -128,7 +130,11 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 				}
 			}
 		}
-		if($scope.sheets.length === 0)
+		$scope.matchSheets($scope.sheets);
+	};
+
+	$scope.matchSheets = function(sheets){
+		if(sheets.length === 0)
 		{
 			$scope.success = null;
 			$scope.valid = false;
@@ -144,59 +150,45 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 				if(response[i].code)
 					$scope.typeCodes.push(response[i].code);
 			}
-			$scope.original_types = $scope.typeCodes;
-			for (var j in $scope.sheets){
-				if($scope.typeCodes.indexOf($scope.sheets[j]) > -1)
-					processedSheet = {'sName':$scope.sheets[j],'dName':$scope.sheets[j]};
+			$scope.original_types = [];
+			for(var k in $scope.typeCodes)
+				$scope.original_types.push($scope.typeCodes[k]);
+			for (var j in sheets){
+				if($scope.typeCodes.indexOf(sheets[j]) > -1)
+					processedSheet = {'sName':sheets[j],'dName':sheets[j]};
 				else
-					processedSheet = {'sName':$scope.sheets[j],'pending':true};
+					processedSheet = {'sName':sheets[j],'pending':true};
 				$scope.processedSheets.push(processedSheet);
 			}
+		});
+	};
+
+	$scope.showOverrideMatchSheetModal = function(){
+		var modalInstance = $modal.open({
+			templateUrl: 'views/Catalog/overrideMatchingSheetModal.html',
+			controller: 'overrideMatchingSheetModalCtrl',
+			resolve:{
+				sheets: function(){
+					return $scope.processedSheets;
+				},
+				wb: function(){
+					return ($scope.wb);
+				}
+			}
+		});
+		modalInstance.result.then(function(data){
+			for(var i in data.types)
+				if(data.types[i].code){
+					$scope.typeCodes.push(data.types[i].code);
+					$scope.types.push(data.types[i]);
+				}
+			$scope.processedSheets = data.sheets;
 		});
 	};
 
 	$scope.matchFields = function(){
 		var wb = $scope.wb;
 		var count = -1;
-		function match_field(j, cols)
-		{
-			var std_fields = [];
-			if($scope.original_types.indexOf($scope.processedSheets[j].dName) > -1)
-				CatalogAPI.fields.query({type:$scope.processedSheets[j].dName},function(response){
-					for(var k in response){
-						var std_field = _.values(response[k]).join('');
-						if(std_field.indexOf('additionalInfo') > -1)
-							std_field = std_field.substr(15);
-						std_fields.push(std_field);
-					}
-					k = 0;
-					$scope.processedSheets[j].fields = [];
-					for (k in cols){
-						var fieldMatchPair = [];
-						if(std_fields.indexOf(cols[k].toLowerCase()) > -1){
-							fieldMatchPair.push(cols[k]);
-							fieldMatchPair.push(std_fields[std_fields.indexOf(cols[k].toLowerCase())]);
-						}else{
-							fieldMatchPair.push(cols[k]);
-							fieldMatchPair.push('');
-							$scope.processedSheets[j].pendingFields++;
-						}
-						$scope.processedSheets[j].fields.push(fieldMatchPair);
-					}
-				});
-			else{
-				$scope.processedSheets[j].fields = [];
-				for (var k in cols){
-					var fieldMatchPair = [];
-					fieldMatchPair.push(cols[k]);
-					fieldMatchPair.push(cols[k]);
-					$scope.processedSheets[j].pendingFields++;
-					$scope.processedSheets[j].fields.push(fieldMatchPair);
-				}
-			}
-		}
-		
-
 		for(var i in wb.Sheets){
 			count++;
 			var sheet_flag= false;
@@ -230,7 +222,53 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 						break;
 					}
 				}
-				match_field(j, cols);
+				$scope.match_field(j, cols);
+			}
+		}
+	};
+
+	$scope.match_field = function (j, cols)
+	{
+		var std_fields = [];
+		var compulsory_fields = ['catalog','manufacturer'];
+		var compulsory_fields_flag = 0;
+		if($scope.original_types.indexOf($scope.processedSheets[j].dName) > -1){
+			CatalogAPI.fields.query({type:$scope.processedSheets[j].dName},function(response){
+				for(var k in response){
+					var std_field = _.values(response[k]).join('');
+					if(std_field.indexOf('additionalInfo') > -1)
+						std_field = std_field.substr(15);
+					std_fields.push(std_field);
+				}
+				k = 0;
+				$scope.processedSheets[j].fields = [];
+				for (k in cols){
+					var fieldMatchPair = [];
+					if(std_fields.indexOf(cols[k].toLowerCase()) > -1){
+						fieldMatchPair.push(cols[k]);
+						fieldMatchPair.push(std_fields[std_fields.indexOf(cols[k].toLowerCase())]);
+						if(compulsory_fields.indexOf(cols[k].toLowerCase()) > -1){
+							compulsory_fields_flag++;
+						}
+
+					}else{
+						fieldMatchPair.push(cols[k]);
+						fieldMatchPair.push('');
+						$scope.processedSheets[j].pendingFields++;
+					}
+					$scope.processedSheets[j].fields.push(fieldMatchPair);
+				}
+				$scope.processedSheets[j].pendingFields += (compulsory_fields.length - compulsory_fields_flag);
+			});
+		}
+		else{
+			$scope.processedSheets[j].fields = [];
+			for (var k in cols){
+				var fieldMatchPair = [];
+				fieldMatchPair.push(cols[k]);
+				fieldMatchPair.push(cols[k]);
+				$scope.processedSheets[j].pendingFields++;
+				$scope.processedSheets[j].fields.push(fieldMatchPair);
 			}
 		}
 	};
@@ -260,14 +298,12 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 	};
 	
 	$scope.showMatchFieldsModal = function(sheet){
-		var newSheet = _.extend({},sheet);
 		var modalInstance = $modal.open({
 			templateUrl: 'views/Catalog/matchFieldsModal.html',
 			controller: 'matchFieldsModalCtrl',
-			backdrop: 'static',
 			resolve:{
 				sheet: function() {
-					return (newSheet);
+					return (sheet);
 				},
 				dbTypes: function(){
 					return $scope.original_types;
@@ -275,14 +311,25 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 			}
 		});
 		modalInstance.result.then(function(response){
-			console.log(response);
 			for(var i in $scope.processedSheets){
 				if($scope.processedSheets[i].sName === response.sName)
 					$scope.processedSheets[i] = response;
 			}
-		}, function() {
-			console.log(sheet);
 		});
+	};
+
+	$scope.overrideMatchingFields = function(){
+		var compulsory_fields = ['catalog','manufacturer'];
+		for(var i in $scope.processedSheets){
+			var flag = 0;
+			if($scope.original_types.indexOf($scope.processedSheets[i].dName) < 0){
+				$scope.processedSheets[i].pendingFields = 0;
+				for(var j in $scope.processedSheets[i].fields)
+					if(compulsory_fields.indexOf($scope.processedSheets[i].fields[j][0].toLowerCase()) > -1)
+						flag ++;
+				$scope.processedSheets[i].pendingFields += compulsory_fields.length - flag;
+			}
+		}
 	};
 
 	$scope.toggleTrackingSheet = function(sheet){
@@ -321,7 +368,7 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 	};
 
 	$scope.$watch('processedSheets', function(){
-		if($scope.sheets.length !== 0)
+		if($scope.processedSheets.length !== 0)
 		{
 			for(var i in $scope.processedSheets)
 				if((!$scope.processedSheets[i].dName) && (!$scope.processedSheets[i].unTrack)){
@@ -335,7 +382,7 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 	},true);
 
 	$scope.$watch('processedSheets', function(){
-		if($scope.sheets.length !== 0)
+		if($scope.processedSheets.length !== 0)
 		{
 			for(var i in $scope.processedSheets)
 				if($scope.processedSheets[i].pendingFields !== 0 && (!$scope.processedSheets[i].unTrack)){
@@ -371,13 +418,9 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 			}
 			return null;
 		}
-		function getMatchingColumn(key, fields, unTrackedFields) {
+		function getMatchingColumn(key, fields) {
 			if(!fields || !key)
 				return null;
-			if(unTrackedFields.indexOf(key) > -1)
-			{
-				return null;
-			}
 			fields = _.object(fields);
 			var newTitle = _.has(fields, key)? fields[key]: null;
 			return newTitle;
@@ -449,7 +492,7 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 									return;
 								}
 							}
-							var updated_column_title = getMatchingColumn(column_title, sheetToProcess.fields, sheetToProcess.unTrackedFields);
+							var updated_column_title = getMatchingColumn(column_title, sheetToProcess.fields);
 							if(updated_column_title)
 								row_data[updated_column_title.toLowerCase()] = newCell;
 						}
@@ -467,12 +510,10 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 						sheet_data.push(row_data);
 					row_data = {};
 				}
-				json_obj[sheetToProcess.dName? sheetToProcess.dName: key] = {title: (sheetToProcess.dName? getTypeName(sheetToProcess.dName): (sheet[[$scope.sheetTitle]]? sheet[$scope.sheetTitle].w: '')), data: sheet_data};
+				json_obj[sheetToProcess.dName? sheetToProcess.dName: key] = {title: (sheetToProcess.dName? getTypeName(sheetToProcess.dName): (sheet[[$scope.sheetTitle]]? sheet[$scope.sheetTitle].w: '')), entries: sheet_data};
 				sheet_data = [];
 			}
-			$scope.populateProgress = 20 +  Math.floor(count*100/$scope.totalSheetNo*0.6);
 		}
-		console.log(json_obj);
 		$scope.submitDisabled = true;
 		$scope.sendingFlag = true;
 		CatalogAPI.updateCatalog.save({data: json_obj}, function(response) {

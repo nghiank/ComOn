@@ -129,7 +129,7 @@ angular.module('ace.schematic')
 			controller:'confirmationModalCtrl',
 			backdrop: 'static',
 			resolve:{
-				title:function(){return 'Are you sure to delete?';},
+				title:function(){return 'Are you sure you want to delete?';},
 				msg:function(){return 'This cannot be undone.';}
 			}
 		});
@@ -140,7 +140,6 @@ angular.module('ace.schematic')
 				SchematicsAPI.delete.get({nodeId: $scope.origin._id}, function(response) {
 					if(response)
 					{
-						console.log('Deleted!');
 						$modalInstance.close();
 					}
 					$scope.hide = false;
@@ -155,7 +154,6 @@ angular.module('ace.schematic')
 		SchematicsAPI.editComponent.save({node:$scope.target}, function(response){
 			if(response)
 			{
-				console.log('Edit Success!');
 				$modalInstance.close();
 			}
 		});

@@ -3,7 +3,7 @@
 angular.module('ace.schematic').controller('UploadController', ['ValidationService', 'formValidation', '$timeout', '$scope', '$location', '$upload', 'ParsingService', 'Global', '$modal', function (ValidationService, formValidation, $timeout, $scope, $location, $upload, ParseDat, Global, $modal) {
 	$scope.global = Global;
 	$scope.Parser = new ParseDat();
-	$scope.uploadDisabled = true;
+	$scope.uploadDisabled = false;
 	$scope.validateDisabled = true;
 	$scope.httpMethod = 'POST';
 	$scope.error = [];
@@ -122,7 +122,6 @@ angular.module('ace.schematic').controller('UploadController', ['ValidationServi
 					$scope.validateText = 'Validated';
 				}
 			}, function() {
-				console.log('Dismissed');
 				$scope.validator.reset();
 			});
 		}
@@ -132,6 +131,8 @@ angular.module('ace.schematic').controller('UploadController', ['ValidationServi
 
 	$scope.uploadFiles = function() {
 		$scope.progress = 0;
+		$scope.uploadDisabled = true;
+		$scope.sendingFlag = true;
 		$scope.upload = $upload.upload({
 			url : 'api/upload',
 			method: $scope.httpMethod,
@@ -143,13 +144,14 @@ angular.module('ace.schematic').controller('UploadController', ['ValidationServi
 			file: [$scope.datFile , $scope.jsonFile],
 			fileFormDataName: ['datFile', 'jsonFile']
 		}).then(function(response) {
+			$scope.sendingFlag = false;
 			if(response)
 			{
 				if(response.status === 200)
 				{
+					$scope.sendingSuccess = true;
 					$scope.uploadResult = response.data;
-					console.log('Uploaded!');
-					$timeout($scope.getAll, 500);
+					$timeout($scope.getAll, 200);
 				}
 			}
 		}, null, function(evt) {

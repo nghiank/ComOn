@@ -1,13 +1,44 @@
 <div data-ng-controller="IndexController">
 		<nav class="navmenu navmenu-default navmenu-fixed-left col-md-4" ng-show="global.authenticated" style="margin-top:50px; z-index:0" role="navigation">
 			<ul class="nav navmenu-nav" style="overflow-y: auto;">
-	            <div style="margin-bottom: 25px" class="navmenu-brand">Quick Links</i></div>       
-	            <li style="margin-left: 10px;" class="ng-class:{active: (!!selected? item.title===selected.title: false)}" ng-repeat="item in nav_menu" ng-click="changeActivePage(item)">
+	            <div style="margin-bottom: 25px" class="navmenu-brand">Quick Links</i></div>
+	            <li style="margin-left: 10px;" class="ng-class:{active: (!!selected? item.title===selected.title: false)}" ng-repeat="item in nav_menu" ng-click="changeActivePage(item);">
 	                <a><i style="margin-right: 10px;" class="fa {{item.fa}}"></i>{{ item.title}}</a>
 	            </li>
 	        </ul>
 		</nav>
-		<div ng-if="!selected"><h1>Welcome to AutoCAD Electrical</h1></div>
-		<div style="margin-top:50px; margin-left:250px;" ng-if="selected" data-ng-include src="selected.link">
+		
+		<div class="bg bgimg" ng-if="!selected">
+	      <div class="row">
+		        <div class="col-lg-12 v-center">
+		          <p class="title">AutoCAD Electrical</p>
+		          <p class="lead">Online Content Library</p>
+		          <form>
+		            <a class="btn btn-primary" href="/auth/oauth">Sign In</a>
+		            <a class="btn-link btn-separate" href="http://accounts-dev.autodesk.com/register">Register</a>
+		          </form>
+		        </div>       
+      		</div> <!-- /row -->
+		</div>
+		<div class="lowerbg" ng-if="!selected">
+	      	<div class="row">
+	      		<div class="col-md-6">
+			        <h4>Access the latest electrical content online</h4>
+			        <h5>Free and easy access to the power of cloud.</h5>
+			        <p>The online library provides you with the a unpdated collection of electrical symbols and catalog information. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean convallis velit sed placerat venenatis. Aenean feugiat metus risus. Maecenas sagittis facilisis libero ac vehicula. Aliquam quis elit malesuada, aliquam urna quis, commodo nulla. <a href="#!/catalog">Access the catalog here.</a></p>
+		        </div>
+		        <div class="col-md-6">
+		        	<h4>Manage your personalised library</h4>
+			        <h5>Take it with you everywhere with Autocad Electrical.</h5>
+			        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque mattis pharetra lectus pretium cursus. Maecenas lacus felis, lobortis vel rutrum vitae, venenatis in nisl. Morbi et gravida felis. Maecenas ullamcorper felis vel ultrices accumsan. Fusce sodales consectetur purus. Etiam id consequat nulla. Aenean quis imperdiet odio. In cursus velit mi, in ullamcorper nibh ornare in. <a href="/auth/oauth">Sign in to access library</a> </p>
+		        </div>
+      		</div> <!-- /row -->
+		</div>
+		<div ng-if="!selected" style="padding-top:50%;padding-left:20%;z-index:9999">
+			
+		</div>
+		
+
+		<div style="margin-top:50px; margin-left:250px;" ng-if="selected" data-ng-include="selected.link">
     	</div>
 </div>

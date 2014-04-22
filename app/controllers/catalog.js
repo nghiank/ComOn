@@ -2,6 +2,7 @@
 
 var mongoose = require('mongoose');
 var CatalogSchem = mongoose.model('Catalog');
+var Users = mongoose.model('User');
 var error = require('../utils/error');
 var _ = require('underscore');
 
@@ -11,13 +12,15 @@ var convertToUpper = function(item) {
 	else if(_.isArray(item))
 	{
 		for (var j = 0; j < item.length; j++) {
-			item[j] = item[j].toUpperCase();
+			if(_.isString(item[j]))
+				item[j] = item[j].toUpperCase();
 		}
 	}
 	else if(_.isObject(item))
 	{
 		for(var i in item)
-			item[i] = item[i].toUpperCase();
+			if(_.isString(item[i]))
+				item[i] = item[i].toUpperCase();
 	}
 	return item;
 };
@@ -30,8 +33,8 @@ var createEntry = function(entry, catalog, typeName, typeCode) {
 		{
 			var additionalInfo = _.omit(entry, ['catalog', 'manufacturer']);
 			var newEntry = new CatalogSchem({
-				catalog: catalog.toUpperCase(),
-				manufacturer: entry.manufacturer.toUpperCase(),
+				catalog: catalog? catalog.toUpperCase(): null,
+				manufacturer: entry.manufacturer? entry.manufacturer.toUpperCase(): null,
 				type: {code: typeCode.toUpperCase(), name: typeName},
 				assemblyCode: entry.assemblycode? entry.assemblycode.toUpperCase(): null,
 				additionalInfo: convertToUpper(additionalInfo)
@@ -44,8 +47,8 @@ var createEntry = function(entry, catalog, typeName, typeCode) {
 		else{
 			var info = _.omit(entry, ['catalog', 'manufacturer']);
 			var replacingEntry = {
-				catalog: catalog.toUpperCase(),
-				manufacturer: entry.manufacturer.toUpperCase(),
+				catalog: catalog? catalog.toUpperCase(): null,
+				manufacturer: entry.manufacturer? entry.manufacturer.toUpperCase(): null,
 				type: {code: typeCode.toUpperCase(), name: typeName},
 				assemblyCode: entry.assemblycode? entry.assemblycode.toUpperCase(): null,
 				additionalInfo: convertToUpper(info)
@@ -62,84 +65,46 @@ var createEntry = function(entry, catalog, typeName, typeCode) {
 exports.populateCatalog = function(req, res) {
 	if(!req.body.data)
 	{
-		return error.sendGenericError(res, 400, 'Error Encountered');
+		return error.sendGenericError(res, 400, 'Invalid Parameters');
 	}
 	var data = req.body.data;
 	var user = req.user;
+	var one_time_limit = 10000;
+	var one_time_delay_ms = 10000;
 	function checkAuthority(manufacturerEntry)
 	{
 		return user.isAdmin? true: (user.codeName.toLowerCase() === manufacturerEntry.toLowerCase());
 	}
-/*	function nextColumn(column)
-	{
-		var length = column.join('').length;
-		function repeatChar(count, ch) {
-			if (count === 0) {
-				return '';
-			}
-			var count2 = count / 2;
-			var result = ch;
-			while (result.length <= count2) {
-				result += result;
-			}
-			var finalResult = result + result.substring(0, count - result.length);
-			return finalResult;
-		}
-		function getNextAlphabet(char) {
-			return String.fromCharCode(char.charCodeAt(0)+1);
-		}
-		var endString = repeatChar(length, 'Z');
-		if(column.join('') === endString)
-			return repeatChar(length+1, 'A');
-		if(column[length - 1] === 'Z')
-		{
-			var index = 1;
-			while(length >= index && column[length - index] === 'Z')
+
+	function iterate(spliced_entries, typeCode, typeName) {
+		for (var i = 0; i < spliced_entries.length; i++) {
+			var entry = spliced_entries[i];
+			if(entry)
 			{
-				column[length-index] = 'A';
-				if(length > index && column[length-index-1] === 'Z')
-				{
-					index++;
-				}
-				else
-				{
-					column[length-index-1] = getNextAlphabet(column[length-index-1]);
-					break;
+				var catalog = entry.catalog? entry.catalog.replace(' ',''): null;
+				if(catalog && checkAuthority(entry.manufacturer.trim())){
+					createEntry(entry, catalog, typeName, typeCode);
 				}
 			}
 		}
-		else
-		{
-			column[length-1] = getNextAlphabet(column[length-1])[0];
-		}
-		return column.join('');
-	}*/
+	}
+
+	function timeout_iteration(j, spliced_entries, typeCode, typeName) {
+		setTimeout(function() {iterate(spliced_entries, typeCode, typeName);}, one_time_delay_ms*j);
+	}
+
 	_.each(data, function(value, key) {
 		if(!key || !value.title)
 			return;
 		var typeCode = key.toString();
 		var typeName = value.title.toString();
-		for (var i = 0; i < value.data.length; i++) {
-/*			var column = 'CAA';
-			console.log(i);
-			for(var j=0 ;j< 200;j++)
-			{
-				var entry = value.data[i];
-				var catalog = entry.catalog.replace(' ','');
-				catalog += column;
-				if(checkAuthority(entry.manufacturer.trim()))
-				{
-					createEntry(entry, catalog, typeName, typeCode);
-					column = nextColumn(column.split(''));
-				}
-			}*/
-			var entry = value.data[i];
-			var catalog = entry.catalog.replace(' ','');
-			if(checkAuthority(entry.manufacturer.trim())){
-				createEntry(entry, catalog, typeName, typeCode);
-			}
+		if(!value.entries)
+			return;
+		var iterations = Math.ceil(value.entries.length/one_time_limit);
+		for (var j = 0; j < iterations; j++) {
+			var spliced_entries = value.entries.splice(0, one_time_limit);
+			timeout_iteration(j, spliced_entries, typeCode, typeName);
 		}
-
 	});
 	res.send(200);
 };
@@ -147,13 +112,11 @@ exports.populateCatalog = function(req, res) {
 exports.getAllUniqueValues = function(req, res) {
 	if(!req.body.field || !req.body.type)
 	{
-		return error.sendGenericError(res, 400, 'Error Encountered');
+		return error.sendGenericError(res, 400, 'Invalid Parameters');
 	}
 	CatalogSchem.distinct(req.body.field.toLowerCase(), {'type.code': req.body.type}, function(err, result) {
 		if(err)
 			return error.sendGenericError(res, 400, 'Error Encountered');
-		if(result.length === 0)
-			return res.jsonp([]);
 		res.jsonp(result);
 	});
 };
@@ -162,15 +125,13 @@ exports.getAllTypes = function(req, res) {
 	CatalogSchem.distinct('type', {}, function(err, result) {
 		if(err)
 			return error.sendGenericError(res, 400, 'Error Encountered');
-		if(result.length === 0)
-			return res.jsonp([]);
 		res.jsonp(result);
 	});
 };
 
 exports.getAllFields = function(req, res) {
 	if(!req.body.type) {
-		return error.sendGenericError(res, 400, 'Error Encountered');
+		return error.sendGenericError(res, 400, 'Invalid Parameters');
 	}
 	var type = req.body.type;
 	CatalogSchem.findOne({'type.code': type}).lean(true).exec(function(err, entry) {
@@ -187,23 +148,22 @@ exports.getAllFields = function(req, res) {
 
 exports.getCatalogEntries = function(req, res) {
 	if(!req.body.type) {
-		return error.sendGenericError(res, 400, 'Error Encountered');
+		return error.sendGenericError(res, 400, 'Invalid Parameters');
 	}
 	var type = req.body.type;
-	var MAX_LIMIT = 10000;
-	var default_upper = 5000;
+	var MAX_LIMIT = 1000;
 	var lower = req.body.lower? req.body.lower: 0;
-	var upper = req.body.upper? req.body.upper: lower+default_upper;
+	var upper = req.body.upper? req.body.upper: lower+MAX_LIMIT;
 	var fields = req.body.fields? req.body.fields: ' catalog manufacturer assemblyCode ';
 	var index_hint = {'type.code': 1};
 	if(upper < lower)
 	{
-		upper = upper + lower;
-		lower = upper - lower;
-		upper = upper - lower;
+		var temp = upper;
+		upper = lower;
+		lower = temp;
 	}
 	if(upper - lower > MAX_LIMIT)
-		upper = lower + default_upper;
+		upper = lower + MAX_LIMIT;
 	var filterCriteria = {'type.code': type};
 	var sortCriteria = {};
 	if(req.body.sortField)
@@ -211,6 +171,11 @@ exports.getCatalogEntries = function(req, res) {
 		var field = req.body.sortField.field;
 		var sort = req.body.sortField.sort;
 		sortCriteria[field] = sort;
+	}
+	if(req.body.manufacturer)
+	{
+		filterCriteria.manufacturer = req.body.manufacturer;
+		index_hint = {'manufacturer': 1};
 	}
 	var count_function = function(final_find) {
 		CatalogSchem.count(final_find).exec(function(err, count) {
@@ -221,11 +186,10 @@ exports.getCatalogEntries = function(req, res) {
 		});
 	};
 	var find_function = function(final_find) {
-		console.log(index_hint);
 		CatalogSchem.find(final_find).sort(sortCriteria).select(fields).skip(lower).limit(upper-lower).hint(index_hint).lean().exec(function(err, entries) {
 			if(err){
 				console.log(err);
-				return error.sendGenericError(res, 400, 'Error Encountered1');
+				return error.sendGenericError(res, 400, 'Error Encountered');
 			}
 			return res.jsonp({data: entries, range: {lower: lower, upper: upper}});
 		});
@@ -244,46 +208,45 @@ exports.getCatalogEntries = function(req, res) {
 					}
 				}
 			}
-			if(_.has(filters, single))
+			if(filters && _.has(filters, single))
 			{
 				if(req.body.filters[single].trim().toUpperCase() === req.body.search.string.trim().toUpperCase())
 					fields.splice(index, 1);
 			}
 		}
 	};
-	if(req.body.filters)
+	if(req.body.filters && _.keys(req.body.filters).length !== 0)
 	{
 		var all_filters = req.body.filters;
 		var index = null;
 		var filters = {};
+		for(var key in all_filters)
+		{
+			if(all_filters[key])
+				filters[key] = new RegExp(all_filters[key].toUpperCase());
+		}
 		if(all_filters.catalog)
 		{
-			filters.catalog =  new RegExp(all_filters.catalog.toUpperCase());
 			index = {'catalog': 1};
 		}
-		if(all_filters.manufacturer)
+		else if(all_filters.manufacturer)
 		{
-			filters.manufacturer = new RegExp(all_filters.manufacturer.toUpperCase());
-			if(!index)
-				index = {'manufacturer': 1};
+			index = {'manufacturer': 1};
 		}
-		if(all_filters.assemblyCode)
+		else if(all_filters.assemblyCode)
 		{
-			filters.assemblyCode =  new RegExp(all_filters.assemblyCode.toUpperCase());
-			if(!index)
-				index = {'assemblyCode': 1};
+			index = {'assemblyCode': 1};
 		}
-		if(all_filters.description)
+		else if(all_filters['additionalInfo.description'])
 		{
-			filters['additionalInfo.description'] =  new RegExp(all_filters.description);
-			if(!index)
-				index = {'additionalInfo.description': 1, 'type.code': 1};
+			index = {'additionalInfo.description': 1, 'type.code': 1};
 		}
 		if(index)
 			index_hint = index;
 		filters['type.code'] = type;
 		filterCriteria = filters;
 	}
+
 	var default_search = null;
 	if(req.body.search && req.body.search.string)
 	{
@@ -347,37 +310,55 @@ exports.getCatalogEntries = function(req, res) {
 };
 
 exports.getCatalogEntryById = function(req,res){
-	if(!req.body._id)
-		return error.sendGenericError(res, 400, 'Error Encountered');
-	CatalogSchem.findOne({_id:req.body._id}).exec(function(err,entry){
-		if(err)
-			return error.sendGenericError(res, 400, 'Error Encountered');
-		if(!entry)
-			return error.sendGenericError(res, 400, 'Error Encountered');
-		res.jsonp(entry);
-	});
+	if(req.body._id)
+	{
+		CatalogSchem.findOne({_id: req.body._id}).lean().exec(function(err,entry){
+			if(err)
+				return error.sendGenericError(res, 400, 'Error Encountered');
+			if(!entry)
+				return error.sendGenericError(res, 400, 'Error Encountered');
+			res.jsonp(entry);
+		});
+	}
+	else if(req.body.item_ids)
+	{
+		CatalogSchem.find({_id: {$in: req.body.item_ids}}).lean().exec(function(err,entries){
+			if(err)
+				return error.sendGenericError(res, 400, 'Error Encountered');
+			res.jsonp(entries);
+		});	
+	}
+	else
+	{
+		return error.sendGenericError(res, 400, 'Invalid Parameters');
+	}
 };
 
 exports.editCatalogEntry = function(req,res){
-	var fetchedEntry, newEntry;
+	var newEntry;
 	if(!req.body.item)
-		return error.sendGenericError(res, 400, 'Error Encountered');
+		return error.sendGenericError(res, 400, 'Invalid Parameters');
 	newEntry = req.body.item;
 	if(!newEntry._id)
-		return error.sendGenericError(res, 400, 'Error Encountered');
-	CatalogSchem.findOne({_id:newEntry._id}).exec(function(err, entry){
+		return error.sendGenericError(res, 400, 'Invalid Parameters');
+	CatalogSchem.findOne({_id:newEntry._id}).exec(function(err, fetchedEntry){
 		if(err)
-			return console.log(err);
-		if(!entry)
-			return console.log(err);
-		fetchedEntry = entry;
-		if(fetchedEntry.type.code !== newEntry.type.code)
+			return error.sendGenericError(res, 400, 'Error Encountered');
+		if(!fetchedEntry)
+			return error.sendGenericError(res, 400, 'Error Encountered');
+		if(newEntry.type && fetchedEntry.type.code !== newEntry.type.code)
 			fetchedEntry.additionalInfo = {};
 		_.extend(fetchedEntry,newEntry);
+		var typeName = fetchedEntry.type.name;
+		for(var key in _.omit(fetchedEntry, ['_id', '__v']))
+		{
+			fetchedEntry[key] = convertToUpper(fetchedEntry[key]);
+		}
+		fetchedEntry.type.name = typeName;
+		fetchedEntry.catalog = fetchedEntry.catalog.replace(' ', '');
 		fetchedEntry.save(function(err){
 			if(err)
-				return console.log(err);
-			console.log('saved');
+				return error.sendGenericError(res, 400, 'Error Encountered');
 			return res.jsonp(fetchedEntry);
 		});
 	});
@@ -385,12 +366,28 @@ exports.editCatalogEntry = function(req,res){
 
 exports.deleteCatalogEntry = function(req,res){
 	if(!req.body._id)
-		return error.sendGenericError(res, 400, 'Error Encountered');
-	CatalogSchem.findOne({_id:req.body._id}).exec(function(err,entry){
+		return error.sendGenericError(res, 400, 'Invalid Parameters');
+	CatalogSchem.findOne({_id: req.body._id}).exec(function(err,entry){
 		if (err)
 			return error.sendGenericError(res, 400, 'Error Encountered');
 		if (!entry)
 			return error.sendGenericError(res, 400, 'Error Encountered');
+		Users.find({'associations.catalogId': entry._id}, function(err, users) {
+			if(err)
+				return;
+			if(!users)
+				return;
+			for (var i = 0; i < users.length; i++) {
+				var user = users[i];
+				for (var j = 0; j < user.associations.length; j++) {
+					if(JSON.stringify(user.associations[j].catalogId) === JSON.stringify(entry._id))
+					{
+						user.associations.splice(j, 1);
+					}
+				}
+				user.save();
+			}
+		});
 		entry.remove(function(err){
 			if(err)
 				return error.sendGenericError(res, 400, 'Error Encountered');
@@ -401,12 +398,11 @@ exports.deleteCatalogEntry = function(req,res){
 
 exports.checkUnique = function(req, res){
 	if(!req.body.catalog || !req.body.manufacturer || typeof req.body.assemblyCode === 'undefined' || !req.body.type || !req.body._id){
-		return error.sendGenericError(res, 400, 'Error Encountered');
+		return error.sendGenericError(res, 400, 'Invalid Parameters');
 	}
-		
-	CatalogSchem.find({catalog:req.body.catalog, manufacturer:req.body.manufacturer, assemblycode:req.body.assemblyCode}).exec(function(err, entry){
+	CatalogSchem.find({catalog: req.body.catalog, manufacturer: req.body.manufacturer, assemblycode: req.body.assemblyCode}).exec(function(err, entry){
 		if(err)
-			return console.log(err);
+			return error.sendGenericError(res, 400, 'Error Encountered');
 		for(var i in entry){
 			if(entry[i]._id !== req.body._id && entry[i].type.code === req.body.type.code)
 				return res.jsonp({'unique':false});

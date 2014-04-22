@@ -1,0 +1,93 @@
+'use strict';
+
+angular.module('ace.catalog').controller('associationModalCtrl', ['$scope', '$modalInstance','data', 'UsersAPI', 'Global', '$modal', '$timeout', function($scope, $modalInstance, data, UsersAPI, Global, $modal, $timeout) {
+
+	$scope.item = data.item;
+	$scope.hide = false;
+
+	$scope.populateEntries = function() {
+		$scope.schematicEntries = [];
+		if(Global.authenticated)
+		{
+			for (var i = 0; i < Global.user.associations.length; i++) {
+				var association = Global.user.associations[i];
+				if(association.catalogId === $scope.item._id)
+				{
+					if(data.schematicLinks[association.schematicId])
+					{
+						var newObj = data.schematicLinks[association.schematicId];
+						newObj.showOption = false;
+						$scope.schematicEntries.push(newObj);
+					}
+				}
+			}
+		}
+	};
+
+
+	$scope.toggleOption = function (child, set) {
+		if(typeof child.showOption === 'undefined')
+			child.showOption = false;
+		return (child.showOption = set);
+	};
+
+	$scope.deleteAssociation = function(child) {
+		$scope.hide = true;
+		var modalInstance = $modal.open({
+			templateUrl: 'views/confirmationModal.html',
+			controller: 'confirmationModalCtrl',
+			resolve: {
+				title: function(){return 'Are you sure you want to delete this Link?';},
+				msg: function(){return '';}
+			}
+		});
+		modalInstance.result.then(function(decision){
+			$scope.hide = false;
+			if(decision){
+				UsersAPI.delAssociation.save({item: $scope.item._id, _id: child._id}, function(response) {
+					if(response)
+					{
+						if(Global.authenticated) 
+						{
+							Global.user.associations = response;
+							$scope.schematicEntries.splice($scope.schematicEntries.indexOf(child), 1);
+						}
+					}
+				});
+			}
+		},function(){
+			$scope.hide = false;
+		});
+	};
+
+	$scope.openAddLinkModal = function(){
+		$scope.hide = true;
+		var modalInstance = $modal.open({
+			templateUrl: 'views/Catalog/catIconLinkModal.html',
+			controller: 'catIconLinkModalCtrl',
+			backdrop: 'static',
+			windowClass: 'largerModal',
+			resolve: {
+				item: function(){
+					var itemArray = [];
+					itemArray.push($scope.item);
+					return itemArray;
+				}
+			}
+		});
+		modalInstance.result.then(function(){
+			$timeout(function(){
+				$scope.hide = false;
+				$scope.populateEntries();
+			},50);
+
+		},function(){
+			$scope.hide =false;
+		});
+	};
+
+	$scope.done = function(){
+		$modalInstance.close(true);
+	};
+
+}]);
