@@ -408,19 +408,6 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 						'__v'
 					]);
 				});
-				if (page === 1 && response.data.length === $scope.pageItemLimit ) {
-					CatalogAPI.entries.query({
-						type: $scope.target.code,
-						total: true
-					}, function (response) {
-						if (response) {
-							$scope.total = response.count;
-						}
-					});
-				}else{
-					if(page === 1)
-						$scope.total = response.data.length;
-				}
 				if ($scope.fields.length > 0) {
 					for (var i = 0; i < $scope.fields.length; i++) {
 						var field = $scope.fields[i];
