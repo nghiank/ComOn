@@ -312,7 +312,6 @@ describe('<e2e API Test>', function() {
 												}
 												for (var i = 0; i < res.body.children.length; i++) {
 													var child = res.body.children[i];
-													(child.isComposite).should.equal(false);
 													if(!child.isComposite)
 													{
 														component_id = child._id;
