@@ -118,7 +118,6 @@ angular.module('ace.schematic').controller('UploadController', ['ValidationServi
 			modalInstance.result.then(function(valid){
 				$scope.uploadDisabled = !valid;
 			}, function() {
-				console.log('Dismissed');
 				$scope.validator.reset();
 			});
 		}

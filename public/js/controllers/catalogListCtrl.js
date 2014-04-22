@@ -149,7 +149,6 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 				
 				$scope.selectedRows[0] = index;
 				$scope.selectedItems.push($scope.items[index]);
-				//console.log(selectedRows.length);
 			}else{
 				if($scope.selectedRows.indexOf(index) > -1){
 					$scope.selectedRows.splice($scope.selectedRows.indexOf(index),1);

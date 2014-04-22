@@ -135,7 +135,6 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['ValidationServic
 			modalInstance.result.then(function(valid){
 				$scope.valid.validation = valid;
 			}, function() {
-				console.log('Dismissed');
 				$scope.validator.reset();
 			});
 		}
@@ -159,7 +158,6 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['ValidationServic
 			if(response)
 			{
 				$scope.uploadResult = response.data;
-				console.log('Uploaded!');
 				$timeout($scope.getAll, 500);
 			}
 		}, null, function(evt) {
@@ -173,7 +171,6 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['ValidationServic
 			SchematicsAPI.editStd.save({standardId:$scope.currentStd.standard._id, stdName:$scope.stdName, desc: $scope.desc}, function(response){
 				if(response)
 				{
-					console.log('standard updated!');
 					$timeout($scope.getAll,500);
 					$scope.currentStd.name = $scope.stdName;
 				}
@@ -181,7 +178,6 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['ValidationServic
 		if($scope.editDatFile){
 			SchematicsAPI.delete.get({nodeId: $scope.currentStd._id}, function(response){
 				if(response){
-					console.log('deleted & re-uploading');
 					$scope.uploadFiles();
 				}
 			});
@@ -205,7 +201,6 @@ angular.module('ace.schematic').controller('editStdFormCtrl', ['ValidationServic
 				SchematicsAPI.delete.get({nodeId: $scope.currentStd._id}, function(response) {
 					if(response)
 					{
-						console.log('Deleted!');
 						$timeout($scope.getAll, 500);
 					}
 				});

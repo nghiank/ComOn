@@ -311,7 +311,6 @@ angular.module('ace.catalog').controller('catalogController', ['CatalogAPI', 'fo
 			}
 		});
 		modalInstance.result.then(function(response){
-			console.log(response);
 			for(var i in $scope.processedSheets){
 				if($scope.processedSheets[i].sName === response.sName)
 					$scope.processedSheets[i] = response;

@@ -115,7 +115,6 @@ angular.module('ace.schematic').controller('editItemFormCtrl', ['$scope', '$moda
 		});
 		modalInstance.result.then(function(decision){
 			if(decision){
-				/*Code for Delete*/
 				CatalogAPI.deleteEntry.save({_id:$scope.item._id}, function(response){
 					if(response)
 					{

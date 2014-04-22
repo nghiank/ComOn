@@ -108,14 +108,14 @@ var parseFiles = function(res, fields, files) {
 	populateSchematic(res, root, fields);
 };
 
-var deleteChildren = function(id, callback) {
+var deleteChildren = function(id, callback, res) {
 	ComponentSchem
 		.findOne({_id: id})
 		.exec(function(err, component) {
 			if(err)
-				return console.log(err);
+				return callback(err, null, res);
 			if(!component)
-				return console.log(new Error('Not found'));
+				return callback('Component Not found', null, res);
 			if(!component.parentNode)
 			{
 				StandardSchem
@@ -124,7 +124,7 @@ var deleteChildren = function(id, callback) {
 						if(err)
 							return console.log(err);
 						if(!standard)
-							return console.log(new Error('Not found'));
+							return console.log('Standard Not found');
 						standard.remove();
 					});
 			}
@@ -135,16 +135,20 @@ var deleteChildren = function(id, callback) {
 				if(child.isComposite) {
 					deleteChildren(child._id, function(err, data) {
 						found = found.concat(data);
-						if(++processed === total) {
-							callback(null, found);
+						if(err)
+						{
+							return callback(err, found, res);
 						}
-					});
+						if(++processed === total) {
+							callback(null, found, res);
+						}
+					}, res);
 				}
 				else {
 					found.push(child._id);
 					child.remove();
 					if(++processed === total) {
-						callback(null, found);
+						callback(null, found, res);
 					}
 				}
 			}
@@ -154,23 +158,22 @@ var deleteChildren = function(id, callback) {
 					.find({parentNode: component._id})
 					.exec(function(err, children) {
 						if (err) {
-							return console.log(err);
+							return callback(err, found, res);
 						}
 						total = children.length;
 						if(total === 0)
 						{
-							callback(null, found);
+							return callback(null, found, res);
 						}
-						for (var i = children.length - 1; i >= 0; i--) {
+						for (var i = total - 1; i >= 0; i--) {
 							isComposite(children[i]);
-/*							deleteChildren(children[i]._id);*/
 						}
 					});
 				component.remove();
 			}
 			else {
 				component.remove();
-				callback(null, [component._id]);
+				callback(null, [component._id], res);
 			}
 		});
 };
@@ -250,7 +253,11 @@ exports.getNodeByName = function(req,res){
 	});
 };
 
-var deleteFavsAssociation = function(err, data) {
+var deleteFavsAssociation = function(err, data, res) {
+	if(!err)
+		res.send(200);
+	else
+		return error.sendGenericError(res, 400, 'Error Encountered');
 	Users.find({$or: [{fav: {$in: data}}, {'associations.schematicId': {$in: data}}]}, function(err, users) {
 		if(err)
 			return console.log(err);
@@ -278,8 +285,7 @@ exports.delete = function(req, res) {
 	{
 		return error.sendGenericError(res, 400, 'Error Encountered');
 	}
-	deleteChildren(req.node._id, deleteFavsAssociation);
-	res.send(200);
+	deleteChildren(req.node._id, deleteFavsAssociation, res);
 };
 
 exports.editStd = function(req,res){

@@ -118,7 +118,6 @@ angular.module('ace.schematic')
 				SchematicsAPI.delete.get({nodeId: $scope.origin._id}, function(response) {
 					if(response)
 					{
-						console.log('Deleted!');
 						$modalInstance.close();
 					}
 					$scope.hide = false;
@@ -133,7 +132,6 @@ angular.module('ace.schematic')
 		SchematicsAPI.editComponent.save({node:$scope.target}, function(response){
 			if(response)
 			{
-				console.log('Edit Success!');
 				$modalInstance.close();
 			}
 		});

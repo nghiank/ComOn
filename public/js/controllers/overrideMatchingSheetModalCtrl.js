@@ -20,7 +20,6 @@ angular.module('ace.catalog').controller('overrideMatchingSheetModalCtrl', ['Glo
 				$scope.newTypes.push({'code':$scope.sheets[i].sName,'name':$scope.getTypeName($scope.sheets[i])});
 				$scope.sheets[i].dName = $scope.sheets[i].sName;
 			}else{
-				console.log($scope.sheets[i]);
 				$scope.newTypes.push({});
 			}
 			$scope.showEditCode.push(false);
@@ -59,7 +58,6 @@ angular.module('ace.catalog').controller('overrideMatchingSheetModalCtrl', ['Glo
 		for(var j in $scope.newTypes){
 			if($scope.newTypes[j].code && $scope.newTypes[index].code){
 				if($scope.newTypes[j].code.toLowerCase() === $scope.newTypes[index].code.toLowerCase()  && (parseInt(j) !== parseInt(index))){
-					console.log('j',j,'index',index);
 					$scope.errorCode[index] = true;
 					return;
 				}
@@ -87,7 +85,6 @@ angular.module('ace.catalog').controller('overrideMatchingSheetModalCtrl', ['Glo
 		for(var j in $scope.newTypes){
 			if($scope.newTypes[j].name && $scope.newTypes[index].name){
 			 	if($scope.newTypes[j].name.toLowerCase() === $scope.newTypes[index].name.toLowerCase() && (parseInt(j) !== parseInt(index))){
-			 		console.log('j',j,'index',index);
 					$scope.errorName[index] = true;
 					return;
 				}
