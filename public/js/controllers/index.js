@@ -16,7 +16,7 @@ angular.module('ace.system').controller('IndexController', ['$scope', 'Global', 
 		if($scope.global.user.isAdmin === true)
 		{
 			$scope.nav_menu.push({'title': 'Manage Users','link': 'views/Users/list.html', fa: 'fa-user'});
-			$scope.selected = null;
+			$scope.selected = {'title': 'My Libraries','link': 'views/favourites.html', fa: 'fa-star'};
 		}
 		if(!$scope.global.user.isAdmin && !$scope.global.user.isManufacturer)
 		{
@@ -37,7 +37,7 @@ angular.module('ace.system').controller('IndexController', ['$scope', 'Global', 
 			if($scope.global.user.isAdmin === true)
 			{
 				$scope.nav_menu.push({'title': 'Manage Users','link': 'views/Users/list.html', fa: 'fa-user'});
-				$scope.selected = null;
+				$scope.selected = {'title': 'My Libraries','link': 'views/favourites.html', fa: 'fa-star'};
 			}
 			if(!$scope.global.user.isAdmin && !$scope.global.user.isManufacturer)
 			{

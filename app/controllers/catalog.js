@@ -2,6 +2,7 @@
 
 var mongoose = require('mongoose');
 var CatalogSchem = mongoose.model('Catalog');
+var Users = mongoose.model('User');
 var error = require('../utils/error');
 var _ = require('underscore');
 
@@ -64,23 +65,20 @@ var createEntry = function(entry, catalog, typeName, typeCode) {
 exports.populateCatalog = function(req, res) {
 	if(!req.body.data)
 	{
-		return error.sendGenericError(res, 400, 'Error Encountered');
+		return error.sendGenericError(res, 400, 'Invalid Parameters');
 	}
 	var data = req.body.data;
 	var user = req.user;
+	var one_time_limit = 10000;
+	var one_time_delay_ms = 10000;
 	function checkAuthority(manufacturerEntry)
 	{
 		return user.isAdmin? true: (user.codeName.toLowerCase() === manufacturerEntry.toLowerCase());
 	}
-	_.each(data, function(value, key) {
-		if(!key || !value.title)
-			return;
-		var typeCode = key.toString();
-		var typeName = value.title.toString();
-		if(!value.entries)
-			return;
-		for (var i = 0; i < value.entries.length; i++) {
-			var entry = value.entries[i];
+
+	function iterate(spliced_entries, typeCode, typeName) {
+		for (var i = 0; i < spliced_entries.length; i++) {
+			var entry = spliced_entries[i];
 			if(entry)
 			{
 				var catalog = entry.catalog? entry.catalog.replace(' ',''): null;
@@ -89,7 +87,24 @@ exports.populateCatalog = function(req, res) {
 				}
 			}
 		}
+	}
 
+	function timeout_iteration(j, spliced_entries, typeCode, typeName) {
+		setTimeout(function() {iterate(spliced_entries, typeCode, typeName);}, one_time_delay_ms*j);
+	}
+
+	_.each(data, function(value, key) {
+		if(!key || !value.title)
+			return;
+		var typeCode = key.toString();
+		var typeName = value.title.toString();
+		if(!value.entries)
+			return;
+		var iterations = Math.ceil(value.entries.length/one_time_limit);
+		for (var j = 0; j < iterations; j++) {
+			var spliced_entries = value.entries.splice(0, one_time_limit);
+			timeout_iteration(j, spliced_entries, typeCode, typeName);
+		}
 	});
 	res.send(200);
 };
@@ -97,7 +112,7 @@ exports.populateCatalog = function(req, res) {
 exports.getAllUniqueValues = function(req, res) {
 	if(!req.body.field || !req.body.type)
 	{
-		return error.sendGenericError(res, 400, 'Error Encountered');
+		return error.sendGenericError(res, 400, 'Invalid Parameters');
 	}
 	CatalogSchem.distinct(req.body.field.toLowerCase(), {'type.code': req.body.type}, function(err, result) {
 		if(err)
@@ -116,7 +131,7 @@ exports.getAllTypes = function(req, res) {
 
 exports.getAllFields = function(req, res) {
 	if(!req.body.type) {
-		return error.sendGenericError(res, 400, 'Error Encountered');
+		return error.sendGenericError(res, 400, 'Invalid Parameters');
 	}
 	var type = req.body.type;
 	CatalogSchem.findOne({'type.code': type}).lean(true).exec(function(err, entry) {
@@ -133,7 +148,7 @@ exports.getAllFields = function(req, res) {
 
 exports.getCatalogEntries = function(req, res) {
 	if(!req.body.type) {
-		return error.sendGenericError(res, 400, 'Error Encountered');
+		return error.sendGenericError(res, 400, 'Invalid Parameters');
 	}
 	var type = req.body.type;
 	var MAX_LIMIT = 1000;
@@ -174,7 +189,7 @@ exports.getCatalogEntries = function(req, res) {
 		CatalogSchem.find(final_find).sort(sortCriteria).select(fields).skip(lower).limit(upper-lower).hint(index_hint).lean().exec(function(err, entries) {
 			if(err){
 				console.log(err);
-				return error.sendGenericError(res, 400, 'Error Encountered1');
+				return error.sendGenericError(res, 400, 'Error Encountered');
 			}
 			return res.jsonp({data: entries, range: {lower: lower, upper: upper}});
 		});
@@ -295,24 +310,37 @@ exports.getCatalogEntries = function(req, res) {
 };
 
 exports.getCatalogEntryById = function(req,res){
-	if(!req.body._id)
-		return error.sendGenericError(res, 400, 'Error Encountered');
-	CatalogSchem.findOne({_id: req.body._id}).lean().exec(function(err,entry){
-		if(err)
-			return error.sendGenericError(res, 400, 'Error Encountered');
-		if(!entry)
-			return error.sendGenericError(res, 400, 'Error Encountered');
-		res.status(200).jsonp(entry);
-	});
+	if(req.body._id)
+	{
+		CatalogSchem.findOne({_id: req.body._id}).lean().exec(function(err,entry){
+			if(err)
+				return error.sendGenericError(res, 400, 'Error Encountered');
+			if(!entry)
+				return error.sendGenericError(res, 400, 'Error Encountered');
+			res.jsonp(entry);
+		});
+	}
+	else if(req.body.item_ids)
+	{
+		CatalogSchem.find({_id: {$in: req.body.item_ids}}).lean().exec(function(err,entries){
+			if(err)
+				return error.sendGenericError(res, 400, 'Error Encountered');
+			res.jsonp(entries);
+		});	
+	}
+	else
+	{
+		return error.sendGenericError(res, 400, 'Invalid Parameters');
+	}
 };
 
 exports.editCatalogEntry = function(req,res){
 	var newEntry;
 	if(!req.body.item)
-		return error.sendGenericError(res, 400, 'Error Encountered');
+		return error.sendGenericError(res, 400, 'Invalid Parameters');
 	newEntry = req.body.item;
 	if(!newEntry._id)
-		return error.sendGenericError(res, 400, 'Error Encountered');
+		return error.sendGenericError(res, 400, 'Invalid Parameters');
 	CatalogSchem.findOne({_id:newEntry._id}).exec(function(err, fetchedEntry){
 		if(err)
 			return error.sendGenericError(res, 400, 'Error Encountered');
@@ -338,12 +366,28 @@ exports.editCatalogEntry = function(req,res){
 
 exports.deleteCatalogEntry = function(req,res){
 	if(!req.body._id)
-		return error.sendGenericError(res, 400, 'Error Encountered');
+		return error.sendGenericError(res, 400, 'Invalid Parameters');
 	CatalogSchem.findOne({_id: req.body._id}).exec(function(err,entry){
 		if (err)
 			return error.sendGenericError(res, 400, 'Error Encountered');
 		if (!entry)
 			return error.sendGenericError(res, 400, 'Error Encountered');
+		Users.find({'associations.catalogId': entry._id}, function(err, users) {
+			if(err)
+				return;
+			if(!users)
+				return;
+			for (var i = 0; i < users.length; i++) {
+				var user = users[i];
+				for (var j = 0; j < user.associations.length; j++) {
+					if(JSON.stringify(user.associations[j].catalogId) === JSON.stringify(entry._id))
+					{
+						user.associations.splice(j, 1);
+					}
+				}
+				user.save();
+			}
+		});
 		entry.remove(function(err){
 			if(err)
 				return error.sendGenericError(res, 400, 'Error Encountered');
@@ -354,7 +398,7 @@ exports.deleteCatalogEntry = function(req,res){
 
 exports.checkUnique = function(req, res){
 	if(!req.body.catalog || !req.body.manufacturer || typeof req.body.assemblyCode === 'undefined' || !req.body.type || !req.body._id){
-		return error.sendGenericError(res, 400, 'Error Encountered');
+		return error.sendGenericError(res, 400, 'Invalid Parameters');
 	}
 	CatalogSchem.find({catalog: req.body.catalog, manufacturer: req.body.manufacturer, assemblycode: req.body.assemblyCode}).exec(function(err, entry){
 		if(err)

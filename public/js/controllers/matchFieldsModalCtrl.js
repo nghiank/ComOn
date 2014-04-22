@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('ace.catalog').controller('matchFieldsModalCtrl', ['$scope', '$modalInstance', 'sheet', 'dbTypes','CatalogAPI', '_',function($scope, $modalInstance, sheet, dbTypes, CatalogAPI, _){
-	$scope.sheet = _.extend({},sheet);
+	$scope.sheet = sheet;
 	$scope.doneEnabled = false;
 	$scope.init = function(){
 		$scope.std_fields = [];
@@ -60,12 +60,12 @@ angular.module('ace.catalog').controller('matchFieldsModalCtrl', ['$scope', '$mo
 		$scope.flag = 0;
 		for(var j in manFields){
 			for(var k in $scope.sheet.fields){
-				if(manFields[j].toLowerCase() === $scope.sheet.fields[k][1].toLowerCase() && (!$scope.sheet.fields[k][2]))
+				if(manFields[j].toLowerCase() === $scope.sheet.fields[k][1].toLowerCase())
 					$scope.flag ++;
 			}
 				
 		}
-		if($scope.flag !== 2){
+		if($scope.flag < 2){
 			$scope.doneEnabled = false;
 			return;
 		}
@@ -73,19 +73,14 @@ angular.module('ace.catalog').controller('matchFieldsModalCtrl', ['$scope', '$mo
 	},true);
 
 	$scope.apply = function(){
-		$scope.sheet.unTrackedFields = [];
 		$scope.sheet.pendingFields = 0;
 		for(var i in $scope.sheet.fields){
 			if($scope.sheet.fields[i][2])
-				$scope.sheet.unTrackedFields.push($scope.sheet.fields[i][0]);
+				$scope.sheet.unTrackedFields[i] = true;
 		}
 		$modalInstance.close($scope.sheet);
 	};
 	$scope.cancel = function(){
-		for(var i in $scope.sheet.fields){
-			if($scope.sheet.fields[i][2])
-				$scope.sheet.fields[i].splice(2,1);
-		}
 		$modalInstance.dismiss('user cancelled');
 	};
 }]);

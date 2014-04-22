@@ -109,13 +109,12 @@ angular.module('ace.schematic').controller('editItemFormCtrl', ['$scope', '$moda
 			controller:'confirmationModalCtrl',
 			backdrop: 'static',
 			resolve:{
-				title:function(){return 'Are you sure to delete?';},
+				title:function(){return 'Are you sure you want to delete?';},
 				msg:function(){return 'This cannot be undone';}
 			}
 		});
 		modalInstance.result.then(function(decision){
 			if(decision){
-				/*Code for Delete*/
 				CatalogAPI.deleteEntry.save({_id:$scope.item._id}, function(response){
 					if(response)
 					{
