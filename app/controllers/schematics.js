@@ -354,7 +354,7 @@ exports.getEntireStandard = function(req, res) {
 			return error.sendGenericError(res, 400, 'Error Encountered');
 		if(!standard)
 			return error.sendGenericError(res, 400, 'Error Encountered');
-		ComponentSchem.find({standard: standard._id}).exec(function(err, components) {
+		ComponentSchem.find({standard: standard._id, published: {$ne: 0}}).exec(function(err, components) {
 			if(err)
 				return error.sendGenericError(res, 400, 'Error Encountered');
 			if(components.length === 0)
@@ -642,7 +642,7 @@ exports.publishStandard = function(req, res) {
 		if(err)
 			return error.sendGenericError(res, 400, 'Error Encountered');
 		for (var i = 0; i < components.length; i++) {
-			components[i].published = 1;
+			components[i].published = components[i].published? components[i].published: 1;
 			components[i].save();
 		}
 		res.send(200);
