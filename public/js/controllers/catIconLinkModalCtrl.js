@@ -19,7 +19,7 @@ angular.module('ace.catalog').controller('catIconLinkModalCtrl', ['Global', '$sc
 	$scope.link = function() {
 		if(!$scope.linkDisabled)
 		{
-			if($scope.selectedHiearchy.length > 0)
+			if($scope.query.text.length === 0)
 				UsersAPI.addAssociation.save({items: _.map($scope.items, function(obj) {return obj._id;}), _id: $scope.selectedHiearchy[$scope.selectedHiearchy.length - 1]._id}, function(response) {
 					if(response) {
 						Global.user.associations = response;

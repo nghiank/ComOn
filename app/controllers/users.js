@@ -326,6 +326,8 @@ exports.addAssociation = function(req, res) {
             return error.sendGenericError(res, 400, 'Error Encountered');
         if(!component)
             return error.sendGenericError(res, 400, 'Error Encountered');
+        if(component.isComposite)
+            return error.sendGenericError(res, 400, 'Error Encountered');
         CatSchem.find({_id: {$in: items}}).lean().exec(function(err, entries) {
             if(err)
                 return error.sendGenericError(res, 400, 'Error Encountered');
