@@ -37,15 +37,15 @@ exports.sendFilesForSharding = function(files, callback){
             return;
         }
         if (!body) {
-            console.log.error('body is not found ');
-            console.log.error('Again........');
+            console.error('body is not found ');
+            console.error('Again........');
             this.sendFilesForSharding(files, callback);
             return;
         }
         parseString(body, function(err, res){
             if (err){
-                console.log.error(err);
-                console.log.error(body);
+                console.error(err);
+                console.error(body);
                 return;
             }
             //console.log(inspect(res, true, null));
