@@ -32,7 +32,7 @@ angular.module('ace.system').factory('formValidation', ['SchematicsAPI', '$http'
 		};
 
 		instance.checkSchematicNodeName = function(name, _id, cb) {
-			if(name.length > 60)
+			if(name.length > 100)
 				return cb({result: false, suc_message: null, err_message: 'Name too long.'});
 			SchematicsAPI.children.get({nodeId: _id}, function(comps) {
 				if(comps){
