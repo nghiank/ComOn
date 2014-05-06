@@ -107,7 +107,7 @@ exports.all = function(req, res) {
         count = req.body.count;
     if(req.body.limit)
         limit = req.body.limit;
-    if(req.body.skip)
+    if(req.body.lowerLimit)
         skip = req.body.lowerLimit; 
     var filterCriteria = {};
     var hint = null;

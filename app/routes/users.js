@@ -16,7 +16,6 @@ module.exports = function(app, passport) {
 
     app.get('/signout', users.signout);
     app.get('/api/users/me', authorization.requiresLogin , users.me);
-    app.get('/api/users', authorization.requiresLogin , hasAuthorization, users.all);
     app.post('/api/users',authorization.requiresLogin , hasAuthorization, users.all);
 
     app.get('/api/makeAdmin/:name', authorization.requiresLogin , users.makeAdmin);

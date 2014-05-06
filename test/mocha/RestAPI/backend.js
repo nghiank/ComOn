@@ -65,7 +65,6 @@ describe('<e2e API Test>', function() {
 			agent
 			.get('/api/users/me', {json: true})
 			.end(function(err, res){
-				//validate the keys in the response JSON matches, we dont care about the values
 				(res.status).should.equal(200);
 				(res.body).should.have.properties('name','email','lastLogin','_id','__v','codeName','isManufacturer','isAdmin','Id');
 				if(res.status === 200)
@@ -86,7 +85,6 @@ describe('<e2e API Test>', function() {
 			});
 		});
 
-		//test update Code Name
 		it('GET /updateCodeName should update my code name', function(done) {
 			this.timeout(config.timeout);
 			agent
@@ -99,11 +97,10 @@ describe('<e2e API Test>', function() {
 			});
 		});
 
-		it('GET /users should return 200', function(done){
+		it('POST /users should return 200', function(done){
 			agent
-			.get('/api/users')
+			.post('/api/users')
 			.end(function(err, res){
-				//validate the keys in the response JSON matches, we dont care about the values
 				(res.status).should.equal(200);
 				(res.body.users[0]).should.have.properties('name','email','provider','lastLogin','_id','__v','codeName','isManufacturer','isAdmin','Id');
 				done();
@@ -114,7 +111,6 @@ describe('<e2e API Test>', function() {
 			agent
 			.get('/api/users/'+body._id)
 			.end(function(err, res){
-				//validate the keys in the response JSON matches, we dont care about the values
 				(res.status).should.equal(200);
 				(res.body).should.have.properties('name','email','lastLogin','_id','__v','codeName','isManufacturer','isAdmin','Id');
 				(res.body.isManufacturer).should.equal(true);
