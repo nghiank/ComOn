@@ -7,7 +7,8 @@ var OxygenOauth = require('./oxygenOauth'),
 	SchematicStandard = mongoose.model('SchematicStandard'),
 	CatalogSchem = mongoose.model('Catalog'),
 	agent = request.agent('http://localhost:3001'),
-	config = require('../../../config/config');
+	config = require('../../../config/config'),
+	_ = require('underscore');
 
 require('../../../server');
 
@@ -65,7 +66,6 @@ describe('<e2e API Test>', function() {
 			agent
 			.get('/api/users/me', {json: true})
 			.end(function(err, res){
-				//validate the keys in the response JSON matches, we dont care about the values
 				(res.status).should.equal(200);
 				(res.body).should.have.properties('name','email','lastLogin','_id','__v','codeName','isManufacturer','isAdmin','Id');
 				if(res.status === 200)
@@ -86,7 +86,6 @@ describe('<e2e API Test>', function() {
 			});
 		});
 
-		//test update Code Name
 		it('GET /updateCodeName should update my code name', function(done) {
 			this.timeout(config.timeout);
 			agent
@@ -99,11 +98,10 @@ describe('<e2e API Test>', function() {
 			});
 		});
 
-		it('GET /users should return 200', function(done){
+		it('POST /users should return 200', function(done){
 			agent
-			.get('/api/users')
+			.post('/api/users')
 			.end(function(err, res){
-				//validate the keys in the response JSON matches, we dont care about the values
 				(res.status).should.equal(200);
 				(res.body.users[0]).should.have.properties('name','email','provider','lastLogin','_id','__v','codeName','isManufacturer','isAdmin','Id');
 				done();
@@ -114,7 +112,6 @@ describe('<e2e API Test>', function() {
 			agent
 			.get('/api/users/'+body._id)
 			.end(function(err, res){
-				//validate the keys in the response JSON matches, we dont care about the values
 				(res.status).should.equal(200);
 				(res.body).should.have.properties('name','email','lastLogin','_id','__v','codeName','isManufacturer','isAdmin','Id');
 				(res.body.isManufacturer).should.equal(true);
@@ -275,6 +272,115 @@ describe('<e2e API Test>', function() {
 			});
 		});
 
+		describe('For testing Add, Delete and getting Associations with catalog', function() {
+			var component_id = '';
+			var entry1 = {catalog: 'asasd', manufacturer: 'BUSS', description: 'First', type: 'Fuse Holder'};
+			var entry2 = {catalog: 'asdqweqd', manufacturer: 'AB', description: 'Second', type: 'Fuse Holder'};
+			var entry3 = {catalog: 'rgethetshs', manufacturer: 'AB', description: 'Third', type: 'Fuse Holder'};
+			var stored_entries;
+			before(function(done) {
+				this.timeout(config.timeout*3);
+				SchematicComponent.remove().exec(function() {
+					SchematicStandard.remove().exec(function() {
+						agent
+						.post('/xauth')
+						.send({oauth_token: acess_token, oauth_verifier: acess_token_secret})
+						.end(function(err,res) {
+							(res.status).should.equal(302);
+							agent.post('/api/upload')
+							.attach('datFile', './test/mocha/RestAPI/ACE_JIC_MENU.dat')
+							.attach('jsonFile', './test/mocha/RestAPI/mapping.json')
+							.end(function(err, res) {
+								res.should.have.status(200);
+								function getComponentId() {
+									agent.get('/api/getSchemStds')
+									.end(function(err, res) {
+										(res.status).should.equal(200);
+										agent.get('/api/getChildren/'+res.body[0]._id)
+										.end(function(err, res) {
+											(res.status).should.equal(200);
+											agent.get('/api/getChildren/'+res.body.children[0]._id)
+											.end(function(err, res) {
+												(res.status).should.equal(200);
+												function setupCatalog() {
+													agent
+													.post('/api/updateCatalog')
+													.send({data: {FU: {title: 'Fuses', entries: [entry1, entry2, entry3]}}})
+													.end(function(err, res) {
+														(res.status).should.equal(200);
+														agent
+														.post('/api/getEntries')
+														.send({type: 'FU'})
+														.end(function(err, res) {
+															(res.status).should.equal(200);
+															(res.body.data.length).should.equal(3);
+															stored_entries = res.body.data;
+															done();
+														});
+													});
+												}
+												for (var i = 0; i < res.body.children.length; i++) {
+													var child = res.body.children[i];
+													if(!child.isComposite)
+													{
+														component_id = child._id;
+														return setupCatalog();
+													}
+												}
+												done();
+											});
+										});
+									});
+								}
+								setTimeout(getComponentId, 500);
+							});
+						});
+					});
+				});
+			});
+			it('POST /api/addAssociation with valid catalog entries and schematic id should return 200', function(done) {
+				(component_id).should.not.equal('');
+				agent.post('/api/addAssociation')
+				.send({items: _.map(stored_entries, function(obj) {return obj._id;}), _id: component_id})
+				.end(function(err, res) {
+					(res.status).should.equal(200);
+					(res.body.length).should.equal(3);
+					done();
+				});
+			});
+
+			it('GET /api/getAssociations should return updated associations with 3 entries', function(done){
+				agent
+				.get('/api/getAssociations')
+				.end(function(err, res){
+					(res.body.length).should.equal(3);
+					(res.status).should.equal(200);
+					done();
+				});
+			});
+
+			it('POST /api/delAssociation with valid catalog entries and schematic id should delete and return updated associations with 2 entries', function(done) {
+				(component_id).should.not.equal('');
+				agent.post('/api/delAssociation')
+				.send({item: stored_entries[0]._id, _id: component_id})
+				.end(function(err, res) {
+					(res.status).should.equal(200);
+					(res.body.length).should.equal(2);
+					done();
+				});
+			});
+
+			after(function(done) {
+				SchematicComponent.remove().exec(function() {
+					SchematicStandard.remove().exec(function() {
+						CatalogSchem.remove().exec(function() {
+							setTimeout(done, 500);
+						});
+					});
+				});
+			});
+		});
+
 		describe('For testing Add, Delete and getting catalog filters', function() {
 			var filter1, filter2;
 			before(function(done) {
@@ -343,14 +449,6 @@ describe('<e2e API Test>', function() {
 					(res.body.length).should.equal(0);
 					(res.status).should.equal(200);
 					done();
-				});
-			});
-
-			after(function(done) {
-				SchematicComponent.remove().exec(function() {
-					SchematicStandard.remove().exec(function() {
-						setTimeout(done, 500);
-					});
 				});
 			});
 		});
@@ -469,6 +567,18 @@ describe('<e2e API Test>', function() {
 				.send({standardId: standard_id, stdName: 'JIC',desc: 'pass'})
 				.end(function(err, res) {
 					(res.body.name).should.equal('JIC');
+					(res.status).should.equal(200);
+					done();
+				});
+			});
+
+			it('POST /api/getMultiple should return all items with matching _ids with 200', function(done) {
+				this.timeout(config.timeout);
+				agent
+				.post('/api/getMultiple')
+				.send({items: [id]})
+				.end(function(err, res) {
+					(res.body[0].name).should.equal('JIC');
 					(res.status).should.equal(200);
 					done();
 				});
@@ -650,6 +760,18 @@ describe('<e2e API Test>', function() {
 				.end(function(err, res) {
 					(res.status).should.equal(200);
 					(res.body.name).should.equal('JIC: Schematic Symbols');
+					done();
+				});
+			});
+
+			it('POST /api/getMultiple without authorization should return all items with matching _ids with 200', function(done) {
+				this.timeout(config.timeout);
+				agent
+				.post('/api/getMultiple')
+				.send({items: [id]})
+				.end(function(err, res) {
+					(res.body[0].name).should.equal('JIC: Schematic Symbols');
+					(res.status).should.equal(200);
 					done();
 				});
 			});

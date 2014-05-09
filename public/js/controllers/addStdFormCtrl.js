@@ -122,7 +122,6 @@ angular.module('ace.schematic').controller('UploadController', ['ValidationServi
 					$scope.validateText = 'Validated';
 				}
 			}, function() {
-				console.log('Dismissed');
 				$scope.validator.reset();
 			});
 		}

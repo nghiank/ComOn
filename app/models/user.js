@@ -38,10 +38,13 @@ var UserSchema = new Schema({
     catalogFilters: [{
         type: Schema.Types.Mixed,
         default: null
-    }]
+    }],
+    associations: [{catalogId: {type: Schema.ObjectId, default: null, ref: 'Catalog'}, schematicId: {type: Schema.ObjectId, default: null,  ref: 'SchematicComponent' }}]
 });
 
 UserSchema.index({isAdmin: 1});
 UserSchema.index({isManufacturer: 1});
 UserSchema.index({name: 1});
+UserSchema.index({SchemFav: 1});
+UserSchema.index({'associations.schematicId': 1});
 mongoose.model('User', UserSchema);

@@ -2,7 +2,7 @@
 
 //service for validating links in a mapping file.
 angular.module('ace.schematic').factory('ValidationService', ['$http', '$timeout', function($http, $timeout) {
-	var g_result = false;
+	var g_result = null;
 	var dlList = [];
 	var thumbnailList = [];
 	var g_messages;
@@ -11,6 +11,7 @@ angular.module('ace.schematic').factory('ValidationService', ['$http', '$timeout
 	var status = true;
 	var trial_number = 0;
 	var count = 10;
+	var errored = false;
 	var escape_regex = function(text) {
 		return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
 	};
@@ -62,7 +63,7 @@ angular.module('ace.schematic').factory('ValidationService', ['$http', '$timeout
 	}
 
 	var checkLinks = function(id, link, number, cb) {
-		$http.get(link).success(function(){
+		$http.head(link).success(function(){
 			if(number === trial_number)
 			{
 				count --;
@@ -94,6 +95,7 @@ angular.module('ace.schematic').factory('ValidationService', ['$http', '$timeout
 			{
 				count --;
 				status = false;
+				errored = true;
 				g_messages.push({'type': 'error', 'info': 'Link for '+id+' invaild.'});
 				checked++;
 				if(checked === total)
@@ -222,9 +224,10 @@ angular.module('ace.schematic').factory('ValidationService', ['$http', '$timeout
 			g_messages = [];
 			dlList = [];
 			thumbnailList = [];
-			g_result = false;
+			g_result = null;
 			status = true;
 			trial_number++;
+			errored = false;
 		},
 		messages: function() { return g_messages; },
 		validateLinks: function(data, mapping) {
@@ -232,7 +235,8 @@ angular.module('ace.schematic').factory('ValidationService', ['$http', '$timeout
 			var number = trial_number;
 			$timeout(function(){populateDlAndThumbnail(data, JSON.parse(mapping), number, startDownloadCheck);}, 1500);
 		},
-		result: function() { return g_result; }
+		result: function() { return g_result; },
+		errored: function() { return errored; }
 	};
 	return instance;
 }]);

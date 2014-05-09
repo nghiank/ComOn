@@ -5,7 +5,6 @@
  */
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
-
 //---------------------------------------------//
 
 var catalogSchema = new Schema({
@@ -41,7 +40,8 @@ var catalogSchema = new Schema({
     }
 
 });
-catalogSchema.index({catalog: 1, manufacturer: -1, assemblyCode: 1, 'type.code': 1}, {unique: true});
+
+catalogSchema.index({catalog: 1, manufacturer: 1, assemblyCode: 1, 'type.code': 1}, {unique: true});
 catalogSchema.index({'type.code': 1});
 catalogSchema.index({catalog: 1});
 catalogSchema.index({assemblyCode: 1});

@@ -1,4 +1,4 @@
-<div class="container" ng-controller="catalogListCtrl" ng-init="init()" style="padding-top:30px;">
+<div class="container" ng-controller="catalogListCtrl" ng-init="init()" style="padding-top:30px; max-height:100%-30px; overflow-y:hidden" has-cuz-menu>
 	<nav class="col-md-4 navmenu navmenu-default animate-show" ng-show="showTypes" style="height: 85%; position: fixed; left: 0; z-index: 9999; overflow-y: auto;">
 		<ul class="nav navmenu-nav" ng-init="getTypes()" style="overflow-y: auto;">
             <div class="navmenu-brand">Catalog Types</i></div> 
@@ -7,7 +7,7 @@
 			</form>
 
             <li style="margin-top: 20px; margin-left: 15px;" ng-show="types.length == 0">No catalog available</li>          
-            <li style="margin-left: 10px;" class="ng-class:{active: (!!selected? type.code===selected.code: false)}" ng-repeat="type in types | orderBy: 'name' |filter: searchType" ng-mouseenter = "toggleOption(type)" ng-mouseleave = "toggleOption(type)" href="#!/catalog/{{type.name}}" ng-click="showTypeList(type)">
+            <li style="margin-left: 10px;" class="ng-class:{active: (!!selected? type.code===selected.code: false)}" ng-repeat="type in types | orderBy: 'name' |filter: searchType" ng-mouseenter = "toggleOption(type, true)" ng-mouseleave = "toggleOption(type, false)" href="#!/catalog/{{type.name}}" ng-click="showTypeList(type)">
                 <a>{{type.name + '  ('+ type.code + ')'}}</a>
             </li>
         </ul>
@@ -22,8 +22,8 @@
 			{{selected.name}}
 			<a style="position:absolute; left:50%;"><i class="fa fa-caret-down fa-lg" ng-show="!searchBox.show"></i></a>
 			<a style="position:absolute; left:50%;"><i class="fa fa-caret-up fa-lg" ng-hide="!searchBox.show"></i></a>
-			<a style="margin-top: -6px; margin-right: -10px" ng-click="$event.stopPropagation(); showConfigureModal()" class=" pull-right btn btn-default btn-sm btn-separate"><i class="fa fa-gear"> Configure Table</i></a>
-			<a style="margin-top: -6px;" ng-show="checkFilters() && global.authenticated" ng-click="$event.stopPropagation(); showFilterModal()" class=" pull-right btn btn-primary btn-sm"><i class="fa fa-save"> Save filter</i></a>
+			<a style="margin-top: -6px; margin-right: -10px" ng-click="$event.stopPropagation(); showConfigureModal()" class=" pull-right btn btn-default btn-sm"><i class="fa fa-gear"  style="margin-right: 10px;"> </i>Configure Table</a>
+			<a style="margin-top: -6px;" ng-show="checkFilters() && global.authenticated" ng-click="$event.stopPropagation(); showFilterModal()" class=" pull-right btn btn-primary btn-sm separate-right"><i class="fa fa-save" style="margin-right: 10px;"></i>Save current search</a>
 		</div>
 	</accordion-heading>
 	<div ng-show="searchBox && selected">
@@ -83,6 +83,16 @@
 	</div>
 	</accordion-group>
 	</accordion>
+	<div class="row" ng-show="showList && !searchBox.show && items.length > 0">
+		<div class="col-md-8">
+			<a class="btn btn-default btn-sm" style="margin-top: 6px;" ng-show="global.authenticated" ng-click="showLinkModal()" ng-disabled="selectedItems.length===0"><i class="fa fa-link"></i></a>
+	    	<a class="btn btn-default btn-sm" style="margin-top: 6px;" ng-show="global.authenticated" ng-disabled="selectedItems.length===0"><i class="fa fa-star-o"></i></a>
+	    	<a class="btn btn-default btn-sm" style="margin-top: 6px;" ng-disabled="selectedItems.length===0"><i style="margin-right: 10px;" class="fa fa-download"></i>3D Symbol</a>
+   	 	</div>
+   	 	<div class="col-md-4 pull-right">
+   	 		<p class="pull-right" style="margin-top:6px;">Showing <b>{{currentPage ? (currentPage-1)*pageItemLimit + 1: 1}} - {{currentPage ? (currentPage-1)*pageItemLimit + items.length : items.length}}</b> of <b>{{total}}</b> results.<p>
+   	 	</div>
+	</div>
 	<div ng-show="showList" ng-click="closeType()">
 		<div class="col-md-12" style="overflow: auto; margin-top:20px">
 			<table class="table table-striped">
@@ -97,8 +107,8 @@
 				</thead>
 				<tbody>
 					<td colspan="{{cols.length}}" style="text-align: center" ng-show="items.length === 0">No Entries available.</td>
-					<tr ng-repeat="item in items">
-						<td ng-repeat="data in sortedValues(item) track by $index" transform-link="{{data}}">{{data}}</td>
+					<tr ng-repeat="item in items" ng-click="toggleSelectRow($index);$event.preventDefault();" ng-class="{highlighted:isHighlighted($index)}" cuz-menu>
+						<td ng-repeat="data in sortedValues(item) track by $index" fix-width="{{sortedValues(item).length}}"><span transform-link="{{data}}"></span><i style="margin-left: 15px" ng-show="!$index && checkLink(item)" class="fa fa-unlink btn-link" ng-click="$event.stopPropagation(); showAssociationModal(item)"></i></td>
 					</tr>
 				</tbody>
 			</table>
@@ -107,4 +117,15 @@
 			<pagination ng-show="showList && items.length !== 0" total-items="total" page="currentPage" max-size="7" items-per-page="pageItemLimit" class="pagination-sm" boundary-links="true" rotate="false" num-pages="numPages" ng-click="getPage(currentPage)"></pagination>
 		</div>
 	</div>
+
+<div ng-if="global.authenticated" id="contextMenu" class="dropdown clearfix" tabindex="-1" context-menu>
+    <ul class="dropdown-menu" aria-labelledby="dropdownMenu" style="display:block;position:static;margin-bottom:5px;" cuz-menu-item>
+        <li>
+        	<a ng-click="showLinkModal()"><i class="fa fa-link"></i> Link <b>{{selectedItems.length > 1 ? selectedItems.length+' items' : selectedItems[0].catalog}}</b> to icons</a>
+        </li>
+        <li>
+        	<a><i class="fa fa-star-o"></i> Mark <b>{{selectedItems.length > 1 ? selectedItems.length+' items' : selectedItems[0].catalog}}</b> as favorite</a>
+        </li>
+    </ul>
 </div>
+

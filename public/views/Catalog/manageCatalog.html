@@ -81,7 +81,7 @@
 					<tbody>
 						<td colspan="{{cols.length+1}}" style="text-align: center" ng-show="items.length === 0">No Entries available.</td>
 						<tr ng-repeat="item in items">
-							<td ng-repeat="data in sortedValues(item) track by $index" transform-link="{{data}}">{{data}}</td>
+							<td ng-repeat="data in sortedValues(item) track by $index" transform-link="{{data}}" fix-width="{{sortedValues(item).length}}">{{data}}</td>
 							<td>
 								<a><i class="fa fa-pencil" ng-click="showEditItemModal(item)" style="margin-right:20px"></i></a>
 							</td>

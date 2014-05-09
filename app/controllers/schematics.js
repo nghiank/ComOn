@@ -144,13 +144,13 @@ var populateSchematic = function(res, root, fields) {
 		}
 		var standardId = standard._id;
 		populateComponents([root], null, standardId);
-		res.send(200);
+		res.status(200).send();
 	});
 };
 
 var parseFiles = function(res, fields, files) {
 	if(!files)
-		return error.sendGenericError(res, 400, 'Error Encountered');
+		return error.sendGenericError(res, 400, 'Invalid Parameters');
 	var jsonBuffer = fs.readFileSync(files.jsonFile.path, 'utf8');
 	var datBuffer = fs.readFileSync(files.datFile.path, 'utf8');
 	g_mapping = JSON.parse(jsonBuffer);
@@ -162,25 +162,55 @@ var parseFiles = function(res, fields, files) {
 	populateSchematic(res, root, fields);
 };
 
-var deleteChildren = function(id) {
+var removeStandardByName = function(name)
+{
+	StandardSchem
+		.findOne({name: name})
+		.exec(function(err, standard) {
+			if(err)
+				return console.log(err);
+			if(!standard)
+				return console.log('Standard Not found');
+			standard.remove();
+			return;
+		});
+};
+
+var deleteChildren = function(id, callback, res) {
 	ComponentSchem
 		.findOne({_id: id})
 		.exec(function(err, component) {
 			if(err)
-				return console.log(err);
+				return callback(err, null, res);
 			if(!component)
-				return console.log(new Error('Not found'));
+				return callback('Component Not found', null, res);
 			if(!component.parentNode)
 			{
-				StandardSchem
-					.findOne({name: component.name})
-					.exec(function(err, standard) {
+				removeStandardByName(component.name);
+			}
+			var found = [];
+			var total = 0;
+			var processed = 0;
+			function isComposite(child) {
+				if(child.isComposite) {
+					deleteChildren(child._id, function(err, data) {
+						found = found.concat(data);
 						if(err)
-							return console.log(err);
-						if(!standard)
-							return console.log(new Error('Not found'));
-						standard.remove();
-					});
+						{
+							return callback(err, found, res);
+						}
+						if(++processed === total) {
+							callback(null, found, res);
+						}
+					}, res);
+				}
+				else {
+					found.push(child._id);
+					child.remove();
+					if(++processed === total) {
+						callback(null, found, res);
+					}
+				}
 			}
 			if(component.isComposite)
 			{
@@ -188,44 +218,41 @@ var deleteChildren = function(id) {
 					.find({parentNode: component._id})
 					.exec(function(err, children) {
 						if (err) {
-							return console.log(err);
+							return callback(err, found, res);
 						}
-						for (var i = children.length - 1; i >= 0; i--) {
-							deleteChildren(children[i]._id);
+						total = children.length;
+						if(total === 0)
+						{
+							return callback(null, found, res);
+						}
+						for (var i = total - 1; i >= 0; i--) {
+							isComposite(children[i]);
 						}
 					});
+				component.remove();
 			}
-			var deleted_id = component._id;
-			Users.find({fav: deleted_id}, function(err, users) {
-				if(err)
-					return console.log(err);
-				if(!users || users.length === 0)
-					return;
-				for (var i = 0; i < users.length; i++) {
-					var user = users[i];
-					user.fav.remove(deleted_id);
-					user.save();
-				}
-			});
-			component.remove();
+			else {
+				component.remove();
+				callback(null, [component._id], res);
+			}
 		});
 };
 
 exports.receiveFiles = function(req, res) {
 	var form = new formidable.IncomingForm();
-    return form.parse(req, function(err, fields, files) {
+	return form.parse(req, function(err, fields, files) {
 		if(err)
 			return error.sendGenericError(res, 400, 'Error Encountered');
 		if(!files.jsonFile || !files.datFile)
 			return error.sendGenericError(res, 400, 'Error Encountered');
 		return parseFiles(res, fields, files);
-    });
+	});
 };
 
 exports.isUniqueId = function(req,res) {
 	if(!req.body.standardId || !req.body.id)
 	{
-		return error.sendGenericError(res, 400, 'Error Encountered');
+		return error.sendGenericError(res, 400, 'Invalid Parameters');
 	}
 	var s_id = req.body.standardId, id = req.body.id, _id = req.body._id;
 	ComponentSchem.find({standard: s_id}).exec(function(err, components) {
@@ -271,7 +298,7 @@ exports.isUniqueId = function(req,res) {
 exports.getNodeChildren = function(req, res) {
 	if(!req.node)
 	{
-		return error.sendGenericError(res, 400, 'Error Encountered');
+		return error.sendGenericError(res, 400, 'Invalid Parameters');
 	}
 	var id = req.node._id;
 	ComponentSchem
@@ -313,19 +340,77 @@ exports.getNodeChildren = function(req, res) {
 		});
 };
 
+exports.getEntireStandard = function(req, res) {
+	if(!req.body.name)
+	{
+		return error.sendGenericError(res, 400, 'Invalid Parameters');
+	}
+	StandardSchem.findOne({name: req.body.name}).exec(function(err, standard) {
+		if(err)
+			return error.sendGenericError(res, 400, 'Error Encountered');
+		if(!standard)
+			return error.sendGenericError(res, 400, 'Error Encountered');
+		ComponentSchem.find({standard: standard._id}).exec(function(err, components) {
+			if(err)
+				return error.sendGenericError(res, 400, 'Error Encountered');
+			if(components.length === 0)
+				return error.sendGenericError(res, 400, 'Error Encountered');
+			res.jsonp(components);
+		});
+	});
+};
+
+exports.getNodeByName = function(req,res){
+	if(!req.body.name){
+		return error.sendGenericError(res, 400, 'Invalid Parameters');
+	}
+	var search = new RegExp('^.*'+escape_regex(req.body.name)+'.*$', 'i');
+	ComponentSchem.find({'name': search,'isComposite': false}).lean().limit(10).exec(function(err,result){
+		if(err)
+			return console.log(err);
+		res.jsonp(result);
+	});
+};
+
+var deleteFavsAssociation = function(err, data, res) {
+	if(!err)
+		res.send(200);
+	else
+		return error.sendGenericError(res, 400, 'Error Encountered');
+	Users.find({$or: [{fav: {$in: data}}, {'associations.schematicId': {$in: data}}]}, function(err, users) {
+		if(err)
+			return console.log(err);
+		if(!users)
+			return;
+		for (var i = 0; i < users.length; i++) {
+			var user = users[i];
+			for (var j = 0; j < data.length; j++) {
+				user.SchemFav.remove(data[j]);
+				for (var k = 0; k < user.associations.length; k++) {
+					if(JSON.stringify(user.associations[k].schematicId) === JSON.stringify(data[j]))
+					{
+						user.associations.splice(k, 1);
+						k--;
+					}
+				}
+			}
+			user.save();
+		}
+	});
+};
+
 exports.delete = function(req, res) {
 	if(!req.node)
 	{
 		return error.sendGenericError(res, 400, 'Error Encountered');
 	}
-	deleteChildren(req.node._id);
-	res.send(200);
+	deleteChildren(req.node._id, deleteFavsAssociation, res);
 };
 
 exports.editStd = function(req,res){
 	if(!req.body.standardId)
 	{
-		return error.sendGenericError(res, 400, 'Error Encountered');
+		return error.sendGenericError(res, 400, 'Invalid Parameters');
 	}
 	var standard = {};
 	if (req.body.hasOwnProperty('stdName'))
@@ -366,7 +451,7 @@ exports.editStd = function(req,res){
 exports.editComponent = function(req, res){
 	if(!req.body.node || !req.body.node._id)
 	{
-		return error.sendGenericError(res, 400, 'Error Encountered');
+		return error.sendGenericError(res, 400, 'Invalid Parameters');
 	}
 	var component = req.body.node;
 	ComponentSchem
@@ -447,7 +532,7 @@ exports.getAllSchemStds = function(req, res) {
 		.populate('standard')
 		.lean()
 		.exec(function(err, components) {
-            if (err)
+			if (err)
 				return error.sendGenericError(res, 400, 'Error Encountered');
 			return res.jsonp(components);
 		});
@@ -455,19 +540,29 @@ exports.getAllSchemStds = function(req, res) {
 
 
 exports.node = function(req, res, next, id) {
-    ComponentSchem
-        .findOne({
-            _id: id
-        })
-        .lean()
+	ComponentSchem
+		.findOne({
+			_id: id
+		})
+		.lean()
 		.exec(function(err, component) {
-            if (err)
+			if (err)
 				return error.sendGenericError(res, 400, 'Error Encountered');
-            if (!component)
+			if (!component)
 				return error.sendGenericError(res, 400, 'Error Encountered');
-            req.node = component;
-            next();
-        });
+			req.node = component;
+			next();
+		});
+};
+
+exports.getMultiple = function(req, res) {
+	if(!req.body.items)
+		return error.sendGenericError(res, 400, 'Invalid Parameters');
+	ComponentSchem.find({_id: {$in: req.body.items}}).lean().populate('standard').exec(function(err, components) {
+		if(err)
+			return error.sendGenericError(res, 400, 'Error Encountered');
+		res.jsonp(components);
+	});
 };
 
 exports.getNode = function(req,res){
@@ -478,15 +573,15 @@ exports.getNode = function(req,res){
 
 exports.createNode = function(req,res){
 	if(!req.body.node)
-		return error.sendGenericError(res, 400, 'No node sent to server');
+		return error.sendGenericError(res, 400, 'Invalid Parameters');
 	var node = req.body.node;
 	if(!node.parentNode)
-		return error.sendGenericError(res, 400, 'No node sent to server');
+		return error.sendGenericError(res, 400, 'Invalid Parameters');
 	ComponentSchem.findOne({_id: node.parentNode}, function(err, component) {
 		if(err)
-			return error.sendGenericError(res, 400, 'No node sent to server');
+			return error.sendGenericError(res, 400, 'Error Encountered');
 		if(!component)
-			return error.sendGenericError(res, 400, 'No node sent to server');
+			return error.sendGenericError(res, 400, 'Error Encountered');
 		var child_component = new ComponentSchem({
 				name: node.name,
 				parentNode: node.parentNode,

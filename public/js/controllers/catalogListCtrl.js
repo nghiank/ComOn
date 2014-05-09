@@ -7,12 +7,16 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 	'_',
 	'$modal',
 	'$http',
+	'$timeout',
 	'searchStringParser',
-	function ($scope, Global, CatalogAPI, $routeParams, underscore, $modal, $http, searchStringParser) {
+	'SchematicsAPI',
+	'UsersAPI',
+	function ($scope, Global, CatalogAPI, $routeParams, underscore, $modal, $http, $timeout, searchStringParser, SchematicsAPI, UsersAPI) {
 		$scope.global = Global;
 		$scope.fields = [];
 		$scope._ = underscore;
 		$scope.pageItemLimit = 15;
+		$scope.items = [];
 		$scope.searchMode = false;
 		$scope.lower = 0;
 		$scope.upper = $scope.lower + $scope.pageItemLimit;
@@ -27,7 +31,12 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 		$scope.searchBox = {};
 		$scope.searchText = {};
 		$scope.typeAheadValues = [];
+		$scope.selectedRows = [];
+		$scope.selectedItems = [];
+		$scope.sth = {show:'aaa'};
+		$scope.multiple = false;
 		$scope.fields = [];
+		$scope.linkedSchematicEntries = {};
 		$scope.cols = [
 			{
 				title: 'Catalog',
@@ -52,6 +61,23 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 			return false;
 		};
 
+		$scope.checkLink = function(data) {
+			if($scope.global.authenticated)
+			{
+				var associations = $scope.global.user.associations;
+				var catalogIds = $scope._.map(associations, function(obj) {return obj.catalogId;});
+				if(catalogIds.indexOf(data._id) > -1)
+				{
+					return true;
+				}
+				return false;
+			}
+			else
+			{
+				return false;
+			}
+		};
+
 		$scope.showConfigureModal = function () {
 			$modal.open({
 				templateUrl: 'views/Catalog/configureTableModal.html',
@@ -69,8 +95,23 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 			});
 		};
 
+		$scope.showAssociationModal = function (item) {
+			$modal.open({
+				templateUrl: 'views/Catalog/associationModal.html',
+				controller: 'associationModalCtrl',
+				resolve: {
+					data: function () {
+						return {
+							item: item,
+							schematicLinks: $scope.linkedSchematicEntries
+						};
+					}
+				}
+			});
+		};
+
 		$scope.showFilterModal = function () {
-			var modalInstance = $modal.open({
+			$modal.open({
 				templateUrl: 'views/Catalog/filterModal.html',
 				controller: 'filterModalCtrl',
 				backdrop: 'static',
@@ -84,13 +125,75 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 					}
 				}
 			});
-			modalInstance.result.then(function(result){
-				if(result)
-				{
-					console.log(result);
-				}
-			});
 		};
+
+		$scope.isHighlighted = function(index){
+			return $scope.selectedRows.indexOf(index) + 1;
+		};
+
+		$scope.$watch('selectedItems',function(){
+			if($scope.selectedItems.length > 0)
+				$scope.searchBox.show = false;
+		},true);
+
+		$scope.toggleSelectRow = function(index) {
+			//if shift key is not pressed, only one row is selected
+			//Otherwise, multiple rows are selected;
+			if(!$scope.multiple){
+				if($scope.selectedRows.indexOf(index) > -1){
+					$scope.selectedRows = [];
+					$scope.selectedItems = [];
+					return;
+				}
+				$scope.selectedRows = [];
+				$scope.selectedItems = [];
+
+				$scope.selectedRows[0] = index;
+				$scope.selectedItems.push($scope.items[index]);
+			}else{
+				if($scope.selectedRows.indexOf(index) > -1){
+					$scope.selectedRows.splice($scope.selectedRows.indexOf(index),1);
+					for(var k in $scope.selectedItems){
+						if($scope.selectedItems[k]._id === $scope.items[index]._id)
+							$scope.selectedItems.splice(k,1);
+					}
+					return;
+				}
+				if($scope.selectedRows.length === 0 || $scope.ctrl){
+					$scope.selectedRows.push(index);
+					$scope.selectedItems.push($scope.items[index]);
+					return;
+				}
+				var minDiff = 9999,
+				minIndex = 0;
+				for(var j = 0; j < $scope.selectedRows.length; j++){
+					if(Math.abs($scope.selectedRows[j] - index) < minDiff){
+						minIndex = $scope.selectedRows[j];
+						minDiff = Math.abs($scope.selectedRows[j] - index);
+					}
+				}
+				for(var i = 0; i <= Math.abs(index - minIndex);i++){
+					if($scope.selectedRows.indexOf(Math.min(index,minIndex)+i)<0){
+						$scope.selectedRows.push(Math.min(index,minIndex)+i);
+						$scope.selectedItems.push($scope.items[Math.min(index,minIndex)+i]);
+					}
+				}
+			}
+		};
+
+		$scope.$watchCollection('global.user.associations', function() {
+			if($scope.global.authenticated && $scope.global.user.associations && $scope.global.user.associations.length > 0)
+			{
+				SchematicsAPI.getLinks.query({items: $scope._.map($scope.global.user.associations, function(obj) {return obj.schematicId;})}, function(response) {
+					if(response)
+					{
+						for (var i = 0; i < response.length; i++) {
+							$scope.linkedSchematicEntries[response[i]._id] = response[i];
+						}
+					}
+				});
+			}
+		});
 
 		$scope.init = function () {
 			$scope.showTypes = true;
@@ -100,6 +203,12 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 				if (response)
 					$scope.types = response;
 			});
+			if(Global.authenticated)
+			{
+				UsersAPI.getAssociations.query(function(response) {
+					Global.user.associations = response;
+				});
+			}
 			if($scope.global.authenticated && $routeParams.filterName && $scope.global.user.catalogFilters.length !== 0)
 			{
 				for (var i = 0; i < $scope.global.user.catalogFilters.length; i++) {
@@ -141,6 +250,20 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 			$scope.searchBox.show = false;
 		};
 
+		$scope.showLinkModal = function(item){
+			if(item)
+				var linkItem = item;
+			$modal.open({
+				templateUrl: 'views/Catalog/catIconLinkModal.html',
+				controller: 'catIconLinkModalCtrl',
+				backdrop: 'static',
+				windowClass: 'largerModal',
+				resolve:{
+					item:function(){return linkItem ? [linkItem]:$scope.selectedItems;}
+				}
+			});
+		};
+
 		$scope.getTypeAheadValues = function (field) {
 			if (field === 'Manufacturer') {
 				return $http.post('/api/getAllUniqueValues', {
@@ -161,6 +284,8 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 			$scope.showList = true;
 			$scope.searchBox.show = true;
 			$scope.showTypes = false;
+			$scope.selectedRows = [];
+			$scope.selectedItems = [];
 			$scope.target = type;
 			$scope.selected = type;
 			function parseCamelCase(input) {
@@ -280,6 +405,8 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
                 cols = $scope._.map($scope.cols, function (value) {
                     return value.field;
                 });
+				$scope.selectedRows = [];
+				$scope.selectedItems = [];
             }
 
 			CatalogAPI.entries.query({
@@ -314,7 +441,7 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 					for (var i = 0; i < $scope.fields.length; i++) {
 						var field = $scope.fields[i];
 						for (var j = 0; j < queryResults.length; j++) {
-							var newField = $scope._.findWhere(response.data, { _id: queryResults.items[j]._id });
+							var newField = $scope._.findWhere(response.data, { _id: queryResults[j]._id });
 							if (newField && newField.additionalInfo)
 								queryResults[j][field.field] = newField.additionalInfo[field.field.replace('additionalInfo.', '')];
 							else

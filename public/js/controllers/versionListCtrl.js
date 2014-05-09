@@ -37,7 +37,6 @@ angular.module('ace.schematic')
 
     $scope.chooseHoverTarget = function(index){
         $scope.hoverTgt = index;
-        console.log($scope.hoverTgt);
     };
     $scope.launchCompareModal = function() {
         $scope.hide = true;

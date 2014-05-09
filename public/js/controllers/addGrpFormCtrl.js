@@ -85,7 +85,6 @@ angular.module('ace.schematic')
         SchematicsAPI.createNode.save({node:$scope.target}, function(response){
             if(response)
             {
-                console.log('Create Success!');
                 $modalInstance.close();
             }
         });

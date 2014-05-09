@@ -16,9 +16,13 @@ module.exports = function(app) {
     app.post('/api/editComponent',authorization.requiresLogin , hasAuthorization, schem.editComponent);
     app.post('/api/isUniqueId',authorization.requiresLogin, hasAuthorization, schem.isUniqueId);
     app.post('/api/createNode',authorization.requiresLogin, hasAuthorization, schem.createNode);
+    
     app.post('/api/publishComponent', authorization.requiresLogin, hasAuthorization, schem.publishComponent);
     app.post('/api/getCompVersions', authorization.requiresLogin, hasAuthorization, schem.getVersions);
 
+    app.post('/api/getEntireStandard', schem.getEntireStandard);
+    app.post('/api/getMultiple', schem.getMultiple);
+    
     app.get('/api/getChildren/:nodeId', schem.getNodeChildren);
     app.get('/api/getParentHiearchy/:nodeId', schem.getParentHiearchy);
     app.get('/api/delete/:nodeId', authorization.requiresLogin , hasAuthorization, schem.delete);
