@@ -23,6 +23,9 @@
                             <a class="btn pull-right btn-link" ng-click="deleteAssociation(child)" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}" ng-show="child.showOption">
                                 <i class="fa fa-times error"></i>
                             </a>
+                            <a href="{{child.dl? child.dl: '#'}}" class="btn pull-right btn-link" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}" ng-show="child.showOption" >
+                                <i class="fa fa-download"></i>
+                            </a>
                         </span>
                     </li>
                 </ul>
