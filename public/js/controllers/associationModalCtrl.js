@@ -24,6 +24,41 @@ angular.module('ace.catalog').controller('associationModalCtrl', ['$scope', '$mo
 		}
 	};
 
+    $scope.setDownloadLink = function(link){
+        var download;
+        if (link === undefined || !link){
+            download = '#';
+        }
+        else{
+            download = link;
+        }
+        try{
+            if (window.exec === undefined){
+                return download;
+            }
+        }
+        catch(e){
+            console.error(e);
+            return download;
+        }
+        // return empty link if its in ACAD
+        return '';
+    };
+
+    $scope.downloadLink = function (link) {
+        try{
+            if (window.exec !== undefined){
+            	//call API to retrieve entire catalog entry
+            	
+                var response = window.exec(JSON.stringify({ functionName: 'DownloadInsertSymbol', invokeAsCommand: false, functionParams: {'link': link} }));
+                console.log(response);
+            }
+        }
+        catch(e){
+            console.error(e);
+        }
+    };
+
 
 	$scope.toggleOption = function (child, set) {
 		if(typeof child.showOption === 'undefined')
