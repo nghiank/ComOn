@@ -153,21 +153,33 @@ angular.module('ace.catalog').controller(
 			return newObj;
 		};
 
+
+		function queryForEntries(fields, cb) {
+			CatalogAPI.entries.query({
+				type: $scope.target.code,
+				lower: $scope.lower,
+				sortField: $scope.sort,
+				upper: $scope.upper,
+				fields: fields,
+				manufacturer: $scope.manufacturer,
+				search: $scope.prepareSearchString($scope.searchText.value),
+				filters: $scope.processFilters($scope.filters)
+			}, function (response) {
+				cb(response);
+			});
+		}
+
+
 		$scope.toggleField = function(field){
 			if($scope.cols.indexOf(field) === -1)
 			{
-				CatalogAPI.entries.query({
-					type: $scope.target.code,
-					lower: $scope.lower,
-					sortField: $scope.sort,
-					upper: $scope.upper,
-					fields: field.field,
-					manufacturer: $scope.manufacturer,
-					search: $scope.prepareSearchString($scope.searchText.value),
-					filters: $scope.processFilters($scope.filters)
-				}, function(response) {
+				var cols = $scope._.map($scope.cols, function (value) {
+						return value.field;
+					});
+				queryForEntries(cols.join(' ') + ' ' + field.field, function(response) {
 					if(response)
 					{
+						console.log(response.data);
 						var data = response.data;
 						for (var i = 0; i < $scope.items.length; i++) {
 							var newField = $scope._.findWhere(data, {_id: $scope.items[i]._id});
@@ -194,16 +206,7 @@ angular.module('ace.catalog').controller(
 			var cols = $scope._.map($scope.cols, function (value) {
 					return value.field;
 				});
-			CatalogAPI.entries.query({
-				type: $scope.target.code,
-				lower: lower,
-				sortField: $scope.sort,
-				upper: upper,
-				fields: cols.join(' '),
-				manufacturer: $scope.manufacturer,
-				search: $scope.prepareSearchString($scope.searchText.value),
-				filters: $scope.processFilters($scope.filters)
-			}, function (response) {
+			queryForEntries(cols.join(' '), function (response) {
 				$scope.items = $scope._.map(response.data, function (value) {
 					return $scope._.omit(value, [
 						'additionalInfo',

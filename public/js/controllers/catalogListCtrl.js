@@ -357,17 +357,27 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 			$scope.showTypes = true;
 		};
 
+		function queryForEntries(fields, cb) {
+			CatalogAPI.entries.query({
+				type: $scope.target.code,
+				lower: $scope.lower,
+				sortField: $scope.sort,
+				upper: $scope.upper,
+				fields: fields,
+				manufacturer: $scope.manufacturer,
+				search: $scope.prepareSearchString($scope.searchText.value),
+				filters: $scope.processFilters($scope.filters)
+			}, function (response) {
+				cb(response);
+			});
+		}
+
 		$scope.toggleField = function (field) {
 			if ($scope.cols.indexOf(field) === -1) {
-				CatalogAPI.entries.query({
-					type: $scope.selected.code,
-					lower: $scope.lower,
-					sortField: $scope.sort,
-					upper: $scope.upper,
-					fields: field.field,
-					search: $scope.prepareSearchString($scope.searchText.value),
-					filters: $scope.processFilters($scope.filters)
-				}, function (response) {
+				var cols = $scope._.map($scope.cols, function (value) {
+						return value.field;
+					});
+					queryForEntries(cols.join(' ') + ' ' + field.field, function (response) {
 					if (response) {
 						var data = response.data;
 						for (var i = 0; i < $scope.items.length; i++) {
