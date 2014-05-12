@@ -341,20 +341,21 @@ exports.editCatalogEntry = function(req,res){
 	newEntry = req.body.item;
 	if(!newEntry._id)
 		return error.sendGenericError(res, 400, 'Invalid Parameters');
-	CatalogSchem.findOne({_id:newEntry._id}).exec(function(err, fetchedEntry){
+	CatalogSchem.findOne({_id: newEntry._id}).exec(function(err, fetchedEntry){
 		if(err)
 			return error.sendGenericError(res, 400, 'Error Encountered');
 		if(!fetchedEntry)
 			return error.sendGenericError(res, 400, 'Error Encountered');
 		if(newEntry.type && fetchedEntry.type.code !== newEntry.type.code)
+		{
 			fetchedEntry.additionalInfo = {};
+		}
 		_.extend(fetchedEntry,newEntry);
-		var typeName = fetchedEntry.type.name;
-		for(var key in _.omit(fetchedEntry, ['_id', '__v']))
+		for(var key in _.omit(fetchedEntry, ['_id', '__v', 'type']))
 		{
 			fetchedEntry[key] = convertToUpper(fetchedEntry[key]);
 		}
-		fetchedEntry.type.name = typeName;
+		fetchedEntry.type.code = fetchedEntry.type.code.toUpperCase();
 		fetchedEntry.catalog = fetchedEntry.catalog.replace(' ', '');
 		fetchedEntry.save(function(err){
 			if(err)
