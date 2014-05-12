@@ -171,32 +171,16 @@ angular.module('ace.catalog').controller(
 
 
 		$scope.toggleField = function(field){
-			if($scope.cols.indexOf(field) === -1)
-			{
-				var cols = $scope._.map($scope.cols, function (value) {
-						return value.field;
-					});
-				queryForEntries(cols.join(' ') + ' ' + field.field, function(response) {
-					if(response)
-					{
-						console.log(response.data);
-						var data = response.data;
-						for (var i = 0; i < $scope.items.length; i++) {
-							var newField = $scope._.findWhere(data, {_id: $scope.items[i]._id});
-							if(newField && newField.additionalInfo)
-							{
-								$scope.items[i][field.field] = newField.additionalInfo[field.field.replace('additionalInfo.','')];
-							}
-							else
-								$scope.items[i][field.field] = '';
-						}
-						$scope.cols.push(field);
-					}
-				});
-			}
-			else
-			{
-				$scope.cols.splice($scope.cols.indexOf(field),1);
+			if ($scope.cols.indexOf(field) === -1) {
+				$scope.cols.push(field);
+				if($scope.searchText || $scope.filters.length > 0)
+				{
+					$scope.getPage(1, true);
+					return;
+				}
+				$scope.getPage($scope.currentPage, true);
+			} else {
+				$scope.cols.splice($scope.cols.indexOf(field), 1);
 			}
 		};
 
