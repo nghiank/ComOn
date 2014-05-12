@@ -358,17 +358,27 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 			$scope.showTypes = true;
 		};
 
+		function queryForEntries(fields, cb) {
+			CatalogAPI.entries.query({
+				type: $scope.target.code,
+				lower: $scope.lower,
+				sortField: $scope.sort,
+				upper: $scope.upper,
+				fields: fields,
+				manufacturer: $scope.manufacturer,
+				search: $scope.prepareSearchString($scope.searchText.value),
+				filters: $scope.processFilters($scope.filters)
+			}, function (response) {
+				cb(response);
+			});
+		}
+
 		$scope.toggleField = function (field) {
 			if ($scope.cols.indexOf(field) === -1) {
-				CatalogAPI.entries.query({
-					type: $scope.selected.code,
-					lower: $scope.lower,
-					sortField: $scope.sort,
-					upper: $scope.upper,
-					fields: field.field,
-					search: $scope.prepareSearchString($scope.searchText.value),
-					filters: $scope.processFilters($scope.filters)
-				}, function (response) {
+				var cols = $scope._.map($scope.cols, function (value) {
+						return value.field;
+					});
+					queryForEntries(cols.join(' ') + ' ' + field.field, function (response) {
 					if (response) {
 						var data = response.data;
 						for (var i = 0; i < $scope.items.length; i++) {
@@ -409,34 +419,13 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 				$scope.selectedItems = [];
             }
 
-			CatalogAPI.entries.query({
-				type: $scope.selected.code,
-				lower: lower,
-				sortField: $scope.sort,
-				upper: upper,
-				fields: cols.join(' '),
-				search: $scope.prepareSearchString($scope.searchText.value),
-				filters: $scope.processFilters($scope.filters)
-			}, function (response) {
+			queryForEntries(cols.join(' '), function (response) {
 				var queryResults = $scope._.map(response.data, function (value) {
 					return $scope._.omit(value, [
 						'additionalInfo',
 						'__v'
 					]);
 				});
-				if (page === 1 && response.data.length === $scope.pageItemLimit ) {
-					CatalogAPI.entries.query({
-						type: $scope.target.code,
-						total: true
-					}, function (response) {
-						if (response) {
-							$scope.total = response.count;
-						}
-					});
-				}else{
-					if(page === 1)
-						$scope.total = response.data.length;
-				}
 				if ($scope.fields.length > 0) {
 					for (var i = 0; i < $scope.fields.length; i++) {
 						var field = $scope.fields[i];
