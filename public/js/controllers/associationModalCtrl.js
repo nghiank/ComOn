@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ace.catalog').controller('associationModalCtrl', ['$scope', '$modalInstance','data', 'UsersAPI', 'Global', '$modal', '$timeout', function($scope, $modalInstance, data, UsersAPI, Global, $modal, $timeout) {
+angular.module('ace.catalog').controller('associationModalCtrl', ['$scope', '$modalInstance','data', 'UsersAPI', 'Global', '$modal', '$timeout', 'CatalogAPI', function($scope, $modalInstance, data, UsersAPI, Global, $modal, $timeout, CatalogAPI) {
 
 	$scope.item = data.item;
 	$scope.hide = false;
@@ -49,9 +49,13 @@ angular.module('ace.catalog').controller('associationModalCtrl', ['$scope', '$mo
         try{
             if (window.exec !== undefined){
             	//call API to retrieve entire catalog entry
-            	
-                var response = window.exec(JSON.stringify({ functionName: 'DownloadInsertSymbol', invokeAsCommand: false, functionParams: {'link': link} }));
-                console.log(response);
+            	CatalogAPI.getEntryById.save({_id: $scope.item._id}, function(response) {
+            		if(response)
+            		{
+		                window.exec(JSON.stringify({ functionName: 'DownloadInsertSymbol', invokeAsCommand: false, functionParams: {'link': link, 'data': response} }));
+		                console.log(response);     			
+            		}
+            	});
             }
         }
         catch(e){
