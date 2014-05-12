@@ -72,7 +72,7 @@ angular.module('ace.schematic')
 			$scope.valid.name = true;
 			return;
 		}
-		$scope.formValidator.checkSchematicNodeName(data, $scope.parentNode._id, function(check) {
+		$scope.formValidator.checkSchematicNodeName(data, $scope.origin.parentNode._id, function(check) {
 			$scope.valid.name = check.result;
 			$scope.error.name = check.err_message;
 			$scope.success.name = check.suc_message;
