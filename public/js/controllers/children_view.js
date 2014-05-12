@@ -251,16 +251,5 @@ angular.module('ace.schematic')
 		});
 	};
 
-	$scope.published = function(child) {
-		return (child.published !== 0) || $scope.admin;
-	};
-
-	$scope.checkAllPublished = function() {
-		for (var i = $scope.leaves.length - 1; i >= 0; i--) {
-			if($scope.published($scope.leaves[i]))
-				return false;
-		}
-		return true;
-	};
 
 }]);

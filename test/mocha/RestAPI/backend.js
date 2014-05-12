@@ -165,6 +165,7 @@ describe('<e2e API Test>', function() {
 
 		describe('For testing Add, Delete Schem Fav and geting favourite list', function() {
 			var component_id = '';
+			var standard = '';
 			before(function(done) {
 				this.timeout(config.timeout*3);
 				SchematicComponent.remove().exec(function() {
@@ -179,11 +180,11 @@ describe('<e2e API Test>', function() {
 							.attach('jsonFile', './test/mocha/RestAPI/mapping.json')
 							.end(function(err, res) {
 								res.should.have.status(200);
-
 								function getComponentId() {
 									agent.get('/api/getSchemStds')
 									.end(function(err, res) {
 										(res.status).should.equal(200);
+                                        standard = res.body[0].standard._id;
 										agent.get('/api/getChildren/'+res.body[0]._id)
 										.end(function(err, res) {
 											(res.status).should.equal(200);
@@ -200,77 +201,84 @@ describe('<e2e API Test>', function() {
 												}
                                                 if (component_id !== '')
                                                 {
-                                                    console.log('sharding ' + component_id);
                                                     agent.post('/api/publishComponent/')
                                                     .send({_id: component_id, number:1})
                                                     .end(function(err, res) {
-                                                        console.log('sharding error ' + err);
-                                                        console.log('sharding res ' + res.status);
                                                         (res.status).should.equal(200);
+                                                        done();
                                                         return;
                                                     });
+                                                    return;
                                                 }
                                                 done();
-											});
+                                            });
+                                        });
+                                    });
+                                }
+                                setTimeout(getComponentId, 500);
+                            });
+                        });
+                    });
+                });
+            });
 
-										});
-									});
-								}
-								setTimeout(getComponentId, 500);
-							});
-						});
-					});
-				});
-			});
-			it('POST /api/addSchemFav with valid id should return 200', function(done) {
-                console.log('adding id as favourite' + component_id);
-				(component_id).should.not.equal('');
-				agent.post('/api/addSchemFav')
-				.send({_id: component_id})
-				.end(function(err, res) {
-					(res.status).should.equal(200);
-					done();
-				});
-			});
+            it('POST /api/publishStandard with valid standard id should publish the entire standard and return 200', function(done) {
+                agent.post('/api/publishStandard')
+                .send({std_id: standard})
+                .end(function(err, res) {
+                    (res.status).should.equal(200);
+                    done();
+                });
+            });
+	
+            it('POST /api/addSchemFav with valid id should return 200', function(done) {
+                (component_id).should.not.equal('');
+                agent.post('/api/addSchemFav')
+                .send({_id: component_id})
+                .end(function(err, res) {
+                    (res.status).should.equal(200);
+                    done();
+                });
+            });
 
-			it('GET /api/getFav should return updated fav list with one fav', function(done){
-				agent
-				.get('/api/getFav', {json: true})
-				.end(function(err, res){
-					(res.body.schematic.length).should.equal(1);
-					(res.status).should.equal(200);
-					done();
-				});
-			});
+            it('GET /api/getFav should return updated fav list with one fav', function(done){
+                agent
+                .get('/api/getFav', {json: true})
+                .end(function(err, res){
+                    (res.body.schematic.length).should.equal(1);
+                    (res.status).should.equal(200);
+                    done();
+                });
+            });
 
-			it('POST /api/delSchemFav with valid id should return 200', function(done) {
-				(component_id).should.not.equal('');
-				agent.post('/api/delSchemFav')
-				.send({_id: component_id})
-				.end(function(err, res) {
-					(res.status).should.equal(200);
-					done();
-				});
-			});
+            it('POST /api/delSchemFav with valid id should return 200', function(done) {
+                (component_id).should.not.equal('');
+                agent.post('/api/delSchemFav')
+                .send({_id: component_id})
+                .end(function(err, res) {
+                    (res.status).should.equal(200);
+                    done();
+                });
+            });
 
-			it('GET /api/getFav should return updated fav list with no favs', function(done){
-				agent
-				.get('/api/getFav', {json: true})
-				.end(function(err, res){
-					(res.status).should.equal(200);
-					(res.body.schematic.length).should.equal(0);
-					done();
-				});
-			});
+            it('GET /api/getFav should return updated fav list with no favs', function(done){
+                agent
+                .get('/api/getFav', {json: true})
+                .end(function(err, res){
+                    (res.status).should.equal(200);
+                    (res.body.schematic.length).should.equal(0);
+                    done();
+                });
+            });
 
-			after(function(done) {
-				SchematicComponent.remove().exec(function() {
-					SchematicStandard.remove().exec(function() {
-						setTimeout(done, 500);
-					});
-				});
-			});
-		});
+            after(function(done) {
+                SchematicComponent.remove().exec(function() {
+                    SchematicStandard.remove().exec(function() {
+                        setTimeout(done, 500);
+                    });
+                });
+            });
+        });
 
 		describe('For testing Add, Delete and getting Associations with catalog', function() {
 			var component_id = '';
@@ -452,7 +460,7 @@ describe('<e2e API Test>', function() {
 				});
 			});
 		});
-	});
+    });
 
 	describe('Schematics Controller', function() {
 		var acess_token, acess_token_secret;
@@ -510,55 +518,54 @@ describe('<e2e API Test>', function() {
 				});
 			});
 
-			it('GET /api/getSchemStds should return 200 with the list of schematics', function(done) {
-				this.timeout(config.timeout);
-				xauth.get('http://localhost:3001/api/getSchemStds', function(err, res, b){
-					var result = JSON.parse(res)[0];
-					(result.name).should.equal('JIC: Schematic Symbols');
-					(b.statusCode).should.equal(200);
-					id = result._id;
-					standard_id = result.standard._id;
-					node = result;
-					done();
-				});
-			});
+            it('GET /api/getSchemStds should return 200 with the list of schematics', function(done) {
+                this.timeout(config.timeout);
+                agent.get('/api/getSchemStds').end(function(err, res){
+                    (res.body[0].name).should.equal('JIC: Schematic Symbols');
+                    (res.status).should.equal(200);
+                    id = res.body[0]._id;
+                    standard_id = res.body[0].standard._id;
+                    node = res.body[0];
+                    done();
+                });
+            });
 
-			it('GET /api/getChildren/:nodeId with invalid componentId should return 400', function(done) {
-				this.timeout(config.timeout);
-				xauth.get('http://localhost:3001/api/getChildren/asdjfhisweuhf', function(err, res, b){
-					(b.statusCode).should.equal(400);
-					done();
-				});
-			});
+            it('GET /api/getChildren/:nodeId with invalid componentId should return 400', function(done) {
+                this.timeout(config.timeout);
+                agent.get('/api/getChildren/asdjfhisweuhf').end(function(err, res){
+                    (res.status).should.equal(400);
+                    done();
+                });
+            });
 
-			it('GET /api/getChildren/:nodeId with valid Id should return the children with status 200', function(done) {
-				this.timeout(config.timeout);
-				xauth.get('http://localhost:3001/api/getChildren/'+id, function(err, res, b){
-					var result = JSON.parse(res);
-					(result.children.length).should.equal(17);
-					(b.statusCode).should.equal(200);
-					done();
-				});
-			});
+            it('GET /api/getChildren/:nodeId with valid Id should return the children with status 200', function(done) {
+                this.timeout(config.timeout);
+                agent.get('/api/getChildren/'+id).end(function(err, res){
+                    var result = res.body;
+                    (result.children.length).should.equal(17);
+                    (res.status).should.equal(200);
+                    done();
+                });
+            });
 
-			it('GET /api/getParentHiearchy/:nodeId with invalid componentId should return 400', function(done) {
-				this.timeout(config.timeout);
-				xauth.get('http://localhost:3001/api/getParentHiearchy/asdjfhisweuhf', function(err, res, b){
-					(b.statusCode).should.equal(400);
-					done();
-				});
-			});
+            it('GET /api/getParentHiearchy/:nodeId with invalid componentId should return 400', function(done) {
+                this.timeout(config.timeout);
+                agent.get('/api/getParentHiearchy/asdjfhisweuhf').end(function(err, res){
+                    (res.status).should.equal(400);
+                    done();
+                });
+            });
 
-			it('GET /api/getParentHiearchy/:nodeId with valid Id should return the parent hiearchy of the node with status 200', function(done) {
-				this.timeout(config.timeout);
-				xauth.get('http://localhost:3001/api/getParentHiearchy/'+id, function(err, res, b){
-					var result = JSON.parse(res);
-					(result.parentHiearchy.length).should.equal(1);
-					(result.parentHiearchy[0].title).should.equal('JIC: Schematic Symbols');
-					(b.statusCode).should.equal(200);
-					done();
-				});
-			});
+            it('GET /api/getParentHiearchy/:nodeId with valid Id should return the parent hiearchy of the node with status 200', function(done) {
+                this.timeout(config.timeout);
+                agent.get('/api/getParentHiearchy/'+id).end(function(err, res){
+                    var result = res.body;
+                    (result.parentHiearchy.length).should.equal(1);
+                    (result.parentHiearchy[0].title).should.equal('JIC: Schematic Symbols');
+                    (res.status).should.equal(200);
+                    done();
+                });
+            });
 
 			it('POST /api/editStd should return updated standard with 200', function(done) {
 				this.timeout(config.timeout);
@@ -709,18 +716,37 @@ describe('<e2e API Test>', function() {
 			});
 
 		});
-		describe('After delete - testing authorization for various API', function() {
-			var test_node = {name: 'test',id: '123saasd',standard: 'asdasdas'};
-			before(function(done) {
-				this.timeout(config.timeout);
-				agent.post('/api/upload')
-				.attach('datFile', './test/mocha/RestAPI/ACE_JIC_MENU.dat')
-				.attach('jsonFile', './test/mocha/RestAPI/mapping.json')
-				.end(function(err, res) {
-					res.should.have.status(200);
-					done();
-				});
-			});
+
+        describe('After delete - testing authorization for various API', function() {
+            var test_node = {name: 'test',id: '123saasd',standard: 'asdasdas'};
+            var standard;
+            before(function(done) {
+                this.timeout(config.timeout);
+                agent.post('/api/upload')
+                .attach('datFile', './test/mocha/RestAPI/ACE_JIC_MENU.dat')
+                .attach('jsonFile', './test/mocha/RestAPI/mapping.json')
+                .end(function(err, res) {
+                    res.should.have.status(200);
+                    function delay() {
+	 					agent.get('/api/getSchemStds')
+	                    .end(function(err, res) {
+	                        (res.status).should.equal(200);
+	                        standard = res.body[0].standard._id;
+	                    	done();
+	                    });
+	                }
+	                setTimeout(delay, 200);
+                });
+            });
+
+            it('POST /api/publishStandard with valid standard id should publish the entire standard and return 200', function(done) {
+                agent.post('/api/publishStandard')
+                .send({std_id: standard})
+                .end(function(err, res) {
+                    (res.status).should.equal(200);
+                    done();
+                });
+            });
 
 			it('GET /signout should logout', function(done){
 				agent
@@ -825,8 +851,8 @@ describe('<e2e API Test>', function() {
 					done();
 				});
 			});
-		});
-	});
+        });
+    });
 
 	describe('Catalog Controller', function() {
 		var acess_token, acess_token_secret;

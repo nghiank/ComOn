@@ -38,19 +38,26 @@ angular.module('ace.schematic')
     $scope.chooseHoverTarget = function(index){
         $scope.hoverTgt = index;
     };
-    $scope.launchCompareModal = function() {
-        $scope.hide = true;
-        var modalInstance = $modal.open({
-            templateUrl: 'views/Schematics/CompareVersionModal.html',
-            controller:'CompareVersionModalCtrl',
-            backdrop: 'static',
-        });
-        modalInstance.result.then(function(decision){
-            if(decision && typeof decision === 'number'){
-                $scope.publishComponent(decision);
+
+    $scope.compareVersions = function(index){
+        var change = '';
+        var fields=['id','name','dl','thumbnail'];
+        if(index < 1){
+            return 'Initial version';
+        }
+        var later = $scope.versionInfo.versions[index];
+        var earlier = $scope.versionInfo.versions[index-1];
+        for(var i in later){
+            if(fields.indexOf(i) > -1 && later[i]!==earlier[i])
+            {
+                change+= (i+' changed to '+ later[i]+'; ');      
             }
-            $scope.hide = false;
-        });
+        }
+        if(change.charAt(change.length-2) === ';')
+        {
+            change = change.substring(0,change.length-2);
+        }
+        return change;
     };
 
     $scope.cancel = function(){

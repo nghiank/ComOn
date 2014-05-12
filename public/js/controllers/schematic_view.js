@@ -56,6 +56,15 @@ angular.module('ace.schematic')
 		$scope.showComingSoon();
 	};
 
+	$scope.publishStandard = function(child){
+		SchematicsAPI.publishStd.save({std_id: child.standard._id}, function(response) {
+			if(response)
+			{
+				child.published = 1;
+			}
+		});
+	};
+
 	$scope.showComingSoon = function(){
 		$modal.open({
 			templateUrl: 'views/ComingModal.html',
