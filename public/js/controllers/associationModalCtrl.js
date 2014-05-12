@@ -52,8 +52,8 @@ angular.module('ace.catalog').controller('associationModalCtrl', ['$scope', '$mo
             	CatalogAPI.getEntryById.save({_id: $scope.item._id}, function(response) {
             		if(response)
             		{
-		                window.exec(JSON.stringify({ functionName: 'DownloadInsertSymbol', invokeAsCommand: false, functionParams: {'link': link, 'data': response} }));
-		                console.log(response);     			
+		                window.exec(JSON.stringify({ functionName: 'InsertSingleCatEntry', invokeAsCommand: false, functionParams: {'link': link, 'record': response} }));
+		                console.log(response);
             		}
             	});
             }
