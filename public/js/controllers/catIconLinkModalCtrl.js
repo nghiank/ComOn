@@ -45,7 +45,10 @@ angular.module('ace.catalog').controller('catIconLinkModalCtrl', ['Global', '$sc
 	};
 
 	$scope.getParentName = function(item){
-		SchematicsAPI.node.get({nodeId:item.parentNode},function(response){
+		if(!item.parentNode)
+			return;
+		$scope.itemParentName = null;
+		SchematicsAPI.node.get({nodeId: item.parentNode._id},function(response){
 			$scope.itemParentName = response.name;
 		});
 	};
@@ -159,7 +162,7 @@ angular.module('ace.catalog').controller('catIconLinkModalCtrl', ['Global', '$sc
 						}
 				var immediateChildren = [];
 				for (var j = 0; j < response.length; j++) {
-					if(response[j].parentNode === option._id)
+					if(response[j].parentNode && response[j].parentNode._id === option._id)
 					{
 						immediateChildren.push(response[j]);
 					}
@@ -174,7 +177,7 @@ angular.module('ace.catalog').controller('catIconLinkModalCtrl', ['Global', '$sc
 
 		var immediateChildren = [];
 		for (var i = 0; i < $scope.selectedStd.length; i++) {
-			if($scope.selectedStd[i].parentNode === option._id)
+			if($scope.selectedStd[i].parentNode && $scope.selectedStd[i].parentNode._id === option._id)
 			{
 				immediateChildren.push($scope.selectedStd[i]);
 			}

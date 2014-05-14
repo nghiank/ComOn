@@ -733,6 +733,8 @@ describe('<e2e API Test>', function() {
         describe('After delete - testing authorization for various API', function() {
             var test_node = {name: 'test',id: '123saasd',standard: 'asdasdas'};
             var standard;
+            var id;
+            var name;
             before(function(done) {
                 this.timeout(config.timeout);
                 agent.post('/api/upload')
@@ -748,7 +750,7 @@ describe('<e2e API Test>', function() {
 	                    	done();
 	                    });
 	                }
-	                setTimeout(delay, 200);
+	                setTimeout(delay, 500);
                 });
             });
 
@@ -793,12 +795,24 @@ describe('<e2e API Test>', function() {
 				});
 			});
 
+            it('GET /api/getChildren/:nodeId without credentials should return the children with status 200', function(done) {
+                this.timeout(config.timeout);
+                agent.get('/api/getChildren/'+id).end(function(err, res){
+                    var result = res.body;
+                    (result.children.length).should.equal(17);
+                    id = result.children[0]._id;
+                    name = result.children[0].name;
+                    (res.status).should.equal(200);
+                    done();
+                });
+            });
+
 			it('GET /api/getNode without credentials should return component with status 200', function(done) {
 				agent
 				.get('/api/getNode/'+id)
 				.end(function(err, res) {
 					(res.status).should.equal(200);
-					(res.body.name).should.equal('JIC: Schematic Symbols');
+					(res.body.name).should.equal(name);
 					done();
 				});
 			});
@@ -809,7 +823,7 @@ describe('<e2e API Test>', function() {
 				.post('/api/getMultiple')
 				.send({items: [id]})
 				.end(function(err, res) {
-					(res.body[0].name).should.equal('JIC: Schematic Symbols');
+					(res.body[0].name).should.equal(name);
 					(res.status).should.equal(200);
 					done();
 				});

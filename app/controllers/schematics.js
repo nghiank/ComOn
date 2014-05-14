@@ -295,18 +295,9 @@ exports.isUniqueId = function(req,res) {
 	});
 };
 
-exports.getNodeChildren = function(req, res) {
-	if(!req.node)
-	{
-		return error.sendGenericError(res, 400, 'Invalid Parameters');
-	}
-	var id = req.node._id;
-	var default_retrieval = {parentNode: id};
-	var adminCheck = req.user? (req.user.isAdmin? true: false): false;
-	if(!adminCheck)
-		default_retrieval.published = {$ne: 0};
+function getComponentsByVersion(condition, res, obj) {
 	ComponentSchem
-		.find(default_retrieval)
+		.find(condition)
 		.populate('standard')
 		.populate('parentNode')
 		.lean()
@@ -314,11 +305,11 @@ exports.getNodeChildren = function(req, res) {
 			if(err)
 				return error.sendGenericError(res, 400, 'Error Encountered');
 			if(!components || components.length === 0)
-				return res.jsonp({'children': []});
+				return res.jsonp(obj? {'children': []}: []);
 			var checked = 0;
 			var getVersion = function(i)
 			{
-				SchematicVersions.findOne({refId: components[i]._id}).exec(function(err, version) {
+				SchematicVersions.findOne({refId: components[i]._id}).lean().exec(function(err, version) {
 					if(err)
 						console.log(err);
 					else if(!version)
@@ -333,7 +324,7 @@ exports.getNodeChildren = function(req, res) {
 					}
 					if(++checked === components.length)
 					{
-						res.jsonp({'children': components});
+						res.jsonp(obj? {'children': components}: components);
 					}
 				});
 				return;
@@ -342,6 +333,29 @@ exports.getNodeChildren = function(req, res) {
 				getVersion(i);
 			}
 		});
+}
+
+exports.getNodeChildren = function(req, res) {
+	if(!req.node)
+	{
+		return error.sendGenericError(res, 400, 'Invalid Parameters');
+	}
+	var id = req.node._id;
+	var default_retrieval = {parentNode: id};
+	var adminCheck = req.user? (req.user.isAdmin? true: false): false;
+	if(!adminCheck)
+		default_retrieval.published = {$ne: 0};
+	getComponentsByVersion(default_retrieval, res, true);
+};
+
+exports.getMultiple = function(req, res) {
+	if(!req.body.items)
+		return error.sendGenericError(res, 400, 'Invalid Parameters');
+	var default_retrieval = {_id: {$in: req.body.items}};
+	var adminCheck = req.user? (req.user.isAdmin? true: false): false;
+	if(!adminCheck)
+		default_retrieval.published = {$ne: 0};
+	getComponentsByVersion(default_retrieval, res, false);
 };
 
 exports.getEntireStandard = function(req, res) {
@@ -354,25 +368,11 @@ exports.getEntireStandard = function(req, res) {
 			return error.sendGenericError(res, 400, 'Error Encountered');
 		if(!standard)
 			return error.sendGenericError(res, 400, 'Error Encountered');
-		ComponentSchem.find({standard: standard._id}).exec(function(err, components) {
-			if(err)
-				return error.sendGenericError(res, 400, 'Error Encountered');
-			if(components.length === 0)
-				return error.sendGenericError(res, 400, 'Error Encountered');
-			res.jsonp(components);
-		});
-	});
-};
-
-exports.getNodeByName = function(req,res){
-	if(!req.body.name){
-		return error.sendGenericError(res, 400, 'Invalid Parameters');
-	}
-	var search = new RegExp('^.*'+escape_regex(req.body.name)+'.*$', 'i');
-	ComponentSchem.find({'name': search,'isComposite': false}).lean().limit(10).exec(function(err,result){
-		if(err)
-			return console.log(err);
-		res.jsonp(result);
+		var default_retrieval = {standard: standard._id};
+		var adminCheck = req.user? (req.user.isAdmin? true: false): false;
+		if(!adminCheck)
+			default_retrieval.published = {$ne: 0};
+		getComponentsByVersion(default_retrieval, res, false);
 	});
 };
 
@@ -565,20 +565,30 @@ exports.node = function(req, res, next, id) {
 		});
 };
 
-exports.getMultiple = function(req, res) {
-	if(!req.body.items)
-		return error.sendGenericError(res, 400, 'Invalid Parameters');
-	ComponentSchem.find({_id: {$in: req.body.items}}).lean().populate('standard').exec(function(err, components) {
-		if(err)
-			return error.sendGenericError(res, 400, 'Error Encountered');
-		res.jsonp(components);
-	});
-};
 
 exports.getNode = function(req,res){
 	if (!req.node)
 		return error.sendGenericError(res, 400, 'Error Encountered');
-	return res.jsonp(req.node);
+	var component = req.node;
+	if(!component.published && !req.user.isAdmin)
+		return error.sendGenericError(res, 400, 'Error Encountered');
+	if(component.isComposite)
+		return res.jsonp(component);
+	SchematicVersions.findOne({refId: component._id}).exec(function(err, version) {
+		if(err)
+			return error.sendGenericError(res, 400, 'Error Encountered');
+		else if(!version)
+			return error.sendGenericError(res, 400, 'Error Encountered');
+		else
+		{
+			var published = (component.published)? (component.published - 1): 0;
+			var published_version = JSON.parse(JSON.stringify(version.versions[published]));
+			var omit = ['refVersion', 'version', 'published', 'standard', 'parentNode', '_id', '__v'];
+			published_version = _.omit(published_version, omit);
+			_.extend(component, published_version);	
+			res.jsonp(component);
+		}
+	});
 };
 
 exports.createNode = function(req,res){
@@ -621,7 +631,7 @@ exports.getVersions = function(req, res) {
 	ComponentSchem.findOne({_id: id}).exec(function(err, component) {
 		if(err)
 			return error.sendGenericError(res, 400, 'Error Encountered');
-		if(!component || component.isComposite)
+		if(!component || (component && component.isComposite))
 			return error.sendGenericError(res, 400, 'Error Encountered');
 		SchematicVersions.findOne({refId: id}).exec(function(err, version) {
 			if(err)
@@ -665,6 +675,8 @@ exports.publishComponent = function(req, res){
 		if(!component)
 			return error.sendGenericError(res, 400, 'Error Encountered');
 		if(component.version < number)
+			return error.sendGenericError(res, 400, 'Error Encountered');
+		if(component.isComposite)
 			return error.sendGenericError(res, 400, 'Error Encountered');
 		if(component.published === number)
 			return res.send(200);
