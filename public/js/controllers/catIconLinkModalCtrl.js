@@ -61,6 +61,12 @@ angular.module('ace.catalog').controller('catIconLinkModalCtrl', ['Global', '$sc
 		return false;
 	};
 
+	$scope.unpublished = function(item) {
+		if(item.published === 0)
+			return true;
+		return false;
+	};
+
 	$scope.getListOfItems = function() {
 		return _.map($scope.items, function(obj){return obj.catalog;}).join(', ');
 	};

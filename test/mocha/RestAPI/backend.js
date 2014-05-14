@@ -286,6 +286,8 @@ describe('<e2e API Test>', function() {
 			var entry2 = {catalog: 'asdqweqd', manufacturer: 'AB', description: 'Second', type: 'Fuse Holder'};
 			var entry3 = {catalog: 'rgethetshs', manufacturer: 'AB', description: 'Third', type: 'Fuse Holder'};
 			var stored_entries;
+			var standard = '';
+
 			before(function(done) {
 				this.timeout(config.timeout*3);
 				SchematicComponent.remove().exec(function() {
@@ -304,6 +306,7 @@ describe('<e2e API Test>', function() {
 									agent.get('/api/getSchemStds')
 									.end(function(err, res) {
 										(res.status).should.equal(200);
+										standard = res.body[0].standard._id;
 										agent.get('/api/getChildren/'+res.body[0]._id)
 										.end(function(err, res) {
 											(res.status).should.equal(200);
@@ -346,6 +349,16 @@ describe('<e2e API Test>', function() {
 					});
 				});
 			});
+
+            it('POST /api/publishStandard with valid standard id should publish the entire standard and return 200', function(done) {
+                agent.post('/api/publishStandard')
+                .send({std_id: standard})
+                .end(function(err, res) {
+                    (res.status).should.equal(200);
+                    done();
+                });
+            });
+
 			it('POST /api/addAssociation with valid catalog entries and schematic id should return 200', function(done) {
 				(component_id).should.not.equal('');
 				agent.post('/api/addAssociation')
