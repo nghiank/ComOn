@@ -6,8 +6,11 @@ angular.module('ace')
 	$scope.schematic = [];
 
 	var setFavVersions = function() {
+		function predicate(obj) {
+			return $scope.schematic[i]._id === obj.schematicId;
+		}
 		for (var i = $scope.schematic.length - 1; i >= 0; i--) {
-			var findIconVersion = _.find(Global.user.SchemFav, function (obj) { return $scope.schematic[i]._id === obj.schematicId; });
+			var findIconVersion = _.find(Global.user.SchemFav, predicate);
 			if(findIconVersion)
 			{
 				$scope.schematic[i].favVersion = findIconVersion.iconVersion;
@@ -58,7 +61,7 @@ angular.module('ace')
 					if(response)
 					{
 						$scope.Global.setFav(response);
-						child.favVersion = child.published;
+						$scope.getFavourites();
 					}
 				});
 			}

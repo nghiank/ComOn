@@ -181,10 +181,10 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 			}
 		};
 
-		$scope.$watchCollection('global.user.associations', function() {
+		$scope.refreshAssociations = function() {
 			if($scope.global.authenticated && $scope.global.user.associations && $scope.global.user.associations.length > 0)
 			{
-				SchematicsAPI.getLinks.query({items: $scope._.map($scope.global.user.associations, function(obj) {return obj.schematicId;})}, function(response) {
+				UsersAPI.getAssociations.query(function(response) {
 					if(response)
 					{
 						for (var i = 0; i < response.length; i++) {
@@ -193,6 +193,10 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 					}
 				});
 			}
+		};
+
+		$scope.$watchCollection('global.user.associations', function() {
+			$scope.refreshAssociations();
 		});
 
 		$scope.init = function () {
@@ -206,7 +210,12 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 			if(Global.authenticated)
 			{
 				UsersAPI.getAssociations.query(function(response) {
-					Global.user.associations = response;
+					if(response)
+					{
+						for (var i = 0; i < response.length; i++) {
+							$scope.linkedSchematicEntries[response[i]._id] = response[i];
+						}
+					}
 				});
 			}
 			if($scope.global.authenticated && $routeParams.filterName && $scope.global.user.catalogFilters.length !== 0)

@@ -14,6 +14,7 @@ angular.module('ace.users').factory('UsersAPI', ['$resource', function($resource
         getFilters: $resource('api/getFilters', null, {query: {method: 'GET'}}),
         addAssociation: $resource('api/addAssociation', null, {save: {method: 'POST', isArray: true}}),
         delAssociation: $resource('api/delAssociation', null, {save: {method: 'POST', isArray: true}}),
+        updateAssociation: $resource('api/updateAssociation', null, {save: {method: 'POST', isArray: true}}),
         getAssociations: $resource('api/getAssociations', null, {query: {method: 'GET', isArray: true}})
 	};
 }]);

@@ -17,11 +17,49 @@ angular.module('ace.catalog').controller('associationModalCtrl', ['$scope', '$mo
 					{
 						var newObj = data.schematicLinks[association.schematicId];
 						newObj.showOption = false;
+						newObj.iconVersion = Global.user.associations[i].iconVersion;
 						$scope.schematicEntries.push(newObj);
 					}
 				}
 			}
 		}
+	};
+
+	$scope.refresh = function() {
+		UsersAPI.getAssociations.query(function(response) {
+			if(response)
+			{
+				for (var i = 0; i < response.length; i++) {
+					data.schematicLinks[response[i]._id] = response[i];
+				}
+				$scope.populateEntries();
+			}
+		});
+	};
+
+	$scope.updateFav = function(child) {
+		var modalInstance = $modal.open({
+			templateUrl: 'views/confirmationModal.html',
+			controller:'confirmationModalCtrl',
+			backdrop: 'static',
+			resolve:{
+				title: function(){return 'Are you sure you want to update this favourite to the latest icon version?';},
+				msg: function(){return '';}
+			}
+		});
+		modalInstance.result.then(function(decision){
+			if(decision){
+				UsersAPI.updateAssociation.save({_id: child._id, item: data.item._id}, function(response) {
+					if(response)
+					{
+						Global.user.associations = response;
+						$scope.refresh();
+						child.iconVersion = child.published;
+					}
+				});
+			}
+		});
+
 	};
 
     $scope.setDownloadLink = function(link){

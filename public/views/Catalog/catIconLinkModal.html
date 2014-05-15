@@ -44,7 +44,7 @@
 		<div style="width:100%;">
 			<ul class="list-group">
 				<li class="list-group-item" ng-if="(typeAheadValues | filter: query.text).length < 1" style="border-radius: 0px; border: 0px; font-size: 12px;">Nothing to show here.</li>
-				<li class="list-group-item imgLoader" style="border-radius: 0px; border: 0px;" ng-repeat="item in typeAheadValues | filter: query.text" ng-click="!alreadyLinked(item) && !unpublished(item)? selectFromSearch(item)" ng-class="{'blueBackground':item._id === selectedItem._id, 'disabledLink': alreadyLinked(item) || unpublished(item)}" ng-mouseenter="setTarget(item);getParentName(item);" ng-mouseleave="removeTarget();">
+				<li class="list-group-item imgLoader" style="border-radius: 0px; border: 0px;" ng-repeat="item in typeAheadValues | filter: query.text" ng-click="!alreadyLinked(item) && !unpublished(item)? selectFromSearch(item): null" ng-class="{'blueBackground':item._id === selectedItem._id, 'disabledLink': alreadyLinked(item) || unpublished(item)}" ng-mouseenter="setTarget(item);getParentName(item);" ng-mouseleave="removeTarget();">
 					<i class="fa fa-folder-o" ng-if="item.isComposite" style="margin-right: 10px; vertical-align: middle;"></i>
 					<img ng-src="{{item.thumbnail}}" ng-if="!item.isComposite" style="margin-right: 10px" height="16" width="16">
 					<span style="font-size:12px;">{{item.name}}</span>

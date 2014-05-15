@@ -389,7 +389,14 @@ var deleteFavsAssociation = function(err, data, res) {
 		for (var i = 0; i < users.length; i++) {
 			var user = users[i];
 			for (var j = 0; j < data.length; j++) {
-				user.SchemFav.remove(data[j]);
+
+				for (var l = 0; l < user.SchemFav.length; l++) {
+					if(JSON.stringify(user.SchemFav[l].schematicId) === JSON.stringify(data[j]))
+					{
+						user.associations.splice(l, 1);
+						l--;
+					}
+				}
 				for (var k = 0; k < user.associations.length; k++) {
 					if(JSON.stringify(user.associations[k].schematicId) === JSON.stringify(data[j]))
 					{

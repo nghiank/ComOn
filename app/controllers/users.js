@@ -226,10 +226,8 @@ exports.updateSchemFavourite = function(req, res) {
             return error.sendGenericError(res, 400, 'Error Encountered');
         if(!component)
             return error.sendGenericError(res, 400, 'Error Encountered');
-        if(component.published === 0)
-            return error.sendGenericError(res, 400, 'Error Encountered');
         var list = _.map(req.user.SchemFav, function(obj) { return JSON.stringify(obj.schematicId); });
-        var index = list.indexOf(id);
+        var index = list.indexOf(JSON.stringify(id));
         if(index > -1)
         {
             req.user.SchemFav[index].iconVersion = component.published;
@@ -341,7 +339,47 @@ exports.removeFilter = function(req,res) {
 exports.getAssociations = function(req, res) {
     if(!req.user)
         return error.sendUnauthorizedError(res);
-    return res.jsonp(req.user.associations);
+    ComponentSchem.find({_id: {$in: _.map(req.user.associations, function(obj){ return obj.schematicId; })}, isComposite: false}).populate('standard').lean().exec(function(err, components) {
+        if(err)
+            return error.sendGenericError(res, 400, 'Error Encountered');
+        if(!components || components.length === 0)
+            return res.jsonp(components);
+        var checked = 0;
+        var getVersion = function(i)
+        {
+            SchematicVersions.findOne({refId: components[i]._id}).exec(function(err, version) {
+                if(err)
+                    console.log(err);
+                else if(!version)
+                    console.log('No available version');
+                else
+                {
+                    var findIconVersion = _.find(req.user.associations, function(obj) { return JSON.stringify(obj.schematicId) === JSON.stringify(components[i]._id); });
+                    var published = findIconVersion? (version.versions[findIconVersion.iconVersion - 1]? findIconVersion.iconVersion - 1: 0): -1;
+                    if(published > -1)
+                    {
+                        var published_version = JSON.parse(JSON.stringify(version.versions[published]));
+                        var omit = ['refVersion', 'version', 'published', 'standard', 'parentNode', '_id', '__v'];
+                        published_version = _.omit(published_version, omit);
+                        _.extend(components[i], published_version);
+                        if(components[i].published === 0)
+                        {
+                            components[i] = _.pick(components[i], ['name', '_id', 'published', 'version', 'standard']);
+                        }
+                    }
+
+                }
+                if(++checked === components.length)
+                {
+                    res.jsonp(components);
+                }
+            });
+            return;
+        };
+        for (var i = components.length - 1; i >= 0; i--) {
+            getVersion(i);
+        }
+    });
 };
 
 exports.addAssociation = function(req, res) {
@@ -349,7 +387,10 @@ exports.addAssociation = function(req, res) {
         return error.sendUnauthorizedError(res);
     if(!req.body.hasOwnProperty('items') || !req.body.hasOwnProperty('_id'))
         return error.sendGenericError(res, 400, 'Invalid Parameters');
+    if(!req.body.hasOwnProperty('number'))
+        return error.sendGenericError(res, 400, 'Invalid Parameters');
     var items = req.body.items;
+    var number = req.body.number;
     if(items.length === 0)
         return error.sendGenericError(res, 400, 'Error Encountered');
     var _id = req.body._id;
@@ -378,7 +419,7 @@ exports.addAssociation = function(req, res) {
                 entry = entries[i];
                 if(!associations || (associations && _.filter(associations, checker).length === 0))
                 {
-                    associations.push({catalogId: entry._id, schematicId: _id});
+                    associations.push({catalogId: entry._id, schematicId: _id, iconVersion: number});
                 }
             }
             req.user.associations = associations;
@@ -389,6 +430,42 @@ exports.addAssociation = function(req, res) {
                     res.jsonp(req.user.associations);
             });
         });
+    });
+};
+
+exports.updateAssociation = function(req,res) {
+    if(!req.user)
+        return error.sendUnauthorizedError(res);
+    if(!req.body.hasOwnProperty('item') || !req.body.hasOwnProperty('_id'))
+        return error.sendGenericError(res, 400, 'Invalid Parameters');
+    var item = JSON.stringify(req.body.item);
+    var _id = JSON.stringify(req.body._id);
+    var list = req.user.associations;
+    ComponentSchem.findOne({_id: req.body._id}).lean().exec(function(err, component) {
+        if(err)
+        {
+            return error.sendGenericError(res, 400, 'Error Encountered1');
+        }
+        if(!component)
+            return error.sendGenericError(res, 400, 'Error Encountered2');
+        if(component.isComposite)
+            return error.sendGenericError(res, 400, 'Error Encountered3');
+        var callback = function(err) {
+            if(err)
+            {
+                return error.sendGenericError(res, 400, 'Error Encountered4');
+            }
+            res.jsonp(req.user.associations);
+        };
+        for (var i = 0; i < list.length; i++) {
+            if(JSON.stringify(list[i].catalogId) === item && JSON.stringify(list[i].schematicId)=== _id)
+            {
+                req.user.associations[i].iconVersion = component.published;
+                req.user.save(callback);
+                return;
+            }
+        }
+        return error.sendGenericError(res, 400, 'Error Encountered');
     });
 };
 
@@ -415,6 +492,7 @@ exports.removeAssociation = function(req,res) {
     }
     return error.sendGenericError(res, 400, 'Error Encountered');
 };
+
 
 /**
  * Find user by Id

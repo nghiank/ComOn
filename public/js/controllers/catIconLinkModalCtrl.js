@@ -20,14 +20,14 @@ angular.module('ace.catalog').controller('catIconLinkModalCtrl', ['Global', '$sc
 		if(!$scope.linkDisabled)
 		{
 			if($scope.query.text.length === 0)
-				UsersAPI.addAssociation.save({items: _.map($scope.items, function(obj) {return obj._id;}), _id: $scope.selectedHiearchy[$scope.selectedHiearchy.length - 1]._id}, function(response) {
+				UsersAPI.addAssociation.save({items: _.map($scope.items, function(obj) {return obj._id;}), _id: $scope.selectedHiearchy[$scope.selectedHiearchy.length - 1]._id, number: $scope.selectedHiearchy[$scope.selectedHiearchy.length - 1].published}, function(response) {
 					if(response) {
 						Global.user.associations = response;
 						$modalInstance.close(true);
 					}
 				});
 			else
-				UsersAPI.addAssociation.save({items: _.map($scope.items, function(obj) {return obj._id;}), _id: $scope.selectedItem._id}, function(response){
+				UsersAPI.addAssociation.save({items: _.map($scope.items, function(obj) {return obj._id;}), _id: $scope.selectedItem._id, number: $scope.selectedItem.published}, function(response){
 					if(response){
 						Global.user.associations = response;
 						$modalInstance.close(true);
@@ -123,7 +123,7 @@ angular.module('ace.catalog').controller('catIconLinkModalCtrl', ['Global', '$sc
 		}
 		if(!$scope.selectedHiearchy[level] || ($scope.selectedHiearchy[level] && $scope.selectedHiearchy[level]._id !== item._id))
 		{
-			$scope.selectedHiearchy[level] = {_id: item._id, isComposite: item.isComposite};
+			$scope.selectedHiearchy[level] = {_id: item._id, isComposite: item.isComposite, published: item.published};
 			if(item.parentNode === null)
 			{
 				$scope.selectStandard(item);

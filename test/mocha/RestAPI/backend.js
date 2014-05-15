@@ -281,7 +281,7 @@ describe('<e2e API Test>', function() {
         });
 
 		describe('For testing Add, Delete and getting Associations with catalog', function() {
-			var component_id = '';
+			var component = '';
 			var entry1 = {catalog: 'asasd', manufacturer: 'BUSS', description: 'First', type: 'Fuse Holder'};
 			var entry2 = {catalog: 'asdqweqd', manufacturer: 'AB', description: 'Second', type: 'Fuse Holder'};
 			var entry3 = {catalog: 'rgethetshs', manufacturer: 'AB', description: 'Third', type: 'Fuse Holder'};
@@ -334,7 +334,7 @@ describe('<e2e API Test>', function() {
 													var child = res.body.children[i];
 													if(!child.isComposite)
 													{
-														component_id = child._id;
+														component = child;
 														return setupCatalog();
 													}
 												}
@@ -360,9 +360,9 @@ describe('<e2e API Test>', function() {
             });
 
 			it('POST /api/addAssociation with valid catalog entries and schematic id should return 200', function(done) {
-				(component_id).should.not.equal('');
+				(component._id).should.not.equal('');
 				agent.post('/api/addAssociation')
-				.send({items: _.map(stored_entries, function(obj) {return obj._id;}), _id: component_id})
+				.send({items: _.map(stored_entries, function(obj) {return obj._id;}), _id: component._id, number: component.published})
 				.end(function(err, res) {
 					(res.status).should.equal(200);
 					(res.body.length).should.equal(3);
@@ -374,16 +374,17 @@ describe('<e2e API Test>', function() {
 				agent
 				.get('/api/getAssociations')
 				.end(function(err, res){
-					(res.body.length).should.equal(3);
+					console.log(res);
+					(res.body.length).should.equal(1);
 					(res.status).should.equal(200);
 					done();
 				});
 			});
 
 			it('POST /api/delAssociation with valid catalog entries and schematic id should delete and return updated associations with 2 entries', function(done) {
-				(component_id).should.not.equal('');
+				(component._id).should.not.equal('');
 				agent.post('/api/delAssociation')
-				.send({item: stored_entries[0]._id, _id: component_id})
+				.send({item: stored_entries[0]._id, _id: component._id})
 				.end(function(err, res) {
 					(res.status).should.equal(200);
 					(res.body.length).should.equal(2);

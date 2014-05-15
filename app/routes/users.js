@@ -37,6 +37,7 @@ module.exports = function(app, passport) {
 
     app.post('/api/addAssociation', authorization.requiresLogin, users.addAssociation);
     app.post('/api/delAssociation', authorization.requiresLogin, users.removeAssociation);
+    app.post('/api/updateAssociation', authorization.requiresLogin, users.updateAssociation);
     app.get('/api/getAssociations', authorization.requiresLogin, users.getAssociations);
 
     // Setting the oxygen oauth route
