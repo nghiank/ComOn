@@ -21,7 +21,7 @@ angular.module('ace').directive('resetForm',
 			restrict: 'A',
 			link: function(scope, element, attr) {
 				scope.$watch('cols.length', function () {
-					if(attr.transformLink.indexOf('HTTP://') === 0)
+					if(attr.transformLink.indexOf('HTTP') === 0)
 					{
 						var link = attr.transformLink;
 						element.text('');

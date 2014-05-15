@@ -1,18 +1,24 @@
 'use strict';
 
 angular.module('ace')
-.controller('Favourites', ['$scope', 'Global', 'UsersAPI', '$modal', function ($scope, Global, UsersAPI, $modal) {
+.controller('Favourites', ['$scope', 'Global', 'UsersAPI', '$modal', '_', function ($scope, Global, UsersAPI, $modal, _) {
 	$scope.Global = Global;
 	$scope.schematic = [];
+
+	var setFavVersions = function() {
+		for (var i = $scope.schematic.length - 1; i >= 0; i--) {
+			var findIconVersion = _.find(Global.user.SchemFav, function (obj) { return $scope.schematic[i]._id === obj.schematicId; });
+			if(findIconVersion)
+			{
+				$scope.schematic[i].favVersion = findIconVersion.iconVersion;
+			}
+		}
+	};
 
 	$scope.getFavourites = function() {
 		UsersAPI.getFav.query(function(favourites) {
 			$scope.schematic = favourites.schematic;
-			var listofFav = [];
-			for (var i = 0; i < $scope.schematic.length; i++) {
-				listofFav.push($scope.schematic[i]._id);
-			}
-			$scope.Global.setFav(listofFav);
+			setFavVersions();
 		});
 	};
 	$scope.toggleOption = function (child, set) {
@@ -36,16 +42,28 @@ angular.module('ace')
 		});
 	};
 
-	$scope.published = function(child) {
-		return (child.published !== 0) || $scope.admin;
-	};
+	$scope.updateFav = function(child) {
+		var modalInstance = $modal.open({
+			templateUrl: 'views/confirmationModal.html',
+			controller:'confirmationModalCtrl',
+			backdrop: 'static',
+			resolve:{
+				title: function(){return 'Are you sure you want to update this favourite to the latest icon version?';},
+				msg: function(){return '';}
+			}
+		});
+		modalInstance.result.then(function(decision){
+			if(decision){
+				UsersAPI.updateSchemFav.save({_id: child._id}, function(response) {
+					if(response)
+					{
+						$scope.Global.setFav(response);
+						child.favVersion = child.published;
+					}
+				});
+			}
+		});
 
-	$scope.checkAllPublished = function() {
-		for (var i = $scope.schematic.length - 1; i >= 0; i--) {
-			if($scope.published($scope.schematic[i]))
-				return false;
-		}
-		return true;
 	};
 
 	$scope.deleteFilter = function(child) {

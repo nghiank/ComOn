@@ -168,7 +168,10 @@ exports.addSchemFavourite = function(req, res) {
         return error.sendUnauthorizedError(res);
     if(!req.body.hasOwnProperty('_id'))
         return error.sendGenericError(res, 400, 'Invalid Parameters');
+    if(!req.body.hasOwnProperty('number'))
+        return error.sendGenericError(res, 400, 'Invalid Parameters');
     var id = req.body._id;
+    var number = req.body.number;
     ComponentSchem.findOne({_id: id}, function(err, component) {
         if(err)
             return error.sendGenericError(res, 400, 'Error Encountered');
@@ -176,19 +179,18 @@ exports.addSchemFavourite = function(req, res) {
             return error.sendGenericError(res, 400, 'Error Encountered');
         if(component.published === 0)
             return error.sendGenericError(res, 400, 'Error Encountered');
-        var list = req.user.SchemFav;
-        if(list.indexOf(id) < 0)
+        var list = _.map(req.user.SchemFav, function(obj) { return JSON.stringify(obj.schematicId); });
+        if(list.indexOf(JSON.stringify(id)) < 0)
         {
-            list.push(id);
-            req.user.SchemFav = list;
+            req.user.SchemFav.push({schematicId: id, iconVersion: number});
             req.user.save(function(err) {
                 if(err)
                     return error.sendGenericError(res, 400, 'Error Encountered');
-                res.jsonp(list);
+                res.jsonp(req.user.SchemFav);
             });
             return;
         }
-        res.jsonp(list);
+        res.jsonp(req.user.SchemFav);
     });
 };
 
@@ -197,11 +199,12 @@ exports.removeSchemFavourite = function(req,res) {
         return error.sendUnauthorizedError(res);
     if(!req.body.hasOwnProperty('_id'))
         return error.sendGenericError(res, 400, 'Invalid Parameters');
-    var id = req.body._id;
-    var list = req.user.SchemFav;
-    if(list.indexOf(id) > -1)
+    var id = JSON.stringify(req.body._id);
+    var list = _.map(req.user.SchemFav, function(obj) { return JSON.stringify(obj.schematicId); });
+    var index = list.indexOf(id);
+    if(index > -1)
     {
-        req.user.SchemFav.remove(id);
+        req.user.SchemFav.splice(index, 1);
         req.user.save(function(err) {
             if(err)
                 return error.sendGenericError(res, 400, 'Error Encountered');
@@ -209,13 +212,42 @@ exports.removeSchemFavourite = function(req,res) {
         });
         return;
     }
-    res.jsonp(list);
+    res.jsonp(req.user.SchemFav);
+};
+
+exports.updateSchemFavourite = function(req, res) {
+    if(!req.user)
+        return error.sendUnauthorizedError(res);
+    if(!req.body.hasOwnProperty('_id'))
+        return error.sendGenericError(res, 400, 'Invalid Parameters');
+    var id = req.body._id;
+    ComponentSchem.findOne({_id: id}, function(err, component) {
+        if(err)
+            return error.sendGenericError(res, 400, 'Error Encountered');
+        if(!component)
+            return error.sendGenericError(res, 400, 'Error Encountered');
+        if(component.published === 0)
+            return error.sendGenericError(res, 400, 'Error Encountered');
+        var list = _.map(req.user.SchemFav, function(obj) { return JSON.stringify(obj.schematicId); });
+        var index = list.indexOf(id);
+        if(index > -1)
+        {
+            req.user.SchemFav[index].iconVersion = component.published;
+            req.user.save(function(err) {
+                if(err)
+                    return error.sendGenericError(res, 400, 'Error Encountered');
+                res.jsonp(req.user.SchemFav);
+            });
+            return;
+        }
+        res.jsonp(req.user.SchemFav);
+    });
 };
 
 exports.getFavourites = function(req, res) {
     if(!req.user)
         return error.sendUnauthorizedError(res);
-    ComponentSchem.find({_id: {$in: req.user.SchemFav}, isComposite: false}).lean().exec(function(err, components) {
+    ComponentSchem.find({_id: {$in: _.map(req.user.SchemFav, function(obj){ return obj.schematicId; })}, isComposite: false}).lean().exec(function(err, components) {
         if(err)
             return error.sendGenericError(res, 400, 'Error Encountered');
         if(!components || components.length === 0)
@@ -230,11 +262,20 @@ exports.getFavourites = function(req, res) {
                     console.log('No available version');
                 else
                 {
-                    var published = (components[i].published)? (components[i].published - 1): 0;
-                    var published_version = JSON.parse(JSON.stringify(version.versions[published]));
-                    var omit = ['refVersion', 'version', 'published', 'standard', 'parentNode', '_id', '__v'];
-                    published_version = _.omit(published_version, omit);
-                    _.extend(components[i], published_version);
+                    var findIconVersion = _.find(req.user.SchemFav, function(obj) { return JSON.stringify(obj.schematicId) === JSON.stringify(components[i]._id); });
+                    var published = findIconVersion.iconVersion? (version.versions[findIconVersion.iconVersion - 1]? findIconVersion.iconVersion - 1: 0): -1;
+                    if(published > -1)
+                    {
+                        var published_version = JSON.parse(JSON.stringify(version.versions[published]));
+                        var omit = ['refVersion', 'version', 'published', 'standard', 'parentNode', '_id', '__v'];
+                        published_version = _.omit(published_version, omit);
+                        _.extend(components[i], published_version);
+                        if(components[i].published === 0)
+                        {
+                            components[i] = _.pick(components[i], ['name', '_id', 'published', 'version']);
+                        }
+                    }
+
                 }
                 if(++checked === components.length)
                 {

@@ -210,7 +210,7 @@ angular.module('ace.schematic')
 	};
 
 	$scope.addFavouriteKey = function() {
-		var listOfFavs = $scope.Global.user.SchemFav;
+		var listOfFavs = $scope._.map($scope.Global.user.SchemFav, function(obj) { return obj.schematicId; });
 		for (var i = 0; i < $scope.leaves.length; i++) {
 			var leaf = $scope.leaves[i];
 			if(listOfFavs.indexOf(leaf._id) > -1)
@@ -225,7 +225,7 @@ angular.module('ace.schematic')
 			return;
 		if(child.published === 0)
 			return;
-		UsersAPI.addSchemFav.save({_id: child._id}, function(response) {
+		UsersAPI.addSchemFav.save({_id: child._id, number: child.published}, function(response) {
 			if(response)
 			{
 				child.isFavourite = true;

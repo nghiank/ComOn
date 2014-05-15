@@ -234,7 +234,7 @@ describe('<e2e API Test>', function() {
             it('POST /api/addSchemFav with valid id should return 200', function(done) {
                 (component_id).should.not.equal('');
                 agent.post('/api/addSchemFav')
-                .send({_id: component_id})
+                .send({_id: component_id, number: 1})
                 .end(function(err, res) {
                     (res.status).should.equal(200);
                     done();

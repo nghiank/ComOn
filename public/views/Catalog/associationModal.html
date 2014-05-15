@@ -15,7 +15,7 @@
                     Item {{item.catalog}} has no links to the schematic icons.
                     <a class="btn btn-default btn-separate" ng-click="openAddLinkModal()">Add Links</a>
                     </li>   
-                    <li class="list-group-item imgLoader" ng-repeat="child in schematicEntries track by $index" ng-mouseenter = "toggleOption(child, true)" ng-mouseleave = "toggleOption(child, false)">
+                    <li class="list-group-item imgLoader" ng-repeat="child in schematicEntries track by $index" ng-mouseenter = "toggleOption(child, true)" ng-mouseleave = "toggleOption(child, false)" ng-class = "{local:!child.published}">
                         <img ng-src='{{child.thumbnail}}' ng-show="child.thumbnail" style="width: 40px; height: 40px; margin-right:10px;">
                         {{child.name}} 
                         <span style="font-size: 13px; color: cadetblue;"> ( {{child.standard.name}} )</span>

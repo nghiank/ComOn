@@ -29,6 +29,7 @@ module.exports = function(app, passport) {
     app.post('/api/addSchemFav', authorization.requiresLogin, users.addSchemFavourite);
     app.post('/api/delSchemFav', authorization.requiresLogin, users.removeSchemFavourite);
     app.get('/api/getFav', authorization.requiresLogin, users.getFavourites);
+    app.post('/api/updateSchemFav', authorization.requiresLogin, users.updateSchemFavourite);
 
     app.post('/api/addFilter', authorization.requiresLogin, users.addFilter);
     app.post('/api/delFilter', authorization.requiresLogin, users.removeFilter);

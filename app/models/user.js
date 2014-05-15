@@ -34,12 +34,12 @@ var UserSchema = new Schema({
         type: String,
         default: null
     },
-    SchemFav: [{ type: Schema.ObjectId, ref: 'SchematicComponent' }],
+    SchemFav: [{schematicId: { type: Schema.ObjectId, ref: 'SchematicComponent' }, iconVersion: {type: Number, default: 1}}],
     catalogFilters: [{
         type: Schema.Types.Mixed,
         default: null
     }],
-    associations: [{catalogId: {type: Schema.ObjectId, default: null, ref: 'Catalog'}, schematicId: {type: Schema.ObjectId, default: null,  ref: 'SchematicComponent' }}]
+    associations: [{catalogId: {type: Schema.ObjectId, default: null, ref: 'Catalog'}, schematicId: {type: Schema.ObjectId, default: null,  ref: 'SchematicComponent' }, iconVersion: {type: Number, default: 1}}]
 });
 
 UserSchema.index({isAdmin: 1});

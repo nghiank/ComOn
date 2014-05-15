@@ -7,6 +7,7 @@ angular.module('ace.users').factory('UsersAPI', ['$resource', function($resource
 		profile: $resource('api/updateCodeName/:codeName', null, {update:{method:'GET'}}),
         addSchemFav: $resource('api/addSchemFav', null, {save: {method: 'POST', isArray: true}}),
         delSchemFav: $resource('api/delSchemFav', null, {save: {method: 'POST', isArray: true}}),
+        updateSchemFav: $resource('api/updateSchemFav', null, {save: {method: 'POST', isArray: true}}),
         getFav: $resource('api/getFav', null, {query: {method: 'GET'}}),
         addFilter: $resource('api/addFilter', null, {save: {method: 'POST', isArray: true}}),
         delFilter: $resource('api/delFilter', null, {save: {method: 'POST', isArray: true}}),

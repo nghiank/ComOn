@@ -4,15 +4,20 @@
             <div class="list-group-item list-title">Schematic Favourites</div> 
             <ul class="list-group">
                 <li class="list-group-item" ng-show="schematic.length == 0">No favourites added yet.</li>          
-                <li class="list-group-item imgLoader" ng-repeat="child in schematic | filter: unpublished" ng-mouseenter = "toggleOption(child, true)" ng-mouseleave = "toggleOption(child, false)">
-                    <img ng-src="{{child.thumbnail}}" ng-show="child.thumbnail" style="width: 40px; height: 40px; margin-right:10px;">
-                    <a href="#!/standards/{{child.parentNode}}">{{child.name}}</a>
+                <li class="list-group-item imgLoader" ng-class = "{local: child.published !== child.favVersion && child.published !== 0}" ng-repeat="child in schematic" ng-mouseenter = "toggleOption(child, true)" ng-mouseleave = "toggleOption(child, false)">
+                    <img ng-src="{{child.thumbnail}}" ng-show="child.thumbnail && child.published !== 0" style="width: 40px; height: 40px; margin-right:10px;">
+                    <a href="#!/standards/{{child.parentNode}}" ng-show="child.published === child.favVersion && child.published !== 0">{{child.name}}</a>
+                    <span ng-show="child.published !== child.favVersion && child.published !== 0">{{child.name}}</span>
+                    <span ng-show="child.published === 0"><i class="fa fa-times error" style="margin-right:10px;"></i><a>"{{child.name}}"</a> is no longer available.</span>                    
                     <span style="position: absolute; right: 0px; height: 100%; top: 0px; padding-top: 12px; background-color: aliceblue;">
                         <a class="btn pull-right btn-link" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}" ng-click="delSchemFav(child)" ng-show="!child.isComposite && child.showOption">
                             <i class="fa fa-star star"></i>
                         </a>
-                        <a href="{{child.dl? child.dl: '#'}}" class="btn pull-right btn-link" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}" ng-show="child.showOption" >
+                        <a href="{{child.dl? child.dl: '#'}}" class="btn pull-right btn-link" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}" ng-show="!child.isComposite && child.showOption && child.published === child.favVersion && child.published !== 0" >
                             <i class="fa fa-download"></i>
+                        </a>
+                        <a ng-click="updateFav(child)" class="btn pull-right btn-link" ng-class="{'btn-s':{{!!child.thumbnail}}, 'btn-xs':{{!!!child.thumbnail}}}" ng-show="!child.isComposite && child.showOption && child.published !== child.favVersion && child.published !== 0" >
+                            <i class="fa fa-arrow-up error"></i>
                         </a>
                     </span>
                 </li>
