@@ -23,7 +23,7 @@
 		       		<td fix-width="4" ng-show="target.published === {{$index+1}}"><div class="success">Published</div></td>
 		       		<td fix-width="4" ng-hide="target.published === {{$index+1}}" class="fixed-width">
                         <span class="grey italic">Not Published</span>
-                        <a ng-show="hoverTgt === ($index+1)" ng-click="publishComponent($index+1)"class="unpublished"><i class="fa fa-book"></i></a>
+                        <a ng-show="hoverTgt === ($index+1)" ng-click="publishComponent($index+1)"class="unpublished" tooltip="Publish" tooltip-placement="bottom" tooltip-popup-delay="500"><i class="fa fa-book"></i></a>
                     </td>
 
 		       	</tr>

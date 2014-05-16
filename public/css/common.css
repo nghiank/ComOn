@@ -416,3 +416,41 @@ footer p {
   background-color: transparent;
   cursor: not-allowed;
 }
+
+.tooltip .tooltip-arrow {
+    display:none;
+};
+
+.tooltip.right .tooltip-arrow {
+  display:none;
+};
+
+.tooltip.bottom .tooltip-arrow {
+  display:none;
+};
+
+.tooltip.bottom-right .tooltip-arrow {
+    display: none;
+};
+
+.tooltip {
+  position: absolute;
+  z-index: 9999;
+  display: block;
+  font-size: 12px;
+  line-height: 1.4;
+  opacity: 0;
+  filter: alpha(opacity=0);
+  visibility: visible;
+  text-align:left;
+};
+
+.tooltip-inner {
+    max-width: 200px;
+    padding: 3px 8px;
+    color: #ffffff;
+    text-align: left!important;
+    background-color: #000000;
+    border-radius: 4px;
+
+};

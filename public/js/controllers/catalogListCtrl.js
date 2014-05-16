@@ -55,6 +55,7 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 			}
 		];
         $scope.showDownload = (window.exec === undefined)? false : true;
+
 		$scope.authorized = function () {
 			if ($scope.global.authenticated && ($scope.global.user.isAdmin || $scope.global.user.isManufacturer))
 				return true;

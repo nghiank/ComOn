@@ -190,4 +190,24 @@ angular.module('ace').directive('resetForm',
 				},true);
 			}
 		};
+	}).directive('tooltipTimer',function($timeout){
+		return{
+			restrict:'A',
+			link:function(scope,element,attr){
+				var shortTooltip = attr.shorttooltip,
+					longTooltip = attr.longtooltip,
+					laterTitle = attr.latertitle,
+					hoverTime = attr.tooltiptime;
+				console.log(attr);
+				scope.tooltip = shortTooltip;
+				attr.title = laterTitle;
+				element.bind('mouseenter',function(){
+					scope.tooltip = shortTooltip;
+					$timeout(function(){
+						scope.tooltip = longTooltip;
+						
+					},hoverTime);
+				});
+			}
+		};
 	});
