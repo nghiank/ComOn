@@ -37,7 +37,7 @@
 		<div class="row greyBackground" style="padding-top:5px;padding-bottom:5px;">
 			<div class="col-md-12" style="padding-left:30px;">
 				{{(typeAheadValues |filter: query.text).length}} search results for "<b>{{query.text}}</b>" in <b>{{selectedStdName}}</b>		
-				<button ng-click="query.text='';" style="margin-left:30px;"class="btn btn-default btn-separate btn-xs">Close</button>
+				<button ng-click="query.text=''; linkDisabled = true; selectedItem= null;" style="margin-left:30px;"class="btn btn-default btn-separate btn-xs">Close</button>
 			</div>
 
 		</div>
