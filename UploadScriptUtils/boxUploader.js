@@ -55,7 +55,7 @@ function prepareLocalFolder (parent_id){
             console.log('Directory '+ path+ ' doesn\'t exist');
             return process.exit();
         }
-        var write = fs.openSync('mapping.json', 'w+');
+        var write = fs.openSync('mapping_box.json', 'w+');
         fs.writeSync(write, '');
         fs.closeSync(write);
         //files will be taken from inside the filesToBeUploaded folder and uploaded to "app/" folder directly.
@@ -171,7 +171,7 @@ var process_files = function(tempFiles, files, slice) {
                                 }
                                 else
                                 {
-                                    var write = fs.openSync('mapping.json', 'a+');
+                                    var write = fs.openSync('mapping_box.json', 'a+');
                                     fs.writeSync(write, JSON.stringify(mapping));
                                     console.log('End of uploading.');
                                     return process.exit();
@@ -210,10 +210,10 @@ var process_files = function(tempFiles, files, slice) {
                                 }
                                 else
                                 {
-                                    var write = fs.openSync('mapping.json', 'a+');
+                                    var write = fs.openSync('mapping_box.json', 'a+');
                                     fs.writeSync(write, JSON.stringify(mapping));
                                     console.log('End of uploading. Total number of files uploaded:', total_files);
-                                    console.log('Mapping file generated as mapping.json');
+                                    console.log('Mapping file generated as mapping_box.json');
                                     return process.exit();
                                 }
                             }

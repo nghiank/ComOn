@@ -3,7 +3,7 @@
 var request = require('request');
 var http = require('http');
 var box_sdk = require('box-sdk');
-var fs = require('graceful-fs');
+var fs = require('./graceful-fs');
 
 
 //User Defined Variables
@@ -48,7 +48,7 @@ connection.ready(function () {
         return;
     }
     console.log('Authentication Succeeded. Reading files...');
-    var write = fs.openSync('mapping_ind.json', 'w+');
+    var write = fs.openSync('mapping_box.json', 'w+');
     fs.writeSync(write, '');
     fs.closeSync(write);
 
@@ -211,7 +211,7 @@ function getFileMapping(tempEntries,folder_name){
 
 var writeMapping = function(mapping) {
     console.log('All files read. Mapping...');
-    var write = fs.openSync('mapping_ind.json', 'a+');
+    var write = fs.openSync('mapping_box.json', 'a+');
     fs.writeSync(write, JSON.stringify(mapping));
     console.log('End of mapping. Total Number of Files Mapped: ',mapping.length);
     return process.exit();  
