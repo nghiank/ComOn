@@ -9,8 +9,9 @@ var file_dir = __dirname + '/filesToBeUploaded',
 var mapping = [];
 var total_files = 0;
 var errored = [];
-var folder_id = 0;
+
 var box_account = 'xingjia.zhang@autodesk.com';
+var base_folder_name = 'MappingSets';
 
 var logLevel = 'debug'; //default log level on construction is info
 
@@ -33,29 +34,35 @@ connection.ready(function () {
 		console.log('Uploader not authenticated to acces Box account.');
 	}
 	//Root Folder id is 0;
-  	connection.createFolder('Icons', 0, function(err,body){
+  	connection.createFolder(base_folder_name, 0, function(err,body){
   		if(err)
   		{
-  			console.log(err);
-  			return;
+            console.log(err);
+            return;                
   		}
-		console.log('Icons folder created');
-  		if(!fs.existsSync(file_dir))
-		{
-			console.log('Directory '+ path+ ' doesn\'t exist');
-			return process.exit();
-		}
-		var write = fs.openSync('mapping.json', 'w+');
-		fs.writeSync(write, '');
-		fs.closeSync(write);
-		//files will be taken from inside the filesToBeUploaded folder and uploaded to "app/" folder directly.
-		walk(file_dir, '/',  startProcess);
-		folder_id = body.id;
+        else{
+            var parent_id = body.id;
+            console.log(base_folder_name,' created. Id:', parent_id);
+            prepareLocalFolder(parent_id);
+        }
 
   	});
 });
 
-function walk(start, absOl, callback) {
+function prepareLocalFolder (parent_id){    
+        if(!fs.existsSync(file_dir))
+        {
+            console.log('Directory '+ path+ ' doesn\'t exist');
+            return process.exit();
+        }
+        var write = fs.openSync('mapping.json', 'w+');
+        fs.writeSync(write, '');
+        fs.closeSync(write);
+        //files will be taken from inside the filesToBeUploaded folder and uploaded to "app/" folder directly.
+        walk(file_dir, '/', parent_id, startProcess);
+};
+
+function walk(start, absOl, parent_id, callback) {
     // Use lstat to resolve symlink if we are passed a symlink
     fs.lstat(start, function(err, stat) {
         if(err) {
@@ -64,18 +71,28 @@ function walk(start, absOl, callback) {
         var found = [],
             total = 0,
             processed = 0;
-        function isDir(abspath, absOl) {
+        function isDir(abspath, absOl, parent_id) {
             fs.stat(abspath, function(err, stat) {
                 if(stat.isDirectory()) {
                     // If we found a directory, recurse!
-                    walk(abspath, absOl, function(err, data) {
-                        found = found.concat(data);
-                        if(++processed == total) {
-                            callback(null, found);
+                    connection.createFolder(absOl.substr(absOl.lastIndexOf('/')+1), parent_id, function(err,body){
+                        if(err)
+                        {
+                            console.log(err);
+                            return;
                         }
+                        console.log('Folder created for ',absOl, 'id ',body.id);
+                        var parent_id = body.id;
+                        walk(abspath, absOl, parent_id, function(err, data) {
+                            found = found.concat(data);
+                            if(++processed == total) {
+                                callback(null, found);
+                            }             
+                        }); 
                     });
+                    
                 } else {
-                    found.push({'file': abspath, 'url': absOl});
+                    found.push({'file': abspath, 'url': absOl, 'parent': parent_id});
                     if(++processed == total) {
                         callback(null, found);
                     }
@@ -93,7 +110,7 @@ function walk(start, absOl, callback) {
                 else
                 {
                     for(var x=0, l=files.length; x<l; x++) {
-                        isDir(start + '/' + files[x], absOl + '/' + files[x]);
+                        isDir(start + '/' + files[x], absOl + '/' + files[x], parent_id);
                     }
                 }
             });
@@ -109,6 +126,7 @@ var startProcess = function(error, found) {
 		return process.exit();
 	}
 	total_files = found.length;
+    console.log(found);
 	process_files(found.slice(0,100), found, 100);
 };
 
@@ -118,89 +136,91 @@ var process_files = function(tempFiles, files, slice) {
 	tempFiles.forEach(function(file) {
     	if(!(/\/\./.test(file.file)))
 		{
-        	console.log('Reading file... ' + ++index_read );
         	fs.readFile(file.file, function(err, data) {
         		if(err)
         		{
         			console.log(err);
         			return process.exit();
         		}
-        		console.log('Finished Reading. Sending...');
         		file.file = file.file.substr(file.file.indexOf('/filesToBeUploaded')+1);
-                    console.log('Uploading file ',file.file);
-                    connection.uploadFile(file.file, folder_id, null, function(err,body){
-                        if(err)
+                console.log('Uploading file ',file.file);
+                console.log('In folder:',file.parent);
+                connection.uploadFile(file.file, file.parent, null, function(err,body){
+                    if(err)
+                    {
+                        if(err.status === '409' && err.code === 'item_name_in_use')
                         {
+                            console.log(file.file, ' already exists. It\'s not uploaded again.');
+                        }else{
                             console.log(err + ' Error encountered while uploading file at path ' + file.file);
                             errored.push(file);
-                            index_sent++;
-                            i--;
-                            if(i === 0)
+                        }                     
+                        index_sent++;
+                        i--;
+                        if(i === 0)
+                        {
+                            console.log(index_sent + '/' + total_files + ' done.');
+                            if(slice < files.length) {
+                                process_files(files.slice(slice, slice+100), files, slice+100);
+                            }
+                            else if(index_sent === total_files)
                             {
-                                console.log(index_sent + '/' + total_files + ' done.');
-                                if(slice < files.length) {
-                                    process_files(files.slice(slice, slice+100), files, slice+100);
-                                }
-                                else if(index_sent === total_files)
+                                if(errored.length != 0)
                                 {
-                                    if(errored.length != 0)
-                                    {
-                                        sendErroredFiles();
-                                    }
-                                    else
-                                    {
-                                        var write = fs.openSync('mapping.json', 'a+');
-                                        fs.writeSync(write, JSON.stringify(mapping));
-                                        console.log('End of uploading.');
-                                        return process.exit();
-                                    }
+                                    sendErroredFiles();
+                                }
+                                else
+                                {
+                                    var write = fs.openSync('mapping.json', 'a+');
+                                    fs.writeSync(write, JSON.stringify(mapping));
+                                    console.log('End of uploading.');
+                                    return process.exit();
                                 }
                             }
-                            return;
+                        }
+                        return;
+                    }
+
+                    connection.updateFile(body.entries[0].id,{'shared_link':{'access':'open'}}, function(error, body) {
+                        if(!error) {
+                            var url = body.shared_link.download_url;
+                            mapping.push({name: file.url.substr(1), dl_url: url});
+                        }
+                        else
+                        {
+                            console.log(error);
+                            errored.push(file);
                         }
 
-                        
-                        var uploadedFile = body;
-                        console.log('package uploaded', uploadedFile);
+                        index_sent++;
+                        i--; 
+                        console.log(index_sent + '/' + total_files + ' uploaded.');
 
-                        connection.updateFile(body.entries[0].id,{'shared_link':{'access':'open'}}, function(error, body) {
-                            if(!error) {
-                                var url = body.shared_link.download_url;
-                                mapping.push({name: file.url, dl_url: url});
+                        if(i === 0)
+                        {
+                            console.log(index_sent + '/' + total_files + ' done.');
+                            if(slice < files.length) {
+                                process_files(files.slice(slice, slice+100), files, slice+100);
                             }
-                            else
+                            else if(index_sent === total_files)
                             {
-                                console.log(error);
-                                errored.push(file);
-                            }
-
-                            index_sent++;
-                            i--; 
-
-                            if(i === 0)
-                            {
-                                console.log(index_sent + '/' + total_files + ' done.');
-                                if(slice < files.length) {
-                                    process_files(files.slice(slice, slice+100), files, slice+100);
-                                }
-                                else if(index_sent === total_files)
+                                if(errored.length != 0)
                                 {
-                                    if(errored.length != 0)
-                                    {
-                                        sendErroredFiles();
-                                    }
-                                    else
-                                    {
-                                        var write = fs.openSync('mapping.json', 'a+');
-                                        fs.writeSync(write, JSON.stringify(mapping));
-                                        console.log('End of uploading.');
-                                        return process.exit();
-                                    }
+                                    sendErroredFiles();
+                                }
+                                else
+                                {
+                                    var write = fs.openSync('mapping.json', 'a+');
+                                    fs.writeSync(write, JSON.stringify(mapping));
+                                    console.log('End of uploading. Total number of files uploaded:', total_files);
+                                    console.log('Mapping file generated as mapping.json');
+                                    return process.exit();
                                 }
                             }
-                        });
-                    
+                        }
                     });
+                
+                });
 
             });
         	}
