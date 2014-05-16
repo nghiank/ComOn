@@ -87,7 +87,7 @@
 		<div class="col-md-8">
 			<a class="btn btn-default btn-sm" style="margin-top: 6px;" ng-show="global.authenticated" ng-click="showLinkModal()" ng-disabled="selectedItems.length===0"><i class="fa fa-link"></i></a>
 	    	<a class="btn btn-default btn-sm" style="margin-top: 6px;" ng-show="global.authenticated" ng-disabled="selectedItems.length===0"><i class="fa fa-star-o"></i></a>
-	    	<a class="btn btn-default btn-sm" style="margin-top: 6px;" ng-disabled="selectedItems.length===0"><i style="margin-right: 10px;" class="fa fa-download"></i>3D Symbol</a>
+	    	<a href="{{check3dExistence(selectedItems[0])}}" class="btn btn-default btn-sm" style="margin-top: 6px;"  ng-disabled="selectedItems.length !== 1 || !!!check3dExistence(selectedItems[0])"><i style="margin-right: 10px;" class="fa fa-download"></i>3D Symbol</a>
    	 	</div>
    	 	<div class="col-md-4 pull-right">
    	 		<p class="pull-right" style="margin-top:6px;">Showing <b>{{currentPage ? (currentPage-1)*pageItemLimit + 1: 1}} - {{currentPage ? (currentPage-1)*pageItemLimit + items.length : items.length}}</b> of <b>{{total}}</b> results.<p>

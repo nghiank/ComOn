@@ -3,6 +3,7 @@
 var http = require('http');
 var box_sdk = require('box-sdk');
 var	fs = require('graceful-fs');
+var open = require('open');
 var file_dir = __dirname + '/filesToBeUploaded',
 	index_read = 0,
 	index_sent = 0;
@@ -22,11 +23,13 @@ var box = box_sdk.Box({
   host: 'localhost' //default localhost
 }, logLevel);
 
+var destination_file = 'mapping_box.json';
+
 var connection = box.getConnection(box_account);
 
 //Navigate user to the auth URL
 console.log('Please authenticate the uploader to access the Box account:');
-console.log(connection.getAuthURL());
+open(connection.getAuthURL());
 
 connection.ready(function () {
 	if(!connection.isAuthenticated())
@@ -55,7 +58,7 @@ function prepareLocalFolder (parent_id){
             console.log('Directory '+ path+ ' doesn\'t exist');
             return process.exit();
         }
-        var write = fs.openSync('mapping_box.json', 'w+');
+        var write = fs.openSync(destination_file, 'w+');
         fs.writeSync(write, '');
         fs.closeSync(write);
         //files will be taken from inside the filesToBeUploaded folder and uploaded to "app/" folder directly.
@@ -171,7 +174,7 @@ var process_files = function(tempFiles, files, slice) {
                                 }
                                 else
                                 {
-                                    var write = fs.openSync('mapping_box.json', 'a+');
+                                    var write = fs.openSync(destination_file, 'a+');
                                     fs.writeSync(write, JSON.stringify(mapping));
                                     console.log('End of uploading.');
                                     return process.exit();
@@ -210,7 +213,7 @@ var process_files = function(tempFiles, files, slice) {
                                 }
                                 else
                                 {
-                                    var write = fs.openSync('mapping_box.json', 'a+');
+                                    var write = fs.openSync(destination_file, 'a+');
                                     fs.writeSync(write, JSON.stringify(mapping));
                                     console.log('End of uploading. Total number of files uploaded:', total_files);
                                     console.log('Mapping file generated as mapping_box.json');

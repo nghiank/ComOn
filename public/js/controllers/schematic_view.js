@@ -65,6 +65,15 @@ angular.module('ace.schematic')
 		});
 	};
 
+	$scope.unpublishStandard = function(child){
+		SchematicsAPI.unpublishStd.save({std_id: child.standard._id}, function(response) {
+			if(response)
+			{
+				child.published = 0;
+			}
+		});
+	};
+
 	$scope.showComingSoon = function(){
 		$modal.open({
 			templateUrl: 'views/ComingModal.html',

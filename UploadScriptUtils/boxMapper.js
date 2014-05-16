@@ -4,7 +4,7 @@ var request = require('request');
 var http = require('http');
 var box_sdk = require('box-sdk');
 var fs = require('./graceful-fs');
-
+var open = require('open');
 
 //User Defined Variables
 /*Slice is the size of requests sending out at a time.*/
@@ -22,7 +22,7 @@ var app_info = {
 };
 
 var logLevel = 'debug'; //default log level on construction is info
-
+var destination_file = 'mapping_box.json';
 //initialisation
 var mapping = [];
 var fileProcessed = 0,
@@ -39,7 +39,7 @@ var connection = box.getConnection(box_account);
 
 //Navigate user to the auth URL
 console.warn('Please authenticate the uploader to access the Box account:');
-console.warn(connection.getAuthURL());
+open(connection.getAuthURL());
 
 connection.ready(function () {
     if(!connection.isAuthenticated())
@@ -48,7 +48,7 @@ connection.ready(function () {
         return;
     }
     console.log('Authentication Succeeded. Reading files...');
-    var write = fs.openSync('mapping_box.json', 'w+');
+    var write = fs.openSync(destination_file, 'w+');
     fs.writeSync(write, '');
     fs.closeSync(write);
 
@@ -177,7 +177,7 @@ function getFileMapping(tempEntries,folder_name){
                     temp_path+=body.name;
                     file_path = temp_path;
                 }
-                mapping.push({'name':file_path,'link':link});
+                mapping.push({'name':file_path,'dl_url':link});
                 //console.log('File: '+entry.name+'in folder'+folder_name+' read.');
                 fileProcessed++;
                 tempEntries[0].splice(tempEntries[0].indexOf(entry),1);
@@ -211,7 +211,7 @@ function getFileMapping(tempEntries,folder_name){
 
 var writeMapping = function(mapping) {
     console.log('All files read. Mapping...');
-    var write = fs.openSync('mapping_box.json', 'a+');
+    var write = fs.openSync(destination_file, 'a+');
     fs.writeSync(write, JSON.stringify(mapping));
     console.log('End of mapping. Total Number of Files Mapped: ',mapping.length);
     return process.exit();  

@@ -19,9 +19,15 @@ angular.module('ace')
 	};
 
 	$scope.getFavourites = function() {
-		UsersAPI.getFav.query(function(favourites) {
-			$scope.schematic = favourites.schematic;
-			setFavVersions();
+		UsersAPI.me.query(function(response) {
+			if(response)
+			{
+				Global.user = response;
+				UsersAPI.getFav.query(function(favourites) {
+					$scope.schematic = favourites.schematic;
+					setFavVersions();
+				});
+			}
 		});
 	};
 	$scope.toggleOption = function (child, set) {

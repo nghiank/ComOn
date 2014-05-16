@@ -1,7 +1,8 @@
 'use strict';
 
 //service for validating links in a mapping file.
-angular.module('ace.schematic').factory('ValidationService', ['$http', '$timeout', function($http, $timeout) {
+angular.module('ace.schematic')
+.factory('ValidationService', ['$http', '$timeout', function($http, $timeout) {
 	var g_result = null;
 	var dlList = [];
 	var thumbnailList = [];

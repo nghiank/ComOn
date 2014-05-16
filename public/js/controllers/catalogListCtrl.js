@@ -217,6 +217,12 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 						}
 					}
 				});
+				UsersAPI.me.query(function(response) {
+					if(response)
+					{
+						Global.user = response;
+					}
+				});
 			}
 			if($scope.global.authenticated && $routeParams.filterName && $scope.global.user.catalogFilters.length !== 0)
 			{
@@ -251,6 +257,18 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 				$scope.filters.splice(f, 1);
 		};
 
+		$scope.check3dExistence = function(item) {
+			var keys = $scope._.keys(item);
+			for (var i = 0; i < keys.length; i++) {
+				if(keys[i].toLowerCase().indexOf('symbol') && keys[i].toLowerCase().indexOf('3d'))
+					if(item[keys[i]] && (item[keys[i]].indexOf('HTTP://') === 0 || item[keys[i]].indexOf('HTTPS://') === 0))
+					{
+						return item[keys[i]];
+					}
+			}
+			return '';
+		};
+
 		$scope.showSearchBox = function () {
 			$scope.searchBox.show = true;
 		};
@@ -262,6 +280,9 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 		$scope.showLinkModal = function(item){
 			if(item)
 				var linkItem = item;
+			else if($scope.selectedItems.length === 0)
+				return;
+			console.log($scope.selectedItems);
 			$modal.open({
 				templateUrl: 'views/Catalog/catIconLinkModal.html',
 				controller: 'catIconLinkModalCtrl',

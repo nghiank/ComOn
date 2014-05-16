@@ -19,6 +19,7 @@ module.exports = function(app) {
     
     app.post('/api/publishComponent', authorization.requiresLogin, hasAuthorization, schem.publishComponent);
     app.post('/api/publishStandard', authorization.requiresLogin, hasAuthorization, schem.publishStandard);
+    app.post('/api/unpublishStandard', authorization.requiresLogin, hasAuthorization, schem.unpublishStandard);
     app.post('/api/getCompVersions', authorization.requiresLogin, hasAuthorization, schem.getVersions);
 
     app.post('/api/getEntireStandard', schem.getEntireStandard);

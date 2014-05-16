@@ -381,7 +381,7 @@ var deleteFavsAssociation = function(err, data, res) {
 		res.send(200);
 	else
 		return error.sendGenericError(res, 400, 'Error Encountered');
-	Users.find({$or: [{fav: {$in: data}}, {'associations.schematicId': {$in: data}}]}, function(err, users) {
+	Users.find({$or: [{'SchemFav.schematicId': {$in: data}}, {'associations.schematicId': {$in: data}}]}, function(err, users) {
 		if(err)
 			return console.log(err);
 		if(!users)
@@ -393,7 +393,7 @@ var deleteFavsAssociation = function(err, data, res) {
 				for (var l = 0; l < user.SchemFav.length; l++) {
 					if(JSON.stringify(user.SchemFav[l].schematicId) === JSON.stringify(data[j]))
 					{
-						user.associations.splice(l, 1);
+						user.SchemFav.splice(l, 1);
 						l--;
 					}
 				}
@@ -662,6 +662,25 @@ exports.publishStandard = function(req, res) {
 			if(!components[i].published)
 			{
 				components[i].published = 1;
+				components[i].save();
+			}
+		}
+		res.send(200);
+	});
+};
+
+exports.unpublishStandard = function(req, res) {
+	if(!req.body.hasOwnProperty('std_id'))
+	{
+		return error.sendGenericError(res, 400, 'Invalid Parameters');
+	}
+	ComponentSchem.find({standard: req.body.std_id}).exec(function(err, components) {
+		if(err)
+			return error.sendGenericError(res, 400, 'Error Encountered');
+		for (var i = 0; i < components.length; i++) {
+			if(components[i].published)
+			{
+				components[i].published = 0;
 				components[i].save();
 			}
 		}

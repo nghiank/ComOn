@@ -99,6 +99,9 @@ angular.module('ace').directive('resetForm',
 						elements.bind('contextmenu', function(){
 							contextmenu.hide();
 						});
+						elements.bind('click',function(){
+							contextmenu.hide();
+						});
 					}else{
 						elements.unbind('contextmenu');
 						elements.bind('contextmenu',function(e){
