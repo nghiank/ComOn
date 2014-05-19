@@ -50,7 +50,7 @@ angular.module('ace.schematic')
         for(var i in later){
             if(fields.indexOf(i) > -1 && later[i]!==earlier[i])
             {
-                change+= (i+' changed to '+ later[i]+'; ');      
+                change+= (i+' changed; ');      
             }
         }
         if(change.charAt(change.length-2) === ';')

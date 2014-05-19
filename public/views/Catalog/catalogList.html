@@ -87,7 +87,7 @@
 		<div class="col-md-8">
 			<a class="btn btn-default btn-sm" style="margin-top: 6px;" ng-show="global.authenticated" ng-click="showLinkModal()" ng-disabled="selectedItems.length===0" tooltip-placement="right" style="display:inline-block;z-index:9999" shortTooltip="Link to Icons" longTooltip="Select one or multiple rows to link them with schematic icons. Once links are made, you can directly insert symbols from the catalog browser into the canvas in AutoCAD Electrical desktop application." tooltipTime="1500" tooltip-timer tooltip-html-unsafe="{{tooltip}}"><i class="fa fa-link"></i></a>
 	    	<a class="btn btn-default btn-sm" style="margin-top: 6px;" ng-show="global.authenticated" ng-disabled="selectedItems.length===0"><i class="fa fa-star-o"></i></a>
-	    	<span tooltip="{{tooltip}}" tooltip-placement="right" style="display:inline-block;z-index:9999" shortTooltip="Download 3D symbol" longTooltip="Make the column <b>symbol 3D</b> available and select only <b>1</b> item. If there is a 3D symbol available, this button is enabled." tooltipTime="1500" tooltip-timer tooltip-html-unsafe="true">
+	    	<span tooltip-placement="right" style="display:inline-block;z-index:9999" shortTooltip="Download 3D symbol" longTooltip="Make the column <b>symbol 3D</b> available and select only <b>1</b> item. If there is a 3D symbol available, this button is enabled." tooltipTime="1500" tooltip-timer tooltip-html-unsafe="{{tooltip}}">
 	    		<a href="{{check3dExistence(selectedItems[0])}}" class="btn btn-default btn-sm" style="margin-top: 6px;"  ng-disabled="selectedItems.length !== 1 || !!!check3dExistence(selectedItems[0])"><i style="margin-right: 10px;" class="fa fa-download"></i>3D Symbol</a>
 	    	</span>
    	 	</div>
