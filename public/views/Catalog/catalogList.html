@@ -15,7 +15,7 @@
 	<span>
 		<a ng-click="showType()"><i class="fa fa-ellipsis-vertical fa-4x" style="position:fixed; left:1%; top:50%;"></i></a>
 	</span>
-	<accordion ng-show="selected">
+	<accordion ng-show="selected" cuz-menu>
 	<accordion-group is-open="searchBox.show" style="overflow:visible;">
 	<accordion-heading>
 		<div class="placeholder">
@@ -92,14 +92,14 @@
 	    	</span>
    	 	</div>
    	 	<div class="col-md-4 pull-right">
-   	 		<p class="pull-right" style="margin-top:6px;">Showing <b>{{currentPage ? (currentPage-1)*pageItemLimit + 1: 1}} - {{currentPage ? (currentPage-1)*pageItemLimit + items.length : items.length}}</b> of <b>{{total}}</b> results.<p>
+   	 		<p class="pull-right" style="margin-top:6px;">Showing <b>{{currentPage ? (currentPage-1)*pageItemLimit + 1: 1}} - {{currentPage ? (currentPage-1)*pageItemLimit + items.length : items.length}}</b> of <b>{{total}}</b> results.</p>
    	 	</div>
 	</div>
 	<div ng-show="showList" ng-click="closeType()">
 		<div class="col-md-12" style="overflow: auto; margin-top:20px">
 			<table class="table table-striped">
 				<thead>
-					<tr>
+					<tr cuz-menu>
 						<th ng-click="sortTable(col)" ng-repeat="col in cols" class="showIconOnHover">{{col.title}}
 							<a><i style="margin-left: 5px" class="fa fa-sort-alpha-asc" ng-show="col.sort !== null && col.sort === 1" ></i></a>
 							<a><i style="margin-left: 5px" class="fa fa-sort-alpha-desc" ng-show="col.sort !== null && col.sort === -1"></i></a>
@@ -130,4 +130,6 @@
         </li>
     </ul>
 </div>
+</div>
+
 

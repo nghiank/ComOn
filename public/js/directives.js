@@ -48,11 +48,7 @@ angular.module('ace').directive('resetForm',
 			restrict:'A',
 			link: function(scope){
 				var doc = $document;
-				var contextmenu = angular.element(document.querySelector('#contextMenu'));
 				var table = angular.element(document.querySelector('table'));
-				doc.bind('click',function(){
-					contextmenu.hide();
-				});
 
 				doc.on('keydown',function(e){
 					if(e.shiftKey){
@@ -93,6 +89,8 @@ angular.module('ace').directive('resetForm',
 			restric:'A',
 			link: function(scope,elements){
 				var contextmenu = angular.element(document.querySelector('#contextMenu'));
+				var body = angular.element(document.querySelector('body'));
+
 				scope.$watch('selectedItems',function(){
 					if(!elements.hasClass('highlighted')){
 						elements.unbind('contextmenu');
@@ -104,11 +102,14 @@ angular.module('ace').directive('resetForm',
 						});
 					}else{
 						elements.unbind('contextmenu');
+						body.bind('click',function(){
+							contextmenu.hide();
+						});
 						elements.bind('contextmenu',function(e){
 							e.preventDefault();
-						if(scope.selectedItems.length > 0)
-							contextmenu.css({left: e.pageX, top: e.pageY,position:'absolute'}).show();
-						});
+							if(scope.selectedItems.length > 0)
+								contextmenu.css({left: e.pageX, top: e.pageY,position:'absolute'}).show();
+							});
 					}						
 				},true);				
 
