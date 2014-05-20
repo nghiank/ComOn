@@ -185,8 +185,8 @@ angular.module('ace.catalog').controller(
 		};
 
 		$scope.getPage = function (page, totalFlag) {
-			var lower = (page ? page - 1 : 0) * $scope.pageItemLimit;
-			var upper = (page ? page : 1) * $scope.pageItemLimit;
+			$scope.lower = (page ? page - 1 : 0) * $scope.pageItemLimit;
+			$scope.upper = (page ? page : 1) * $scope.pageItemLimit;
 			var cols = $scope._.map($scope.cols, function (value) {
 					return value.field;
 				});
@@ -209,8 +209,6 @@ angular.module('ace.catalog').controller(
 						}
 					}
 				}
-				$scope.lower = lower;
-				$scope.upper = upper;
 				if(page === 1 && totalFlag)
 				{
 					if (response.data.length === $scope.pageItemLimit) {

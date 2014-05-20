@@ -389,10 +389,10 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 			$scope.showTypes = true;
 		};
 
-		function queryForEntries(fields, upper, cb) {
+		function queryForEntries(fields, upper, lower, cb) {
 			CatalogAPI.entries.query({
 				type: $scope.target.code,
-				lower: $scope.lower,
+				lower: lower,
 				sortField: $scope.sort,
 				upper: upper,
 				fields: fields,
@@ -441,7 +441,7 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 				$scope.selectedItems = [];
             }
 
-			queryForEntries(cols.join(' '), upper , function (response) {
+			queryForEntries(cols.join(' '), upper , lower, function (response) {
 				var queryResults = $scope._.map(response.data, function (value) {
 					return $scope._.omit(value, [
 						'additionalInfo',
