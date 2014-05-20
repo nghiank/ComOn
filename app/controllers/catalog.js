@@ -356,7 +356,6 @@ exports.editCatalogEntry = function(req,res){
 			fetchedEntry[key] = convertToUpper(fetchedEntry[key]);
 		}
 		fetchedEntry.type.code = fetchedEntry.type.code.toUpperCase();
-		fetchedEntry.catalog = fetchedEntry.catalog.replace(' ', '');
 		fetchedEntry.save(function(err){
 			if(err)
 				return error.sendGenericError(res, 400, 'Error Encountered');
