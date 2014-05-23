@@ -40,8 +40,6 @@ angular.module('ace')
 	$scope.delSchemFav = function(child){
 		if(child.isComposite)
 			return;
-		if(child.published === 0)
-			return;
 		UsersAPI.delSchemFav.save({_id: child._id}, function(response) {
 			if(response)
 			{
