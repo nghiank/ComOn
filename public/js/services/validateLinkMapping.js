@@ -68,7 +68,7 @@ angular.module('ace.schematic')
 			if(number === trial_number)
 			{
 				count --;
-				g_messages.push({'type': 'success', 'info': 'Link for '+id+' valid.'});
+				g_messages.push({'type': 'success', 'info': (cb? 'DWG ': 'Thumbnail ') + 'Link for '+id+' valid.'});
 				checked++;
 				if(checked === total)
 				{
@@ -97,7 +97,7 @@ angular.module('ace.schematic')
 				count --;
 				status = false;
 				errored = true;
-				g_messages.push({'type': 'error', 'info': 'Link for '+id+' invaild.'});
+				g_messages.push({'type': 'error', 'info': (cb? 'DWG ': 'Thumbnail ') + 'Link for '+id+' invaild.'});
 				checked++;
 				if(checked === total)
 				{
