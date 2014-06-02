@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('ace.catalog').controller(
-	'manageCatalogCtrl', ['$scope', 'Global', 'CatalogAPI', '_' ,'$modal', 'searchStringParser', function ($scope, Global, CatalogAPI, underscore, $modal, searchStringParser) {
+	'manageCatalogCtrl', ['$scope', 'Global', 'CatalogAPI', '_' ,'$modal', function ($scope, Global, CatalogAPI, underscore, $modal) {
 		$scope.global = Global;
 		$scope.fields = [];
 		$scope._ = underscore;
@@ -248,7 +248,7 @@ angular.module('ace.catalog').controller(
 		};
 
 		$scope.prepareSearchString = function (copy) {
-			return searchStringParser.parse(copy);
+			return copy;
 		};
 
 		$scope.toggleAll = function() {

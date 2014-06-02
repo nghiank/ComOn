@@ -8,10 +8,9 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 	'$modal',
 	'$http',
 	'$timeout',
-	'searchStringParser',
 	'SchematicsAPI',
 	'UsersAPI',
-	function ($scope, Global, CatalogAPI, $routeParams, underscore, $modal, $http, $timeout, searchStringParser, SchematicsAPI, UsersAPI) {
+	function ($scope, Global, CatalogAPI, $routeParams, underscore, $modal, $http, $timeout, SchematicsAPI, UsersAPI) {
 		$scope.global = Global;
 		$scope.fields = [];
 		$scope._ = underscore;
@@ -489,7 +488,7 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 		};
 
 		$scope.prepareSearchString = function (copy) {
-			return searchStringParser.parse(copy);
+			return copy;
 		};
 
 		$scope.search = function () {

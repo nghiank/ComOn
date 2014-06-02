@@ -5,6 +5,7 @@ var CatalogSchem = mongoose.model('Catalog');
 var Users = mongoose.model('User');
 var error = require('../utils/error');
 var _ = require('underscore');
+var searchStringParser = require('../utils/searchStringParser');
 
 var convertToUpper = function(item) {
 	if(_.isString(item))
@@ -248,6 +249,7 @@ exports.getCatalogEntries = function(req, res) {
 	}
 
 	var default_search = null;
+	req.body.search = searchStringParser.parse(req.body.search);
 	if(req.body.search && req.body.search.string)
 	{
 		default_search = [];

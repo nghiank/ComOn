@@ -44,7 +44,6 @@ module.exports = function(config) {
             'public/js/services/validateLinkMapping.js',
             'public/js/services/ParsingService.js',
             'public/js/services/formValidation.js',
-            'public/js/services/searchStringParser.js',
             'public/js/controllers/index.js',
             'public/js/controllers/header.js',
             'public/js/controllers/addStdFormCtrl.js',
