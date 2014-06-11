@@ -145,9 +145,9 @@ describe('<e2e API Test>', function() {
 			});
 		});
 
-		it('GET api/getFav without credentials should return 401', function(done){
+		it('GET api/getSchemFav without credentials should return 401', function(done){
 			agent
-			.get('/api/getFav')
+			.get('/api/getSchemFav')
 			.end(function(err, res){
 				(res.status).should.equal(401);
 				done();
@@ -241,9 +241,9 @@ describe('<e2e API Test>', function() {
                 });
             });
 
-            it('GET /api/getFav should return updated fav list with one fav', function(done){
+            it('GET /api/getSchemFav should return updated fav list with one fav', function(done){
                 agent
-                .get('/api/getFav', {json: true})
+                .get('/api/getSchemFav', {json: true})
                 .end(function(err, res){
                     (res.body.schematic.length).should.equal(1);
                     (res.status).should.equal(200);
@@ -261,9 +261,9 @@ describe('<e2e API Test>', function() {
                 });
             });
 
-            it('GET /api/getFav should return updated fav list with no favs', function(done){
+            it('GET /api/getSchemFav should return updated fav list with no favs', function(done){
                 agent
-                .get('/api/getFav', {json: true})
+                .get('/api/getSchemFav', {json: true})
                 .end(function(err, res){
                     (res.status).should.equal(200);
                     (res.body.schematic.length).should.equal(0);

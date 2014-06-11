@@ -35,6 +35,10 @@ var UserSchema = new Schema({
         default: null
     },
     SchemFav: [{schematicId: { type: Schema.ObjectId, ref: 'SchematicComponent' }, iconVersion: {type: Number, default: 1}}],
+    catFav: [{
+        type: Schema.Types.ObjectId,
+        default: null
+    }],
     catalogFilters: [{
         type: Schema.Types.Mixed,
         default: null

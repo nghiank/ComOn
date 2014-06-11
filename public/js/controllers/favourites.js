@@ -27,6 +27,9 @@ angular.module('ace')
 					$scope.schematic = favourites.schematic;
 					setFavVersions();
 				});
+				UsersAPI.getCatFav.query(function(catEntries) {
+					$scope.catalog = catEntries;
+				});
 			}
 		});
 	};
@@ -71,6 +74,18 @@ angular.module('ace')
 			}
 		});
 
+	};
+
+	$scope.delCatFav = function(child){
+		if(child.isComposite)
+			return;
+		UsersAPI.delCatFav.save({_id: child._id}, function(response) {
+			if(response)
+			{
+				$scope.catalog.splice($scope.catalog.indexOf(child), 1);
+				Global.user.catFav = response;
+			}
+		});
 	};
 
 	$scope.deleteFilter = function(child) {

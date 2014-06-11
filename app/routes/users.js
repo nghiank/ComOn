@@ -28,12 +28,16 @@ module.exports = function(app, passport) {
 
     app.post('/api/addSchemFav', authorization.requiresLogin, users.addSchemFavourite);
     app.post('/api/delSchemFav', authorization.requiresLogin, users.removeSchemFavourite);
-    app.get('/api/getFav', authorization.requiresLogin, users.getFavourites);
+    app.get('/api/getSchemFav', authorization.requiresLogin, users.getSchemFavourites);
     app.post('/api/updateSchemFav', authorization.requiresLogin, users.updateSchemFavourite);
 
     app.post('/api/addFilter', authorization.requiresLogin, users.addFilter);
     app.post('/api/delFilter', authorization.requiresLogin, users.removeFilter);
     app.get('/api/getFilters', authorization.requiresLogin, users.getFilters);
+
+    app.post('/api/addCatFav', authorization.requiresLogin, users.addCatFavourite);
+    app.post('/api/delCatFav', authorization.requiresLogin, users.removeCatFavourite);
+    app.get('/api/getCatFav', authorization.requiresLogin, users.getCatFavourite);
 
     app.post('/api/addAssociation', authorization.requiresLogin, users.addAssociation);
     app.post('/api/delAssociation', authorization.requiresLogin, users.removeAssociation);

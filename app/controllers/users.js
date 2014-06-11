@@ -190,7 +190,8 @@ exports.addSchemFavourite = function(req, res) {
             });
             return;
         }
-        res.jsonp(req.user.SchemFav);
+        else
+            return error.sendGenericError(res, 400, 'Error Encountered');
     });
 };
 
@@ -212,7 +213,8 @@ exports.removeSchemFavourite = function(req,res) {
         });
         return;
     }
-    res.jsonp(req.user.SchemFav);
+    else
+        return error.sendGenericError(res, 400, 'Error Encountered');
 };
 
 exports.updateSchemFavourite = function(req, res) {
@@ -238,11 +240,12 @@ exports.updateSchemFavourite = function(req, res) {
             });
             return;
         }
-        res.jsonp(req.user.SchemFav);
+        else
+            return error.sendGenericError(res, 400, 'Error Encountered');
     });
 };
 
-exports.getFavourites = function(req, res) {
+exports.getSchemFavourites = function(req, res) {
     if(!req.user)
         return error.sendUnauthorizedError(res);
     ComponentSchem.find({_id: {$in: _.map(req.user.SchemFav, function(obj){ return obj.schematicId; })}, isComposite: false}).lean().exec(function(err, components) {
@@ -335,6 +338,64 @@ exports.removeFilter = function(req,res) {
     }
 };
 
+exports.getCatFavourite = function(req, res) {
+    if(!req.user)
+        return error.sendUnauthorizedError(res);
+    CatSchem.find({_id: {$in: req.user.catFav}}).lean().exec(function(err, entries) {
+        if(err) {
+            return error.sendGenericError(res, 400, 'Error Encountered');
+        }
+        res.jsonp(entries);
+    });
+};
+
+exports.addCatFavourite= function(req, res) {
+    if(!req.user)
+        return error.sendUnauthorizedError(res);
+    if(!req.body.hasOwnProperty('items'))
+        return error.sendGenericError(res, 400, 'Invalid Parameters');
+    var items = req.body.items;
+    CatSchem.find({_id: {$in: items}}).lean().exec(function(err, entries) {
+        if(err)
+            return error.sendGenericError(res, 400, 'Error Encountered');
+        if(entries.length === 0)
+            return error.sendGenericError(res, 400, 'Error Encountered');
+        for (var i = entries.length - 1; i >= 0; i--) {
+            var id = entries[i]._id;
+            if(req.user.catFav.indexOf(id) < 0)
+            {
+                req.user.catFav.push(id);
+            }  
+        }
+        req.user.save(function(err) {
+            if(err)
+                return error.sendGenericError(res, 400, 'Error Encountered');
+            res.jsonp(req.user.catFav);
+        });
+    });
+};
+
+exports.removeCatFavourite= function(req,res) {
+    if(!req.user)
+        return error.sendUnauthorizedError(res);
+    if(!req.body.hasOwnProperty('_id'))
+        return error.sendGenericError(res, 400, 'Invalid Parameters');
+    var _id = req.body._id;
+    var index = req.user.catFav.indexOf(_id);
+    if(index > -1)
+    {
+        req.user.catFav.splice(index, 1);
+        req.user.save(function(err) {
+            if(err)
+                return error.sendGenericError(res, 400, 'Error Encountered');
+            res.jsonp(req.user.catFav);
+        });
+        return;
+    }
+    else {
+        return error.sendGenericError(res, 400, 'Error Encountered');
+    }
+};
 
 exports.getAssociations = function(req, res) {
     if(!req.user)

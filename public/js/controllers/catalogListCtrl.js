@@ -136,6 +136,41 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 				$scope.searchBox.show = false;
 		},true);
 
+		$scope.markCatFavourite = function(){
+			if($scope.selectedItems.length === 0 || !Global.authenticated)
+				return;
+			var items = $scope._.map($scope.selectedItems, function(obj) {
+				return obj._id;
+			});
+			UsersAPI.addCatFav.save({items: items}, function(response) {
+				if(response)
+				{
+					Global.user.catFav = response;
+				}
+			});
+		};
+
+		$scope.delCatFav = function(item){
+			UsersAPI.delCatFav.save({_id: item._id}, function(response) {
+				if(response)
+				{
+					Global.user.catFav = response;
+				}
+			});
+		};
+
+		$scope.checkIfCatFav = function(item) {
+			console.log('asdasda');
+			for (var i = Global.user.catFav.length - 1; i >= 0; i--) {
+				if(Global.user.catFav[i] === item._id)
+				{
+					console.log(item);
+					return true;
+				}
+			}
+			return false;
+		};
+
 		$scope.toggleSelectRow = function(index) {
 			//if shift key is not pressed, only one row is selected
 			//Otherwise, multiple rows are selected;
@@ -282,7 +317,6 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 				var linkItem = item;
 			else if($scope.selectedItems.length === 0)
 				return;
-			console.log($scope.selectedItems);
 			$modal.open({
 				templateUrl: 'views/Catalog/catIconLinkModal.html',
 				controller: 'catIconLinkModalCtrl',
@@ -553,7 +587,6 @@ angular.module('ace.catalog').controller('catalogListCtrl', [
 		};
 
         var resultDownloaded = function(type, queryResult) {
-            console.log(queryResult);
             try{
                 if (window.exec !== undefined){
                     var response = window.exec(JSON.stringify({ functionName: 'MergeTable', invokeAsCommand: false, functionParams: {'type' : type, 'result' : queryResult}}));

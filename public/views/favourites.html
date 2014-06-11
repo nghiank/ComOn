@@ -30,8 +30,25 @@
                 <li class="list-group-item" ng-repeat="child in Global.user.catalogFilters" ng-mouseenter = "toggleOption(child, true)" ng-mouseleave = "toggleOption(child, false)">
                     <a href="#!/catalog/{{child.name}}">{{child.name}}</a>
                     <span style="position: absolute; right: 0px; height: 100%; top: 0px; padding-top: 12px; background-color: aliceblue;">
-                        <a ng-click="deleteFilter(child)" style="padding-left: 10px; padding-right: 10px;" class="pull-right btn-link" ng-show="child.showOption" >
+                        <a ng-click="deleteFilter(child)" style="margin-right: 10px; margin-left: 10px;" class="pull-right btn-link" ng-show="child.showOption" tooltip="Delete" tooltip-placement="bottom" tooltip-popup-delay="400" tooltip-animation="false">
                             <i class="fa fa-times error"></i>
+                        </a>
+                    </span>
+                </li>
+            </ul>
+        </div>
+        <div class="col-md-6">
+            <div class="list-group-item list-title">Catalog Favourites</div> 
+            <ul class="list-group">
+                <li class="list-group-item" ng-show="catalog.length == 0">No catalog favourites added.</li>          
+                <li class="list-group-item" ng-repeat="child in catalog" ng-mouseenter = "toggleOption(child, true)" ng-mouseleave = "toggleOption(child, false)">
+                    {{child.catalog}} ({{child.type.name}})
+                    <span style="position: absolute; right: 0px; height: 100%; top: 0px; padding-top: 12px; background-color: aliceblue;">
+                        <a style="margin-right: 10px;" class="btn pull-right btn-link btn-xs" ng-click="delCatFav(child)" ng-show="child.showOption" tooltip="Remove" tooltip-placement="bottom" tooltip-popup-delay="400" tooltip-animation="false">
+                            <i class="fa fa-star star"></i>
+                        </a>
+                        <a style="margin-right: 10px; margin-left: 10px;" class="btn pull-right btn-link btn-xs" ng-click="launchAssociationModal(child)" ng-show="child.showOption" tooltip="See Associations" tooltip-placement="bottom" tooltip-popup-delay="400" tooltip-animation="false">
+                            <i class="fa fa-unlink"></i>
                         </a>
                     </span>
                 </li>

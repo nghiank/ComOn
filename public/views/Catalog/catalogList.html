@@ -86,7 +86,7 @@
 	<div class="row" ng-show="showList && !searchBox.show && items.length > 0">
 		<div class="col-md-8">
 			<a class="btn btn-default btn-sm" style="margin-top: 6px;" ng-show="global.authenticated" ng-click="showLinkModal()" ng-disabled="selectedItems.length===0" tooltip-placement="right" style="display:inline-block;z-index:9999" shortTooltip="Link to Icons" longTooltip="Select one or multiple rows to link them with schematic icons. Once links are made, you can directly insert symbols from the catalog browser into the canvas in AutoCAD Electrical desktop application." tooltipTime="1500" tooltip-timer tooltip-html-unsafe="{{tooltip}}"><i class="fa fa-link"></i></a>
-	    	<a class="btn btn-default btn-sm" style="margin-top: 6px;" ng-show="global.authenticated" ng-disabled="selectedItems.length===0"><i class="fa fa-star-o"></i></a>
+	    	<a class="btn btn-default btn-sm" style="margin-top: 6px;" tooltip="Mark as Favourite" tooltip-placement="bottom" tooltip-popup-delay="100" tooltip-animation="false" ng-click="markCatFavourite()" ng-show="global.authenticated" ng-disabled="selectedItems.length===0"><i class="fa fa-star-o"></i></a>
 	    	<span tooltip-placement="right" style="display:inline-block;z-index:9999" shortTooltip="Download 3D symbol" longTooltip="Make the column <b>symbol 3D</b> available and select only <b>1</b> item. If there is a 3D symbol available, this button is enabled." tooltipTime="1500" tooltip-timer tooltip-html-unsafe="{{tooltip}}">
 	    		<a href="{{check3dExistence(selectedItems[0])}}" class="btn btn-default btn-sm" style="margin-top: 6px;"  ng-disabled="selectedItems.length !== 1 || !!!check3dExistence(selectedItems[0])"><i style="margin-right: 10px;" class="fa fa-download"></i>3D Symbol</a>
 	    	</span>
@@ -110,7 +110,11 @@
 				<tbody>
 					<td colspan="{{cols.length}}" style="text-align: center" ng-show="items.length === 0">No Entries available.</td>
 					<tr ng-repeat="item in items" ng-click="toggleSelectRow($index);$event.preventDefault();" ng-class="{highlighted:isHighlighted($index)}" cuz-menu>
-						<td ng-repeat="data in sortedValues(item) track by $index" fix-width="{{sortedValues(item).length}}"><span transform-link="{{data}}"></span><i style="margin-left: 15px" ng-show="!$index && checkLink(item)" class="fa fa-unlink btn-link" ng-click="$event.stopPropagation(); showAssociationModal(item)"></i></td>
+						<td ng-repeat="data in sortedValues(item) track by $index" fix-width="{{sortedValues(item).length}}">
+						<span transform-link="{{data}}"></span>
+						<i style="margin-left: 15px" ng-show="!$index && checkLink(item)" class="fa fa-unlink btn-link" ng-click="$event.stopPropagation(); showAssociationModal(item)"></i>
+						<i style="margin-left: 15px" ng-show="!$index && checkIfCatFav(item)" class="fa fa-star star" ng-click="$event.stopPropagation(); delCatFav(item);"></i>
+						</td>
 					</tr>
 				</tbody>
 			</table>
